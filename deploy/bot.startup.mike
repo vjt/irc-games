@@ -1,0 +1,10 @@
+# MikeBongiorno su Azzurra — parte subito dopo il 001. Nessun NickServ: il nick
+# non e' registrato e il vhost e' l'rDNS vero dell'indirizzo da cui il processo
+# esce (fffc::a11e -> ti.faccio.le.domande.mentre.sniffo.org), non un grant dei
+# servizi.
+#
+# Tre canali, per ordine di vjt (#sbiffo 2026-09-09 23:39): «mike bongiorno
+# autojoin su sniffo italia e sbiffo».
+JOIN #sniffo
+JOIN #sbiffo
+JOIN #italia

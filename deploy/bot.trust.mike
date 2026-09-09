@@ -1,0 +1,4 @@
+# Vuoto apposta, come quello di Convento. MikeBongiorno non prende ordini da
+# nessuno: sulla sua FIFO scrive solo il quiz, e nessuna sessione Claude legge
+# il suo stdout. Un presentatore non ha bisogno di sapere chi sei, gli basta
+# che tu risponda.

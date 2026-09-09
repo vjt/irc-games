@@ -1,0 +1,37 @@
+#!/bin/sh
+# PROVIDE: convento_bot_azzurra
+# REQUIRE: NETWORKING
+# KEYWORD: shutdown
+#
+# Convento su Azzurra. Seconda istanza dello stesso bot.py, stesso nick e
+# stesso indirizzo (quindi stesso vhost) di quella IRCnet, altra rete.
+# Ordine di vjt, #sbiffo 2026-09-09 23:34: «connettilo pure qui su azzurra
+# sniffo e sbiffo / con lo stesso vhost».
+#
+# Log e FIFO sono SUOI, non quelli di IRCnet: il gioco tailla un log per rete e
+# risponde sulla FIFO da cui e' arrivato il colpo. Condividerli vorrebbe dire
+# rispondere su #cybernet a un .bang di #sniffo.
+#
+# TLS verify resta acceso (il default): Azzurra presenta una catena che valida,
+# al contrario di IRCnet. Nessun NickServ — .env.azzurra e' vuoto, il nick non
+# e' registrato e il vhost e' l'rDNS dell'indirizzo della jail.
+. /etc/rc.subr
+name="convento_bot_azzurra"
+rcvar="convento_bot_azzurra_enable"
+load_rc_config "$name"
+: ${convento_bot_azzurra_enable:="NO"}
+pidfile="/var/run/convento/bot.azzurra.pid"
+# Il pidfile di daemon(8) tiene il pid del FIGLIO, non del supervisore, quindi
+# rc.subr deve cercare l'interprete e non /usr/sbin/daemon: senza questo
+# `service ... status` dice «is not running» mentre il bot gira, e `stop` non
+# ammazza niente.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/bot.azzurra.stdout.log -t convento-azzurra \
+  /usr/bin/env IRC_HOST=irc.azzurra.chat IRC_NICK=Convento \
+  IRC_IDENT=convento IRC_REAL=github.com/vjt/irc-games \
+  BOT_LOG=/var/log/convento/bot.azzurra.log BOT_FIFO=/var/run/convento/bot.azzurra.send \
+  BOT_TRUST=/opt/convento/bot.trust.azzurra BOT_ENV=/opt/convento/.env.azzurra \
+  BOT_STARTUP=/opt/convento/bot.startup.azzurra \
+  /usr/local/bin/python3.11 -u /opt/convento/bot.py"
+run_rc_command "$1"

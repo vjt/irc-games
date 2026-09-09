@@ -1,0 +1,41 @@
+#!/bin/sh
+# PROVIDE: mikebongiorno_bot
+# REQUIRE: NETWORKING
+# KEYWORD: shutdown
+#
+# MikeBongiorno su Azzurra. Terzo processo dello stesso bot.py, nella stessa
+# jail di Convento — ordine di vjt (#sbiffo 2026-09-09 23:36-23:47): «il sidecar
+# lo fai diventare un bot a se stante», «il nome del bot trivial e'
+# MikeBongiorno», «su m42 metti tutto nella stessa jail».
+#
+# IRC_BIND e' il punto di tutto il giro: su Azzurra il vhost e' l'rDNS
+# dell'indirizzo da cui arrivi, quindi due bot nella stessa jail con due vhost
+# diversi vogliono due indirizzi diversi, e senza source_address il kernel ne
+# sceglie uno solo per entrambi. fffc::a11e ha il PTR
+# ti.faccio.le.domande.mentre.sniffo.org (vjt, 23:37).
+#
+# Log e FIFO sono suoi: il gioco tailla il log del bot che lo ospita e risponde
+# sulla FIFO da cui e' arrivato il comando. Condividerli con Convento vorrebbe
+# dire far rispondere il quiz sulla bocca dello sparasuore.
+#
+# Trust vuoto e .env vuoto: nessun NickServ (il vhost non e' un grant dei
+# servizi, e' DNS vero) e nessun ordine da nessuno — sulla sua FIFO scrive solo
+# il quiz.
+. /etc/rc.subr
+name="mikebongiorno_bot"
+rcvar="mikebongiorno_bot_enable"
+load_rc_config "$name"
+: ${mikebongiorno_bot_enable:="NO"}
+pidfile="/var/run/convento/mike.pid"
+# daemon(8) scrive nel pidfile il pid del FIGLIO: senza procname sull'interprete
+# `status` dice «is not running» col bot vivo e `stop` non ammazza niente.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/mike.stdout.log -t mikebongiorno \
+  /usr/bin/env IRC_BIND=2a03:4000:20:2d3:fffc::a11e IRC_HOST=irc.azzurra.chat \
+  IRC_NICK=MikeBongiorno IRC_IDENT=mike IRC_REAL=github.com/vjt/irc-games \
+  BOT_LOG=/var/log/convento/mike.log BOT_FIFO=/var/run/convento/mike.send \
+  BOT_TRUST=/opt/convento/bot.trust.mike BOT_ENV=/opt/convento/.env.mike \
+  BOT_STARTUP=/opt/convento/bot.startup.mike \
+  /usr/local/bin/python3.11 -u /opt/convento/bot.py"
+run_rc_command "$1"

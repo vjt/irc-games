@@ -187,8 +187,13 @@ PRIVMSG_PAT = re.compile(
 # dopo l'obiezione di peluche: in inglese il quiz e' `trivia`, `trivial` vuol
 # dire banale). La `l` finale resta opzionale nel pattern invece di aggiungere
 # una terza alternativa: una `?` non puo' divergere dal ramo accanto.
+#
+# `!allegria` e' il terzo alias (ordine di vjt, #sbiffo 2026-09-09 23:51: «serve
+# il trigger !allegria», «alias di !trivial»): quando il quiz lo conduce
+# MikeBongiorno, il comando che apre la partita e' il suo grido.
 CMD_PAT = re.compile(
-    r'^!\s*(?:trivial?|impiccati)(?:\s+(?P<set>.+?))?(?:\s+(?P<limit>\d{1,3}))?\s*$',
+    r'^!\s*(?:trivial?|impiccati|allegria)'
+    r'(?:\s+(?P<set>.+?))?(?:\s+(?P<limit>\d{1,3}))?\s*$',
     re.IGNORECASE)
 # `classifica` e' un nome che il canale condivide con lo sparasuore: nudo
 # rispondono tutti i giochi vivi, con l'argomento risponde solo quello
@@ -196,12 +201,13 @@ CMD_PAT = re.compile(
 # proprio nome e tace sugli altri: nessuno sa chi altro e' in ascolto.
 CLASSIFICA_PAT = re.compile(
     r'^!\s*classifica(?:\s+(?P<game>\S+))?\s*$', re.IGNORECASE)
-MY_GAME = ("impiccato", "impiccati", "trivia", "trivial")
+MY_GAME = ("impiccato", "impiccati", "trivia", "trivial", "allegria")
 # `!impiccati stop` va accettato quanto `!stop`: gosub ha scritto la forma
 # lunga al primo giro (#cybernet 21:38) e cadeva nel vuoto, che si legge come
 # un bot che ignora chi vuole chiudere.
-STOP_PAT = re.compile(r'^!\s*(?:stop|basta|(?:trivial?|impiccati)\s+stop)\s*$',
-                      re.IGNORECASE)
+STOP_PAT = re.compile(
+    r'^!\s*(?:stop|basta|(?:trivial?|impiccati|allegria)\s+stop)\s*$',
+    re.IGNORECASE)
 
 # I set a tema. Ordine di vjt (#sbiffo 2026-08-24 21:57-21:59): «facciamo in
 # modo che il set di domande si possa scegliere all'inizio del gioco, tipo il

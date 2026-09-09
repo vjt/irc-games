@@ -1,0 +1,42 @@
+#!/bin/sh
+# PROVIDE: convento_suore
+# REQUIRE: convento_bot convento_bot_azzurra
+# KEYWORD: shutdown
+#
+# Caccia alle suore, UN processo per DUE reti e TRE canali. Prima era un
+# processo per canale: la suora, il timer e la cadenza erano globali di
+# processo, e spawn() pescava sempre il primo canale in ordine alfabetico.
+# Ordine di vjt, #sbiffo 2026-09-09 23:34: «rendilo multi rete e multi canale».
+#
+# SUORE_NETS: nome|log|fifo|#canale:min-max,... — i record separati da ';'.
+# Log e FIFO stanno nello stesso record apposta: sono le due meta' dello stesso
+# bot, e tenerle in due variabili separate era il modo facile di leggere i colpi
+# di una rete e rispondere su un'altra.
+#
+# Cadenze: #sniffo 90-240 e #sbiffo 60-180 come le ha fissate vjt il 6/9
+# (#sbiffo e' la testnet, li' si gioca di piu'); #cybernet 90-240, canale di
+# passaggio.
+#
+# SUORE_NET=ircnet: e' la rete a cui viene attribuito uno stato salvato nel
+# formato vecchio, che teneva i canali nudi. Lo stato di questa jail nasce li'.
+#
+# Il valore di SUORE_NETS va fra virgolette singole: rc.subr fa eval di
+# command_args, e senza quelle la '|' del formato diventa una pipe di shell e
+# la '#' dei canali apre un commento. Provato: senza apici il servizio parte
+# e muore subito.
+. /etc/rc.subr
+name="convento_suore"
+rcvar="convento_suore_enable"
+load_rc_config "$name"
+: ${convento_suore_enable:="NO"}
+pidfile="/var/run/convento/suore.pid"
+# Vedi convento_bot_azzurra: daemon(8) scrive il pid del figlio, quindi rc.subr
+# deve cercare l'interprete o `status` e `stop` mentono.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/suore.log -t convento-suore \
+  /usr/bin/env SUORE_HOME=/var/db/convento SUORE_NET=ircnet \
+  SUORE_STATE=/var/db/convento/suore_state.json \
+  'SUORE_NETS=ircnet|/var/log/convento/bot.log|/var/run/convento/bot.send|#cybernet:90-240;azzurra|/var/log/convento/bot.azzurra.log|/var/run/convento/bot.azzurra.send|#sniffo:90-240,#sbiffo:60-180' \
+  /usr/local/bin/python3.11 -u /opt/irc-games/suore.py"
+run_rc_command "$1"

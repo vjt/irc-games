@@ -1,0 +1,32 @@
+#!/bin/sh
+# PROVIDE: mikebongiorno_impiccato
+# REQUIRE: mikebongiorno_bot
+# KEYWORD: shutdown
+#
+# Il quiz (impiccato + trivial) dietro a MikeBongiorno. Una rete sola, tre
+# canali — ordine di vjt (#sbiffo 2026-09-09 23:39): «mike bongiorno autojoin su
+# sniffo italia e sbiffo».
+#
+# IMPICCATO_NETS ha lo stesso formato di SUORE_NETS apposta:
+#   nome|log|fifo|#canali
+# e come li' il valore va fra APICI SINGOLI: rc.subr fa eval di command_args,
+# quindi senza apici la '|' diventa una pipe di shell e la '#' apre un commento.
+#
+# Lo stato tiene il nome storico senza suffisso per la rete 'azzurra'
+# (impiccato_state.json): e' la classifica di #sniffo/#sbiffo/#italia che
+# arriva dal Pi, rinominarla la butterebbe via.
+. /etc/rc.subr
+name="mikebongiorno_impiccato"
+rcvar="mikebongiorno_impiccato_enable"
+load_rc_config "$name"
+: ${mikebongiorno_impiccato_enable:="NO"}
+pidfile="/var/run/convento/impiccato.pid"
+# Vedi mikebongiorno_bot: daemon(8) scrive il pid del figlio.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/impiccato.log -t mike-impiccato \
+  /usr/bin/env IMPICCATO_HOME=/var/db/convento \
+  IMPICCATO_DOMANDE=/opt/irc-games/impiccato_domande.json \
+  'IMPICCATO_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sniffo,#sbiffo,#italia' \
+  /usr/local/bin/python3.11 -u /opt/irc-games/impiccato.py --net azzurra daemon"
+run_rc_command "$1"
