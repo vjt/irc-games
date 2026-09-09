@@ -71,28 +71,76 @@ import time
 import unicodedata
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent
-DOMANDE = REPO / "impiccato_domande.json"
+# La casa del gioco: dove stanno domande e stato. Era la directory del file, che
+# andava bene finche' il codice viveva nel checkout del bot; ora il gioco sta in
+# un repo suo e gira in una jail su m42, dove il codice e i dati non sono nello
+# stesso posto. IMPICCATO_HOME li separa.
+REPO = Path(os.environ.get("IMPICCATO_HOME", Path(__file__).resolve().parent))
+DOMANDE = Path(os.environ.get("IMPICCATO_DOMANDE", REPO / "impiccato_domande.json"))
 
-# Una voce per rete. Sono processi di bot.py distinti: log, FIFO e canali
-# separati, quindi anche stato separato.
-NETS = {
-    "azzurra": {
-        "log": REPO / "bot.log",
-        "fifo": REPO / "bot.send",
-        "state": REPO / "impiccato_state.json",
-        # #sniffo aggiunto per ordine di vjt (#sbiffo 2026-08-24 21:54),
-        # #italia per ordine di vjt (#sniffo 2026-08-29 21:43).
-        # Le partite sono per canale: vedi load_state().
-        "chans": {"#sbiffo", "#sniffo", "#italia"},
-    },
-    "ircnet": {
-        "log": REPO / "bot.ircnet.log",
-        "fifo": REPO / "bot.send.ircnet",
-        "state": REPO / "impiccato_state.ircnet.json",
-        "chans": {"#cybernet"},
-    },
-}
+
+def _default_nets():
+    """Le reti storiche, quando la config non arriva dall'ambiente.
+
+    Una voce per rete: sono processi di `bot.py` distinti, con log, FIFO e canali
+    separati, quindi anche stato separato."""
+    return {
+        "azzurra": {
+            "log": REPO / "bot.log",
+            "fifo": REPO / "bot.send",
+            "state": REPO / "impiccato_state.json",
+            # #sniffo aggiunto per ordine di vjt (#sbiffo 2026-08-24 21:54),
+            # #italia per ordine di vjt (#sniffo 2026-08-29 21:43).
+            # Le partite sono per canale: vedi load_state().
+            "chans": {"#sbiffo", "#sniffo", "#italia"},
+        },
+        "ircnet": {
+            "log": REPO / "bot.ircnet.log",
+            "fifo": REPO / "bot.send.ircnet",
+            "state": REPO / "impiccato_state.ircnet.json",
+            "chans": {"#cybernet"},
+        },
+    }
+
+
+def load_nets():
+    """`IMPICCATO_NETS` se c'e', altrimenti le reti storiche.
+
+    Stesso formato di SUORE_NETS, apposta — i due giochi si configurano allo
+    stesso modo e chi legge una unit sa gia' leggere l'altra:
+
+        nome|path/bot.log|path/bot.send|#chan1,#chan2 ; nome2|...
+
+    Lo stato di ogni rete e' `impiccato_state.<rete>.json` sotto REPO, tranne
+    che per 'azzurra', che tiene il nome storico senza suffisso: rinominarlo
+    perderebbe la classifica di #sniffo, #sbiffo e #italia.
+
+    Il gioco resta UN PROCESSO PER RETE (il template systemd/rc.d fa il resto):
+    il suo loop e' per rete, con stato e tail suoi. Non e' il caso delle suore,
+    dove il processo era per CANALE — quello si', era il difetto."""
+    raw = os.environ.get("IMPICCATO_NETS", "").strip()
+    if not raw:
+        return _default_nets()
+    nets = {}
+    for record in raw.split(";"):
+        record = record.strip()
+        if not record:
+            continue
+        parts = record.split("|")
+        if len(parts) != 4:
+            raise SystemExit(f"impiccato: record malformato in IMPICCATO_NETS: "
+                             f"{record!r} — serve nome|log|fifo|canali")
+        name, log, fifo, chanspec = (p.strip() for p in parts)
+        chans = {c.strip().lower() for c in chanspec.split(",") if c.strip()}
+        if not chans:
+            raise SystemExit(f"impiccato: la rete {name!r} non ha canali")
+        suffix = "" if name == "azzurra" else f".{name}"
+        nets[name] = {"log": Path(log), "fifo": Path(fifo), "chans": chans,
+                      "state": REPO / f"impiccato_state{suffix}.json"}
+    return nets
+
+
+NETS = load_nets()
 
 # Silenzio in canale dopo il quale la partita si chiude da sola.
 IDLE_STOP = 600

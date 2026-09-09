@@ -1,0 +1,5258 @@
+{
+ "_": "Catalogo domande dell'impiccato. Ordine di vjt (#sbiffo 2026-08-24 21:27): 'trovale o meglio ancora GENERALE, un gran bel catalogo incluse le bestemmie'; e 21:54: 'genera nuove domande a catalogo magari rispondibili anche da qualcuno non tecnico tipo mia moglie, roba di scienza e cultura generale e magari scarpe moda e vestiti di merda' -- da li' le categorie scienza/cultura/moda/cucina/natura. La categoria religioni e' di peluche (#sbiffo 21:57), confermata da vjt. Formato: q = domanda, a = risposta (il case che si vede quando la si indovina), cat = categoria, alt = altre risposte da accettare. La risposta e' 1-3 parole, come ShBot su #cybernet: vedi docs/impiccato_spec.md.",
+ "domande": [
+  {
+   "cat": "unix",
+   "q": "Quale segnale chiede a un processo di terminare in modo pulito?",
+   "a": "SIGTERM"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale segnale un processo non puo' ne' catturare ne' ignorare?",
+   "a": "SIGKILL"
+  },
+  {
+   "cat": "unix",
+   "q": "Come si chiama il processo con PID 1?",
+   "a": "init",
+   "alt": [
+    "systemd",
+    "launchd"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale processo adotta gli orfani quando il padre muore?",
+   "a": "init",
+   "alt": [
+    "systemd",
+    "launchd"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Come si chiama un processo morto di cui nessuno ha letto lo stato?",
+   "a": "Zombie"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale chiamata di sistema duplica il processo corrente?",
+   "a": "fork"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale chiamata di sistema sostituisce l'immagine del processo?",
+   "a": "execve"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale permesso fa girare un eseguibile con l'utente del proprietario?",
+   "a": "setuid"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale bit su una directory impedisce di cancellare i file altrui?",
+   "a": "Sticky bit"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando cambia il proprietario di un file?",
+   "a": "chown"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale struttura del filesystem contiene i metadati di un file?",
+   "a": "inode"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale tipo di link non puo' attraversare i filesystem?",
+   "a": "Hard link"
+  },
+  {
+   "cat": "unix",
+   "q": "Come si chiama il file speciale che collega due processi in pipeline su disco?",
+   "a": "FIFO",
+   "alt": [
+    "named pipe",
+    "pipe con nome",
+    "coda"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando mostra le chiamate di sistema fatte da un processo su Linux?",
+   "a": "strace"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando elenca i file aperti da un processo?",
+   "a": "lsof"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale filesystem virtuale espone lo stato dei processi su Linux?",
+   "a": "procfs"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale segnale riceve un processo che scrive su una pipe senza lettori?",
+   "a": "SIGPIPE"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale variabile d'ambiente elenca le directory degli eseguibili?",
+   "a": "PATH"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale meccanismo del kernel isola PID, rete e mount di un container?",
+   "a": "namespace"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale meccanismo del kernel limita CPU e memoria di un gruppo di processi?",
+   "a": "cgroup"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando FreeBSD esegue un comando dentro una jail?",
+   "a": "jexec"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale editor si esce con due punti q punto esclamativo?",
+   "a": "vi"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale numero di file descriptor e' lo standard error?",
+   "a": "due",
+   "alt": [
+    "2"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Come si chiama il primo settore di un disco con il boot loader?",
+   "a": "MBR"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale demone moderno fa da init su gran parte delle distribuzioni Linux?",
+   "a": "systemd"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo traduce i nomi in indirizzi?",
+   "a": "DNS"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS indica il server di posta di un dominio?",
+   "a": "MX"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS fa la risoluzione inversa da indirizzo a nome?",
+   "a": "PTR"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS contiene i parametri di zona e il numero di serie?",
+   "a": "SOA"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS associa un nome a un indirizzo IPv6?",
+   "a": "AAAA"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale campo del pacchetto IP evita che giri in eterno?",
+   "a": "TTL"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo garantisce la consegna ordinata dei segmenti?",
+   "a": "TCP"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo di trasporto non garantisce nulla ma e' veloce?",
+   "a": "UDP"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama lo scambio a tre messaggi che apre una connessione TCP?",
+   "a": "Handshake"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale flag TCP chiede di aprire una connessione?",
+   "a": "SYN"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale flag TCP abbatte la connessione senza chiuderla per bene?",
+   "a": "RST"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo risolve un indirizzo IP in un indirizzo MAC?",
+   "a": "ARP"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo di routing tiene insieme i sistemi autonomi di internet?",
+   "a": "BGP"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale numero di porta usa HTTPS per convenzione?",
+   "a": "443",
+   "alt": [
+    "quattrocentoquarantatre"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale numero di porta usa SSH per convenzione?",
+   "a": "22",
+   "alt": [
+    "ventidue"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale porta usa IRC su TLS per convenzione?",
+   "a": "6697",
+   "alt": [
+    "seimilaseicentonovantasette"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama la dimensione massima di un pacchetto su un collegamento?",
+   "a": "MTU"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama la porzione di indirizzo che identifica la rete?",
+   "a": "prefisso",
+   "alt": [
+    "network prefix",
+    "netmask",
+    "prefix"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale tecnica fa passare piu' host privati dietro un solo indirizzo pubblico?",
+   "a": "NAT"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale organismo definisce gli standard di internet?",
+   "a": "IETF"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama il documento in cui si pubblica uno standard di internet?",
+   "a": "RFC"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale comando windows mostra l'indirizzo IP locale?",
+   "a": "Ipconfig"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale strumento mostra il percorso dei pacchetti verso una destinazione?",
+   "a": "traceroute"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale campo IPv6 ha sostituito la frammentazione degli intermedi?",
+   "a": "Path MTU"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale tecnologia porta due reti private dentro un tunnel cifrato?",
+   "a": "VPN"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale tipo di crittografia usa una coppia di chiavi pubblica e privata?",
+   "a": "Crittografia asimmetrica",
+   "alt": [
+    "asimmetrica",
+    "a chiave pubblica"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama il valore casuale aggiunto a una password prima di digerirla?",
+   "a": "salt"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama il numero usato una sola volta in un protocollo?",
+   "a": "nonce"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco riusa un messaggio valido catturato in precedenza?",
+   "a": "Replay"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco inserisce comandi nel database attraverso un campo di input?",
+   "a": "SQL injection"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco esegue codice altrui nel browser della vittima?",
+   "a": "XSS"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco fa compiere al browser una richiesta autenticata a insaputa dell'utente?",
+   "a": "CSRF"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale meccanismo definisce come un browser gestisce le richieste cross-origin?",
+   "a": "CORS"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale intestazione dichiara da quali origini si puo' caricare codice?",
+   "a": "CSP"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco si mette in mezzo a due parti che si credono sole?",
+   "a": "Man in the middle",
+   "alt": [
+    "mitm"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama la funzione che trasforma una password in un digest lento apposta?",
+   "a": "KDF"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale algoritmo di derivazione password ha vinto la Password Hashing Competition?",
+   "a": "Argon2"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama il documento che lega una chiave pubblica a un'identita'?",
+   "a": "certificato"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Chi firma i certificati e li rende credibili?",
+   "a": "Certificate Authority",
+   "alt": [
+    "ca",
+    "autorita di certificazione"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale protocollo automatizza il rilascio dei certificati di Let's Encrypt?",
+   "a": "ACME"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama la proprieta' per cui rubare la chiave oggi non svela il traffico di ieri?",
+   "a": "Forward secrecy"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Cosa serve per rilevare un attacco in corso?",
+   "a": "Logging e monitoring"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Cosa viene usato spesso per l'autenticazione tramite API?",
+   "a": "Token JWT"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale lista predefinita blocca traffico malevolo noto?",
+   "a": "Managed Rule"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale strumento gestisce le password e i certificati in ambiente macOS?",
+   "a": "Keychain"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale meccanismo permette di disabilitare webcam o geolocalizzazione su un sito?",
+   "a": "Feature Policy"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama una falla nota a tutti tranne che a chi deve correggerla?",
+   "a": "Zero day",
+   "alt": [
+    "0day",
+    "zeroday"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale scrittura oltre la fine di un buffer e' il difetto piu' antico del mestiere?",
+   "a": "Overflow",
+   "alt": [
+    "buffer overflow"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale identificatore pubblico cataloga una vulnerabilita' nota?",
+   "a": "CVE"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama il secondo fattore che si genera da un segreto e dall'orologio?",
+   "a": "TOTP"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRC entra in un canale?",
+   "a": "JOIN"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRC manda un messaggio senza pretendere risposta automatica?",
+   "a": "NOTICE"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale servizio di rete custodisce la registrazione dei nick?",
+   "a": "NickServ"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale servizio di rete custodisce la registrazione dei canali?",
+   "a": "ChanServ"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama la rottura di una rete IRC in due tronconi?",
+   "a": "netsplit"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale modo utente nasconde l'host dietro una maschera?",
+   "a": "cloak",
+   "alt": [
+    "vhost",
+    "host mask"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale numerico IRC saluta il client appena registrato?",
+   "a": "001"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale messaggio tiene viva la connessione IRC e va sempre ricambiato?",
+   "a": "PING"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale modo di canale impedisce a chi non e' dentro di scriverci?",
+   "a": "no external",
+   "alt": [
+    "n",
+    "modo n"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRC chiede a un server chi e' un certo utente?",
+   "a": "WHOIS"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama l'estensione moderna che porta tag e capacita' al protocollo IRC?",
+   "a": "IRCv3"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale demone IRC fa girare la rete Azzurra?",
+   "a": "bahamut"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama il messaggio che il canale mostra a chi entra?",
+   "a": "topic",
+   "alt": [
+    "entrymsg"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando butta fuori qualcuno da un canale senza bandirlo?",
+   "a": "KICK"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama il client che resta connesso al posto tuo mentre dormi?",
+   "a": "bouncer",
+   "alt": [
+    "bnc",
+    "znc"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Quale header indica al server che i dati inviati sono in formato JSON?",
+   "a": "Content type"
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP dice che la risorsa non esiste?",
+   "a": "404",
+   "alt": [
+    "not found"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP dice che serve autenticarsi?",
+   "a": "401",
+   "alt": [
+    "unauthorized"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP dice che sei autenticato ma non ti spetta?",
+   "a": "403",
+   "alt": [
+    "forbidden"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP dice che il server e' esploso da solo?",
+   "a": "500",
+   "alt": [
+    "internal server error"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Quale metodo HTTP e' idempotente e sostituisce la risorsa intera?",
+   "a": "PUT"
+  },
+  {
+   "cat": "web",
+   "q": "Come si chiama il caricamento frazionato del codice per accelerare il primo caricamento?",
+   "a": "Code splitting"
+  },
+  {
+   "cat": "web",
+   "q": "Quale processo ricostruisce un oggetto da una sequenza di byte ricevuta?",
+   "a": "Deserialization",
+   "alt": [
+    "deserializzazione"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Cosa indica il livello di dettaglio di un'immagine digitale?",
+   "a": "Risoluzione",
+   "alt": [
+    "dpi"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Come si chiama una dipendenza che deve essere installata dall'utente finale?",
+   "a": "Peer dependency"
+  },
+  {
+   "cat": "web",
+   "q": "Quale protocollo tiene aperto un canale bidirezionale sopra HTTP?",
+   "a": "WebSocket"
+  },
+  {
+   "cat": "web",
+   "q": "Come si chiama il file che dichiara nome, icone e schermata di una web app installabile?",
+   "a": "manifest"
+  },
+  {
+   "cat": "web",
+   "q": "Quale componente intercetta le richieste di una PWA e la fa funzionare offline?",
+   "a": "Service worker"
+  },
+  {
+   "cat": "web",
+   "q": "Come si chiama la zona dello schermo che il notch e gli angoli non coprono?",
+   "a": "Safe area"
+  },
+  {
+   "cat": "web",
+   "q": "Contro quale bordo un box in position absolute risolve i propri offset?",
+   "a": "Padding edge"
+  },
+  {
+   "cat": "web",
+   "q": "Quale proprieta' CSS crea un contesto di impilamento insieme alla posizione?",
+   "a": "z-index"
+  },
+  {
+   "cat": "web",
+   "q": "Quale metrica misura quanto tarda a comparire il contenuto principale?",
+   "a": "LCP"
+  },
+  {
+   "cat": "web",
+   "q": "Quale metrica misura quanto la pagina balla mentre carica?",
+   "a": "CLS"
+  },
+  {
+   "cat": "web",
+   "q": "Come si chiama il file che dice ai crawler dove non mettere il naso?",
+   "a": "robots"
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama il framework di calcolo su MongoDB?",
+   "a": "Aggregation",
+   "alt": [
+    "aggregation framework",
+    "aggregazione"
+   ]
+  },
+  {
+   "cat": "db",
+   "q": "Quale tipo di lock viene usato durante la fase di ricerca prima della scrittura?",
+   "a": "Update Lock"
+  },
+  {
+   "cat": "db",
+   "q": "Quale acronimo raccoglie le quattro garanzie di una transazione?",
+   "a": "ACID"
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama la situazione in cui due transazioni si aspettano a vicenda per sempre?",
+   "a": "Deadlock"
+  },
+  {
+   "cat": "db",
+   "q": "Quale struttura dati indicizza tipicamente una tabella relazionale?",
+   "a": "B-tree"
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama il vincolo che punta alla chiave primaria di un'altra tabella?",
+   "a": "Chiave esterna",
+   "alt": [
+    "foreign key"
+   ]
+  },
+  {
+   "cat": "db",
+   "q": "Quale modalita' di SQLite tiene le scritture in un giornale separato?",
+   "a": "WAL"
+  },
+  {
+   "cat": "db",
+   "q": "Quale operazione unisce due tabelle su una condizione?",
+   "a": "JOIN"
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama la lettura di dati scritti da una transazione non ancora confermata?",
+   "a": "Dirty read"
+  },
+  {
+   "cat": "db",
+   "q": "Quale comando annulla una transazione e riporta tutto com'era?",
+   "a": "ROLLBACK"
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama il processo che riduce la ridondanza nello schema relazionale?",
+   "a": "Normalizzazione",
+   "alt": [
+    "forme normali"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Quale componente garantisce che il numero specificato di pod sia sempre attivo?",
+   "a": "ReplicaSet"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale strumento permette di personalizzare configurazioni YAML senza usare template?",
+   "a": "Kustomize"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale concetto di Kustomize permette di applicare patch su basi diverse?",
+   "a": "Overlay"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama la piu' piccola unita' schedulabile in Kubernetes?",
+   "a": "Pod",
+   "alt": [
+    "pods"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Quale oggetto Kubernetes espone un insieme di pod dietro un nome stabile?",
+   "a": "Service"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale risorsa Kubernetes tiene i segreti in chiaro ma codificati?",
+   "a": "Secret"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama il rilascio che manda una fetta di traffico sulla versione nuova?",
+   "a": "Canary"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama il rilascio che tiene due ambienti gemelli e scambia il traffico?",
+   "a": "Blue green",
+   "alt": [
+    "bluegreen"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama la proprieta' di un'operazione che ripetuta non cambia il risultato?",
+   "a": "idempotenza",
+   "alt": [
+    "idempotente"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Quale file dichiara i passi di costruzione di un'immagine container?",
+   "a": "Dockerfile"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale strumento descrive l'infrastruttura come codice con lo stato su file?",
+   "a": "Terraform"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama la pratica di unire spesso il proprio lavoro sul ramo principale?",
+   "a": "Integrazione continua",
+   "alt": [
+    "ci",
+    "continuous integration"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Seconda fase del paradigma divide et impera?",
+   "a": "Impera",
+   "alt": [
+    "impera et divide",
+    "conquer"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Tecnica di gestione collisioni con scansione?",
+   "a": "Linear Probing"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale strumento di comunicazione tra processi e' gestito tramite numeri?",
+   "a": "Signals"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Cosa significa che le maiuscole e minuscole vengono distinte?",
+   "a": "Case Sensitive"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale struttura dati serve l'ultimo arrivato per primo?",
+   "a": "Stack",
+   "alt": [
+    "pila",
+    "lifo"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale struttura dati serve il primo arrivato per primo?",
+   "a": "Coda",
+   "alt": [
+    "fifo",
+    "queue"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale complessita' ha la ricerca binaria su un vettore ordinato?",
+   "a": "logaritmica",
+   "alt": [
+    "log n",
+    "o log n"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama una funzione che chiama se' stessa?",
+   "a": "ricorsiva",
+   "alt": [
+    "ricorsione"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama la memoria allocata a runtime e mai restituita?",
+   "a": "Memory leak"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama il puntatore che punta a memoria gia' liberata?",
+   "a": "Dangling pointer"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale componente libera automaticamente la memoria non piu' raggiungibile?",
+   "a": "Garbage collector"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama l'esecuzione di due thread che si pestano i piedi sullo stesso dato?",
+   "a": "Race condition"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale primitiva permette a un solo thread per volta di entrare in una sezione critica?",
+   "a": "mutex",
+   "alt": [
+    "lock",
+    "semaforo"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama il debito che si paga con gli interessi a ogni funzionalita' nuova?",
+   "a": "Debito tecnico",
+   "alt": [
+    "technical debt"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama la riscrittura che cambia la forma e non il comportamento?",
+   "a": "refactoring"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale linguaggio ha la gestione della memoria affidata al borrow checker?",
+   "a": "Rust"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale macchina virtuale fa girare Erlang ed Elixir?",
+   "a": "BEAM"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale filosofia erlang preferisce far morire il processo invece di curarlo?",
+   "a": "Let it crash"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama il processo che sorveglia gli altri e li riavvia?",
+   "a": "supervisore"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale notazione descrive la crescita asintotica di un algoritmo?",
+   "a": "O grande",
+   "alt": [
+    "big o",
+    "notazione asintotica"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Come si chiamava la rete che ha preceduto internet?",
+   "a": "ARPANET"
+  },
+  {
+   "cat": "storia",
+   "q": "Chi ha scritto il primo kernel Linux?",
+   "a": "Torvalds",
+   "alt": [
+    "linus",
+    "linus torvalds"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale sistema operativo nasce ai Bell Labs nel millenovecentosessantanove?",
+   "a": "Unix"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale linguaggio e' stato scritto per riscrivere Unix?",
+   "a": "C"
+  },
+  {
+   "cat": "storia",
+   "q": "Chi ha fondato il progetto GNU?",
+   "a": "Stallman",
+   "alt": [
+    "richard stallman",
+    "rms"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale distribuzione Linux e' nota per la sua stabilita' e per i pacchetti punto deb?",
+   "a": "Debian"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale worm del millenovecentottantotto ha messo in ginocchio ARPANET?",
+   "a": "Morris"
+  },
+  {
+   "cat": "storia",
+   "q": "Come si chiamava il protocollo di chiacchiera che ha preceduto IRC su BITNET?",
+   "a": "Relay"
+  },
+  {
+   "cat": "storia",
+   "q": "Chi ha scritto IRC nel millenovecentoottantotto?",
+   "a": "Oikarinen",
+   "alt": [
+    "jarkko oikarinen",
+    "jarkko"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale rete di bacheche telefoniche precedeva internet in Italia?",
+   "a": "Fidonet"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale terminale a caratteri e' ancora emulato da mezzo mondo?",
+   "a": "VT100"
+  },
+  {
+   "cat": "storia",
+   "q": "Come si chiamava il sistema operativo a riga di comando di Microsoft prima di Windows?",
+   "a": "MS DOS",
+   "alt": [
+    "dos",
+    "msdos"
+   ]
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia da' il nome al principio per cui piu' bestemmi e meglio scrivi il codice?",
+   "a": "Porco dio"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia affianca a dio il migliore amico dell'uomo?",
+   "a": "Dio cane"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia accosta la madonna al mestiere piu' antico del mondo?",
+   "a": "Madonna puttana"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia mette il figlio al posto del padre, sempre in compagnia del cane?",
+   "a": "Cristo cane"
+  },
+  {
+   "cat": "goliardia",
+   "q": "In quale bestemmia dio diventa un animale generico, senza specificare la specie?",
+   "a": "Dio bestia"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia appiccica alla madonna l'aggettivo del maiale?",
+   "a": "Porca madonna"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia affianca a dio il rettile che striscia?",
+   "a": "Dio serpente"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia lombarda fa di dio un cane di legno?",
+   "a": "Dio can de legn"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia trasforma la madonna in una scrofa?",
+   "a": "Madonna maiala"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia da' a dio del pezzo di merda in una parola sola?",
+   "a": "Dio stronzo"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Che regola di consapevolezza automatica riguarda la molteplicita' e la scarsezza?",
+   "a": "Antani"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama la conversazione che sembra sensata e non lo e' affatto?",
+   "a": "supercazzola",
+   "alt": [
+    "supercazzora"
+   ]
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale conte pronuncia la supercazzola nel film di Monicelli?",
+   "a": "Mascetti"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama sempre chiunque su questo canale?",
+   "a": "john"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale distribuzione secondo asbesto e' merda?",
+   "a": "Debian"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa si beve dopo aver letto i sorgenti di OpenSSL?",
+   "a": "grappa"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale liquore corregge il caffe' servito nel bicchiere di vetro?",
+   "a": "sambuca"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa si risponde a chi chiede se ce n'e'?",
+   "a": "Certo john"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama il sistema operativo eleet piu' famoso di Azzurra che non e' mai esistito?",
+   "a": "SignalOS"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa risponde il bot quando qualcuno nomina nano su cybernet?",
+   "a": "puorc e merd"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa e' successo davvero quando qualcuno scrive una cifra nuda e poi ops sorry?",
+   "a": "irssi"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale editor scatena guerre di religione contro emacs?",
+   "a": "vi"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama il problema che sparisce appena colleghi il debugger?",
+   "a": "Heisenbug"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama la macchina su cui funziona sempre tutto?",
+   "a": "la mia"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale documentazione non esiste mai quando serve?",
+   "a": "quella giusta"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale pianeta del sistema solare e' il piu' vicino al Sole?",
+   "a": "Mercurio"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale pianeta e' famoso per i suoi anelli?",
+   "a": "Saturno"
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama il satellite naturale della Terra?",
+   "a": "Luna"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale gas respiriamo in quantita' maggiore nell'aria?",
+   "a": "Azoto"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale gas assorbono le piante per la fotosintesi?",
+   "a": "Anidride carbonica",
+   "alt": [
+    "CO2"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Qual e' il simbolo chimico dell'oro?",
+   "a": "Au"
+  },
+  {
+   "cat": "scienza",
+   "q": "Qual e' il simbolo chimico del ferro?",
+   "a": "Fe"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quante ossa ha in media un essere umano adulto?",
+   "a": "Duecentosei",
+   "alt": [
+    "206"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale organo pompa il sangue nel corpo?",
+   "a": "Cuore"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale organo filtra il sangue e produce l'urina?",
+   "a": "Reni",
+   "alt": [
+    "rene"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama la molecola che porta l'informazione genetica?",
+   "a": "DNA"
+  },
+  {
+   "cat": "scienza",
+   "q": "A quanti gradi Celsius bolle l'acqua a livello del mare?",
+   "a": "Cento",
+   "alt": [
+    "100"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "A quanti gradi Celsius congela l'acqua?",
+   "a": "Zero",
+   "alt": [
+    "0"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Chi ha formulato la teoria della relativita'?",
+   "a": "Einstein",
+   "alt": [
+    "albert einstein",
+    "albert"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Chi ha formulato la legge di gravitazione universale?",
+   "a": "Newton",
+   "alt": [
+    "isaac newton",
+    "isaac"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Chi ha scritto L'origine delle specie?",
+   "a": "Darwin",
+   "alt": [
+    "charles darwin",
+    "charles"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Chi ha scoperto la penicillina?",
+   "a": "Fleming",
+   "alt": [
+    "alexander fleming"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Chi ha vinto due Nobel in due discipline diverse?",
+   "a": "Marie Curie",
+   "alt": [
+    "curie",
+    "maria sklodowska",
+    "sklodowska"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale forza tiene i pianeti in orbita attorno al Sole?",
+   "a": "Gravità",
+   "alt": [
+    "gravita"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama la piu' piccola unita' di materia con proprieta' chimiche?",
+   "a": "Atomo"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quali particelle orbitano attorno al nucleo dell'atomo?",
+   "a": "Elettroni",
+   "alt": [
+    "elettrone"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama il processo con cui le piante producono zuccheri dalla luce?",
+   "a": "Fotosintesi"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale animale e' il piu' grande mai esistito sulla Terra?",
+   "a": "Balenottera azzurra",
+   "alt": [
+    "balena azzurra"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quanti cromosomi ha una cellula umana normale?",
+   "a": "Quarantasei",
+   "alt": [
+    "46"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama la scala che misura la magnitudo dei terremoti?",
+   "a": "Richter",
+   "alt": [
+    "scala richter"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Qual e' la velocita' della luce, in numeri tondi, in km al secondo?",
+   "a": "Trecentomila",
+   "alt": [
+    "300000"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama la galassia in cui si trova la Terra?",
+   "a": "Via Lattea"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale scienziato fu processato per aver sostenuto che la Terra gira?",
+   "a": "Galileo",
+   "alt": [
+    "galileo galilei",
+    "galilei"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama il cambiamento di stato da liquido a gas?",
+   "a": "Evaporazione"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale metallo e' liquido a temperatura ambiente?",
+   "a": "Mercurio"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha dipinto la Gioconda?",
+   "a": "Leonardo",
+   "alt": [
+    "leonardo da vinci",
+    "da vinci"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scolpito il David di Firenze?",
+   "a": "Michelangelo",
+   "alt": [
+    "michelangelo buonarroti",
+    "buonarroti"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scritto la Divina Commedia?",
+   "a": "Dante",
+   "alt": [
+    "dante alighieri",
+    "alighieri"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scritto I Promessi Sposi?",
+   "a": "Manzoni",
+   "alt": [
+    "alessandro manzoni"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scritto Romeo e Giulietta?",
+   "a": "Shakespeare",
+   "alt": [
+    "william shakespeare",
+    "william"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "In quale citta' si trova la Torre Eiffel?",
+   "a": "Parigi"
+  },
+  {
+   "cat": "cultura",
+   "q": "In quale citta' si trova il Colosseo?",
+   "a": "Roma"
+  },
+  {
+   "cat": "cultura",
+   "q": "Qual e' la capitale del Giappone?",
+   "a": "Tokyo"
+  },
+  {
+   "cat": "cultura",
+   "q": "Qual e' la capitale dell'Australia?",
+   "a": "Canberra"
+  },
+  {
+   "cat": "cultura",
+   "q": "Qual e' il fiume piu' lungo d'Italia?",
+   "a": "Po"
+  },
+  {
+   "cat": "cultura",
+   "q": "Qual e' la montagna piu' alta del mondo?",
+   "a": "Everest"
+  },
+  {
+   "cat": "cultura",
+   "q": "Qual e' l'oceano piu' grande?",
+   "a": "Pacifico"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quanti sono i continenti?",
+   "a": "Sette",
+   "alt": [
+    "7"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "In che anno e' caduto il muro di Berlino?",
+   "a": "Millenovecentottantanove",
+   "alt": [
+    "1989"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha composto la Nona Sinfonia con l'Inno alla gioia?",
+   "a": "Beethoven",
+   "alt": [
+    "ludwig van beethoven",
+    "ludwig"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha dipinto la Notte stellata?",
+   "a": "Van Gogh",
+   "alt": [
+    "vincent van gogh",
+    "vangogh",
+    "vincent"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama la valuta del Regno Unito?",
+   "a": "Sterlina",
+   "alt": [
+    "pound"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale isola italiana e' la piu' grande?",
+   "a": "Sicilia"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quanti giocatori ha una squadra di calcio in campo?",
+   "a": "Undici",
+   "alt": [
+    "11"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Ogni quanti anni si tengono le Olimpiadi estive?",
+   "a": "Quattro",
+   "alt": [
+    "4"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama il piu' piccolo stato del mondo?",
+   "a": "Vaticano",
+   "alt": [
+    "citta del vaticano"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale animale e' simbolo di Roma con i gemelli?",
+   "a": "Lupa"
+  },
+  {
+   "cat": "cultura",
+   "q": "In quale citta' si trova la Sagrada Familia?",
+   "a": "Barcellona"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi era il pittore delle Ninfee?",
+   "a": "Monet",
+   "alt": [
+    "claude monet"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale strumento suonava Louis Armstrong?",
+   "a": "Tromba"
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama la lingua ufficiale del Brasile?",
+   "a": "Portoghese"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scritto Il Piccolo Principe?",
+   "a": "Saint Exupery",
+   "alt": [
+    "saint-exupery",
+    "antoine de saint exupery",
+    "antoine de saint-exupery",
+    "de saint exupery",
+    "saint exuperi",
+    "antoine de saint exuperi",
+    "exupery"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale film ha per protagonista uno squalo mangiauomini?",
+   "a": "Lo squalo",
+   "alt": [
+    "jaws"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "In che regione si trova la Torre di Pisa?",
+   "a": "Toscana"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi dipinse la volta della Cappella Sistina?",
+   "a": "Michelangelo",
+   "alt": [
+    "michelangelo buonarroti",
+    "buonarroti"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la scarpa col tacco a spillo sottile?",
+   "a": "Stiletto"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiamano gli stivali di gomma per la pioggia?",
+   "a": "Stivali di gomma",
+   "alt": [
+    "galosce",
+    "wellington"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Che scarpa e' la classica bassa senza lacci che si infila e basta?",
+   "a": "Mocassino",
+   "alt": [
+    "mocassini"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiamano le scarpe da ginnastica in inglese?",
+   "a": "Sneakers",
+   "alt": [
+    "sneaker"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il sandalo infradito da spiaggia?",
+   "a": "Infradito",
+   "alt": [
+    "ciabatte infradito"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marca ha come logo lo swoosh?",
+   "a": "Nike"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marca ha come logo tre strisce?",
+   "a": "Adidas"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marca di scarpe da basket ha reso famose le Chuck Taylor?",
+   "a": "Converse"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la suola rossa che identifica una nota maison francese?",
+   "a": "Louboutin"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la parte della scarpa sotto il tallone che alza il piede?",
+   "a": "Tacco"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la fibbia di metallo che chiude la cintura?",
+   "a": "Fibbia"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il tessuto blu dei jeans?",
+   "a": "Denim"
+  },
+  {
+   "cat": "moda",
+   "q": "Da quale citta' italiana prende il nome il tessuto jeans?",
+   "a": "Genova"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il tessuto pregiato prodotto dai bachi?",
+   "a": "Seta"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la fibra ricavata dal pelo delle pecore?",
+   "a": "Lana"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il cappello rigido a cilindro alto?",
+   "a": "Cilindro"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la giacca corta di pelle da motociclista?",
+   "a": "Chiodo",
+   "alt": [
+    "giubbotto di pelle"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il vestito lungo da sera senza spalline?",
+   "a": "Abito da sera"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la sfilata dove le modelle camminano?",
+   "a": "Passerella"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale citta' italiana e' la capitale della moda?",
+   "a": "Milano"
+  },
+  {
+   "cat": "moda",
+   "q": "Chi ha inventato il tubino nero, secondo la leggenda?",
+   "a": "Coco Chanel",
+   "alt": [
+    "chanel",
+    "gabrielle chanel"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale stilista italiano e' associato al Re della moda di Legnano?",
+   "a": "Armani",
+   "alt": [
+    "giorgio armani"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la chiusura a denti che sostituisce i bottoni?",
+   "a": "Cerniera",
+   "alt": [
+    "zip",
+    "lampo"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la maglia con cappuccio?",
+   "a": "Felpa",
+   "alt": [
+    "hoodie"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il pantalone corto sopra il ginocchio?",
+   "a": "Pantaloncini",
+   "alt": [
+    "shorts"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la borsa che si porta a tracolla sul fianco?",
+   "a": "Tracolla"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiamano le calze lunghe fino alla vita?",
+   "a": "Collant"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la scarpa da uomo classica coi buchi decorativi?",
+   "a": "Brogue"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale numero di scarpa e' il piu' comune in Italia per un uomo adulto?",
+   "a": "Quarantadue",
+   "alt": [
+    "42"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il negozio dove si fanno riparare le scarpe?",
+   "a": "Calzolaio",
+   "alt": [
+    "ciabattino"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Con quale formaggio si fa la vera carbonara?",
+   "a": "Pecorino",
+   "alt": [
+    "pecorino romano"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale ingrediente NON va nella carbonara, mai?",
+   "a": "Panna"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale salume si usa nella vera amatriciana?",
+   "a": "Guanciale"
+  },
+  {
+   "cat": "cucina",
+   "q": "Di che citta' e' originaria la pizza margherita?",
+   "a": "Napoli"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale erba aromatica sta nel pesto genovese?",
+   "a": "Basilico"
+  },
+  {
+   "cat": "cucina",
+   "q": "Come si chiama il riso usato per il risotto?",
+   "a": "Carnaroli",
+   "alt": [
+    "arborio"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale vino rosso e' il simbolo del Piemonte?",
+   "a": "Barolo"
+  },
+  {
+   "cat": "cucina",
+   "q": "Come si chiama il dolce con mascarpone, caffe' e savoiardi?",
+   "a": "Tiramisù",
+   "alt": [
+    "tiramisu"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale spezia e' la piu' costosa al mondo?",
+   "a": "Zafferano"
+  },
+  {
+   "cat": "cucina",
+   "q": "Da quale pianta si ricava l'olio extravergine?",
+   "a": "Olivo",
+   "alt": [
+    "ulivo",
+    "olive"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il libro sacro dell'Islam?",
+   "a": "Corano"
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il libro sacro dell'ebraismo?",
+   "a": "Torah"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quanti sono i comandamenti nella tradizione cristiana?",
+   "a": "Dieci",
+   "alt": [
+    "10"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il capo della Chiesa cattolica?",
+   "a": "Papa",
+   "alt": [
+    "pontefice"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "In quale Stato si trova la Mecca?",
+   "a": "Arabia Saudita",
+   "alt": [
+    "arabia"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il mese di digiuno islamico?",
+   "a": "Ramadan"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale religione ha come fondatore Siddharta Gautama?",
+   "a": "Buddismo",
+   "alt": [
+    "buddhismo"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il luogo di culto ebraico?",
+   "a": "Sinagoga"
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il luogo di culto islamico?",
+   "a": "Moschea"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale fiume e' sacro per l'induismo?",
+   "a": "Gange"
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il primo libro della Bibbia?",
+   "a": "Genesi"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quanti sono gli apostoli di Gesu'?",
+   "a": "Dodici",
+   "alt": [
+    "12"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama la citta' sacra a ebrei, cristiani e musulmani?",
+   "a": "Gerusalemme"
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il santo patrono d'Italia insieme a Caterina?",
+   "a": "Francesco",
+   "alt": [
+    "san francesco"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il rito che accoglie un bambino nella Chiesa?",
+   "a": "Battesimo"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale divinita' greca era il re dell'Olimpo?",
+   "a": "Zeus"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale divinita' romana corrisponde a Zeus?",
+   "a": "Giove"
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama la corrente cristiana nata con Lutero?",
+   "a": "Protestantesimo",
+   "alt": [
+    "riforma"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il pellegrinaggio islamico alla Mecca?",
+   "a": "Hajj"
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama la festa ebraica delle luci?",
+   "a": "Hanukkah",
+   "alt": [
+    "chanukah"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale e' l'animale terrestre piu' veloce?",
+   "a": "Ghepardo"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale e' il piu' alto del mondo?",
+   "a": "Giraffa"
+  },
+  {
+   "cat": "natura",
+   "q": "Quanti cuori ha un polpo?",
+   "a": "Tre",
+   "alt": [
+    "3"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale uccello non vola ma nuota benissimo?",
+   "a": "Pinguino"
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama il cucciolo della pecora?",
+   "a": "Agnello"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale albero produce le ghiande?",
+   "a": "Quercia"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale insetto produce il miele?",
+   "a": "Ape"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale cambia colore per mimetizzarsi?",
+   "a": "Camaleonte"
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama il deserto piu' grande caldo del mondo?",
+   "a": "Sahara"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale fiore e' il simbolo dell'Olanda?",
+   "a": "Tulipano"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia mette dio insieme all'animale che fa le uova?",
+   "a": "Dio gallina"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia toglie a dio ogni tratto positivo con un solo aggettivo di sventura?",
+   "a": "Dio maledetto"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia veneta accosta la madonna al maiale in dialetto?",
+   "a": "Madona porca"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia riduce dio a materia fecale?",
+   "a": "Dio merda"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia da' a dio del roditore che vive nelle fogne?",
+   "a": "Dio ratto"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia accosta il figlio al suino?",
+   "a": "Porco cristo"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia rende dio un animale da soma con le orecchie lunghe?",
+   "a": "Dio asino"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia manda dio a fare il mestiere della madonna puttana, al maschile?",
+   "a": "Dio porco"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia fa della madonna un animale che raglia?",
+   "a": "Madonna asina"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bestemmia trasforma dio in un pesce senza ossa?",
+   "a": "Dio squalo"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama la citta' di Azzurra da cui viene la sezione pugliese di sniffo?",
+   "a": "Monopoli"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa si risponde a chi scrive quindici piu' diciotto, secondo il canone?",
+   "a": "non trentatre"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale gesto da pattinatori ha dato il nome al canale di alan?",
+   "a": "sniffo"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale marca di birra si beve mentre il deploy fallisce?",
+   "a": "qualunque"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa dice sempre chi ha appena rotto la produzione?",
+   "a": "da me funzionava"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale comando si digita per sbaglio credendo di essere sull'altra macchina?",
+   "a": "reboot"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama il commit che nessuno vuole rivendicare?",
+   "a": "il mio"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale giorno della settimana non si fa mai deploy?",
+   "a": "venerdi"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama il backup che non e' mai stato provato a ripristinare?",
+   "a": "inutile"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa contiene sempre il file chiamato temp punto txt?",
+   "a": "la produzione"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale animale compare nel logo di BSD?",
+   "a": "Diavolo",
+   "alt": [
+    "beastie",
+    "demone",
+    "daemon"
+   ]
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale animale e' la mascotte di Linux?",
+   "a": "Pinguino",
+   "alt": [
+    "tux"
+   ]
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama la pratica di rispondere a una domanda con una domanda su IRC?",
+   "a": "trolling"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale editor si esce premendo la combinazione che nessuno ricorda?",
+   "a": "vim"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa risponde un sistemista quando gli chiedi quanto ci vuole?",
+   "a": "dipende"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama il collega che committa direttamente su main?",
+   "a": "il problema"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale bevanda calda tiene in piedi la sala macchine?",
+   "a": "caffe"
+  },
+  {
+   "cat": "goliardia",
+   "q": "In quale bicchiere vuole il caffe' vjt?",
+   "a": "vetro"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa succede sempre appena stacchi il monitoraggio?",
+   "a": "cade tutto"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale parola magica sblocca ogni discussione tecnica su sniffo?",
+   "a": "antani"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama la scusa universale quando la rete non va?",
+   "a": "il DNS"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Chi ha sempre ragione nel dibattito tra tabulazioni e spazi?",
+   "a": "nessuno"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale numero di bug rimane sempre nel software, per legge?",
+   "a": "uno"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa risponde il manuale a chi cerca la funzione che gli serve?",
+   "a": "vedi sotto"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama il test che passa solo sulla macchina di chi l'ha scritto?",
+   "a": "flaky"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa fa un programmatore quando il codice funziona e non sa perche'?",
+   "a": "niente"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale film di Monicelli ha regalato la supercazzola al mondo?",
+   "a": "Amici miei"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale regista ha diretto Amici miei?",
+   "a": "Monicelli"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama la tarapia tapioco quando e' scherzosa?",
+   "a": "blinda"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale mestiere fa il Perozzi in Amici miei?",
+   "a": "giornalista"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama il rito goliardico di prendere in giro il novellino su IRC?",
+   "a": "nonnismo"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa chiede sempre chi entra in un canale senza leggere il topic?",
+   "a": "c e nessuno"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Quale comando digitano tutti i novellini credendo di elencare i file condivisi?",
+   "a": "list"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Come si chiama chi resta connesso in canale per anni senza scrivere mai?",
+   "a": "lurker"
+  },
+  {
+   "cat": "goliardia",
+   "q": "Cosa dice il capo quando chiedi tempo per rifattorizzare?",
+   "a": "dopo"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale pasta si usa tradizionalmente per la carbonara?",
+   "a": "Spaghetti",
+   "alt": [
+    "rigatoni"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale pomodoro e' il re della pizza napoletana?",
+   "a": "San Marzano"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale formaggio filante copre la pizza margherita?",
+   "a": "Mozzarella"
+  },
+  {
+   "cat": "cucina",
+   "q": "Di quale regione e' originaria la cassata?",
+   "a": "Sicilia"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale dolce siciliano si riempie di ricotta dentro una cialda fritta?",
+   "a": "Cannolo"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale carne si usa per l'ossobuco alla milanese?",
+   "a": "Vitello"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale ingrediente da' il colore giallo al risotto alla milanese?",
+   "a": "Zafferano"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale citta' e' la patria del ragu alla bolognese?",
+   "a": "Bologna"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale pasta ripiena si mangia in brodo a Natale in Emilia?",
+   "a": "Tortellini"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale liquido serve per mantecare il risotto insieme al burro?",
+   "a": "Brodo"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale legume sta nella pasta e fagioli?",
+   "a": "Fagioli"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale pesce azzurro si conserva sotto sale e si mette sulla pizza?",
+   "a": "Acciuga",
+   "alt": [
+    "alici",
+    "acciughe"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale salsa verde accompagna il bollito misto piemontese?",
+   "a": "Bagnetto",
+   "alt": [
+    "salsa verde"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale dolce natalizio milanese ha la forma a cupola?",
+   "a": "Panettone"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale dolce natalizio veronese ha la forma di stella?",
+   "a": "Pandoro"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale bevanda si ottiene fermentando l'uva?",
+   "a": "Vino"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale cereale sta alla base della polenta?",
+   "a": "Mais",
+   "alt": [
+    "granoturco"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale caffe' si beve in tazzina piccola e concentrato?",
+   "a": "Espresso"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale latte si usa per la vera mozzarella di bufala?",
+   "a": "Bufala"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale ingrediente fa lievitare il pane?",
+   "a": "Lievito"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale parte del maiale e' il guanciale?",
+   "a": "Guancia"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale erba si mette sulla pizza margherita a fine cottura?",
+   "a": "Basilico"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale frutto e' la base della marmellata di agrumi amara inglese?",
+   "a": "Arancia"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale formaggio stagionato si gratta sulla pasta e viene da Parma?",
+   "a": "Parmigiano"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale piatto si prepara con riso, zafferano e midollo a Milano?",
+   "a": "Risotto"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale pasta lunga e sottile e' la piu' venduta al mondo?",
+   "a": "Spaghetti"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale ortaggio e' l'ingrediente principale della parmigiana?",
+   "a": "Melanzana"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale dolce a strati alterna crema e savoiardi bagnati nel caffe?",
+   "a": "Tiramisù",
+   "alt": [
+    "tiramisu"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale alcolico si ottiene distillando le vinacce?",
+   "a": "Grappa"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale spezia rossa si ricava dal peperoncino essiccato e macinato?",
+   "a": "Paprica",
+   "alt": [
+    "paprika"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale e' il mammifero piu' grande del pianeta?",
+   "a": "Balena",
+   "alt": [
+    "balenottera azzurra",
+    "balenottera"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale uccello e' il piu' veloce in picchiata?",
+   "a": "Falco",
+   "alt": [
+    "falco pellegrino",
+    "pellegrino"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale e' noto per la memoria lunghissima e la proboscide?",
+   "a": "Elefante"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale marino ha otto braccia?",
+   "a": "Polpo"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale insetto costruisce il formicaio?",
+   "a": "Formica"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale porta il cucciolo nel marsupio?",
+   "a": "Canguro"
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama il cucciolo del cavallo?",
+   "a": "Puledro"
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama la femmina del maiale?",
+   "a": "Scrofa"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale albero perde le foglie ogni autunno ed e' simbolo del Canada?",
+   "a": "Acero"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale pianta grassa vive nel deserto e ha le spine?",
+   "a": "Cactus"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale e' il simbolo della lentezza?",
+   "a": "Lumaca",
+   "alt": [
+    "bradipo",
+    "tartaruga"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale uccello notturno gira la testa e caccia i topi?",
+   "a": "Gufo",
+   "alt": [
+    "civetta"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale costruisce le dighe sui fiumi?",
+   "a": "Castoro"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale mammifero vola davvero?",
+   "a": "Pipistrello"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale grande felino vive in India e ha le strisce?",
+   "a": "Tigre"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale oceano e' il piu' grande della Terra?",
+   "a": "Pacifico"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale montagna e' la piu' alta del mondo?",
+   "a": "Everest"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale fiume e' il piu' lungo d'Italia?",
+   "a": "Po"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale vulcano sovrasta Napoli?",
+   "a": "Vesuvio"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale vulcano e' il piu' alto d'Europa e sta in Sicilia?",
+   "a": "Etna"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale gas respirano le piante per fare la fotosintesi?",
+   "a": "Anidride carbonica",
+   "alt": [
+    "co2",
+    "biossido di carbonio"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale pigmento rende verdi le foglie?",
+   "a": "Clorofilla"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale e' il piu' grande felino del mondo?",
+   "a": "Tigre"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale foresta pluviale e' la piu' estesa del pianeta?",
+   "a": "Amazzonia"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale cambia pelle periodicamente strisciando?",
+   "a": "Serpente"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale uccello e' il simbolo della pace?",
+   "a": "Colomba"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale pianeta e' il piu' vicino al Sole?",
+   "a": "Mercurio"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale produce la seta?",
+   "a": "Baco",
+   "alt": [
+    "baco da seta",
+    "bombice"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale albero e' simbolo della pace nel Mediterraneo e da' un frutto oleoso?",
+   "a": "Ulivo",
+   "alt": [
+    "olivo"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale ha il collo lungo e vive nella savana africana?",
+   "a": "Giraffa"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale particella ha carica negativa e orbita il nucleo?",
+   "a": "Elettrone"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale particella del nucleo non ha carica?",
+   "a": "Neutrone"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale scienziato ha formulato la relativita' generale?",
+   "a": "Einstein"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale scienziata ha vinto due Nobel in due discipline diverse?",
+   "a": "Curie",
+   "alt": [
+    "marie curie"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale gas e' il piu' abbondante nell'atmosfera terrestre?",
+   "a": "Azoto"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale elemento ha simbolo chimico Fe?",
+   "a": "Ferro"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale elemento ha simbolo chimico Au?",
+   "a": "Oro"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale elemento ha numero atomico uno?",
+   "a": "Idrogeno"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale organo pompa il sangue nel corpo umano?",
+   "a": "Cuore"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quante ossa ha circa lo scheletro umano adulto?",
+   "a": "Duecentosei",
+   "alt": [
+    "206"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale molecola porta l'informazione genetica?",
+   "a": "DNA"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale stella e' al centro del nostro sistema?",
+   "a": "Sole"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale pianeta e' noto per i suoi anelli?",
+   "a": "Saturno"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale pianeta e' il piu' grande del sistema solare?",
+   "a": "Giove"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale satellite naturale gira intorno alla Terra?",
+   "a": "Luna"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale scienziato ha enunciato la legge di gravitazione universale?",
+   "a": "Newton"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale unita' misura la forza nel sistema internazionale?",
+   "a": "Newton"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale unita' misura la temperatura assoluta?",
+   "a": "Kelvin"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale scienziato ha proposto la teoria dell'evoluzione per selezione naturale?",
+   "a": "Darwin"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale scienziato ha scoperto la penicillina?",
+   "a": "Fleming"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale strumento serve per osservare cose molto piccole?",
+   "a": "Microscopio"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale forma ha la molecola dell'acqua in formula?",
+   "a": "H2O",
+   "alt": [
+    "acca due o"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale scienziato italiano ha puntato il cannocchiale sui satelliti di Giove?",
+   "a": "Galileo",
+   "alt": [
+    "galilei",
+    "galileo galilei"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quante cantiche compongono la Divina Commedia?",
+   "a": "Tre",
+   "alt": [
+    "3"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "In quale citta' si trova la torre pendente?",
+   "a": "Pisa"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale citta' italiana e' costruita sull'acqua con i canali?",
+   "a": "Venezia"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale opera lirica di Verdi si apre con il coro degli ebrei?",
+   "a": "Nabucco"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha composto le Quattro Stagioni?",
+   "a": "Vivaldi",
+   "alt": [
+    "antonio vivaldi"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale capitale europea e' attraversata dal Tamigi?",
+   "a": "Londra"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale monumento parigino e' stato costruito per l'esposizione del milleottocentottantanove?",
+   "a": "Torre Eiffel",
+   "alt": [
+    "eiffel"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale mare bagna Venezia?",
+   "a": "Adriatico"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale lingua si parla in Brasile?",
+   "a": "Portoghese"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale continente ospita il deserto del Sahara?",
+   "a": "Africa"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale scrittore inglese ha scritto Romeo e Giulietta?",
+   "a": "Shakespeare"
+  },
+  {
+   "cat": "cultura",
+   "q": "In quale citta' italiana e' ambientata Romeo e Giulietta?",
+   "a": "Verona"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale artista ha dipinto la notte stellata?",
+   "a": "Van Gogh",
+   "alt": [
+    "vincent van gogh"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale strumento a corde ha quattro corde e si suona con l'archetto?",
+   "a": "Violino"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale citta' e' la capitale della Francia?",
+   "a": "Parigi"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale citta' ospita il Colosseo?",
+   "a": "Roma"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scritto l'Odissea?",
+   "a": "Omero"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale regista italiano ha diretto La dolce vita?",
+   "a": "Fellini",
+   "alt": [
+    "federico fellini"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale premio si assegna ogni anno a Stoccolma per la letteratura?",
+   "a": "Nobel"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale stilista italiano ha fondato la casa di moda con la testa di Medusa?",
+   "a": "Versace"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marchio italiano ha il logo con due G intrecciate?",
+   "a": "Gucci"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marchio francese e' famoso per il tailleur e il profumo numero cinque?",
+   "a": "Chanel"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale tessuto blu ha reso famosi i pantaloni da lavoro americani?",
+   "a": "Denim",
+   "alt": [
+    "jeans"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marchio americano di jeans ha inventato i cinquecentouno?",
+   "a": "Levis",
+   "alt": [
+    "levi s",
+    "levi strauss",
+    "levi's"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale scarpa sportiva col cerchio in gomma sulla punta e' un classico da basket?",
+   "a": "Converse",
+   "alt": [
+    "all star",
+    "chuck taylor"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marchio tedesco di scarpe sportive ha tre strisce?",
+   "a": "Adidas"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marchio americano di scarpe sportive ha il baffo?",
+   "a": "Nike"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la passerella su cui sfilano le modelle?",
+   "a": "Catwalk",
+   "alt": [
+    "passerella"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale accessorio si porta al polso per sapere l'ora?",
+   "a": "Orologio"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale capo copre la testa e ha una visiera davanti?",
+   "a": "Cappello",
+   "alt": [
+    "berretto",
+    "cappellino"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la giacca di pelle corta amata dai motociclisti?",
+   "a": "Chiodo",
+   "alt": [
+    "biker",
+    "perfecto"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale fibra pregiata si ricava dal baco?",
+   "a": "Seta"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale fibra naturale si ricava dalla pecora?",
+   "a": "Lana"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marchio italiano di lusso e' famoso per i mocassini con i pallini di gomma sotto?",
+   "a": "Tods",
+   "alt": [
+    "tod s"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale marchio italiano di lusso e' nato come pelletteria a Firenze nel millenovecentoventuno?",
+   "a": "Gucci"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la taglia piu' piccola in etichetta, in sigla inglese?",
+   "a": "XS",
+   "alt": [
+    "extra small"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale colore e' d'obbligo al funerale in occidente?",
+   "a": "Nero"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale capo femminile lungo si indossa in un pezzo solo?",
+   "a": "Vestito",
+   "alt": [
+    "abito"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando mostra i processi in esecuzione in tempo reale?",
+   "a": "top",
+   "alt": [
+    "htop"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando cambia i permessi di un file?",
+   "a": "chmod"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando cerca ricorsivamente file per nome?",
+   "a": "find"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando mostra lo spazio libero sui filesystem?",
+   "a": "df"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando mostra quanto spazio occupa una directory?",
+   "a": "du"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando crea un collegamento simbolico?",
+   "a": "ln",
+   "alt": [
+    "ln -s"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando segue un file mentre cresce?",
+   "a": "tail",
+   "alt": [
+    "tail -f"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale carattere collega l'uscita di un comando all'ingresso di un altro?",
+   "a": "pipe",
+   "alt": [
+    "|"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale permesso ottale corrisponde a lettura scrittura ed esecuzione per tutti?",
+   "a": "777"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale file elenca gli utenti locali del sistema?",
+   "a": "passwd",
+   "alt": [
+    "/etc/passwd"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale file contiene le password cifrate su Linux?",
+   "a": "shadow",
+   "alt": [
+    "/etc/shadow"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando pianifica lavori ricorrenti a orari fissi?",
+   "a": "cron",
+   "alt": [
+    "crontab"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale directory contiene i file di configurazione di sistema?",
+   "a": "etc",
+   "alt": [
+    "/etc"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale filesystem virtuale espone lo stato del kernel come file?",
+   "a": "proc",
+   "alt": [
+    "/proc",
+    "procfs"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale editor a modi si esce con due punti q?",
+   "a": "vi",
+   "alt": [
+    "vim"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando manda un segnale a un processo?",
+   "a": "kill"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale numero corrisponde al segnale SIGKILL?",
+   "a": "nove",
+   "alt": [
+    "9"
+   ]
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando mostra il percorso della directory corrente?",
+   "a": "pwd"
+  },
+  {
+   "cat": "unix",
+   "q": "Quale comando sostituisce testo riga per riga in uno stream?",
+   "a": "sed"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale porta usa di solito HTTPS?",
+   "a": "443"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale porta usa di solito SSH?",
+   "a": "22"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale porta usa di solito il DNS?",
+   "a": "53"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo assegna automaticamente un indirizzo IP a una macchina?",
+   "a": "DHCP"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo traduce un IP in un indirizzo MAC nella rete locale?",
+   "a": "ARP"
+  },
+  {
+   "cat": "rete",
+   "q": "Quanti bit ha un indirizzo IPv6?",
+   "a": "centoventotto",
+   "alt": [
+    "128"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quanti bit ha un indirizzo IPv4?",
+   "a": "trentadue",
+   "alt": [
+    "32"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale indirizzo IPv4 significa sempre questa macchina?",
+   "a": "127.0.0.1",
+   "alt": [
+    "localhost"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale comando misura il tempo di andata e ritorno verso un host?",
+   "a": "ping"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale comando mostra il percorso dei router fino a destinazione?",
+   "a": "traceroute",
+   "alt": [
+    "tracert",
+    "mtr"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo di trasporto non garantisce la consegna?",
+   "a": "UDP"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo di trasporto stabilisce una connessione con tre messaggi?",
+   "a": "TCP"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama la stretta di mano iniziale del TCP?",
+   "a": "three way handshake",
+   "alt": [
+    "handshake",
+    "3 way handshake"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS punta a un indirizzo IPv4?",
+   "a": "A"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS punta a un indirizzo IPv6?",
+   "a": "AAAA"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS fa da alias verso un altro nome?",
+   "a": "CNAME"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS traduce un IP in un nome?",
+   "a": "PTR"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale strato del modello OSI si occupa dell'instradamento?",
+   "a": "rete",
+   "alt": [
+    "3",
+    "terzo",
+    "network"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale tecnica permette a molte macchine di uscire su internet con un solo IP pubblico?",
+   "a": "NAT"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco inietta comandi nel database attraverso un campo di input?",
+   "a": "SQL injection",
+   "alt": [
+    "sqli"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco inserisce codice eseguito dal browser di un altro utente?",
+   "a": "XSS",
+   "alt": [
+    "cross site scripting"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco fa compiere azioni all'utente autenticato a sua insaputa?",
+   "a": "CSRF",
+   "alt": [
+    "xsrf"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama la truffa via email che imita un mittente fidato?",
+   "a": "Phishing"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale funzione trasforma una password in un digest non reversibile?",
+   "a": "hash"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale valore casuale si aggiunge a una password prima di calcolarne il digest?",
+   "a": "salt",
+   "alt": [
+    "sale"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale algoritmo di digest e' considerato rotto e non va piu' usato?",
+   "a": "MD5"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale algoritmo a chiave pubblica prende il nome dalle iniziali di tre persone?",
+   "a": "RSA"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama il documento firmato che lega una chiave a un nome di dominio?",
+   "a": "Certificato"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale autorita' gratuita rilascia certificati TLS automatizzati?",
+   "a": "Letsencrypt",
+   "alt": [
+    "lets encrypt",
+    "let s encrypt"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale protocollo usano i certificati per essere richiesti in automatico?",
+   "a": "ACME"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama la pratica di provare tutte le combinazioni di password?",
+   "a": "Bruteforce",
+   "alt": [
+    "forza bruta",
+    "brute force"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama un elenco di password comuni usato per indovinare?",
+   "a": "Dizionario",
+   "alt": [
+    "wordlist"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama la falla nota al pubblico ma senza patch disponibile?",
+   "a": "zero day",
+   "alt": [
+    "0day",
+    "zeroday"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale sigla identifica una vulnerabilita' pubblica in un catalogo mondiale?",
+   "a": "CVE"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Quale attacco satura un servizio con richieste fino a farlo cadere?",
+   "a": "DoS",
+   "alt": [
+    "denial of service",
+    "ddos"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama il secondo fattore che si aggiunge alla password?",
+   "a": "2FA",
+   "alt": [
+    "due fattori",
+    "mfa",
+    "otp"
+   ]
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama il software che cifra i file e chiede un riscatto?",
+   "a": "Ransomware"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama la rete di macchine compromesse comandate a distanza?",
+   "a": "Botnet"
+  },
+  {
+   "cat": "sicurezza",
+   "q": "Come si chiama l'errore che scrive oltre la fine di un buffer?",
+   "a": "Buffer overflow",
+   "alt": [
+    "overflow"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRC esce da un canale?",
+   "a": "PART"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRC cambia il proprio soprannome?",
+   "a": "NICK"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRC chiede informazioni su un utente?",
+   "a": "WHOIS"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRC caccia qualcuno da un canale?",
+   "a": "KICK"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale modo di canale impedisce di entrare senza invito?",
+   "a": "i",
+   "alt": [
+    "+i"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale modo di canale nasconde il canale dalla lista?",
+   "a": "s",
+   "alt": [
+    "+s"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale modo utente rende invisibile nella lista dei canali?",
+   "a": "i",
+   "alt": [
+    "+i"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale servizio di Azzurra registra e protegge i soprannomi?",
+   "a": "NickServ"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale servizio di Azzurra gestisce i canali registrati?",
+   "a": "ChanServ"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale simbolo precede il soprannome di chi ha i privilegi di operatore di canale?",
+   "a": "chiocciola",
+   "alt": [
+    "@"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama la separazione della rete in due tronconi che non si vedono?",
+   "a": "netsplit"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale messaggio manda il server per verificare che il client sia vivo?",
+   "a": "PING"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale risposta deve dare il client al PING del server?",
+   "a": "PONG"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando manda un messaggio senza aspettarsi risposta automatica dai bot?",
+   "a": "NOTICE"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRC descrive un'azione in terza persona?",
+   "a": "ACTION",
+   "alt": [
+    "me",
+    "/me"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale porta usa di solito IRC su TLS?",
+   "a": "6697"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale porta usa storicamente IRC in chiaro?",
+   "a": "6667"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama la riga di descrizione in cima a un canale?",
+   "a": "topic"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale estensione moderna del protocollo IRC aggiunge le capability?",
+   "a": "IRCv3",
+   "alt": [
+    "ircv3"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP significa che la risorsa non esiste?",
+   "a": "404"
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP significa che serve autenticarsi?",
+   "a": "401"
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP significa che il server e' esploso?",
+   "a": "500"
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP significa che tutto e' andato bene?",
+   "a": "200"
+  },
+  {
+   "cat": "web",
+   "q": "Quale codice HTTP indica uno spostamento permanente?",
+   "a": "301"
+  },
+  {
+   "cat": "web",
+   "q": "Quale intestazione HTTP dice al browser da chi accettare le risorse?",
+   "a": "CSP",
+   "alt": [
+    "content security policy"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Quale meccanismo permette a un sito di chiamare un dominio diverso dal browser?",
+   "a": "CORS"
+  },
+  {
+   "cat": "web",
+   "q": "Quale linguaggio descrive la struttura di una pagina?",
+   "a": "HTML"
+  },
+  {
+   "cat": "web",
+   "q": "Quale linguaggio descrive lo stile di una pagina?",
+   "a": "CSS"
+  },
+  {
+   "cat": "web",
+   "q": "Quale protocollo permette una connessione bidirezionale persistente col browser?",
+   "a": "WebSocket",
+   "alt": [
+    "websockets"
+   ]
+  },
+  {
+   "cat": "web",
+   "q": "Quale formato di scambio dati e' fatto di chiavi e valori tra graffe?",
+   "a": "JSON"
+  },
+  {
+   "cat": "web",
+   "q": "Quale metodo HTTP si usa per creare una risorsa?",
+   "a": "POST"
+  },
+  {
+   "cat": "web",
+   "q": "Quale metodo HTTP si usa per leggere una risorsa?",
+   "a": "GET"
+  },
+  {
+   "cat": "web",
+   "q": "Quale metodo HTTP cancella una risorsa?",
+   "a": "DELETE"
+  },
+  {
+   "cat": "web",
+   "q": "Come si chiama il piccolo file che il sito lascia nel browser per riconoscerti?",
+   "a": "cookie"
+  },
+  {
+   "cat": "web",
+   "q": "Quale server web e' famoso per il file di configurazione senza punto e virgola e la velocita?",
+   "a": "nginx"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale struttura dati funziona con l'ultimo entrato primo uscito?",
+   "a": "stack",
+   "alt": [
+    "pila"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale struttura dati funziona con il primo entrato primo uscito?",
+   "a": "coda",
+   "alt": [
+    "queue",
+    "fifo"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale notazione descrive la complessita' asintotica di un algoritmo?",
+   "a": "O grande",
+   "alt": [
+    "big o",
+    "o-grande"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale algoritmo di ordinamento ha complessita' media n log n e usa un perno?",
+   "a": "quicksort"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale tecnica risolve un problema chiamando se stessa?",
+   "a": "ricorsione"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama l'errore che consuma memoria senza mai restituirla?",
+   "a": "memory leak",
+   "alt": [
+    "perdita di memoria",
+    "leak"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama la funzione che ripulisce la memoria non piu' usata?",
+   "a": "garbage collector",
+   "alt": [
+    "gc",
+    "garbage collection"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale linguaggio funzionale gira sulla macchina virtuale BEAM insieme a Elixir?",
+   "a": "Erlang"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale linguaggio ha inventato Guido van Rossum?",
+   "a": "Python"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale linguaggio compilato di Google usa le goroutine?",
+   "a": "Go",
+   "alt": [
+    "golang"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale linguaggio garantisce la sicurezza della memoria senza garbage collector?",
+   "a": "Rust"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale sistema di controllo versione ha scritto Linus Torvalds?",
+   "a": "git"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale comando git unisce due rami?",
+   "a": "merge"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale comando git riscrive la storia appoggiando i commit su un altro ramo?",
+   "a": "rebase"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama la condizione in cui due thread accedono allo stesso dato senza ordine?",
+   "a": "race condition",
+   "alt": [
+    "corsa critica",
+    "race"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama il valore che indica assenza di valore in molti linguaggi?",
+   "a": "null",
+   "alt": [
+    "nil",
+    "none"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Quale paradigma evita di modificare lo stato e preferisce i valori immutabili?",
+   "a": "funzionale"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama il test che verifica una funzione singola in isolamento?",
+   "a": "unit test",
+   "alt": [
+    "test unitario"
+   ]
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama la copia di un repository sul proprio account?",
+   "a": "fork"
+  },
+  {
+   "cat": "programmazione",
+   "q": "Come si chiama la proposta di modifica da rivedere prima del merge?",
+   "a": "pull request",
+   "alt": [
+    "pr",
+    "merge request"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Quale strumento impacchetta un'applicazione con le sue dipendenze in un contenitore?",
+   "a": "Docker"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale sistema orchestra i contenitori su piu' macchine?",
+   "a": "Kubernetes",
+   "alt": [
+    "k8s"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Quale file descrive come costruire un'immagine di contenitore?",
+   "a": "Dockerfile"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale sistema di init gestisce i servizi sulla maggior parte delle distribuzioni Linux?",
+   "a": "systemd"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale comando systemd avvia un servizio?",
+   "a": "start",
+   "alt": [
+    "systemctl start"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Quale strumento raccoglie metriche a intervalli e le interroga con PromQL?",
+   "a": "Prometheus"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale strumento disegna cruscotti sopra le metriche raccolte?",
+   "a": "Grafana"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama la pratica di integrare e provare il codice a ogni commit?",
+   "a": "CI",
+   "alt": [
+    "continuous integration",
+    "integrazione continua"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama il ritorno alla versione precedente dopo un rilascio andato male?",
+   "a": "rollback"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale strumento descrive l'infrastruttura come codice con i file punto tf?",
+   "a": "Terraform"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale strumento di configurazione senza agente usa i playbook in YAML?",
+   "a": "Ansible"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama il documento scritto dopo un incidente per capire cosa e' andato storto?",
+   "a": "postmortem"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama la percentuale di tempo in cui un servizio deve stare su, per contratto?",
+   "a": "SLA",
+   "alt": [
+    "slo"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama il rilascio graduale a una piccola parte degli utenti?",
+   "a": "canary",
+   "alt": [
+    "canarino"
+   ]
+  },
+  {
+   "cat": "devops",
+   "q": "Quale formato di file di configurazione usa l'indentazione e i trattini?",
+   "a": "YAML"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama la macchina virtuale isolata di FreeBSD?",
+   "a": "jail"
+  },
+  {
+   "cat": "devops",
+   "q": "Quale servizio distribuisce i contenuti sui bordi della rete per ridurre la latenza?",
+   "a": "CDN"
+  },
+  {
+   "cat": "devops",
+   "q": "Come si chiama il processo che ripulisce e ricrea l'ambiente prima dei test?",
+   "a": "setup",
+   "alt": [
+    "fixture"
+   ]
+  },
+  {
+   "cat": "db",
+   "q": "Quale comando SQL estrae righe da una tabella?",
+   "a": "SELECT"
+  },
+  {
+   "cat": "db",
+   "q": "Quale comando SQL inserisce nuove righe?",
+   "a": "INSERT"
+  },
+  {
+   "cat": "db",
+   "q": "Quale comando SQL modifica righe esistenti?",
+   "a": "UPDATE"
+  },
+  {
+   "cat": "db",
+   "q": "Quale comando SQL conferma definitivamente una transazione?",
+   "a": "COMMIT"
+  },
+  {
+   "cat": "db",
+   "q": "Quale clausola SQL filtra le righe?",
+   "a": "WHERE"
+  },
+  {
+   "cat": "db",
+   "q": "Quale clausola SQL raggruppa le righe per calcolare aggregati?",
+   "a": "GROUP BY"
+  },
+  {
+   "cat": "db",
+   "q": "Quale clausola SQL ordina il risultato?",
+   "a": "ORDER BY"
+  },
+  {
+   "cat": "db",
+   "q": "Quale database relazionale sta tutto in un file singolo senza server?",
+   "a": "SQLite"
+  },
+  {
+   "cat": "db",
+   "q": "Quale database relazionale libero e' famoso per le estensioni e il rispetto dello standard?",
+   "a": "PostgreSQL",
+   "alt": [
+    "postgres"
+   ]
+  },
+  {
+   "cat": "db",
+   "q": "Quale database tiene i dati in memoria e si usa spesso come cache?",
+   "a": "Redis"
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama il parametro di SQLite che dice quanto aspettare se il file e' occupato?",
+   "a": "busy timeout",
+   "alt": [
+    "busy_timeout"
+   ]
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama l'insieme di connessioni riutilizzate verso il database?",
+   "a": "pool"
+  },
+  {
+   "cat": "db",
+   "q": "Quale isolamento impedisce di leggere dati non ancora confermati?",
+   "a": "read committed"
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama la colonna che identifica univocamente una riga?",
+   "a": "chiave primaria",
+   "alt": [
+    "primary key"
+   ]
+  },
+  {
+   "cat": "db",
+   "q": "Come si chiama la copia di sicurezza di un database?",
+   "a": "backup"
+  },
+  {
+   "cat": "storia",
+   "q": "In quale anno e' nato il World Wide Web al CERN?",
+   "a": "millenovecentottantanove",
+   "alt": [
+    "1989"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Chi ha inventato il World Wide Web?",
+   "a": "Berners Lee",
+   "alt": [
+    "tim berners-lee",
+    "berners-lee",
+    "tim berners lee"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale azienda ha prodotto il PDP undici su cui giravano i primi Unix?",
+   "a": "DEC",
+   "alt": [
+    "digital"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Chi ha scritto insieme a Ritchie il libro sul linguaggio C?",
+   "a": "Kernighan"
+  },
+  {
+   "cat": "storia",
+   "q": "Chi ha creato il linguaggio C ai Bell Labs?",
+   "a": "Ritchie",
+   "alt": [
+    "dennis ritchie"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale sistema di posta elettronica ha introdotto la chiocciola negli indirizzi?",
+   "a": "Tomlinson",
+   "alt": [
+    "ray tomlinson"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale browser ha aperto il web alle masse nel millenovecentonovantatre?",
+   "a": "Mosaic"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale azienda ha prodotto il primo personal computer di grande diffusione con MS DOS?",
+   "a": "IBM"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale rete di computer universitari italiana ha portato internet in Italia?",
+   "a": "GARR"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale motore di ricerca ha soppiantato Altavista?",
+   "a": "Google"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale protocollo di trasferimento file precede il web ed e' del millenovecentosettantuno?",
+   "a": "FTP"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale sistema di menu testuali su internet e' stato battuto dal web?",
+   "a": "Gopher"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale gruppo di discussione distribuito precedeva i forum web?",
+   "a": "Usenet"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale licenza libera ha scritto Stallman per il progetto GNU?",
+   "a": "GPL"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale sistema operativo libero derivato da Unix e' nato a Berkeley?",
+   "a": "BSD"
+  },
+  {
+   "cat": "storia",
+   "q": "In quale anno e' uscito il primo kernel Linux?",
+   "a": "millenovecentonovantuno",
+   "alt": [
+    "1991"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale azienda ha creato Java?",
+   "a": "Sun",
+   "alt": [
+    "sun microsystems"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale scheda di rete a dieci megabit ha dominato gli anni novanta?",
+   "a": "Ethernet"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale modem acustico faceva il verso caratteristico prima di connettersi?",
+   "a": "dialup",
+   "alt": [
+    "56k",
+    "modem analogico"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale software di messaggistica a numeri ha preceduto i moderni messaggeri?",
+   "a": "ICQ"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale azienda ha comprato Sun Microsystems?",
+   "a": "Oracle"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale calcolatrice meccanica di Babbage non fu mai completata in vita sua?",
+   "a": "macchina analitica",
+   "alt": [
+    "analytical engine"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Chi e' considerata la prima programmatrice della storia?",
+   "a": "Ada Lovelace",
+   "alt": [
+    "ada",
+    "lovelace"
+   ]
+  },
+  {
+   "cat": "storia",
+   "q": "Quale matematico ha dato il nome al test sull'intelligenza delle macchine?",
+   "a": "Turing"
+  },
+  {
+   "cat": "storia",
+   "q": "Quale macchina cifrante tedesca fu decifrata a Bletchley Park?",
+   "a": "Enigma"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale libro sacro seguono i musulmani?",
+   "a": "Corano"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale libro sacro raccoglie Antico e Nuovo Testamento?",
+   "a": "Bibbia"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale giorno della settimana e' sacro per gli ebrei?",
+   "a": "sabato",
+   "alt": [
+    "shabbat"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale citta' e' sacra per ebrei cristiani e musulmani?",
+   "a": "Gerusalemme"
+  },
+  {
+   "cat": "religioni",
+   "q": "Verso quale citta' si rivolgono i musulmani per pregare?",
+   "a": "Mecca",
+   "alt": [
+    "la mecca"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale fiume e' sacro per gli induisti?",
+   "a": "Gange"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale festa cristiana celebra la resurrezione?",
+   "a": "Pasqua"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale festa cristiana celebra la nascita di Gesu?",
+   "a": "Natale"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quanti sono i comandamenti nella tradizione biblica?",
+   "a": "dieci",
+   "alt": [
+    "10"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "In quale stato indipendente risiede il Papa?",
+   "a": "Vaticano",
+   "alt": [
+    "citta del vaticano"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale simbolo rappresenta l'ebraismo con due triangoli intrecciati?",
+   "a": "stella di David",
+   "alt": [
+    "stella di davide"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale particella e' stata osservata al CERN nel 2012 completando il Modello Standard?",
+   "a": "Bosone di Higgs",
+   "alt": [
+    "higgs"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale enzima trascrive il DNA in RNA messaggero?",
+   "a": "RNA polimerasi",
+   "alt": [
+    "polimerasi"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale principio nega di conoscere insieme posizione e quantita' di moto di una particella?",
+   "a": "Indeterminazione",
+   "alt": [
+    "principio di indeterminazione",
+    "heisenberg"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale unita' del Sistema Internazionale misura la quantita' di sostanza?",
+   "a": "Mole"
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama il cambio di direzione della luce che passa dall'aria all'acqua?",
+   "a": "Rifrazione"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale elemento chimico ha numero atomico sei?",
+   "a": "Carbonio",
+   "alt": [
+    "c"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Chi ha ottenuto la fotografia 51, la diffrazione a raggi X del DNA?",
+   "a": "Rosalind Franklin",
+   "alt": [
+    "franklin"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama una stella di neutroni che emette impulsi radio regolari?",
+   "a": "Pulsar"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale legge dice che a temperatura costante pressione e volume di un gas sono inversamente proporzionali?",
+   "a": "Boyle",
+   "alt": [
+    "legge di boyle"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale divisione cellulare dimezza il numero dei cromosomi?",
+   "a": "Meiosi"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale osservatorio ha rilevato le prime onde gravitazionali nel 2015?",
+   "a": "LIGO"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale grandezza fisica si misura in pascal?",
+   "a": "Pressione"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale acido dello stomaco attiva la pepsina?",
+   "a": "Acido cloridrico",
+   "alt": [
+    "hcl"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale teoria spiega il movimento delle zolle terrestri?",
+   "a": "Tettonica a placche",
+   "alt": [
+    "tettonica delle placche",
+    "deriva dei continenti"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale numero adimensionale distingue il moto laminare da quello turbolento?",
+   "a": "Numero di Reynolds",
+   "alt": [
+    "reynolds"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scritto Il nome della rosa?",
+   "a": "Umberto Eco",
+   "alt": [
+    "eco"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale pittore spagnolo ha dipinto Guernica?",
+   "a": "Picasso",
+   "alt": [
+    "pablo picasso"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "In quale citta' si trova il museo del Prado?",
+   "a": "Madrid"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha composto Il flauto magico?",
+   "a": "Mozart"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha diretto Ladri di biciclette?",
+   "a": "Vittorio De Sica",
+   "alt": [
+    "de sica"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale poeta italiano ha scritto L'infinito?",
+   "a": "Leopardi",
+   "alt": [
+    "giacomo leopardi"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale corrente pittorica di Kandinskij e Mondrian rinuncia alla figura?",
+   "a": "Astrattismo",
+   "alt": [
+    "arte astratta"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale romanzo di Melville insegue una balena bianca?",
+   "a": "Moby Dick"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale filosofo greco ha fondato l'Accademia ad Atene?",
+   "a": "Platone"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scritto Cent'anni di solitudine?",
+   "a": "Garcia Marquez",
+   "alt": [
+    "gabriel garcia marquez",
+    "marquez"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale scrittore siciliano ha inventato il commissario Montalbano?",
+   "a": "Camilleri",
+   "alt": [
+    "andrea camilleri"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale opera di Verdi e' ambientata nell'antico Egitto?",
+   "a": "Aida"
+  },
+  {
+   "cat": "cultura",
+   "q": "In quale citta' si trova il museo Hermitage?",
+   "a": "San Pietroburgo"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha dipinto La ronda di notte?",
+   "a": "Rembrandt"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale premio si assegna al miglior film del festival di Cannes?",
+   "a": "Palma d'oro",
+   "alt": [
+    "palma doro"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale stilista francese ha lanciato il New Look nel 1947?",
+   "a": "Dior",
+   "alt": [
+    "christian dior"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il tessuto di lana scozzese a quadri incrociati?",
+   "a": "Tartan"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la moda su misura di altissima gamma che sfila a Parigi?",
+   "a": "Alta moda",
+   "alt": [
+    "haute couture"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale stilista britannica e' stata la regina del punk?",
+   "a": "Vivienne Westwood",
+   "alt": [
+    "westwood"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la scarpa maschile stringata con la punta liscia e allacciatura chiusa?",
+   "a": "Oxford"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale fibra sintetica di DuPont ha sostituito la seta nelle calze?",
+   "a": "Nylon"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il motivo a goccia di origine persiana usato negli scialli?",
+   "a": "Paisley"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale rivista di moda e' stata diretta per decenni da Anna Wintour?",
+   "a": "Vogue"
+  },
+  {
+   "cat": "moda",
+   "q": "Chi ha fondato il marchio giapponese Comme des Garcons?",
+   "a": "Rei Kawakubo",
+   "alt": [
+    "kawakubo"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale borsa Hermes porta il nome di un'attrice diventata principessa di Monaco?",
+   "a": "Kelly",
+   "alt": [
+    "kelly bag"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale fibra pregiata si ricava dal sottopelo della capra himalayana?",
+   "a": "Cashmere",
+   "alt": [
+    "cachemire"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il maglione dal collo alto e aderente?",
+   "a": "Dolcevita"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale stilista ha creato Le Smoking, lo smoking femminile del 1966?",
+   "a": "Yves Saint Laurent",
+   "alt": [
+    "saint laurent"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama l'armatura diagonale del tessuto tipica del denim?",
+   "a": "Twill",
+   "alt": [
+    "saia"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il cappello di paglia a tesa rigida dei gondolieri?",
+   "a": "Canotier",
+   "alt": [
+    "paglietta"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale taglio di vitello si usa per l'ossobuco?",
+   "a": "Stinco",
+   "alt": [
+    "geretto"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Come si chiama la cottura sottovuoto a bassa temperatura?",
+   "a": "Sous vide"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale fungo pregiato si cerca ad Alba con i cani?",
+   "a": "Tartufo",
+   "alt": [
+    "tartufo bianco"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale salsa madre nasce da roux bianco e latte?",
+   "a": "Besciamella",
+   "alt": [
+    "bechamel"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale processo trasforma il mosto in vino?",
+   "a": "Fermentazione"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale formaggio erborinato lombardo ha le venature verdi?",
+   "a": "Gorgonzola"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale condimento modenese invecchia in batterie di botti di legno?",
+   "a": "Aceto balsamico",
+   "alt": [
+    "balsamico"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale alga avvolge il maki giapponese?",
+   "a": "Nori"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale molecola rende piccante il peperoncino?",
+   "a": "Capsaicina"
+  },
+  {
+   "cat": "cucina",
+   "q": "Come si chiama il dolce di pasta choux farcito di crema?",
+   "a": "Bigne",
+   "alt": [
+    "bignè",
+    "profiterole"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale vitigno sta alla base del Brunello di Montalcino?",
+   "a": "Sangiovese",
+   "alt": [
+    "sangiovese grosso"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale reazione imbrunisce la carne in cottura e le da' l'aroma?",
+   "a": "Maillard",
+   "alt": [
+    "reazione di maillard"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale legume e' la base dell'hummus?",
+   "a": "Ceci",
+   "alt": [
+    "cece"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Come si chiama il coltello giapponese multiuso a lama larga?",
+   "a": "Santoku"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale piatto romano unisce guanciale, pecorino, uovo e pepe?",
+   "a": "Carbonara"
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama l'organismo nato dalla simbiosi di un fungo e un'alga?",
+   "a": "Lichene"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale albero e' il piu' alto del mondo?",
+   "a": "Sequoia",
+   "alt": [
+    "sequoia sempervirens"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale mammifero depone le uova?",
+   "a": "Ornitorinco",
+   "alt": [
+    "echidna"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale corrente oceanica mitiga il clima dell'Europa occidentale?",
+   "a": "Corrente del Golfo",
+   "alt": [
+    "gulf stream"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama la crescita di una pianta orientata verso la luce?",
+   "a": "Fototropismo"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale rettile vivente ha il morso piu' potente misurato?",
+   "a": "Coccodrillo",
+   "alt": [
+    "coccodrillo marino"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama la foresta di conifere che cinge l'emisfero nord?",
+   "a": "Taiga",
+   "alt": [
+    "foresta boreale"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale insetto sociale costruisce nidi di carta masticando il legno?",
+   "a": "Vespa",
+   "alt": [
+    "calabrone"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "In quale strato dell'atmosfera si trova l'ozono?",
+   "a": "Stratosfera"
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama il piccolo dell'aquila?",
+   "a": "Aquilotto"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale roccia nasce dal magma raffreddato in superficie?",
+   "a": "Basalto"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale parte del fiore produce il polline?",
+   "a": "Antera",
+   "alt": [
+    "stame"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale uccello incapace di volare e' il simbolo della Nuova Zelanda?",
+   "a": "Kiwi"
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama il letargo estivo di certi animali?",
+   "a": "Estivazione"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale scala misura gli effetti di un terremoto sulle costruzioni?",
+   "a": "Mercalli",
+   "alt": [
+    "scala mercalli"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale concilio del 325 ha formulato il credo cristiano?",
+   "a": "Nicea",
+   "alt": [
+    "concilio di nicea"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale lingua sacra e' quella dei Veda?",
+   "a": "Sanscrito"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale festa ebraica ricorda l'uscita dall'Egitto?",
+   "a": "Pesach",
+   "alt": [
+    "pasqua ebraica"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama la professione di fede islamica, primo pilastro?",
+   "a": "Shahada"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale monaco tedesco ha affisso le 95 tesi a Wittenberg?",
+   "a": "Lutero",
+   "alt": [
+    "martin lutero"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il ciclo di rinascite di induismo e buddismo?",
+   "a": "Samsara"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale libro della Bibbia racconta la fuga dall'Egitto?",
+   "a": "Esodo"
+  },
+  {
+   "cat": "religioni",
+   "q": "Chi e' la guida spirituale del buddismo tibetano?",
+   "a": "Dalai Lama"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale tempio sikh di Amritsar e' il piu' importante?",
+   "a": "Tempio d'oro",
+   "alt": [
+    "tempio doro",
+    "golden temple"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale imperatore romano ha reso lecito il cristianesimo nel 313?",
+   "a": "Costantino"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale pellegrinaggio cristiano finisce in Galizia davanti a una cattedrale?",
+   "a": "Cammino di Santiago",
+   "alt": [
+    "santiago"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale arcangelo annuncia a Maria la nascita di Gesu'?",
+   "a": "Gabriele"
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama la rottura del 1054 fra Chiesa d'Oriente e d'Occidente?",
+   "a": "Scisma",
+   "alt": [
+    "grande scisma",
+    "scisma d'oriente"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale divinita' induista e' detta il distruttore?",
+   "a": "Shiva"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale testo ebraico raccoglie la legge orale?",
+   "a": "Talmud",
+   "alt": [
+    "mishnah"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Qual e' la ghiandola piu' grande del corpo umano?",
+   "a": "Fegato"
+  },
+  {
+   "cat": "scienza",
+   "q": "Ogni quanti anni la cometa di Halley torna visibile dalla Terra?",
+   "a": "76",
+   "alt": [
+    "76 anni",
+    "settantasei"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Qual e' la galassia piu' vicina alla nostra, escluse le Nubi di Magellano?",
+   "a": "Andromeda"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale satellite di Saturno scopri' William Herschel nel 1789?",
+   "a": "Mimas",
+   "alt": [
+    "mimante"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama il sistema di numerazione in base venti?",
+   "a": "Vigesimale"
+  },
+  {
+   "cat": "scienza",
+   "q": "A quale apparato del corpo umano appartiene la patella?",
+   "a": "Scheletrico",
+   "alt": [
+    "scheletro",
+    "osseo"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale malattia e' causata dal bacillo di Hansen?",
+   "a": "Lebbra"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale organo permette ai pesci di respirare sott'acqua?",
+   "a": "Branchie",
+   "alt": [
+    "branchia"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiamano le rocce nate dall'accumulo di detriti di rocce preesistenti?",
+   "a": "Sedimentarie",
+   "alt": [
+    "sedimentaria"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Chi progetto' nell'Ottocento la macchina differenziale?",
+   "a": "Charles Babbage",
+   "alt": [
+    "babbage"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale strumento misura la distanza percorsa a piedi?",
+   "a": "Pedometro",
+   "alt": [
+    "contapassi"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale specialista studia l'orecchio e le sue malattie?",
+   "a": "Otologo",
+   "alt": [
+    "otorino",
+    "otorinolaringoiatra"
+   ]
+  },
+  {
+   "cat": "scienza",
+   "q": "Come si chiama la paura patologica di ingrassare?",
+   "a": "Obesofobia"
+  },
+  {
+   "cat": "scienza",
+   "q": "Come e' piu' comunemente nota la sostanza chiamata nacre?",
+   "a": "Madreperla"
+  },
+  {
+   "cat": "scienza",
+   "q": "Quale scala misura la durezza dei minerali?",
+   "a": "Mohs",
+   "alt": [
+    "scala di mohs"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama la paura patologica delle falene?",
+   "a": "Mottefobia"
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama la paura patologica delle formiche?",
+   "a": "Mirmecofobia"
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama la paura patologica dei denti e del dentista?",
+   "a": "Odontofobia"
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama la paura patologica dei peli e dei capelli?",
+   "a": "Tricofobia"
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama la paura patologica di restare da soli?",
+   "a": "Monofobia"
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama lo studio dell'origine delle parole?",
+   "a": "Etimologia"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale tecnica pittorica usa pigmenti opachi invece dell'acquerello trasparente?",
+   "a": "Guazzo",
+   "alt": [
+    "gouache"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale tecnica pittorica usa un'emulsione di tuorlo d'uovo e acqua?",
+   "a": "Tempera"
+  },
+  {
+   "cat": "cultura",
+   "q": "In quale romanzo di Jane Austen compare Fanny Price?",
+   "a": "Mansfield Park",
+   "alt": [
+    "mansfield"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi ha scritto Intervista col vampiro?",
+   "a": "Anne Rice",
+   "alt": [
+    "rice"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "Come si chiama la nave dalla quale Gulliver naufraga la prima volta?",
+   "a": "Antelope"
+  },
+  {
+   "cat": "cultura",
+   "q": "Di quale citta' era re Edipo?",
+   "a": "Tebe"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale eroe greco uccise per sbaglio il nonno con un disco durante dei giochi?",
+   "a": "Perseo"
+  },
+  {
+   "cat": "cultura",
+   "q": "Quale mostro mitologico ha testa di leone e coda di serpente?",
+   "a": "Chimera"
+  },
+  {
+   "cat": "cultura",
+   "q": "Chi scrisse i versi incisi sulla Statua della Liberta'?",
+   "a": "Emma Lazarus",
+   "alt": [
+    "lazarus"
+   ]
+  },
+  {
+   "cat": "cultura",
+   "q": "In che anno mori' Andy Warhol?",
+   "a": "1987"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale casa di moda lancio' il New Look nel 1947?",
+   "a": "Dior",
+   "alt": [
+    "christian dior"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il cappellino allacciato sotto il mento?",
+   "a": "Cuffia",
+   "alt": [
+    "bonnet",
+    "cuffietta"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale tessuto di lana ruvida scozzese prende il nome, per un errore di trascrizione, da un fiume?",
+   "a": "Tweed"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale stilista italiano e' soprannominato il re del rosso?",
+   "a": "Valentino"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la scarpa estiva con la suola di corda intrecciata?",
+   "a": "Espadrillas",
+   "alt": [
+    "espadrilla"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale colore indica il prefisso greco leuco?",
+   "a": "Bianco"
+  },
+  {
+   "cat": "moda",
+   "q": "Quale stilista lancio' la minigonna nella Londra degli anni Sessanta?",
+   "a": "Mary Quant",
+   "alt": [
+    "quant"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il taglio del diamante a cinquantasette faccette?",
+   "a": "Brillante"
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama l'unita' di peso delle pietre preziose?",
+   "a": "Carato"
+  },
+  {
+   "cat": "moda",
+   "q": "Da quale animale del Kashmir si ricava il cashmere?",
+   "a": "Capra",
+   "alt": [
+    "capra del kashmir"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il corpetto rigido steccato dell'abito storico femminile?",
+   "a": "Bustino",
+   "alt": [
+    "corsetto",
+    "busto"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale maison ha reso celebre il monogramma LV?",
+   "a": "Louis Vuitton",
+   "alt": [
+    "vuitton"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama il motivo a goccia di origine persiana usato sui foulard?",
+   "a": "Paisley",
+   "alt": [
+    "cachemire"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Quale stilista creo' nel 1966 lo smoking da donna Le Smoking?",
+   "a": "Yves Saint Laurent",
+   "alt": [
+    "saint laurent",
+    "ysl"
+   ]
+  },
+  {
+   "cat": "moda",
+   "q": "Come si chiama la scarpa maschile inglese con la stringatura chiusa?",
+   "a": "Oxford"
+  },
+  {
+   "cat": "moda",
+   "q": "Di quale paese e' originario il cappello di paglia chiamato per errore panama?",
+   "a": "Ecuador"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale salsa bianca e' una delle basi della cucina francese?",
+   "a": "Besciamella",
+   "alt": [
+    "bechamel"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale frutto secco e' l'ingrediente principale del marzapane?",
+   "a": "Mandorla",
+   "alt": [
+    "mandorle"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale dolce italiano unisce pan di Spagna e alchermes?",
+   "a": "Zuppa inglese"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale verdura, oltre alle uova, caratterizza le uova alla fiorentina?",
+   "a": "Spinaci",
+   "alt": [
+    "spinacio"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale taglio di manzo prende il nome da uno scrittore e politico francese?",
+   "a": "Chateaubriand"
+  },
+  {
+   "cat": "cucina",
+   "q": "Come si chiamano le castagne candite nello sciroppo?",
+   "a": "Marrons glaces",
+   "alt": [
+    "marron glace",
+    "marroni canditi"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale ortaggio era chiamato in Francia pomo d'amore?",
+   "a": "Pomodoro"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale frattaglia ha un taglio detto a nido d'ape?",
+   "a": "Trippa"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale crema spalmabile salata australiana nasce nel 1923?",
+   "a": "Vegemite"
+  },
+  {
+   "cat": "cucina",
+   "q": "Come si chiama il cocktail di spumante e succo d'arancia?",
+   "a": "Mimosa"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale erba aromatica ha varieta' dette piperita e romana?",
+   "a": "Menta"
+  },
+  {
+   "cat": "cucina",
+   "q": "Come si chiama l'impasto di farina e acqua fermentato usato come lievito?",
+   "a": "Lievito madre",
+   "alt": [
+    "pasta madre"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale varieta' di riso italiano regge meglio il risotto all'onda?",
+   "a": "Carnaroli"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale salume vuole la carbonara secondo la tradizione romana?",
+   "a": "Guanciale"
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale formaggio, con il pepe, fa la cacio e pepe?",
+   "a": "Pecorino romano",
+   "alt": [
+    "pecorino"
+   ]
+  },
+  {
+   "cat": "cucina",
+   "q": "Quale liquore all'anice si mette nel caffe' corretto piu' classico?",
+   "a": "Sambuca"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale uccello depone le uova nei nidi degli altri?",
+   "a": "Cuculo"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale mammifero marino ha due lunghe zanne e vive nell'Artico?",
+   "a": "Tricheco"
+  },
+  {
+   "cat": "natura",
+   "q": "Da quale uccello prende il nome l'isola di Alcatraz?",
+   "a": "Pellicano",
+   "alt": [
+    "pellicani"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Che tipo di animale era il dodo, estinto nel Seicento?",
+   "a": "Uccello"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale pesce tropicale vorace e' temuto dai sub per la mascella sporgente?",
+   "a": "Barracuda"
+  },
+  {
+   "cat": "natura",
+   "q": "Quale grosso mammifero africano trasuda un muco rossastro simile a sudore?",
+   "a": "Ippopotamo"
+  },
+  {
+   "cat": "natura",
+   "q": "Quanti volt puo' produrre un'anguilla elettrica adulta?",
+   "a": "600",
+   "alt": [
+    "600 volt",
+    "seicento"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale pianta erbacea e' la piu' rapida a crescere al mondo?",
+   "a": "Bambu",
+   "alt": [
+    "bambu'"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama l'agricoltura progettata per essere permanente e autosufficiente?",
+   "a": "Permacultura"
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama la parte della zampa del cavallo fra nodello e zoccolo?",
+   "a": "Pastorale",
+   "alt": [
+    "pastoia"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Come si chiama l'insieme dei cuccioli nati dallo stesso parto?",
+   "a": "Cucciolata",
+   "alt": [
+    "figliata"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale si dice ovino?",
+   "a": "Pecora",
+   "alt": [
+    "pecore"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Che animale e' il rallo?",
+   "a": "Uccello"
+  },
+  {
+   "cat": "natura",
+   "q": "Di quale insetto si occupa la mirmecologia?",
+   "a": "Formica",
+   "alt": [
+    "formiche"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Di cosa si occupa la ficologia?",
+   "a": "Alghe",
+   "alt": [
+    "alga"
+   ]
+  },
+  {
+   "cat": "natura",
+   "q": "Quale animale marino ha il sangue blu per via dell'emocianina?",
+   "a": "Polpo",
+   "alt": [
+    "polipo",
+    "molluschi"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Chi e' il dio norreno della poesia?",
+   "a": "Bragi"
+  },
+  {
+   "cat": "religioni",
+   "q": "Chi e' la patrona della musica?",
+   "a": "Santa Cecilia",
+   "alt": [
+    "cecilia"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Chi e' il patrono dei giornalisti?",
+   "a": "Francesco di Sales",
+   "alt": [
+    "san francesco di sales"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Chi fu inghiottito da un grande pesce secondo la Bibbia?",
+   "a": "Giona"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quanti giorni resto' Giona nel ventre del pesce?",
+   "a": "Tre",
+   "alt": [
+    "3"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Come si chiama il capro su cui il sommo sacerdote confessava i peccati d'Israele?",
+   "a": "Capro espiatorio",
+   "alt": [
+    "capro"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "In quale libro biblico si trova il rito del capro espiatorio?",
+   "a": "Levitico"
+  },
+  {
+   "cat": "religioni",
+   "q": "A chi attribuisce la tradizione il Cantico dei Cantici?",
+   "a": "Salomone"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quanti sono i vizi capitali?",
+   "a": "Sette",
+   "alt": [
+    "7"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Chi fu la prima santa degli Stati Uniti, canonizzata nel 1946?",
+   "a": "Francesca Cabrini",
+   "alt": [
+    "cabrini",
+    "francesca saverio cabrini"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Chi e' la patrona del mal di denti?",
+   "a": "Apollonia",
+   "alt": [
+    "sant'apollonia",
+    "santa apollonia"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale dio romano da' il nome al pianeta associato alla guerra?",
+   "a": "Marte"
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale arcangelo pesa le anime nell'iconografia cristiana?",
+   "a": "Michele",
+   "alt": [
+    "san michele"
+   ]
+  },
+  {
+   "cat": "religioni",
+   "q": "Quale testo induista contiene il dialogo fra Krishna e Arjuna?",
+   "a": "Bhagavadgita",
+   "alt": [
+    "bhagavad gita"
+   ]
+  }
+ ]
+}
