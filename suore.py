@@ -177,14 +177,15 @@ PENALTY = 7
 #
 # 2026-09-10 09:15 UTC: allungato a 72h da adesso su ordine di vjt (#sbiffo
 # 11:14 Rome, «allunga il ban di deadbeef a 72h da adesso, sta ancora
-# scriptando»). Aggiunto anche `deadbeef_`: `canon()` fa solo `lower()`, quindi
-# il ban e' chiavato sul nick grezzo e riconnettersi con l'underscore lo
-# aggira — e nello stato `deadbeef_` esiste gia' come giocatore separato. Le
-# due righe sono un tappo: la cura vera e' normalizzare in `canon()`, che pero'
-# fonderebbe anche le classifiche e non e' stata chiesta.
+# scriptando»).
+#
+# `deadbeef_` NON va bannato, e non e' una svista: vjt (#sbiffo 11:18) dice che
+# quello e' il suo client grappa, dove non scripta. Quindi la separazione dei
+# nick, che per la classifica e' un difetto, qui e' esattamente cio' che serve:
+# `canon()` deve continuare a NON normalizzare l'underscore, o il ban del
+# client scriptato si porterebbe dietro anche l'altro.
 BANS = {
     "deadbeef": 1789290917,   # fino al 2026-09-13 09:15 UTC (11:15 Rome)
-    "deadbeef_": 1789290917,  # stesso umano, vedi sopra
 }
 
 ZWSP = "​"
