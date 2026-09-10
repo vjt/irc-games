@@ -43,6 +43,10 @@
   .scope { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem 1.1rem 1.3rem; margin-bottom: 1.5rem; }
   .scope > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem; margin-bottom: 1rem; }
   .scope h3 { margin: 0; font-size: 1.05rem; }
+  /* Il nome del canale e' un invito grappa, ma resta un titolo: tiene il
+     colore del testo e dichiara di essere cliccabile solo al passaggio. */
+  .scope h3 a { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--line); }
+  .scope h3 a:hover { color: var(--gold); border-bottom-color: var(--gold); }
   .scope .net { color: var(--dim); font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; }
   .tot { color: var(--dim); font-size: .8rem; margin-left: auto; }
   .tot b { color: var(--ink); font-weight: 600; }
@@ -90,7 +94,7 @@
   <h1><span class="cross">&#8224;</span> Sparasuore</h1>
   <p class="sub" id="sub">caricamento&hellip;</p>
 
-  <p class="join">Si gioca in canale: <a href="https://irc.sniffo.org/?join=azzurra/sniffo">apri #sniffo con grappa</a>, aspetta che passi una suora e spara.</p>
+  <p class="join">Si gioca in canale: <a href="https://irc.sniffo.org/?go=azzurra/sniffo">apri #sniffo con grappa</a>, aspetta che passi una suora e spara.</p>
 
   <h2>Come si gioca</h2>
   <section class="howto">
@@ -155,12 +159,28 @@ function card(n, k) {
   return c;
 }
 
+// Invito grappa per uno scope. Il parametro canonico e' `?go=`, NON `?join=`
+// (`cicchetto/src/lib/inviteLink.ts`, `searchParams.get("go")`), e il `#` del
+// canale NON si scrive letterale: dentro una query string apre il FRAGMENT e
+// tronca il valore, quindi il canale non arriverebbe mai all'app. Il parser
+// sottintende il `#` su un segmento nudo, che e' la forma usata qui; per un
+// chantype diverso da `#` si tiene il sigillo e lo si percent-encoda.
+function joinUrl(net, chan) {
+  const seg = chan.startsWith("#") ? chan.slice(1) : chan;
+  return "https://irc.sniffo.org/?go="
+    + encodeURIComponent(net) + "/" + encodeURIComponent(seg);
+}
+
 function renderScope(scope, s) {
   const [net, chan] = scope.split("/");
   const box = el("section", "scope");
 
   const head = el("header");
-  const h3 = el("h3", null, chan);
+  const h3 = el("h3");
+  const a = el("a", null, chan);
+  a.href = joinUrl(net, chan);
+  a.title = "apri " + chan + " con grappa";
+  h3.appendChild(a);
   head.appendChild(h3);
   head.appendChild(el("span", "net", net));
   const tot = el("div", "tot");
