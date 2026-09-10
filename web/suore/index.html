@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sparasuore</title>
+<meta name="description" content="Statistiche del gioco delle suore sui canali IRC di Azzurra e IRCnet.">
+<style>
+  :root {
+    --bg: #0f1012;
+    --panel: #17181c;
+    --line: #26272d;
+    --ink: #e6e4df;
+    --dim: #8d8b86;
+    --gold: #d9a441;
+    --hit: #b7543f;
+    --friend: #4f7a6a;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.55 var(--mono);
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 60rem; margin: 0 auto; padding: 2rem 1.1rem 4rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .2rem; letter-spacing: .02em; }
+  h1 .cross { color: var(--gold); }
+  .sub { color: var(--dim); margin: 0 0 2rem; font-size: .88rem; }
+  h2 {
+    font-size: .82rem; text-transform: uppercase; letter-spacing: .12em;
+    color: var(--dim); font-weight: 600; margin: 0 0 .7rem;
+  }
+  .cards { display: grid; gap: .8rem; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); margin-bottom: 2.4rem; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .8rem .9rem; }
+  .card .n { font-size: 1.7rem; line-height: 1.1; }
+  .card .k { color: var(--dim); font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; }
+  .scope { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem 1.1rem 1.3rem; margin-bottom: 1.5rem; }
+  .scope > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem; margin-bottom: 1rem; }
+  .scope h3 { margin: 0; font-size: 1.05rem; }
+  .scope .net { color: var(--dim); font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; }
+  .tot { color: var(--dim); font-size: .8rem; margin-left: auto; }
+  .tot b { color: var(--ink); font-weight: 600; }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .87rem; min-width: 30rem; }
+  th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--dim); font-weight: 600; font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; }
+  td.nick, th.nick { text-align: left; width: 40%; }
+  tr:last-child td { border-bottom: 0; }
+  .medal { width: 1.3em; display: inline-block; }
+  .star { color: var(--gold); }
+  .nowt { color: var(--dim); }
+  .record { margin-top: 1rem; font-size: .87rem; color: var(--dim); }
+  .record b { color: var(--gold); }
+  .bars { display: flex; align-items: flex-end; gap: 3px; height: 4.5rem; margin-top: 1rem; }
+  .bars div { flex: 1; background: var(--hit); border-radius: 2px 2px 0 0; min-height: 2px; position: relative; }
+  .bars div.bef { background: var(--friend); }
+  .axis { display: flex; gap: 3px; margin-top: .3rem; color: var(--dim); font-size: .66rem; }
+  .axis span { flex: 1; text-align: center; overflow: hidden; }
+  .legend { color: var(--dim); font-size: .75rem; margin-top: .8rem; }
+  .legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px; margin-right: .25rem; vertical-align: baseline; font-style: normal; }
+  .warn { color: var(--gold); font-size: .78rem; margin-top: .8rem; }
+  footer { color: var(--dim); font-size: .78rem; margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  footer code { color: var(--ink); }
+  a { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="cross">&#8224;</span> Sparasuore</h1>
+  <p class="sub" id="sub">caricamento&hellip;</p>
+
+  <div class="cards" id="cards"></div>
+
+  <h2>Per canale</h2>
+  <div id="scopes"></div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const MEDALS = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
+
+function secs(v) {
+  if (v === null || v === undefined) return "—";
+  if (v < 60) return v.toFixed(v < 10 ? 2 : 0).replace(/\.00$/, "") + "s";
+  const m = Math.floor(v / 60), s = Math.round(v % 60);
+  if (m < 60) return m + "m " + String(s).padStart(2, "0") + "s";
+  return Math.floor(m / 60) + "h " + String(m % 60).padStart(2, "0") + "m";
+}
+
+function day(iso) {
+  const [y, m, d] = iso.split("-");
+  return d + "/" + m;
+}
+
+function el(tag, cls, txt) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt !== undefined) n.textContent = txt;
+  return n;
+}
+
+function card(n, k) {
+  const c = el("div", "card");
+  c.appendChild(el("div", "n", n));
+  c.appendChild(el("div", "k", k));
+  return c;
+}
+
+function renderScope(scope, s) {
+  const [net, chan] = scope.split("/");
+  const box = el("section", "scope");
+
+  const head = el("header");
+  const h3 = el("h3", null, chan);
+  head.appendChild(h3);
+  head.appendChild(el("span", "net", net));
+  const tot = el("div", "tot");
+  tot.innerHTML = "<b>" + s.totali.kills + "</b> stese · <b>"
+    + s.totali.friends + "</b> convertite"
+    + (s.totali.golden ? " · <b class='star'>" + s.totali.golden + "</b> dorate" : "");
+  head.appendChild(tot);
+  box.appendChild(head);
+
+  const scroll = el("div", "scroll");
+  const t = el("table");
+  t.innerHTML = "<thead><tr><th class='nick'>chi</th><th>stese</th>"
+    + "<th>convertite</th><th>dorate</th><th>mediana</th><th>media</th>"
+    + "<th>record</th></tr></thead>";
+  const tb = el("tbody");
+  s.classifica.forEach((r, i) => {
+    const tr = el("tr");
+    const nick = el("td", "nick");
+    nick.appendChild(el("span", "medal", i < 3 && r.kills ? MEDALS[i] : ""));
+    nick.appendChild(document.createTextNode(r.nick));
+    tr.appendChild(nick);
+    tr.appendChild(el("td", null, r.kills || "—"));
+    tr.appendChild(el("td", null, r.friends || "—"));
+    const g = el("td", r.golden ? "star" : "nowt", r.golden || "—");
+    tr.appendChild(g);
+    tr.appendChild(el("td", r.mediana === null ? "nowt" : null, secs(r.mediana)));
+    tr.appendChild(el("td", r.media === null ? "nowt" : null, secs(r.media)));
+    const best = (s.record && s.record.nick === r.nick) ? secs(s.record.secs) : "—";
+    tr.appendChild(el("td", best === "—" ? "nowt" : "star", best));
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);
+  scroll.appendChild(t);
+  box.appendChild(scroll);
+
+  if (s.record) {
+    const rec = el("div", "record");
+    rec.innerHTML = "Colpo più rapido: <b>" + secs(s.record.secs)
+      + "</b> — " + s.record.nick;
+    box.appendChild(rec);
+  }
+
+  const giorni = Object.keys(s.per_giorno);
+  if (giorni.length) {
+    const max = Math.max(...giorni.map(d =>
+      s.per_giorno[d].bang + s.per_giorno[d].bef), 1);
+    const bars = el("div", "bars");
+    const axis = el("div", "axis");
+    giorni.forEach(d => {
+      const v = s.per_giorno[d].bang + s.per_giorno[d].bef;
+      const b = el("div");
+      b.style.height = Math.round(v / max * 100) + "%";
+      b.title = d + ": " + s.per_giorno[d].bang + " stese, "
+        + s.per_giorno[d].bef + " convertite";
+      bars.appendChild(b);
+      axis.appendChild(el("span", null, day(d)));
+    });
+    box.appendChild(bars);
+    box.appendChild(axis);
+  }
+
+  if (s.discrepanza) {
+    const w = el("div", "warn");
+    w.textContent = "Nota: il log conta " + Math.abs(s.discrepanza)
+      + (Math.abs(s.discrepanza) === 1 ? " colpo " : " colpi ")
+      + (s.discrepanza > 0 ? "in più " : "in meno ")
+      + "rispetto ai contatori del gioco. Storie diverse, non un errore: i "
+      + "contatori sono stati azzerati a mano, e qualche annuncio non è "
+      + "mai finito nell’archivio.";
+    box.appendChild(w);
+  }
+
+  return box;
+}
+
+function render(d) {
+  const scopes = Object.keys(d.scopes).sort();
+  let kills = 0, friends = 0, golden = 0, best = null;
+  scopes.forEach(k => {
+    const s = d.scopes[k];
+    kills += s.totali.kills; friends += s.totali.friends; golden += s.totali.golden;
+    if (s.record && (!best || s.record.secs < best.secs)) best = s.record;
+  });
+
+  const cards = document.getElementById("cards");
+  cards.appendChild(card(kills, "suore stese"));
+  cards.appendChild(card(friends, "convertite"));
+  cards.appendChild(card(golden, "dorate"));
+  cards.appendChild(card(best ? secs(best.secs) : "—", "colpo più rapido"));
+  cards.appendChild(card(d.giorni_coperti, "giorni di guerra"));
+
+  const box = document.getElementById("scopes");
+  scopes.forEach(k => box.appendChild(renderScope(k, d.scopes[k])));
+
+  const primo = d.primo_evento ? new Date(d.primo_evento * 1000) : null;
+  document.getElementById("sub").textContent = primo
+    ? "Dal " + primo.toLocaleDateString("it-IT") + ", "
+      + d.eventi_totali + " colpi registrati su " + scopes.length + " canali."
+    : "Nessun colpo registrato. Che noia.";
+
+  const gen = new Date(d.generato * 1000);
+  const foot = document.getElementById("foot");
+  foot.innerHTML = "Dati aggiornati dal bot a ogni suora presa — ultimo "
+    + "aggiornamento " + gen.toLocaleString("it-IT") + ". Si gioca con "
+    + "<code>.bang</code> per sparare e <code>.bef</code> per fare amicizia, "
+    + "quando una suora compare in canale.";
+}
+
+fetch("data.json?_=" + Date.now(), { cache: "no-store" })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(render)
+  .catch(e => {
+    document.getElementById("sub").textContent =
+      "I dati non si caricano (" + e.message + "). Riprova fra poco.";
+  });
+</script>
+</body>
+</html>

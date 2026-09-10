@@ -77,6 +77,7 @@ import json, os, random, re, select, subprocess, sys, time
 from pathlib import Path
 
 import suore_events
+import suore_stats
 
 # La casa del gioco: dove stanno stato e default. Era hardcoded sul checkout del
 # bot su questo Pi; ora il codice vive in un repo suo (irc-games) e gira in una
@@ -98,6 +99,16 @@ STATE = Path(os.environ.get("SUORE_STATE", str(REPO / "suore_state.json")))
 _events_default = str(Path(STATE).with_name("suore_events.ndjson"))
 _events_env = os.environ.get("SUORE_EVENTS", _events_default)
 EVENTS = _events_env or None
+
+# Statistiche derivate, per la pagina web (ordine di vjt, #sbiffo 2026-09-10:
+# «Convento dovrebbe tenere aggiornati i dati, che vengon poi pubblicati sul
+# json consumato dalla webpage»). Riscritto per intero a ogni comparsa risolta:
+# a un colpo ogni tanti minuti e poche migliaia di righe di storico costa meno
+# di quanto costerebbe tenere aggiornati dei contatori incrementali e poi
+# scoprire che sono andati a puttane. '' lo spegne.
+_stats_default = str(Path(STATE).with_name("suore_stats.json"))
+_stats_env = os.environ.get("SUORE_STATS", _stats_default)
+STATS = _stats_env or None
 
 MIN_GAP = float(os.environ.get("SUORE_MIN_MIN", "45")) * 60
 MAX_GAP = float(os.environ.get("SUORE_MAX_MIN", "180")) * 60
@@ -640,6 +651,11 @@ def handle(data, scope, nick, cmd, now):
     # testo in canale arrotonda, il log no, e le due cose non devono confondersi.
     suore_events.append(EVENTS, now, scope, nick, cmd,
                         golden=golden, reaction=now - nun["at"])
+    # Il JSON della pagina si rifa' da qui: lo stato in mano e' quello appena
+    # aggiornato, il log ha gia' la riga nuova. Rileggere il log costa una
+    # lettura di file per colpo, e finche' e' un colpo ogni tanti minuti non
+    # vale la pena di inventarsi niente di piu' furbo.
+    suore_stats.write(STATS, suore_events.read(EVENTS), data, now)
     if cmd == "bang":
         if golden:
             say(net, chan, f"\x02{nick} ha steso la SUORA DORATA in {took}!\x0F "

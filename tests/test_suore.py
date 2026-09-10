@@ -5,6 +5,7 @@ import json, os, sys, tempfile, time
 tmp = tempfile.mkdtemp()
 os.environ["SUORE_STATE"] = os.path.join(tmp, "state.json")
 os.environ["SUORE_EVENTS"] = os.path.join(tmp, "events.ndjson")
+os.environ["SUORE_STATS"] = os.path.join(tmp, "stats.json")
 os.environ["SUORE_NETS"] = (
     f"azzurra|{tmp}/a.log||#sniffo:90-240,#sbiffo:60-180;"
     f"ircnet|{tmp}/i.log||#cybernet:90-240")
@@ -183,5 +184,28 @@ assert suore_events.parse_took("1m 05s") == 65
 assert suore_events.parse_took("2h 03m 04s") == 7384
 assert suore_events.parse_took("una vita") is None
 print("ok: i tre formati di human_time() si rileggono come secondi")
+
+# --- json per la pagina ------------------------------------------------------
+# Anche questo si e' scritto da solo: handle() lo rifa' a ogni comparsa risolta.
+import suore_stats
+
+stats = json.load(open(suore.STATS, encoding="utf-8"))
+assert stats["eventi_totali"] == len(suore_events.read(suore.EVENTS)), stats
+assert set(stats["scopes"]) >= {e["scope"] for e in logged}, stats["scopes"].keys()
+uno = stats["scopes"][scope]
+# le classifiche vengono dallo STATO, non dal log: e' quello che dice il bot
+assert uno["totali"]["kills"] == sum(
+    v["kills"] for v in data["scores"][scope].values()), uno["totali"]
+assert uno["classifica"] == sorted(
+    uno["classifica"], key=lambda r: (-r["kills"], -r["friends"], r["nick"].lower()))
+assert uno["record"]["secs"] > 0 and uno["record"]["nick"], uno["record"]
+assert len(uno["per_ora"]) == 24 and sum(uno["per_ora"]) == uno["totali"]["eventi"]
+print("ok: il json della pagina si riscrive da solo e quadra col log")
+
+# la mediana non deve farsi trascinare dal colpo dato dopo mezz'ora
+assert suore_stats._mediana([1, 2, 3]) == 2
+assert suore_stats._mediana([1, 2, 3, 100]) == 2.5
+assert suore_stats._mediana([5]) == 5
+print("ok: la mediana regge gli outlier")
 
 print("\nTUTTO VERDE, porco dio")
