@@ -115,6 +115,54 @@
   footer { color: var(--dim); font-size: .78rem; margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1rem; }
   footer code { color: var(--ink); }
   a { color: var(--gold); }
+  /* Le due classifiche dipinte in alto a destra sul cover sono FINTE: nomi
+     inventati dal generatore. RFE di peluche e Sythos — mettere sotto quelle
+     vere. Non si sovrastampa sul raster (il font del cover e' roba di un
+     modello, non un TTF che si possa rimontare): il blocco vive qui sotto,
+     in HTML, e prende i numeri dal `data.json` come tutto il resto. Il
+     registro cromatico e' quello del cover — verde fosforo e oro su nero —
+     apposta, cosi' l'occhio che arriva dalle finte legge le vere come la
+     stessa cosa, e non come un widget di un'altra pagina. */
+  .tops { margin: 0 0 2rem; }
+  .tops-hd {
+    display: flex; align-items: center; gap: .6rem; margin-bottom: .7rem;
+    font-size: .82rem; text-transform: uppercase; letter-spacing: .12em;
+    color: var(--dim); font-weight: 600;
+  }
+  .tops-hd select {
+    margin-left: auto; text-transform: none; letter-spacing: 0;
+    background: #08130c; color: #39ff5a; border: 1px solid #2a6b39;
+    font: inherit; font-size: .78rem; padding: .15rem .4rem; border-radius: 3px;
+  }
+  .tops-grid { display: grid; gap: .8rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+  .board {
+    border: 1px solid #2a6b39; border-radius: 6px; overflow: hidden;
+    background: #0c1410;
+    box-shadow: inset 0 0 14px rgba(57, 255, 90, .10);
+  }
+  .board.bef { border-color: #6b5a1e; box-shadow: inset 0 0 14px rgba(217, 164, 65, .10); }
+  .board .bhdr {
+    display: flex; align-items: center; gap: .5rem; padding: .5rem .7rem;
+    font-size: .8rem; letter-spacing: .14em; color: #39ff5a;
+    border-bottom: 1px solid rgba(57, 255, 90, .28);
+    text-shadow: 0 0 6px rgba(57, 255, 90, .45);
+  }
+  .board.bef .bhdr { color: var(--gold); border-bottom-color: rgba(217, 164, 65, .28); text-shadow: 0 0 6px rgba(217, 164, 65, .45); }
+  .board .bhdr .unit { margin-left: auto; font-size: .68rem; letter-spacing: .06em; opacity: .6; }
+  .board table { min-width: 0; font-size: .85rem; }
+  .board td { border-bottom: 0; padding: .28rem .7rem; }
+  .board tr:nth-child(odd) { background: #0f1c13; }
+  .board.bef tr:nth-child(odd) { background: #171308; }
+  .board td.rk { text-align: left; width: 1.6rem; color: var(--dim); }
+  .board td.nk { text-align: left; white-space: normal; }
+  .board td.vl { font-weight: 700; color: #39ff5a; }
+  .board.bef td.vl { color: var(--gold); }
+  .board tr.r1 .rk { color: var(--gold); }
+  .board tr.r2 .rk { color: #cfd8dc; }
+  .board tr.r3 .rk { color: #cd7f32; }
+  .board td.nowt { text-align: left; color: var(--dim); }
+  .tops-note { color: var(--dim); font-size: .75rem; margin: .7rem 0 0; }
+  .tops-note b { color: var(--gold); }
   /* `pixelated` o il downscale interpola e la pixel art si sfoca. `max-width`
      in percentuale + `height:auto` perche' l'attributo height nativo del tag
      serve solo a riservare lo spazio prima del download, non a fissarla. */
@@ -143,6 +191,12 @@
        2.15% del 4:2:0 alla stessa q. -->
   <img class="cover" src="cover.webp" width="1254" height="1254" decoding="async"
        alt="Pixel art: la Madre Superiora appare in un cimitero, cinque suore intorno e una canna di fucile in primo piano.">
+
+  <section class="tops" id="tops" hidden>
+    <div class="tops-hd">Classifiche vere<select id="topscope" aria-label="canale"></select></div>
+    <div class="tops-grid" id="topboards"></div>
+    <p class="tops-note" id="topnote"></p>
+  </section>
 
   <p class="join">Si gioca in canale: <a href="https://irc.sniffo.org/?go=azzurra/sniffo">apri #sniffo con grappa</a>, aspetta che passi una suora e spara.</p>
 
@@ -369,6 +423,68 @@ function renderScope(scope, s) {
   return box;
 }
 
+// Cinque righe per lato: oltre non ci arriva l'occhio, e la tabella per
+// canale piu' sotto porta comunque tutti quanti con tempi e record.
+const TOP_N = 5;
+
+function board(cls, ico, titolo, unita, righe) {
+  const b = el("div", "board " + cls);
+  const h = el("div", "bhdr");
+  h.appendChild(document.createTextNode(ico + " " + titolo));
+  h.appendChild(el("span", "unit", unita));
+  b.appendChild(h);
+  const t = el("table");
+  const tb = el("tbody");
+  if (!righe.length) {
+    const tr = el("tr");
+    const td = el("td", "nowt", "nessuno, per ora");
+    td.colSpan = 3;
+    tr.appendChild(td);
+    tb.appendChild(tr);
+  }
+  righe.forEach((r, i) => {
+    const tr = el("tr", "r" + (i + 1));
+    tr.appendChild(el("td", "rk", (i + 1) + "."));
+    const nk = el("td", "nk");
+    nk.appendChild(document.createTextNode(r.nick));
+    // Il badge dorato sta solo sui killer. Il gioco lascia fare amica anche
+    // una dorata, ma nello storico non e' mai successo: il campo si legge
+    // lo stesso invece di darlo per zero.
+    if (r.gold) nk.appendChild(el("span", "star", " ⭐" + r.gold));
+    tr.appendChild(nk);
+    tr.appendChild(el("td", "vl", r.v));
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);
+  b.appendChild(t);
+  return b;
+}
+
+// Stese e convertite sono due partite diverse (e due tabelle diverse), quindi
+// due classifiche e non una sola ordinata a caso.
+function renderTop(scope, d) {
+  const s = d.scopes[scope], cl = s.classifica || [];
+  const bang = cl.filter(r => r.kills > 0).sort((a, b) => b.kills - a.kills)
+    .slice(0, TOP_N).map(r => ({nick: r.nick, v: r.kills, gold: r.golden || 0}));
+  const bef = cl.filter(r => r.friends > 0).sort((a, b) => b.friends - a.friends)
+    .slice(0, TOP_N).map(r => ({nick: r.nick, v: r.friends, gold: 0}));
+
+  const box = document.getElementById("topboards");
+  box.textContent = "";
+  box.appendChild(board("bang", "\u{1F3C6}", "TOP BANG", "stese", bang));
+  box.appendChild(board("bef", "\u{1F91D}", "TOP BEF", "convertite", bef));
+
+  const note = document.getElementById("topnote");
+  note.textContent = "";
+  note.appendChild(document.createTextNode(
+    "Quelle dipinte sul cover qui sopra sono finte, nomi inventati dal "
+    + "generatore. Queste sono le vere di " + scope + ", e il badge ⭐ "
+    + "accanto al nick sono le dorate stese: in questo canale ne sono "
+    + "cadute "));
+  note.appendChild(el("b", null, String(s.totali.golden || 0)));
+  note.appendChild(document.createTextNode("."));
+}
+
 function render(d) {
   const scopes = Object.keys(d.scopes).sort();
   let kills = 0, friends = 0, golden = 0, best = null;
@@ -387,6 +503,23 @@ function render(d) {
 
   const box = document.getElementById("scopes");
   scopes.forEach(k => box.appendChild(renderScope(k, d.scopes[k])));
+
+  // Il canale di partenza e' quello piu' giocato, non uno scritto qui dentro:
+  // i canali vanno e vengono, e una preferenza fissa invecchia male.
+  if (scopes.length) {
+    const peso = k => d.scopes[k].totali.kills + d.scopes[k].totali.friends;
+    const sel = document.getElementById("topscope");
+    scopes.forEach(k => {
+      const o = document.createElement("option");
+      o.value = k;
+      o.textContent = k;
+      sel.appendChild(o);
+    });
+    sel.value = scopes.slice().sort((a, b) => peso(b) - peso(a))[0];
+    sel.onchange = () => renderTop(sel.value, d);
+    document.getElementById("tops").hidden = false;
+    renderTop(sel.value, d);
+  }
 
   const primo = d.primo_evento ? new Date(d.primo_evento * 1000) : null;
   document.getElementById("sub").textContent = primo
