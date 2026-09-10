@@ -174,8 +174,17 @@ PENALTY = 7
 # #sniffo (02:26:16) una riga di comparsa identica a quella del sidecar ma
 # scritta da me — il gioco non ha mai visto nessuna suora. Cinque secondi dopo
 # e' arrivato il suo `.bef`, poi `!bang`, contro una suora inesistente.
+#
+# 2026-09-10 09:15 UTC: allungato a 72h da adesso su ordine di vjt (#sbiffo
+# 11:14 Rome, «allunga il ban di deadbeef a 72h da adesso, sta ancora
+# scriptando»). Aggiunto anche `deadbeef_`: `canon()` fa solo `lower()`, quindi
+# il ban e' chiavato sul nick grezzo e riconnettersi con l'underscore lo
+# aggira — e nello stato `deadbeef_` esiste gia' come giocatore separato. Le
+# due righe sono un tappo: la cura vera e' normalizzare in `canon()`, che pero'
+# fonderebbe anche le classifiche e non e' stata chiesta.
 BANS = {
-    "deadbeef": 1789172884,   # fino al 2026-09-12 00:28 UTC (02:28 Rome)
+    "deadbeef": 1789290917,   # fino al 2026-09-13 09:15 UTC (11:15 Rome)
+    "deadbeef_": 1789290917,  # stesso umano, vedi sopra
 }
 
 ZWSP = "​"
