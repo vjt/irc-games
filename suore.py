@@ -67,6 +67,7 @@ Env:
   SUORE_LOG     forma vecchia: bot.log da seguire (default bot.log, cioè Azzurra)
   SUORE_FIFO    forma vecchia: FIFO del bot ('' = muto)
   SUORE_STATE   path dello stato json
+  SUORE_EVENTS  path del log eventi NDJSON append-only ('' = non scriverlo)
   SUORE_MIN_MIN minuti minimi fra due comparse (default 45)
   SUORE_MAX_MIN minuti massimi fra due comparse (default 180)
   SUORE_JAM     probabilità di inceppamento del fucile (default 0.15)
@@ -75,12 +76,28 @@ Env:
 import json, os, random, re, select, subprocess, sys, time
 from pathlib import Path
 
+import suore_events
+
 # La casa del gioco: dove stanno stato e default. Era hardcoded sul checkout del
 # bot su questo Pi; ora il codice vive in un repo suo (irc-games) e gira in una
 # jail su m42, quindi il default è la directory del file e SUORE_HOME la sposta.
 REPO = Path(os.environ.get("SUORE_HOME", os.path.dirname(os.path.abspath(__file__))))
 
 STATE = Path(os.environ.get("SUORE_STATE", str(REPO / "suore_state.json")))
+
+# Log eventi: una riga NDJSON per ogni comparsa risolta, accanto allo stato.
+# Serve a non precludersi le statistiche a fette di tempo (richiesta di peluche,
+# #sbiffo 2026-09-10, via di vjt: «ok ad avere un altro state file per i
+# timestamp se serve»): i contatori aggregati sono una porta a senso unico, una
+# volta che il colpo finisce dentro `kills` l'anno, il canale e il tempo di
+# reazione non si riprendono piu'.
+#
+# NON viene mai riletto dal gioco: le classifiche continuano a uscire da STATE,
+# quindi un log troncato o corrotto non puo' rompere una partita. Metterlo a ''
+# lo spegne.
+_events_default = str(Path(STATE).with_name("suore_events.ndjson"))
+_events_env = os.environ.get("SUORE_EVENTS", _events_default)
+EVENTS = _events_env or None
 
 MIN_GAP = float(os.environ.get("SUORE_MIN_MIN", "45")) * 60
 MAX_GAP = float(os.environ.get("SUORE_MAX_MIN", "180")) * 60
@@ -619,6 +636,10 @@ def handle(data, scope, nick, cmd, now):
     jumped = was_above - now_above
     passed = [x for x in board(data, scope, field) if canon(x["nick"]) in jumped]
     tail = standing(data, scope, nick, passed, field)
+    # La reazione qui e' il numero grezzo, non la stringa di human_time(): il
+    # testo in canale arrotonda, il log no, e le due cose non devono confondersi.
+    suore_events.append(EVENTS, now, scope, nick, cmd,
+                        golden=golden, reaction=now - nun["at"])
     if cmd == "bang":
         if golden:
             say(net, chan, f"\x02{nick} ha steso la SUORA DORATA in {took}!\x0F "

@@ -4,6 +4,7 @@ import json, os, sys, tempfile, time
 
 tmp = tempfile.mkdtemp()
 os.environ["SUORE_STATE"] = os.path.join(tmp, "state.json")
+os.environ["SUORE_EVENTS"] = os.path.join(tmp, "events.ndjson")
 os.environ["SUORE_NETS"] = (
     f"azzurra|{tmp}/a.log||#sniffo:90-240,#sbiffo:60-180;"
     f"ircnet|{tmp}/i.log||#cybernet:90-240")
@@ -12,6 +13,12 @@ import suore
 
 sent = []
 suore.say = lambda net, chan, text: sent.append((net.name, chan, text))
+
+# La dorata regge piu' di un colpo, quindi una comparsa dorata a caso fa saltare
+# ogni assert sui punteggi: la prova era verde o rossa a seconda del dado (3 run
+# su 5 fallivano). Le comparse dorate si provano dove servono, montando la suora
+# a mano; qui il fucile spara e basta.
+suore.P_GOLDEN = 0.0
 
 data = suore.empty()
 now = time.time()
@@ -120,5 +127,61 @@ assert "🥇 1º, scavalcato morph." in msg, msg
 # e non e' la classifica dei killer: katia li' non c'e' proprio (0 kills)
 assert "katia" not in [s["nick"] for s in suore.board(data, scope, "kills")]
 print("ok: il .bef annuncia la posizione fra i marpioni, non fra i killer")
+
+# --- event log ---------------------------------------------------------------
+# Il log eventi si e' scritto da solo per tutta la sessione qui sopra: nessuna
+# chiamata esplicita, e' `handle()` che appende. Lo si rilegge adesso.
+import suore_events
+
+logged = suore_events.read(suore.EVENTS)
+assert logged, "il log eventi e' vuoto: handle() non ha appeso niente"
+assert all(set(e) <= set(suore_events.FIELDS) for e in logged), logged[0]
+assert all(e["verb"] in ("bang", "bef") for e in logged), logged
+assert all(e["reaction"] >= 0 for e in logged), logged
+assert {e["scope"] for e in logged} <= set(suore.SCOPES), logged
+print(f"ok: il log eventi ha {len(logged)} righe, una per comparsa risolta")
+
+# un colpo a vuoto NON deve lasciare traccia: il log e' delle comparse risolte
+prima = len(suore_events.read(suore.EVENTS))
+suore.handle(data, scope, "nessuno", "bang", now + 999)   # nessuna suora viva
+assert len(suore_events.read(suore.EVENTS)) == prima, "il buco ha scritto un evento"
+print("ok: il colpo a vuoto non finisce nel log")
+
+# ROUND-TRIP: la riga annunciata in canale deve tornare indietro identica
+# attraverso il parser del backfill. E' il test che tiene insieme le due meta':
+# se domani cambia la formula dell'annuncio e non la regex, questo si spacca
+# invece di far sparire in silenzio lo storico di ieri.
+for verb, golden_wanted in (("bang", False), ("bef", False)):
+    suore.spawn(data, scope, now + 1000)
+    sent.clear()
+    assert suore.handle(data, scope, "peluche", verb, now + 1007)
+    riga = sent[0][2]
+    back = suore_events.parse(riga)
+    assert back, f"il parser non riconosce l'annuncio: {riga!r}"
+    assert back["nick"] == "peluche", back
+    assert back["verb"] == verb, (back, riga)
+    assert back["golden"] is golden_wanted, (back, riga)
+    assert back["chan"] == scope.split("/", 1)[1], (back, scope)
+    assert abs(back["reaction"] - 7) < 1.5, (back, riga)
+print("ok: round-trip annuncio -> parser del backfill, bang e bef")
+
+# la dorata: si annuncia diversa e deve tornare indietro con golden=True
+data["nuns"][scope] = {"at": now + 2000, "golden": True, "hp": 1}
+sent.clear()
+assert suore.handle(data, scope, "bitflesh", "bang", now + 2003)
+riga = sent[0][2]
+back = suore_events.parse(riga)
+assert back and back["golden"] is True, (back, riga)
+assert back["verb"] == "bang" and back["nick"] == "bitflesh", back
+assert suore_events.read(suore.EVENTS)[-1]["golden"] is True
+print("ok: round-trip della suora dorata, golden=True da entrambe le parti")
+
+# i formati di tempo di human_time() devono tornare tutti numeri
+assert suore_events.parse_took("37.989 secondi") == 37.989
+assert suore_events.parse_took("1 secondo") == 1
+assert suore_events.parse_took("1m 05s") == 65
+assert suore_events.parse_took("2h 03m 04s") == 7384
+assert suore_events.parse_took("una vita") is None
+print("ok: i tre formati di human_time() si rileggono come secondi")
 
 print("\nTUTTO VERDE, porco dio")
