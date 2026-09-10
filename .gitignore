@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 *_state.json
 *.log
+
+# grappa-stats: il salt che deriva gli slug delle pagine private e' una
+# credenziale (chi lo ha ricostruisce ogni URL), e il db e' stato locale.
+grappa_stats/slug.salt
+grappa_stats/stats.db
+grappa_stats/*.log

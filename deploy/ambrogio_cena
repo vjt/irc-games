@@ -1,0 +1,29 @@
+#!/bin/sh
+# PROVIDE: ambrogio_cena
+# REQUIRE: ambrogio_bot
+# KEYWORD: shutdown
+#
+# Il contatore `!pranzo`/`!cena` della crew (#sniffo, #sbiffo) dietro ad
+# Ambrogio. Migrato dal servizio `systemd --user` sul Pi il 2026-09-10 per
+# ordine di vjt («chanstats e il resto possono stare nello stesso bot»).
+#
+# Web output: NON scrive nel docroot di sindro.me (e' una cartella Syncthing
+# sull'host, il jail non ci deve mettere le mani) — scrive il JSON qui in
+# /var/db/convento e l'nginx dell'host aliasa il singolo file.
+. /etc/rc.subr
+name="ambrogio_cena"
+rcvar="ambrogio_cena_enable"
+load_rc_config "$name"
+: ${ambrogio_cena_enable:="NO"}
+pidfile="/var/run/convento/cena.pid"
+# Vedi ambrogio_bot: daemon(8) scrive il pid del figlio.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/cena.log -t ambrogio-cena \
+  /usr/bin/env CENA_LOG=/var/log/convento/ambrogio.log \
+  CENA_FIFO=/var/run/convento/ambrogio.send \
+  CENA_STATE=/var/db/convento/cena_state.json \
+  CENA_OUT=/var/db/convento/cena.json \
+  'CENA_CHANS=#sniffo,#sbiffo' \
+  /usr/local/bin/python3.11 -u /opt/irc-games/cena_counter.py"
+run_rc_command "$1"

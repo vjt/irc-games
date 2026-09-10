@@ -1,0 +1,13 @@
+# Ambrogio su Azzurra — bot aggregatore dei sidecar di gioco/stat.
+# Ordine di vjt (#sbiffo 2026-09-10 22:31): i sidecar restanti (chanstats,
+# cena-counter, cena-ito, next-counter, sniffo-stats) vanno TUTTI in UN bot,
+# nick Ambrogio, vhost ci.pensa.ambrogio.con.la.grappa.chat.
+#
+# Canali = unione di quelli dei sidecar: #sniffo/#sbiffo (cena+chanstats+next),
+# #it-opers (cena-ito+chanstats), #grappa (next-counter).
+# NickServ REGISTER con la mail di vjt, AUTH lo fa lui.
+JOIN #sniffo
+JOIN #sbiffo
+RAW PRIVMSG ChanServ :INVITE #it-opers
+JOIN #it-opers
+JOIN #grappa

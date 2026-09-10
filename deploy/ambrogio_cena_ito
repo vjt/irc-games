@@ -1,0 +1,27 @@
+#!/bin/sh
+# PROVIDE: ambrogio_cena_ito
+# REQUIRE: ambrogio_bot
+# KEYWORD: shutdown
+#
+# Secondo poll dello stesso sidecar: la cena #it-opers (luogo e data omessi).
+# Canale, stato, pagina e link ristoranti separati da quello della crew.
+. /etc/rc.subr
+name="ambrogio_cena_ito"
+rcvar="ambrogio_cena_ito_enable"
+load_rc_config "$name"
+: ${ambrogio_cena_ito_enable:="NO"}
+pidfile="/var/run/convento/cena_ito.pid"
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/cena_ito.log -t ambrogio-cena-ito \
+  /usr/bin/env CENA_LOG=/var/log/convento/ambrogio.log \
+  CENA_FIFO=/var/run/convento/ambrogio.send \
+  CENA_STATE=/var/db/convento/cena_ito_state.json \
+  CENA_OUT=/var/db/convento/cena_ito.json \
+  'CENA_CHANS=#it-opers' \
+  'CENA_TITLE=Cena it-opers' \
+  'CENA_PAGE=https://example.org/cena/' \
+  'CENA_EVENT={}' \
+  'CENA_LINKS={}' \
+  /usr/local/bin/python3.11 -u /opt/irc-games/cena_counter.py"
+run_rc_command "$1"

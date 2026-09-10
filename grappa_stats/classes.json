@@ -1,0 +1,83 @@
+{
+  "_comment": "nick->class map for the sniffo message-stats daemon. Editable without code change (vjt: 'rendila configurabile'). Matching is case-insensitive; aliases fold alt-nicks; relay_prefixes catches ghost-recovery nicks like vjt-claude-<rand>.",
+  "ai": [
+    "vjt-claude",
+    "OttavIA",
+    "jarvis",
+    "aufhundschwanzart"
+  ],
+  "classic": [
+    "cristobot",
+    "padrepio_superstar",
+    "Convento",
+    "MikeBongiorno"
+  ],
+  "relays": [
+    "Trillian",
+    "Gazzurbo"
+  ],
+  "services": [
+    "ChanServ",
+    "NickServ",
+    "MemoServ",
+    "OperServ",
+    "RootServ",
+    "HostServ",
+    "BotServ",
+    "HelpServ",
+    "StatServ",
+    "Global",
+    "SpamServ"
+  ],
+  "exclude_from_ratio": [
+    "sniffo-stats"
+  ],
+  "aliases": {
+    "vjt`afk": "vjt",
+    "vjt`zZz": "vjt",
+    "vjt42": "vjt",
+    "vjt_": "vjt",
+    "grappa": "vjt",
+    "asdasd": "vjt",
+    "mrph`away": "morph",
+    "mrph": "morph",
+    "morgoth": "morph",
+    "mpanella": "morph"
+  },
+  "class_prefixes": {
+    "ai": [
+      "vjt-claude-"
+    ]
+  },
+  "_comment_origins": "bot.py stamps '[tag]' right after the '>' on outbound lines a sidecar produced. Those are deterministic code, not the model, so they count as 'classic'. An untagged outbound line stays 'ai' — that one is the LLM talking. Tag unknown here -> 'ai', same as before.",
+  "origin_classes": {
+    "impiccato": "classic",
+    "cena": "classic",
+    "next": "classic",
+    "list": "classic",
+    "stats": "classic"
+  },
+  "exclude_channels": [
+    "#security"
+  ],
+  "_comment_grappa": "allowlist per il source `grappa` (ingest_grappa.py): chiave = slug di rete nel db di grappa, valore = canali. La chiave e' la COPPIA — #linux esiste su azzurra, libera e oftc in quell'archivio e vjt ha chiesto solo azzurra. Chiave mancante = non si ingesta nulla per quella rete (fail closed).",
+  "grappa_channels": {
+    "azzurra": [
+      "#sniffo",
+      "#sbiffo",
+      "#it-opers",
+      "#grappa",
+      "#linux",
+      "#olografix",
+      "#altrove",
+      "#italia",
+      "#endsummercamp"
+    ],
+    "libera": [
+      "#linux-it"
+    ],
+    "ircnet": [
+      "#cybernet"
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+# Vuoto apposta, come Convento/MikeBongiorno/EliteWarez. Ambrogio ospita i
+# sidecar di gioco/stat (chanstats, cena, cena-ito, next); non prende ordini
+# da nessuno via IRC. Sulla sua FIFO scrivono solo i sidecar locali.
