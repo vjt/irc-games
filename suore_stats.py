@@ -45,6 +45,57 @@ def _mediana(valori):
     return v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2
 
 
+# Mezz'ora: la grana con cui si dice quando esce la prossima. Deve restare
+# uguale a `suore.BUCKET`, o il canale e la pagina direbbero due finestre
+# diverse per la stessa suora.
+BUCKET = 1800.0
+
+
+def _prossima(state, scope):
+    """Quando esce la prossima suora di uno scope, a scarti di mezz'ora.
+
+    Ordine di vjt (#sniffo 2026-09-10 19:17). Tre stati, e vanno tenuti
+    distinti perche' la pagina deve dire tre cose diverse:
+
+      `in_giro`  c'e' una suora in canale adesso — `next_spawn` non esiste
+                 nemmeno, spawn() lo cancella apposta;
+      `attesa`   nessuna in giro, appuntamento preso: la finestra `da`/`a`;
+      `ignota`   scope senza appuntamento (appena aggiunto, o sidecar fermo).
+
+    `da` e' agganciato alla griglia assoluta delle mezz'ore e NON a "adesso":
+    il JSON viene riscritto solo quando succede qualcosa, e una finestra
+    relativa invecchierebbe in silenzio fra un evento e l'altro.
+
+    Il secondo esatto non esce di qui apposta: pubblicarlo regalerebbe il
+    cronometro a chi scripta."""
+    if (state.get("nuns") or {}).get(scope):
+        return {"stato": "in_giro"}
+    at = (state.get("next_spawn") or {}).get(scope)
+    if not at:
+        return {"stato": "ignota"}
+    da = int(at // BUCKET) * BUCKET
+    return {"stato": "attesa", "da": da, "a": da + BUCKET}
+
+
+def _ultima(events, state, scope):
+    """L'ultimo evento di uno scope: quando, chi, e se sparata o fatta amica.
+
+    «quando c'e' stata == quando e' stata sparata / fatta amica l'ultima.
+    insomma l'ultimo evento» (vjt, #sniffo 19:17) ⇒ vale tanto il `.bang`
+    quanto il `.bef`, non i soli colpi.
+
+    Il log e' la fonte buona perche' porta anche il verbo, ma parte dal 6
+    settembre: dove non copre si ripiega su `last_taken` dello stato, che il
+    verbo non ce l'ha. Meglio un `verbo` nullo dichiarato che una data finta."""
+    if events:
+        ev = max(events, key=lambda e: e["ts"])
+        return {"ts": ev["ts"], "nick": ev["nick"], "verbo": ev["verb"]}
+    last = (state.get("last_taken") or {}).get(scope)
+    if last and last.get("at") is not None:
+        return {"ts": last["at"], "nick": last.get("nick"), "verbo": None}
+    return None
+
+
 def _scope_stats(events, scores):
     """Statistiche di uno scope. `events` gia' filtrati, `scores` dallo stato."""
     per_day = collections.defaultdict(lambda: {"bang": 0, "bef": 0})
@@ -119,8 +170,10 @@ def build(events, state, generated):
     scopes = sorted(set(scores) | {e["scope"] for e in events})
     per_scope = {}
     for scope in scopes:
-        per_scope[scope] = _scope_stats(
-            [e for e in events if e["scope"] == scope], scores.get(scope, {}))
+        suoi = [e for e in events if e["scope"] == scope]
+        per_scope[scope] = _scope_stats(suoi, scores.get(scope, {}))
+        per_scope[scope]["ultima"] = _ultima(suoi, state, scope)
+        per_scope[scope]["prossima"] = _prossima(state, scope)
 
     giorni = sorted({_day(e["ts"]) for e in events})
     return {

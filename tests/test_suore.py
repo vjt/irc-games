@@ -226,4 +226,53 @@ assert suore_stats._mediana([1, 2, 3, 100]) == 2.5
 assert suore_stats._mediana([5]) == 5
 print("ok: la mediana regge gli outlier")
 
+# --- ultima suora e finestra della prossima ----------------------------------
+# Ordine di vjt (#sniffo 2026-09-10 19:17-19:19): per ogni canale quando c'e'
+# stata l'ultima e quando arriva la prossima, "a scarti di mezz'ora" nella
+# forma «tra due ore» / «entro mezz'ora» — mai un orario, mai il secondo.
+assert suore.fra_quanto(0, 0) == "entro mezz'ora"
+assert suore.fra_quanto(600, 0) == "entro mezz'ora"      # arrotonda a zero
+assert suore.fra_quanto(-9999, 0) == "entro mezz'ora"    # finestra gia' aperta
+assert suore.fra_quanto(1800, 0) == "tra mezz'ora"
+assert suore.fra_quanto(3600, 0) == "tra un'ora"
+assert suore.fra_quanto(5400, 0) == "tra un'ora e mezza"
+assert suore.fra_quanto(7200, 0) == "tra due ore"
+assert suore.fra_quanto(3600 * 7, 0) == "tra 7 ore"      # oltre la tabella
+assert suore.fra_quanto(3600 * 7 + 1800, 0) == "tra 7 ore e mezza"
+print("ok: la prossima si dice a mezz'ore, in italiano e mai in orario")
+
+# La finestra e' agganciata alla griglia assoluta delle mezz'ore, cosi' il
+# canale e la pagina leggono lo stesso numero. E il secondo esatto non esce.
+prova = {"nuns": {}, "next_spawn": {"x/#y": 4000.0}, "last_taken": {}}
+assert suore.next_window(prova, "x/#y") == (3600.0, 5400.0)
+assert suore.next_window(prova, "x/#z") is None          # scope senza appuntamento
+prova["nuns"]["x/#y"] = {"at": 1}
+assert suore.next_window(prova, "x/#y") is None          # ce n'e' una in giro
+print("ok: la finestra sta sulla griglia, e tace se la suora e' gia' li'")
+
+# La coda di `.suore`: last_taken vale per il .bang come per il .bef, ed e'
+# quello che vjt intende per "l'ultimo evento".
+stato = {"nuns": {}, "next_spawn": {"x/#y": 7200.0},
+         "last_taken": {"x/#y": {"at": 0.0, "nick": "Tizio"}}}
+riga = suore.when_line(stato, "x/#y", 3600.0)
+assert "Tizio" in riga and "1h 00m 00s fa" in riga, riga
+assert "tra un'ora" in riga, riga
+stato["nuns"]["x/#y"] = {"at": 1}
+assert "ADESSO" in suore.when_line(stato, "x/#y", 3600.0)
+vuoto = suore.when_line({"nuns": {}, "next_spawn": {}, "last_taken": {}}, "x/#y", 0)
+assert "nessuna" in vuoto and "calendario" in vuoto, vuoto
+print("ok: la coda di .suore dice l'ultima presa e la prossima finestra")
+
+# Il JSON per la pagina porta gli stessi due fatti, e il verbo dell'ultimo
+# evento: la pagina deve poter dire "sparata" o "fatta amica".
+s_json = suore_stats.build(eventi, {"scores": {"x/#y": punteggi},
+                                    "nuns": {},
+                                    "next_spawn": {"x/#y": 7200.0},
+                                    "last_taken": {}}, 0.0)["scopes"]["x/#y"]
+assert s_json["ultima"] == {"ts": 400, "nick": "caio", "verbo": "bef"}, s_json["ultima"]
+assert s_json["prossima"] == {"stato": "attesa", "da": 7200.0, "a": 9000.0}, s_json["prossima"]
+# stessa griglia del canale: se le due costanti divergono, questo salta
+assert suore_stats.BUCKET == suore.BUCKET
+print("ok: il json porta ultima+prossima con la stessa grana del canale")
+
 print("\nTUTTO VERDE, porco dio")

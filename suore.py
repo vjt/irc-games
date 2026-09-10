@@ -476,6 +476,83 @@ def human_time(secs):
     return f"{m}m {s:02d}s"
 
 
+BUCKET = 1800.0   # mezz'ora, la grana con cui si dice "la prossima quando"
+
+
+def next_window(data, scope):
+    """La finestra di mezz'ora in cui cade la prossima comparsa di UNO scope.
+
+    Ordine di vjt (#sniffo 2026-09-10 19:17): «piu o meno a scarti di mezz'ora
+    quando arriva la prossima». Il «piu o meno» non e' pigrizia mia: in
+    `next_spawn` c'e' il secondo esatto, e pubblicarlo nudo vuol dire regalare
+    il cronometro a chi scripta — che e' esattamente la gente che l'honeypot
+    esiste per beccare. Mezz'ora dice quando conviene stare in canale senza
+    dire quando premere invio.
+
+    Torna `None` in due casi diversi che il chiamante deve distinguere da se':
+    una suora gia' in giro (la finestra non c'entra niente, c'e' adesso) e uno
+    scope senza appuntamento (mai visto, o appena aggiunto alla config).
+    L'inizio della finestra e' agganciato alla griglia assoluta delle mezz'ore,
+    non a `now`: cosi' la risposta non balla a ogni `.suore` e la pagina, che
+    il JSON se lo rilegge quando le pare, dice la stessa cosa del canale."""
+    if data.get("nuns", {}).get(scope):
+        return None
+    at = data.get("next_spawn", {}).get(scope)
+    if not at:
+        return None
+    lo = int(at // BUCKET) * BUCKET
+    return lo, lo + BUCKET
+
+
+MEZZORE = {1: "mezz'ora", 2: "un'ora", 3: "un'ora e mezza", 4: "due ore",
+           5: "due ore e mezza", 6: "tre ore", 7: "tre ore e mezza",
+           8: "quattro ore", 9: "quattro ore e mezza", 10: "cinque ore"}
+
+
+def fra_quanto(da, now):
+    """«tra due ore» oppure «entro mezz'ora», mai un orario.
+
+    Forma dettata da vjt (#sniffo 2026-09-10 19:19: «devi mettere "la prossima
+    tra due ore" oppure "la prossima entro mezz'ora" ... quello intendo con "a
+    scarti di mezz'ora"»), dopo che gliel'avevo messa come orologio.
+
+    Il conto parte da `da`, cioe' dall'inizio della finestra pubblicata, non
+    dal secondo esatto della comparsa: il canale e la pagina hanno in mano lo
+    stesso numero e dicono la stessa cosa, e il cronometro vero non esce di
+    qui. Dentro la finestra (o oltre) e' «entro mezz'ora»: manca meno di
+    quanto la grana sappia dire."""
+    n = int(round((da - now) / BUCKET))
+    if n <= 0:
+        return "entro mezz'ora"
+    if n in MEZZORE:
+        return f"tra {MEZZORE[n]}"
+    ore, resto = divmod(n, 2)
+    return f"tra {ore} ore e mezza" if resto else f"tra {ore} ore"
+
+
+def when_line(data, scope, now):
+    """La coda di `.suore`: quand'e' stata l'ultima e quando esce la prossima.
+
+    «quando c'e' stata == quando e' stata sparata / fatta amica l'ultima.
+    insomma l'ultimo evento» (vjt, #sniffo 19:17) ⇒ si legge `last_taken`, che
+    handle() scrive per il `.bang` come per il `.bef`, non i soli colpi."""
+    last = data.get("last_taken", {}).get(scope) or {}
+    at = last.get("at")
+    if at is not None:      # `if at` no: uno zero e' un istante, non un'assenza
+        pezzi = [f"Ultima suora {human_time(now - at)} fa, "
+                 f"se l'e' presa {last.get('nick', 'qualcuno')}."]
+    else:
+        pezzi = ["Ultima suora: nessuna, in questo canale non e' ancora"
+                 " successo niente."]
+    if data.get("nuns", {}).get(scope):
+        pezzi.append("E ce n'e' una in giro ADESSO.")
+    else:
+        win = next_window(data, scope)
+        pezzi.append(f"La prossima {fra_quanto(win[0], now)}."
+                     if win else "La prossima non e' ancora in calendario.")
+    return " ".join(pezzi)
+
+
 def schedule(data, scope, now, immediate=False):
     """Il prossimo appuntamento di QUELLO scope, con la cadenza di quel canale.
 
@@ -507,6 +584,12 @@ def spawn(data, scope, now):
     # ore di sit-in `next_spawn` sarebbe nel passato e la successiva uscirebbe
     # nello stesso secondo della presa. Vedi handle().
     data["next_spawn"].pop(scope, None)
+    # Il JSON si rifa' anche QUI, non solo quando la suora viene presa: da
+    # adesso `next_spawn` per questo scope non esiste piu', e una pagina che
+    # continuasse a leggere quello vecchio annuncerebbe una finestra gia'
+    # passata invece della suora che e' li' in canale in questo momento.
+    # Costa una riscrittura ogni comparsa, cioe' una ogni ora e passa.
+    suore_stats.write(STATS, suore_events.read(EVENTS), data, now)
     return True
 
 
@@ -568,9 +651,13 @@ def handle(data, scope, nick, cmd, now):
         gold = s.get("golden", 0)
         di_cui = (f", di cui {gold} {plural(gold, 'dorata', 'dorate')}"
                   if gold else "")
+        # La coda sul canale (ultima presa + finestra della prossima) sta nella
+        # STESSA PRIVMSG, non in una seconda riga: `.suore` lo battono in tanti
+        # e due righe a testa allagano il canale ([[feedback_no_orphan_line_tails]]).
         say(net, chan, f"{nick} ha fatto fuori {s['kills']} "
                        f"{plural(s['kills'], 'suora', 'suore')}{di_cui} e ne ha "
-                       f"fatte amiche {s['friends']} in {chan}.")
+                       f"fatte amiche {s['friends']} in {chan}. "
+                       f"{when_line(data, scope, now)}")
         return True  # score_for puo' aver creato la riga del nick
 
     if cmd in ("classifica", "killers"):

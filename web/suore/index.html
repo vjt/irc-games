@@ -75,6 +75,7 @@
   .scope h3 a { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--line); }
   .scope h3 a:hover { color: var(--gold); border-bottom-color: var(--gold); }
   .scope .net { color: var(--dim); font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; }
+  .scope .quando { margin: -.5rem 0 1rem; color: var(--dim); font-size: .82rem; }
   .tot { color: var(--dim); font-size: .8rem; margin-left: auto; }
   .tot b { color: var(--ink); font-weight: 600; }
   .scroll { overflow-x: auto; }
@@ -208,6 +209,59 @@ function card(n, k) {
   return c;
 }
 
+// Le mezz'ore in lettere, gemelle di `MEZZORE` in suore.py: la pagina e il
+// canale devono dire la stessa cosa con le stesse parole.
+const MEZZORE = {1: "mezz'ora", 2: "un'ora", 3: "un'ora e mezza", 4: "due ore",
+                 5: "due ore e mezza", 6: "tre ore", 7: "tre ore e mezza",
+                 8: "quattro ore", 9: "quattro ore e mezza", 10: "cinque ore"};
+
+// «tra due ore» / «entro mezz'ora», mai un orario: forma dettata da vjt
+// (#sniffo 2026-09-10 19:19). Il conto parte da `da`, l'inizio della finestra
+// pubblicata, e non dal secondo della comparsa — quello nel JSON non c'e'
+// apposta, o basterebbe un `curl data.json` per cronometrare le suore.
+// Si ricalcola al caricamento della pagina, quindi non invecchia col JSON.
+function fraQuanto(da) {
+  const n = Math.round((da - Date.now() / 1000) / 1800);
+  if (n <= 0) return "entro mezz'ora";
+  if (MEZZORE[n]) return "tra " + MEZZORE[n];
+  const ore = Math.floor(n / 2);
+  return n % 2 ? "tra " + ore + " ore e mezza" : "tra " + ore + " ore";
+}
+
+// «2h 14m fa». Grana grossa apposta: sotto il minuto dire "43s fa" su un dato
+// riletto da un JSON statico sarebbe una precisione finta.
+function quantoFa(ts) {
+  const d = Math.max(0, Date.now() / 1000 - ts);
+  if (d < 90) return "poco fa";
+  const m = Math.round(d / 60);
+  if (m < 60) return m + "m fa";
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + "h " + String(m % 60).padStart(2, "0") + "m fa";
+  const g = Math.round(h / 24);
+  return g === 1 ? "un giorno fa" : g + " giorni fa";
+}
+
+// La riga "ultima / prossima" di un canale, ordine di vjt (#sniffo 19:17).
+// `prossima.stato` ha tre valori e vanno detti diversi: una suora in giro
+// ADESSO non e' un'attesa da zero minuti, e uno scope senza appuntamento
+// (sidecar fermo, canale appena aggiunto) non e' una suora imminente.
+function quandoLine(s) {
+  const u = s.ultima, p = s.prossima || {stato: "ignota"};
+  const pezzi = [];
+  if (u) {
+    const verbo = u.verbo === "bef" ? "fatta amica" : u.verbo === "bang"
+      ? "stesa" : "presa";
+    pezzi.push("Ultima suora " + verbo + " " + quantoFa(u.ts)
+      + (u.nick ? " da " + u.nick : ""));
+  } else {
+    pezzi.push("Nessuna suora presa qui, per ora");
+  }
+  if (p.stato === "in_giro") pezzi.push("ce n'e' una in giro ADESSO");
+  else if (p.stato === "attesa") pezzi.push("la prossima " + fraQuanto(p.da));
+  else pezzi.push("la prossima non e' ancora in calendario");
+  return pezzi.join(" · ");
+}
+
 // Invito grappa per uno scope. Il parametro canonico e' `?go=`, NON `?join=`
 // (`cicchetto/src/lib/inviteLink.ts`, `searchParams.get("go")`), e il `#` del
 // canale NON si scrive letterale: dentro una query string apre il FRAGMENT e
@@ -238,6 +292,7 @@ function renderScope(scope, s) {
     + (s.totali.golden ? " · <b class='star'>" + s.totali.golden + "</b> dorate" : "");
   head.appendChild(tot);
   box.appendChild(head);
+  box.appendChild(el("p", "quando", quandoLine(s)));
 
   const scroll = el("div", "scroll");
   const t = el("table");
