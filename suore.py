@@ -343,6 +343,57 @@ def score_for(data, scope, nick):
     return chan_scores.setdefault(canon(nick), {"kills": 0, "friends": 0, "nick": nick})
 
 
+# Il podio si vede anche nel messaggio del singolo colpo, non solo su
+# `.classifica` (ordine di vjt, #sbiffo 2026-09-10 13:13).
+MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
+
+
+def killers_rank(data, scope):
+    """La classifica dei killer, con lo STESSO ordinamento di leaderboard():
+    chi non ha mai sparato non c'è — fare amicizia è un'altra partita. Una
+    chiave sola per le due funzioni, o la posizione annunciata dopo il colpo
+    non combacia con quella che si legge su `.classifica`."""
+    scores = data["scores"].get(scope, {})
+    rank = sorted(scores.values(), key=lambda s: (-s["kills"], -s["friends"], s["nick"]))
+    return [s for s in rank if s["kills"]]
+
+
+def above(data, scope, nick):
+    """Chi sta STRETTAMENTE sopra `nick`, per canon. Chiamata prima e dopo il
+    colpo, la differenza dei due insiemi è esattamente chi è stato scavalcato:
+    non serve ricostruire l'ordine vecchio. Chi non è ancora in classifica non
+    fa `break` e si ritrova sotto tutti, che è la verità."""
+    me = canon(nick)
+    out = []
+    for s in killers_rank(data, scope):
+        if canon(s["nick"]) == me:
+            break
+        out.append(s)
+    return out
+
+
+def join_nicks(nicks):
+    if len(nicks) < 2:
+        return "".join(nicks)
+    return ", ".join(nicks[:-1]) + " e " + nicks[-1]
+
+
+def standing(data, scope, nick, passed):
+    """La coda del messaggio di kill: medaglia se sei sul podio, posizione, e
+    chi hai scavalcato con QUESTO colpo. Stringa vuota se non sei in
+    classifica, così il chiamante la concatena senza controlli."""
+    me = canon(nick)
+    rank = killers_rank(data, scope)
+    pos = next((i + 1 for i, s in enumerate(rank) if canon(s["nick"]) == me), None)
+    if pos is None:
+        return ""
+    medal = MEDALS.get(pos)
+    out = f" {medal} {pos}º" if medal else f" {pos}º"
+    if passed:
+        out += f", scavalcato {join_nicks([s['nick'] for s in passed])}"
+    return out + "."
+
+
 def say(net, chan, text):
     """Una riga sulla FIFO di QUELLA rete. Apertura non bloccante: senza lettore
     si prende ENXIO e si salta, invece di piantare il daemon su un bot morto.
@@ -552,15 +603,23 @@ def handle(data, scope, nick, cmd, now):
     if golden:
         s["golden"] = s.get("golden", 0) + 1
     if cmd == "bang":
+        # Il prima e il dopo si misurano attorno all'incremento: `s` è già
+        # dentro `data`, quindi la seconda chiamata vede il colpo appena messo
+        # a segno. La classifica non si ricalcola a mano da nessuna parte.
+        was_above = {canon(x["nick"]) for x in above(data, scope, nick)}
         s["kills"] += 1
+        now_above = {canon(x["nick"]) for x in above(data, scope, nick)}
+        jumped = was_above - now_above
+        passed = [x for x in killers_rank(data, scope) if canon(x["nick"]) in jumped]
+        tail = standing(data, scope, nick, passed)
         if golden:
             say(net, chan, f"\x02{nick} ha steso la SUORA DORATA in {took}!\x0F "
                            f"Ne ha stese {s['kills']} in {chan}, di cui "
                            f"{s['golden']} "
-                           f"{plural(s['golden'], 'dorata', 'dorate')}.")
+                           f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}")
         else:
             say(net, chan, f"{nick} hai fatto secca una suora in {took}! "
-                           f"Ne hai stese {s['kills']} in {chan}.")
+                           f"Ne hai stese {s['kills']} in {chan}.{tail}")
     else:
         s["friends"] += 1
         if golden:

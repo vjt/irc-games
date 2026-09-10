@@ -80,4 +80,40 @@ again = suore.migrate(json.loads(json.dumps(migrated)))   # idempotente
 assert "azzurra/azzurra/#sniffo" not in again["scores"], again["scores"]
 print("ok: stato vecchio migrato, e migrare due volte non raddoppia il prefisso")
 
+# 7. il messaggio del colpo dice posizione, medaglia e chi hai scavalcato
+suore.P_JAM = suore.P_NOPE = 0.0
+scope = "azzurra/#sbiffo"
+data = suore.empty()
+data["scores"][scope] = {
+    "peluche": {"kills": 13, "friends": 0, "nick": "peluche"},
+    "morph":   {"kills": 9,  "friends": 2, "nick": "morph"},
+    "vjt":     {"kills": 9,  "friends": 0, "nick": "vjt"},
+    "alk":     {"kills": 1,  "friends": 0, "nick": "alk"},
+}
+# a parità di kills vince chi ha più amicizie: morph 2º, vjt 3º
+assert [s["nick"] for s in suore.killers_rank(data, scope)] == \
+       ["peluche", "morph", "vjt", "alk"]
+suore.spawn(data, scope, now)
+sent.clear()
+assert suore.handle(data, scope, "vjt", "bang", now + 10)
+msg = sent[0][2]
+assert "🥈 2º, scavalcato morph." in msg, msg
+print("ok: il colpo annuncia medaglia, posizione e sorpasso")
+
+# chi resta dov'è non scavalca nessuno, e fuori dal podio niente medaglia
+suore.spawn(data, scope, now + 20)
+sent.clear()
+assert suore.handle(data, scope, "alk", "bang", now + 30)
+msg = sent[0][2]
+assert " 4º." in msg and "scavalcato" not in msg, msg
+assert not any(m in msg for m in suore.MEDALS.values()), msg
+print("ok: niente medaglia fuori dal podio, niente sorpasso inventato")
+
+# il .bef non tocca la classifica dei killer: nessuna coda appiccicata
+suore.spawn(data, scope, now + 40)
+sent.clear()
+assert suore.handle(data, scope, "katia", "bef", now + 50)
+assert "º" not in sent[0][2], sent[0][2]
+print("ok: l'amicizia resta un'altra partita, niente posizione appiccicata")
+
 print("\nTUTTO VERDE, porco dio")
