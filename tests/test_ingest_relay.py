@@ -15,9 +15,10 @@ import ingest
 cfg = ingest.load_config()
 
 
-def resolve(text, nick="Gazzurbo", direction="<"):
+def resolve(text, nick="Gazzurbo", direction="<", target="#endsummercamp"):
     return ingest.resolve(cfg, {"direction": direction, "nick": nick, "text": text,
-                                "is_action": False, "origin": None})
+                                "target": target, "is_action": False,
+                                "origin": None})
 
 
 def check(label, got, want):
@@ -41,7 +42,8 @@ check("\\x03 nudo senza cifre",
 check("prefisso nudo, come prima",
       resolve("<plainnick> ciao")[:3], ("plainnick", "human", "telegram"))
 
-check("riga del relay senza prefisso: resta il relay, bot classico",
+cfg["relay_carry"].clear()  # niente coda in sospeso da ereditare
+check("riga del relay senza prefisso e senza testa: resta il relay, bot classico",
       resolve("il bridge parla da solo")[:3], ("Gazzurbo", "classic", "irc"))
 
 check("un umano qualsiasi non passa dall'unwrap",
@@ -51,6 +53,36 @@ check("un umano qualsiasi non passa dall'unwrap",
 check("zero-width nel nick, con e senza colore",
       resolve("\x0350<\x02M​ez\x02> \x0fciao")[:3],
       ("Mez", "human", "telegram"))
+
+# --- code dei messaggi lunghi spezzati da matterbridge (ordine di vjt 2026-09-10
+#     23:46: «va bene ok aggiungi»). Solo la testa tiene il prefisso, la coda
+#     arriva nuda ~60ms dopo e porta lei il marcatore "(more)".
+cfg["relay_carry"].clear()
+check("la testa dello split srotola normale",
+      resolve("\x0350<\x02packetfilter\x02> \x0fDomanda stupida: ma se")[:3],
+      ("packetfilter", "human", "telegram"))
+check("la coda nuda va a chi era la testa",
+      resolve("mercato dei PC? maggiore consapevolezza (more)")[:3],
+      ("packetfilter", "human", "telegram"))
+check("anche la coda della coda",
+      resolve("e poi il resto")[:3], ("packetfilter", "human", "telegram"))
+check("una testa nuova sposta la carry",
+      resolve("<Besrixa> altro")[:3], ("Besrixa", "human", "telegram"))
+check("e la coda dopo va a lei, non al precedente",
+      resolve("coda di Besrixa")[:3], ("Besrixa", "human", "telegram"))
+
+check("la carry e' per canale: altro canale, nessuna eredita'",
+      resolve("coda orfana", target="#altro")[:3],
+      ("Gazzurbo", "classic", "irc"))
+
+cfg["relay_carry"].clear()
+check("coda senza testa: resta il relay, niente nick inventato",
+      resolve("coda orfana")[:3], ("Gazzurbo", "classic", "irc"))
+
+check("il messaggio di sistema del bridge non va all'umano precedente",
+      (resolve("<pippo> ciao"),
+       resolve("<vjt’s IRC bridge> joined chat"))[1][:3],
+      ("Gazzurbo", "classic", "irc"))
 
 # --- strip_formatting non deve mangiarsi il testo
 check("strip_formatting toglie i codici e lascia il resto",

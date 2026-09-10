@@ -96,6 +96,11 @@ _INVISIBLE = re.compile(r"[​-‏‪-‮⁠-⁤﻿]")
 # \x03. Strip these before unwrapping, not just the zero-width chars.
 _MIRC_FMT = re.compile(r"\x03(?:\d{1,2}(?:,\d{1,2})?)?|\x04[0-9A-Fa-f]{6}|[\x02\x0f\x11\x16\x1d\x1e\x1f]")
 
+# The bridge talking about itself: "<vjt's IRC bridge> joined chat". It looks
+# like a relay prefix but the name has spaces, so BRIDGE_PREFIX_PAT rejects it
+# — and it must NOT be handed to the previous human by the carry-over below.
+_BRIDGE_SYSTEM = re.compile(r"^<[^>]*\s[^>]*>")
+
 # TS + direction prefix bot.py stamps: "HH:MM:SS < ..." / "HH:MM:SS > ...".
 _TS = re.compile(r"^(\d{2}):(\d{2}):(\d{2}) ([<>]) (.*)$", re.DOTALL)
 # Inbound PRIVMSG (after the "< " prefix is stripped).
@@ -121,6 +126,10 @@ _P_366 = re.compile(r"^:\S+ 366 \S+ (?P<chan>#\S+)")
 
 def strip_invisible(s):
     return _INVISIBLE.sub("", s)
+
+
+def _carry_key(relay, target):
+    return (relay.lower(), (target or "").lower())
 
 
 def strip_formatting(s):
@@ -152,6 +161,9 @@ def load_config(path=CONFIG_PATH):
         # through as-is; that module lowercases and set-ifies it, and treats a
         # missing key as "ingest nothing" rather than "ingest everything".
         "grappa_channels": cfg.get("grappa_channels", {}),
+        # (relay, channel) -> last nick unwrapped there. Scratch state for the
+        # split-message carry-over in resolve(), not configuration.
+        "relay_carry": {},
     }
 
 
@@ -256,16 +268,31 @@ def classify(cfg, nick, direction, origin=None):
 
 def resolve(cfg, parsed):
     """parse_line dict -> (nick, klass, transport, is_action). Handles telegram
-    relay unwrap (nick in relays -> inner human, transport=telegram)."""
+    relay unwrap (nick in relays -> inner human, transport=telegram).
+
+    Rows must arrive in chronological order per channel: the continuation
+    carry-over below is a one-slot memory of the last unwrapped nick.
+    """
     direction, nick, text = parsed["direction"], parsed["nick"], parsed["text"]
     transport = "irc"
     if direction == "<" and nick is not None and nick.lower() in cfg["relays"]:
-        bm = rc.BRIDGE_PREFIX_PAT.match(strip_formatting(text).lstrip())
+        clean = strip_formatting(text).lstrip()
+        bm = rc.BRIDGE_PREFIX_PAT.match(clean)
         if bm:
             inner = strip_invisible(bm.group(1)).strip()
             if inner:
                 canon = cfg["aliases"].get(inner.lower(), inner)
+                cfg["relay_carry"][_carry_key(nick, parsed["target"])] = canon
                 return canon, "human", "telegram", parsed["is_action"]
+        if not _BRIDGE_SYSTEM.match(clean):
+            # matterbridge splits a long telegram message and only the head
+            # keeps the "<Nick>" prefix; the tail lands as a bare line ~60ms
+            # later (measured on #endsummercamp: the tail carries the "(more)"
+            # marker, not the head). Give it to whoever the head belonged to,
+            # or those tails count as the relay talking.
+            carried = cfg["relay_carry"].get(_carry_key(nick, parsed["target"]))
+            if carried:
+                return carried, "human", "telegram", parsed["is_action"]
         # relay line that didn't unwrap: treat the relay itself as classic bot
         return nick, "classic", "irc", parsed["is_action"]
     canon, klass, transport = classify(cfg, nick if nick else "", direction,
