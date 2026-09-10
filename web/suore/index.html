@@ -9,23 +9,29 @@
 <!-- Anteprima per gli share. `og:image` vuole un URL ASSOLUTO: gli scraper
      non hanno una base su cui risolvere un path relativo. Il file e' 1200x630
      (rapporto 1.91:1) perche' e' quello che Telegram, X e Facebook ritagliano
-     senza tagliare niente; l'originale era verticale e sarebbe stato croppato
-     proprio nel mezzo. Larghezza e altezza sono dichiarate cosi' il primo
-     share non aspetta il download per sapere che spazio riservare. -->
+     senza tagliare niente. La sorgente e' quadrata (1254x1254, `cover.png`, in
+     pagina qui sotto): per il 1.91:1 si e' ritagliata la SOLA fascia del
+     cimitero, che a quella larghezza fa 1254x658 quasi esatti, invece di
+     rimpicciolire tutto dentro una lettera-box — cosi' l'anteprima e' a pieno
+     campo e non ha bordi morti. PNG e non JPEG: e' pixel art, e i bordi netti
+     sul JPEG squillano. Il nome del file e' nuovo apposta (`og-madre.png`):
+     Telegram tiene la cache degli share per URL, e un file riscritto sotto
+     lo stesso nome resta quello vecchio. Larghezza e altezza dichiarate cosi'
+     il primo share non aspetta il download per sapere che spazio riservare. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Sparasuore">
 <meta property="og:title" content="Sparasuore">
 <meta property="og:description" content="Ogni tanto passa una suora. Chi spara per primo se la prende. Classifiche, record e statistiche dai canali IRC.">
 <meta property="og:url" content="https://dioschifoso.it/suore/">
-<meta property="og:image" content="https://dioschifoso.it/suore/og.jpg">
-<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image" content="https://dioschifoso.it/suore/og-madre.png">
+<meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Un NUNCHUCK in blister: catapults nuns up to 15 feet.">
+<meta property="og:image:alt" content="Pixel art: la Madre Superiora appare in un cimitero, cinque suore intorno e una canna di fucile in primo piano. Su una lapide c'e' scritto dioschifoso.it.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sparasuore">
 <meta name="twitter:description" content="Ogni tanto passa una suora. Chi spara per primo se la prende. Classifiche, record e statistiche dai canali IRC.">
-<meta name="twitter:image" content="https://dioschifoso.it/suore/og.jpg">
+<meta name="twitter:image" content="https://dioschifoso.it/suore/og-madre.png">
 <style>
   :root {
     --bg: #0f1012;
@@ -108,12 +114,27 @@
   footer { color: var(--dim); font-size: .78rem; margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1rem; }
   footer code { color: var(--ink); }
   a { color: var(--gold); }
+  /* `pixelated` o il downscale interpola e la pixel art si sfoca. `max-width`
+     in percentuale + `height:auto` perche' l'attributo height nativo del tag
+     serve solo a riservare lo spazio prima del download, non a fissarla. */
+  .cover {
+    display: block; width: 100%; max-width: 620px; height: auto;
+    margin: 1rem 0 1.2rem; border: 1px solid var(--line); border-radius: 4px;
+    image-rendering: pixelated;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1><span class="cross">&#8224;</span> Sparasuore</h1>
   <p class="sub" id="sub">caricamento&hellip;</p>
+
+  <!-- `width`/`height` nativi del file servito (900x900) cosi' il browser
+       riserva il posto e la pagina non salta quando l'immagine arriva.
+       `image-rendering: pixelated` nel CSS: senza, il ridimensionamento
+       interpola e la pixel art viene fuori sfocata. -->
+  <img class="cover" src="cover.png" width="900" height="900" decoding="async"
+       alt="Pixel art: la Madre Superiora appare in un cimitero, cinque suore intorno e una canna di fucile in primo piano.">
 
   <p class="join">Si gioca in canale: <a href="https://irc.sniffo.org/?go=azzurra/sniffo">apri #sniffo con grappa</a>, aspetta che passi una suora e spara.</p>
 
