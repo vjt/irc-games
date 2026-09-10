@@ -1,0 +1,13 @@
+# EliteWarez su Azzurra — parte subito dopo il 001.
+#
+# Il nick va registrato a NickServ con la mail di vjt (ordine suo, #sbiffo
+# 2026-09-10 22:17: «registralo con la mia mail, faccio io authnick»): finche'
+# l'IDENTIFY non c'e', questa riga resta commentata e il vhost e' comunque
+# quello vero, perche' su Azzurra il vhost e' l'rDNS dell'indirizzo da cui il
+# processo esce (fffc::e117 -> ti.prendo.per.il.culo.diostronzo.org), non un
+# grant dei servizi.
+#
+# Due canali, gli stessi del sidecar storico: #it-opers fu tolto da vjt il
+# 2026-08-07 («deve rispondere solo su sniffo e sbiffo»).
+JOIN #sniffo
+JOIN #sbiffo

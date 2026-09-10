@@ -1,0 +1,32 @@
+#!/bin/sh
+# PROVIDE: elitewarez_list
+# REQUIRE: elitewarez_bot
+# KEYWORD: shutdown
+#
+# Il gag `!list` (finto listino XDCC) dietro a EliteWarez. Una rete sola, due
+# canali — restano quelli storici del sidecar sul Pi (#sniffo, #sbiffo:
+# #it-opers fu tolto da vjt il 2026-08-07, «deve rispondere solo su sniffo e
+# sbiffo»).
+#
+# Niente stato su disco: il gag e' senza memoria fra un dump e l'altro, il
+# throttle vive in RAM. Se il processo riparte, il primo `!list` dopo il
+# riavvio ristampa — accettabile, e' una gag, non una classifica.
+#
+# LIST_MUTES resta vuoto apposta: il file dei mute e' della sessione Claude sul
+# Pi, qui non esiste, e comunque il gag li scavalca per ordine di vjt
+# (2026-08-07, «no non deve tacere»).
+. /etc/rc.subr
+name="elitewarez_list"
+rcvar="elitewarez_list_enable"
+load_rc_config "$name"
+: ${elitewarez_list_enable:="NO"}
+pidfile="/var/run/convento/list.pid"
+# Vedi elitewarez_bot: daemon(8) scrive il pid del figlio.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/list.log -t elite-list \
+  /usr/bin/env LIST_LOG=/var/log/convento/warez.log \
+  LIST_FIFO=/var/run/convento/warez.send \
+  'LIST_CHANS=#sniffo,#sbiffo' LIST_MUTES=/nonexistent \
+  /usr/local/bin/python3.11 -u /opt/irc-games/listgag.py"
+run_rc_command "$1"

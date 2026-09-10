@@ -1,0 +1,37 @@
+#!/bin/sh
+# PROVIDE: elitewarez_bot
+# REQUIRE: NETWORKING
+# KEYWORD: shutdown
+#
+# EliteWarez su Azzurra. Quarto processo dello stesso bot.py nella jail di
+# Convento — ordine di vjt (#sbiffo 2026-09-10 22:13): «poi spostiamo il !list
+# gag. nella stessa jail di suore e mikebongiorno. vhost ...
+# ti.prendo.per.il.culo.diostronzo.org», nick EliteWarez (22:16, verificato non
+# SQLINEato con una connessione usa-e-getta prima di sceglierlo).
+#
+# IRC_BIND come per MikeBongiorno: su Azzurra il vhost e' l'rDNS dell'indirizzo
+# da cui esci, quindi ogni bot della jail vuole il suo. fffc::e117 ha il PTR
+# ti.prendo.per.il.culo.diostronzo.org (AAAA su Cloudflare, zona diostronzo.org;
+# PTR via `netcup rdns ipv6 set`).
+#
+# Log e FIFO sono suoi: il gag tailla il log del bot che lo ospita e risponde
+# sulla FIFO da cui e' arrivato il `!list`. Condividerli con Convento o Mike
+# vorrebbe dire far parlare il listino con la bocca di un altro.
+. /etc/rc.subr
+name="elitewarez_bot"
+rcvar="elitewarez_bot_enable"
+load_rc_config "$name"
+: ${elitewarez_bot_enable:="NO"}
+pidfile="/var/run/convento/warez.pid"
+# daemon(8) scrive nel pidfile il pid del FIGLIO: senza procname sull'interprete
+# `status` dice «is not running» col bot vivo e `stop` non ammazza niente.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/warez.stdout.log -t elitewarez \
+  /usr/bin/env IRC_BIND=2a03:4000:20:2d3:fffc::e117 IRC_HOST=irc.azzurra.chat \
+  IRC_NICK=EliteWarez IRC_IDENT=warez IRC_REAL=github.com/vjt/irc-games \
+  BOT_LOG=/var/log/convento/warez.log BOT_FIFO=/var/run/convento/warez.send \
+  BOT_TRUST=/opt/convento/bot.trust.list BOT_ENV=/opt/convento/.env.list \
+  BOT_STARTUP=/opt/convento/bot.startup.list \
+  /usr/local/bin/python3.11 -u /opt/convento/bot.py"
+run_rc_command "$1"

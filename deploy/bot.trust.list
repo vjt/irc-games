@@ -1,0 +1,4 @@
+# Vuoto apposta, come quelli di Convento e MikeBongiorno. EliteWarez non prende
+# ordini da nessuno: sulla sua FIFO scrive solo il gag `!list`, e nessuna
+# sessione Claude legge il suo stdout. Un piazzista di warez non ha bisogno di
+# sapere chi sei, gli basta che tu ci caschi.
