@@ -87,6 +87,15 @@ CREATE INDEX IF NOT EXISTS ix_presence_net_ts ON presence(network, ts, id);
 # human mis-keys and distinct-user/top-talker counts break.
 _INVISIBLE = re.compile(r"[​-‏‪-‮⁠-⁤﻿]")
 
+# mIRC formatting: colour (\x03 plus up to "fg,bg"), bold, italic, underline,
+# reverse, monospace, hex colour and the reset. Gazzurbo paints the relay
+# prefix, so a bridged line reaches us as "\x0350<\x02Nick\x02> \x0fbody" and
+# BRIDGE_PREFIX_PAT — anchored on a bare "<" — never matches: the relay stays
+# classified as a classic bot and shows up in the top-talkers. Measured on the
+# prod archive, 2026-09-10: 4643 of the last 5000 #endsummercamp lines carry
+# \x03. Strip these before unwrapping, not just the zero-width chars.
+_MIRC_FMT = re.compile(r"\x03(?:\d{1,2}(?:,\d{1,2})?)?|\x04[0-9A-Fa-f]{6}|[\x02\x0f\x11\x16\x1d\x1e\x1f]")
+
 # TS + direction prefix bot.py stamps: "HH:MM:SS < ..." / "HH:MM:SS > ...".
 _TS = re.compile(r"^(\d{2}):(\d{2}):(\d{2}) ([<>]) (.*)$", re.DOTALL)
 # Inbound PRIVMSG (after the "< " prefix is stripped).
@@ -112,6 +121,12 @@ _P_366 = re.compile(r"^:\S+ 366 \S+ (?P<chan>#\S+)")
 
 def strip_invisible(s):
     return _INVISIBLE.sub("", s)
+
+
+def strip_formatting(s):
+    """mIRC colour/bold/reset codes out. Invisible chars stay: strip_invisible
+    handles those, and the two are wanted in different places."""
+    return _MIRC_FMT.sub("", s)
 
 
 def load_config(path=CONFIG_PATH):
@@ -245,7 +260,7 @@ def resolve(cfg, parsed):
     direction, nick, text = parsed["direction"], parsed["nick"], parsed["text"]
     transport = "irc"
     if direction == "<" and nick is not None and nick.lower() in cfg["relays"]:
-        bm = rc.BRIDGE_PREFIX_PAT.match(text)
+        bm = rc.BRIDGE_PREFIX_PAT.match(strip_formatting(text).lstrip())
         if bm:
             inner = strip_invisible(bm.group(1)).strip()
             if inner:
