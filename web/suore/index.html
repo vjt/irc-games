@@ -26,7 +26,12 @@
   .wrap { max-width: 60rem; margin: 0 auto; padding: 2rem 1.1rem 4rem; }
   h1 { font-size: 1.6rem; margin: 0 0 .2rem; letter-spacing: .02em; }
   h1 .cross { color: var(--gold); }
-  .sub { color: var(--dim); margin: 0 0 2rem; font-size: .88rem; }
+  .sub { color: var(--dim); margin: 0 0 .6rem; font-size: .88rem; }
+  .join {
+    margin: 0 0 2rem; font-size: .84rem; color: var(--dim);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: .55rem .8rem;
+  }
   h2 {
     font-size: .82rem; text-transform: uppercase; letter-spacing: .12em;
     color: var(--dim); font-weight: 600; margin: 0 0 .7rem;
@@ -69,6 +74,8 @@
 <div class="wrap">
   <h1><span class="cross">&#8224;</span> Sparasuore</h1>
   <p class="sub" id="sub">caricamento&hellip;</p>
+
+  <p class="join">Si gioca in canale: <a href="https://irc.sniffo.org/?join=azzurra/sniffo">apri #sniffo con grappa</a>, aspetta che passi una suora e spara.</p>
 
   <div class="cards" id="cards"></div>
 
