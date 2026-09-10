@@ -9,8 +9,8 @@
 <!-- Anteprima per gli share. `og:image` vuole un URL ASSOLUTO: gli scraper
      non hanno una base su cui risolvere un path relativo. Il file e' 1200x630
      (rapporto 1.91:1) perche' e' quello che Telegram, X e Facebook ritagliano
-     senza tagliare niente. La sorgente e' quadrata (1254x1254, `cover.png`, in
-     pagina qui sotto): per il 1.91:1 si e' ritagliata la SOLA fascia del
+     senza tagliare niente. La sorgente e' quadrata (1254x1254, in pagina qui
+     sotto come `cover.webp`): per il 1.91:1 si e' ritagliata la SOLA fascia del
      cimitero, che a quella larghezza fa 1254x658 quasi esatti, invece di
      rimpicciolire tutto dentro una lettera-box — cosi' l'anteprima e' a pieno
      campo e non ha bordi morti. PNG e non JPEG: e' pixel art, e i bordi netti
@@ -132,8 +132,11 @@
   <!-- `width`/`height` nativi del file servito (1254x1254) cosi' il browser
        riserva il posto e la pagina non salta quando l'immagine arriva.
        `image-rendering: pixelated` nel CSS: senza, il ridimensionamento
-       interpola e la pixel art viene fuori sfocata. -->
-  <img class="cover" src="cover.png" width="1254" height="1254" decoding="async"
+       interpola e la pixel art viene fuori sfocata.
+       WebP **lossless** (`-define webp:lossless=true`), non lossy: verificato
+       pixel per pixel contro il PNG originale con `magick compare -metric AE`,
+       che da' 0. Stessi 1254x1254, 340 KB in meno. -->
+  <img class="cover" src="cover.webp" width="1254" height="1254" decoding="async"
        alt="Pixel art: la Madre Superiora appare in un cimitero, cinque suore intorno e una canna di fucile in primo piano.">
 
   <p class="join">Si gioca in canale: <a href="https://irc.sniffo.org/?go=azzurra/sniffo">apri #sniffo con grappa</a>, aspetta che passi una suora e spara.</p>
