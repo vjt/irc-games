@@ -65,12 +65,19 @@ def cycle():
     cfg = ingest.load_config()          # reloaded each cycle → live-editable classes.json
     conn = ingest.open_db(DB)
     new = 0
-    for path, net in SOURCES:
-        if os.path.exists(path):
-            try:
-                new += ingest.catchup_file(conn, cfg, path, net)
-            except Exception as e:
-                log("INGEST ERROR", path, repr(e))
+    if SOURCE == "grappa":
+        import ingest_grappa           # noqa: E402  (only when that source is chosen)
+        try:
+            new += ingest_grappa.cycle(conn, cfg)
+        except Exception as e:
+            log("INGEST ERROR grappa:", repr(e))
+    else:
+        for path, net in SOURCES:
+            if os.path.exists(path):
+                try:
+                    new += ingest.catchup_file(conn, cfg, path, net)
+                except Exception as e:
+                    log("INGEST ERROR", path, repr(e))
     idx, islug = render.render_all(conn, OUTDIR)
     conn.close()
     return new, len(idx), islug

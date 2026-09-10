@@ -1,0 +1,34 @@
+#!/bin/sh
+# PROVIDE: grappa_stats
+# REQUIRE: grappa
+# KEYWORD: shutdown
+#
+# Le statistiche di canale. Girano QUI, nella jail del server, per un motivo
+# solo: la sorgente e' `grappa_prod.db`, che e' SQLite in WAL, e un lettore WAL
+# deve poter scrivere il file `-shm` accanto al database. Deve quindi stare
+# sullo stesso filesystem, non di la' da un nullfs.
+#
+# Legge in `mode=ro` e da una sola riga di `users` (quella di vjt): `messages`
+# e' scrollback per destinatario, non un log di canale — vedi il README di
+# grappa_stats, sbagliare qui e' silenzioso.
+#
+# Scrive in /var/db/grappa-stats, che e' /srv/stats sull'host montato in nullfs
+# rw qui e ro nella jail `convento` (dove `chanstats` legge lo stesso db).
+# L'nginx dell'host serve le pagine da li' senza passare da Syncthing.
+. /etc/rc.subr
+name="grappa_stats"
+rcvar="grappa_stats_enable"
+load_rc_config "$name"
+: ${grappa_stats_enable:="NO"}
+pidfile="/var/run/grappa_stats.pid"
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u grappa -o /var/log/grappa_stats.log -t grappa-stats \
+  /usr/bin/env SNIFFO_STATS_SOURCE=grappa \
+  SNIFFO_STATS_DB=/var/db/grappa-stats/stats.db \
+  SNIFFO_STATS_OUT=/var/db/grappa-stats/pages/st-XXXXXXXXXXXX \
+  SNIFFO_STATS_INTERVAL=300 \
+  GRAPPA_DB=/home/grappa/grappa/runtime/grappa_prod.db \
+  GRAPPA_USER=vjt \
+  /usr/local/bin/python3.11 -u /opt/grappa-stats/daemon.py"
+run_rc_command "$1"

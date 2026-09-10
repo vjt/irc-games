@@ -1,0 +1,25 @@
+#!/bin/sh
+# PROVIDE: ambrogio_chanstats
+# REQUIRE: ambrogio_bot
+# KEYWORD: shutdown
+#
+# `!chanstats` dietro ad Ambrogio. Legge in SOLA LETTURA lo stats.db che scrive
+# grappa_stats nella jail grappa-new: /var/db/grappa-stats e' /srv/stats
+# dell'host, montato in nullfs **ro** qui e rw di la'. Il db e' in journal_mode
+# DELETE apposta — un lettore su WAL vorrebbe scrivere lo -shm, e da un mount
+# read-only non potrebbe.
+. /etc/rc.subr
+name="ambrogio_chanstats"
+rcvar="ambrogio_chanstats_enable"
+load_rc_config "$name"
+: ${ambrogio_chanstats_enable:="NO"}
+pidfile="/var/run/convento/chanstats.pid"
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} -u convento -o /var/log/convento/chanstats.log -t ambrogio-chanstats \
+  /usr/bin/env CHANSTATS_LOG=/var/log/convento/ambrogio.log \
+  CHANSTATS_FIFO=/var/run/convento/ambrogio.send \
+  CHANSTATS_DB=/var/db/grappa-stats/stats.db \
+  CHANSTATS_NETWORK=azzurra \
+  /usr/local/bin/python3.11 -u /opt/irc-games/chanstats_sidecar.py"
+run_rc_command "$1"
