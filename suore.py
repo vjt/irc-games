@@ -530,6 +530,22 @@ def fra_quanto(da, now):
     return f"tra {ore} ore e mezza" if resto else f"tra {ore} ore"
 
 
+def next_tail(data, scope, now):
+    """La coda « La prossima tra X.» da appendere a una riga gia' scritta.
+
+    Ordine di vjt (#sniffo 2026-09-10 20:40): «facciamo che la previsione della
+    prossima suora appare anche nella risposta al !bang e al !bef. stessa
+    granularita'» — la stessa mezz'ora di `.suore` e della pagina, e lo stesso
+    numero: passa da `next_window` + `fra_quanto` come tutto il resto.
+
+    Torna la stringa vuota quando la finestra non c'e', ed e' cio' che la rende
+    innestabile ovunque: con una suora ancora in giro (dorata che regge, fucile
+    inceppato, suora schizzinosa) `next_window` da' `None` e la coda sparisce da
+    se', senza che il chiamante debba sapere in che ramo si trova."""
+    win = next_window(data, scope)
+    return f" La prossima {fra_quanto(win[0], now)}." if win else ""
+
+
 def when_line(data, scope, now):
     """La coda di `.suore`: quand'e' stata l'ultima e quando esce la prossima.
 
@@ -547,9 +563,8 @@ def when_line(data, scope, now):
     if data.get("nuns", {}).get(scope):
         pezzi.append("E ce n'e' una in giro ADESSO.")
     else:
-        win = next_window(data, scope)
-        pezzi.append(f"La prossima {fra_quanto(win[0], now)}."
-                     if win else "La prossima non e' ancora in calendario.")
+        pezzi.append(next_tail(data, scope, now).strip()
+                     or "La prossima non e' ancora in calendario.")
     return " ".join(pezzi)
 
 
@@ -684,13 +699,16 @@ def handle(data, scope, nick, cmd, now):
         return False
 
     if not here:
+        # La previsione va in coda al buco: e' proprio qui che serve a chi ha
+        # sparato al vuoto e vuole sapere quando riprovare.
+        prossima = next_tail(data, scope, now)
         if cmd == "bang":
             say(net, chan, f"{nick}: Non c'e' nessuna suora! A cosa stai sparando?"
-                           f"{late_by(data, scope, now)}")
+                           f"{late_by(data, scope, now)}{prossima}")
         else:
             say(net, chan, f"{nick}: Hai provato a fare amicizia con una suora "
                            f"inesistente. Robaccia da denuncia."
-                           f"{late_by(data, scope, now)}")
+                           f"{late_by(data, scope, now)}{prossima}")
         return False
 
     if cmd == "bang" and random.random() < P_JAM:
@@ -743,25 +761,28 @@ def handle(data, scope, nick, cmd, now):
     # lettura di file per colpo, e finche' e' un colpo ogni tanti minuti non
     # vale la pena di inventarsi niente di piu' furbo.
     suore_stats.write(STATS, suore_events.read(EVENTS), data, now)
+    # `schedule()` e' gia' passato qui sopra, quindi la finestra e' quella nuova:
+    # la riga della presa annuncia la prossima, non quella appena consumata.
+    prossima = next_tail(data, scope, now)
     if cmd == "bang":
         if golden:
             say(net, chan, f"\x02{nick} ha steso la SUORA DORATA in {took}!\x0F "
                            f"Ne ha stese {s['kills']} in {chan}, di cui "
                            f"{s['golden']} "
-                           f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}")
+                           f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}{prossima}")
         else:
             say(net, chan, f"{nick} hai fatto secca una suora in {took}! "
-                           f"Ne hai stese {s['kills']} in {chan}.{tail}")
+                           f"Ne hai stese {s['kills']} in {chan}.{tail}{prossima}")
     else:
         if golden:
             say(net, chan, f"\x02{nick} si e' fatto amico la SUORA DORATA in "
                            f"{took}!\x0F Ne ha convertite {s['friends']} in "
                            f"{chan}, di cui {s['golden']} "
-                           f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}")
+                           f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}{prossima}")
         else:
             say(net, chan, f"{nick} hai fatto amicizia con una suora in {took}! "
                            f"Ora sei amico di {s['friends']} "
-                           f"{plural(s['friends'], 'suora', 'suore')} in {chan}.{tail}")
+                           f"{plural(s['friends'], 'suora', 'suore')} in {chan}.{tail}{prossima}")
     return True
 
 

@@ -275,4 +275,39 @@ assert s_json["prossima"] == {"stato": "attesa", "da": 7200.0, "a": 9000.0}, s_j
 assert suore_stats.BUCKET == suore.BUCKET
 print("ok: il json porta ultima+prossima con la stessa grana del canale")
 
+# --- la previsione in coda anche al !bang e al !bef --------------------------
+# Ordine di vjt (#sniffo 2026-09-10 20:40): «facciamo che la previsione della
+# prossima suora appare anche nella risposta al !bang e al !bef. stessa
+# granularita'» — stessa mezz'ora di `.suore`, e per forza: e' lo stesso numero.
+d2 = suore.empty()
+sc = "azzurra/#sniffo"
+d2["next_spawn"][sc] = 7200.0
+sent.clear()
+assert not suore.handle(d2, sc, "tizio", "bang", 0.0)
+assert "tra due ore" in sent[-1][2], sent
+sent.clear()
+assert not suore.handle(d2, sc, "tizio", "bef", 0.0)
+assert "tra due ore" in sent[-1][2], sent
+
+# Sulla presa la finestra e' quella NUOVA, fissata da schedule() un attimo prima:
+# la riga non deve annunciare l'appuntamento appena consumato.
+sent.clear()
+d2["nuns"][sc] = {"chan": "#sniffo", "at": 0.0, "golden": False, "hp": 1}
+assert suore.handle(d2, sc, "tizio", "bang", 60.0)
+attesa = suore.fra_quanto(suore.next_window(d2, sc)[0], 60.0)
+assert attesa in sent[-1][2], (attesa, sent)
+
+# Dove la suora c'e' ancora la coda deve sparire da se': dorata che incassa e
+# fucile inceppato non sono un buco da riempire con un appuntamento.
+sent.clear()
+d2["nuns"][sc] = {"chan": "#sniffo", "at": 60.0, "golden": True, "hp": 3}
+assert suore.handle(d2, sc, "tizio", "bang", 61.0)
+assert "regge ancora" in sent[-1][2] and "La prossima" not in sent[-1][2], sent
+sent.clear()
+suore.P_JAM = 1.0
+assert suore.handle(d2, sc, "caio", "bang", 62.0)
+assert "inceppato" in sent[-1][2] and "La prossima" not in sent[-1][2], sent
+suore.P_JAM = 0.0
+print("ok: bang e bef dicono la prossima, e tacciono se la suora e' li'")
+
 print("\nTUTTO VERDE, porco dio")
