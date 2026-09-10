@@ -348,24 +348,28 @@ def score_for(data, scope, nick):
 MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
 
 
-def killers_rank(data, scope):
-    """La classifica dei killer, con lo STESSO ordinamento di leaderboard():
-    chi non ha mai sparato non c'è — fare amicizia è un'altra partita. Una
-    chiave sola per le due funzioni, o la posizione annunciata dopo il colpo
-    non combacia con quella che si legge su `.classifica`."""
+def board(data, scope, field="kills"):
+    """Una delle due classifiche, ordinata come la riga che la stampa: killer
+    su `kills`, marpioni su `friends`, e l'altro campo come spareggio. Chi ha
+    zero non c'è — sono due partite diverse, non due colonne della stessa.
+
+    È la SOLA fonte d'ordinamento: `leaderboard()`, `marpioni()` e la coda del
+    messaggio del colpo passano tutte di qui, o la posizione annunciata subito
+    dopo il tiro non combacia con quella che si legge su `.classifica`."""
+    other = "friends" if field == "kills" else "kills"
     scores = data["scores"].get(scope, {})
-    rank = sorted(scores.values(), key=lambda s: (-s["kills"], -s["friends"], s["nick"]))
-    return [s for s in rank if s["kills"]]
+    rank = sorted(scores.values(), key=lambda s: (-s[field], -s[other], s["nick"]))
+    return [s for s in rank if s[field]]
 
 
-def above(data, scope, nick):
+def above(data, scope, nick, field="kills"):
     """Chi sta STRETTAMENTE sopra `nick`, per canon. Chiamata prima e dopo il
     colpo, la differenza dei due insiemi è esattamente chi è stato scavalcato:
     non serve ricostruire l'ordine vecchio. Chi non è ancora in classifica non
     fa `break` e si ritrova sotto tutti, che è la verità."""
     me = canon(nick)
     out = []
-    for s in killers_rank(data, scope):
+    for s in board(data, scope, field):
         if canon(s["nick"]) == me:
             break
         out.append(s)
@@ -378,12 +382,15 @@ def join_nicks(nicks):
     return ", ".join(nicks[:-1]) + " e " + nicks[-1]
 
 
-def standing(data, scope, nick, passed):
-    """La coda del messaggio di kill: medaglia se sei sul podio, posizione, e
-    chi hai scavalcato con QUESTO colpo. Stringa vuota se non sei in
-    classifica, così il chiamante la concatena senza controlli."""
+def standing(data, scope, nick, passed, field="kills"):
+    """La coda del messaggio: medaglia se sei sul podio, posizione, e chi hai
+    scavalcato con QUESTO colpo. Stringa vuota se non sei in classifica, così
+    il chiamante la concatena senza controlli.
+
+    `field` sceglie la classifica: il `.bang` scala i killer, il `.bef` i
+    marpioni — ognuno vede la propria, mai quella dell'altro gioco."""
     me = canon(nick)
-    rank = killers_rank(data, scope)
+    rank = board(data, scope, field)
     pos = next((i + 1 for i, s in enumerate(rank) if canon(s["nick"]) == me), None)
     if pos is None:
         return ""
@@ -602,16 +609,17 @@ def handle(data, scope, nick, cmd, now):
     s["nick"] = nick          # il casing buono e' l'ultimo visto
     if golden:
         s["golden"] = s.get("golden", 0) + 1
+    # Il prima e il dopo si misurano attorno all'incremento: `s` è già dentro
+    # `data`, quindi la seconda chiamata vede il punto appena fatto. La
+    # classifica non si ricalcola a mano da nessuna parte.
+    field = "kills" if cmd == "bang" else "friends"
+    was_above = {canon(x["nick"]) for x in above(data, scope, nick, field)}
+    s[field] += 1
+    now_above = {canon(x["nick"]) for x in above(data, scope, nick, field)}
+    jumped = was_above - now_above
+    passed = [x for x in board(data, scope, field) if canon(x["nick"]) in jumped]
+    tail = standing(data, scope, nick, passed, field)
     if cmd == "bang":
-        # Il prima e il dopo si misurano attorno all'incremento: `s` è già
-        # dentro `data`, quindi la seconda chiamata vede il colpo appena messo
-        # a segno. La classifica non si ricalcola a mano da nessuna parte.
-        was_above = {canon(x["nick"]) for x in above(data, scope, nick)}
-        s["kills"] += 1
-        now_above = {canon(x["nick"]) for x in above(data, scope, nick)}
-        jumped = was_above - now_above
-        passed = [x for x in killers_rank(data, scope) if canon(x["nick"]) in jumped]
-        tail = standing(data, scope, nick, passed)
         if golden:
             say(net, chan, f"\x02{nick} ha steso la SUORA DORATA in {took}!\x0F "
                            f"Ne ha stese {s['kills']} in {chan}, di cui "
@@ -621,16 +629,15 @@ def handle(data, scope, nick, cmd, now):
             say(net, chan, f"{nick} hai fatto secca una suora in {took}! "
                            f"Ne hai stese {s['kills']} in {chan}.{tail}")
     else:
-        s["friends"] += 1
         if golden:
             say(net, chan, f"\x02{nick} si e' fatto amico la SUORA DORATA in "
                            f"{took}!\x0F Ne ha convertite {s['friends']} in "
                            f"{chan}, di cui {s['golden']} "
-                           f"{plural(s['golden'], 'dorata', 'dorate')}.")
+                           f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}")
         else:
             say(net, chan, f"{nick} hai fatto amicizia con una suora in {took}! "
                            f"Ora sei amico di {s['friends']} "
-                           f"{plural(s['friends'], 'suora', 'suore')} in {chan}.")
+                           f"{plural(s['friends'], 'suora', 'suore')} in {chan}.{tail}")
     return True
 
 
@@ -639,11 +646,9 @@ def leaderboard(data, scope, limit=12, maxlen=380):
 
     Il tetto e' in byte utili, non in voci: un nick lungo ne vale tre corti, e
     il server taglia a 512 la riga intera comprese le intestazioni."""
-    scores = data["scores"].get(scope, {})
-    rank = sorted(scores.values(), key=lambda s: (-s["kills"], -s["friends"], s["nick"]))
     # Solo chi ha sparato: e' la classifica dei killer, come `.killers` di rex.
     # Chi fa solo amicizia non e' ultimo in classifica, e' in un'altra partita.
-    rank = [s for s in rank if s["kills"]][:limit]
+    rank = board(data, scope, "kills")[:limit]
     if not rank:
         return ("🔫 [Sparasuore] Classifica vuota: nessuno ha ancora sparato "
                 "a una suora. Che noia.")
@@ -680,9 +685,7 @@ def marpioni(data, scope, limit=12, maxlen=380):
     Torna None quando nessuno ha ancora convertito una suora: una riga che
     dice "nessun marpione" e' rumore su ogni `.classifica` di un canale che
     gioca solo a sparare."""
-    scores = data["scores"].get(scope, {})
-    rank = sorted(scores.values(), key=lambda s: (-s["friends"], -s["kills"], s["nick"]))
-    rank = [s for s in rank if s["friends"]][:limit]
+    rank = board(data, scope, "friends")[:limit]
     if not rank:
         return None
     return _rank_line("😏 [Sparasuore] Marpioni: ", rank, "friends", maxlen)

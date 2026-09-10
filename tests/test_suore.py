@@ -91,7 +91,7 @@ data["scores"][scope] = {
     "alk":     {"kills": 1,  "friends": 0, "nick": "alk"},
 }
 # a parità di kills vince chi ha più amicizie: morph 2º, vjt 3º
-assert [s["nick"] for s in suore.killers_rank(data, scope)] == \
+assert [s["nick"] for s in suore.board(data, scope, "kills")] == \
        ["peluche", "morph", "vjt", "alk"]
 suore.spawn(data, scope, now)
 sent.clear()
@@ -109,11 +109,16 @@ assert " 4º." in msg and "scavalcato" not in msg, msg
 assert not any(m in msg for m in suore.MEDALS.values()), msg
 print("ok: niente medaglia fuori dal podio, niente sorpasso inventato")
 
-# il .bef non tocca la classifica dei killer: nessuna coda appiccicata
+# il .bef ha la coda sua: scala i MARPIONI, non i killer (ordine di vjt 13:17)
+data["scores"][scope]["katia"] = {"kills": 0, "friends": 4, "nick": "katia"}
+data["scores"][scope]["morph"]["friends"] = 4   # pari merito, ma morph ha piu' kills
 suore.spawn(data, scope, now + 40)
 sent.clear()
 assert suore.handle(data, scope, "katia", "bef", now + 50)
-assert "º" not in sent[0][2], sent[0][2]
-print("ok: l'amicizia resta un'altra partita, niente posizione appiccicata")
+msg = sent[0][2]
+assert "🥇 1º, scavalcato morph." in msg, msg
+# e non e' la classifica dei killer: katia li' non c'e' proprio (0 kills)
+assert "katia" not in [s["nick"] for s in suore.board(data, scope, "kills")]
+print("ok: il .bef annuncia la posizione fra i marpioni, non fra i killer")
 
 print("\nTUTTO VERDE, porco dio")
