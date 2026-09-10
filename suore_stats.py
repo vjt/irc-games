@@ -50,6 +50,9 @@ def _scope_stats(events, scores):
     per_day = collections.defaultdict(lambda: {"bang": 0, "bef": 0})
     per_hour = [0] * 24
     per_nick_time = collections.defaultdict(list)
+    # Il record personale si misura sui soli colpi, come quello di scope: il
+    # `.bef` e' un'altra partita e ci finirebbe dentro con tempi non comparabili.
+    per_nick_bang = collections.defaultdict(list)
     best = None
 
     for ev in sorted(events, key=lambda e: e["ts"]):
@@ -58,16 +61,23 @@ def _scope_stats(events, scores):
         r = ev.get("reaction")
         if r is None:
             continue
-        per_nick_time[ev["nick"]].append(r)
-        # Il record e' solo sui colpi: il .bef e' un'altra partita.
-        if ev["verb"] == "bang" and (best is None or r < best["secs"]):
-            best = {"nick": ev["nick"], "secs": round(r, 3), "ts": ev["ts"]}
+        # Chiave in lower: nel log il casing e' quello visto sul momento
+        # (`Mezmerize` una volta, `mezmerize` un'altra), nello stato e' un'altra
+        # scelta ancora. Indicizzare per casing perde i tempi di chi cambia.
+        nick = ev["nick"].lower()
+        per_nick_time[nick].append(r)
+        if ev["verb"] == "bang":
+            per_nick_bang[nick].append(r)
+            if best is None or r < best["secs"]:
+                best = {"nick": ev["nick"], "secs": round(r, 3), "ts": ev["ts"]}
 
     tabella = []
     for canon, row in scores.items():
         if not isinstance(row, dict):
             continue
-        tempi = per_nick_time.get(row.get("nick", canon), [])
+        chiave = str(row.get("nick", canon)).lower()
+        tempi = per_nick_time.get(chiave, [])
+        colpi = per_nick_bang.get(chiave, [])
         tabella.append({
             "nick": row.get("nick", canon),
             "kills": row.get("kills", 0),
@@ -79,6 +89,7 @@ def _scope_stats(events, scores):
             # dice come si gioca davvero, la media dice quanto si e' distratti.
             "media": round(sum(tempi) / len(tempi), 2) if tempi else None,
             "mediana": round(_mediana(tempi), 2) if tempi else None,
+            "record": round(min(colpi), 2) if colpi else None,
             "eventi": len(tempi),
         })
     tabella.sort(key=lambda r: (-r["kills"], -r["friends"], r["nick"].lower()))

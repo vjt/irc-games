@@ -202,6 +202,24 @@ assert uno["record"]["secs"] > 0 and uno["record"]["nick"], uno["record"]
 assert len(uno["per_ora"]) == 24 and sum(uno["per_ora"]) == uno["totali"]["eventi"]
 print("ok: il json della pagina si riscrive da solo e quadra col log")
 
+# il record personale sta in riga, ed e' il minimo sui SOLI colpi: il .bef e'
+# un'altra partita e ci entrerebbe con tempi non comparabili. Il casing del log
+# non conta: chi spara come `Tizio` e come `tizio` e' la stessa persona.
+eventi = [
+    {"ts": 100, "scope": "x/#y", "nick": "Tizio", "verb": "bang", "reaction": 30.0},
+    {"ts": 200, "scope": "x/#y", "nick": "tizio", "verb": "bang", "reaction": 4.5},
+    {"ts": 300, "scope": "x/#y", "nick": "Tizio", "verb": "bef", "reaction": 0.5},
+    {"ts": 400, "scope": "x/#y", "nick": "caio", "verb": "bef", "reaction": 1.0},
+]
+punteggi = {"tizio": {"nick": "Tizio", "kills": 2, "friends": 1},
+            "caio": {"nick": "caio", "kills": 0, "friends": 1}}
+righe = {r["nick"]: r for r in
+         suore_stats._scope_stats(eventi, punteggi)["classifica"]}
+assert righe["Tizio"]["record"] == 4.5, righe["Tizio"]
+assert righe["caio"]["record"] is None, righe["caio"]
+assert righe["Tizio"]["eventi"] == 3, righe["Tizio"]
+print("ok: il record personale e' il minimo sui colpi, e ignora il casing")
+
 # la mediana non deve farsi trascinare dal colpo dato dopo mezz'ora
 assert suore_stats._mediana([1, 2, 3]) == 2
 assert suore_stats._mediana([1, 2, 3, 100]) == 2.5
