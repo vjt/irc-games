@@ -66,6 +66,20 @@
   .legend { color: var(--dim); font-size: .75rem; margin-top: .8rem; }
   .legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px; margin-right: .25rem; vertical-align: baseline; font-style: normal; }
   .warn { color: var(--gold); font-size: .78rem; margin-top: .8rem; }
+  .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
+  .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
+  .howto li { margin-bottom: .35rem; }
+  .howto li:last-child { margin-bottom: 0; }
+  .howto b { color: var(--gold); font-weight: 600; }
+  /* Il finto log e' l'unico posto della pagina che deve reggere righe lunghe
+     senza mandare in scroll il body: scorre da solo, come le tabelle. */
+  .irc { overflow-x: auto; background: #0b0c0e; border: 1px solid var(--line); border-radius: 4px; padding: .8rem .9rem; font-size: .8rem; line-height: 1.5; }
+  .irc div { white-space: pre; }
+  .irc .t { color: #55565c; }
+  .irc .n { color: var(--dim); }
+  .irc .me { color: var(--friend); }
+  .irc .bot { color: var(--hit); }
+  .irc .g { color: var(--gold); }
   footer { color: var(--dim); font-size: .78rem; margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1rem; }
   footer code { color: var(--ink); }
   a { color: var(--gold); }
@@ -77,6 +91,31 @@
   <p class="sub" id="sub">caricamento&hellip;</p>
 
   <p class="join">Si gioca in canale: <a href="https://irc.sniffo.org/?join=azzurra/sniffo">apri #sniffo con grappa</a>, aspetta che passi una suora e spara.</p>
+
+  <h2>Come si gioca</h2>
+  <section class="howto">
+    <ul>
+      <li>Ogni tanto, a caso, passa una suora: una riga di arte ASCII col suo richiamo. <b>Non scappa</b> &mdash; resta lì finché qualcuno non se la prende, che sia un minuto o tre ore.</li>
+      <li><b>.bang</b> le spara, <b>.bef</b> ci fa amicizia (va bene anche <b>!bang</b> e <b>!bef</b>). Il primo che arriva se la prende, gli altri trovano il canale vuoto.</li>
+      <li>Il colpo può fallire: fucile inceppato o suora schizzinosa. La suora <b>resta</b>, e chi ha sbagliato sta zitto per sette secondi &mdash; in quei sette secondi i suoi tentativi vengono ignorati in silenzio.</li>
+      <li>Circa una suora su dodici è <b>dorata</b>: regge da tre a sei colpi, e di solito serve il canale intero per portarla giù. Chi tira quello finale se la mette in bacheca, e le dorate hanno una colonna tutta loro.</li>
+      <li>Stese e convertite sono <b>due partite diverse</b>: chi spara scala i killer, chi fa amicizia scala i marpioni. <b>.classifica</b> le stampa tutte e due in canale.</li>
+      <li>Ogni canale ha la sua suora, il suo timer e i suoi punteggi. Due canali sono due partite, e non si mescolano.</li>
+      <li>Copiare e incollare la riga della suora non serve a niente, e chi la spara con uno script prima o poi finisce fuori dal gioco. Come lo becchiamo non si dice.</li>
+    </ul>
+    <div class="irc">
+      <div><span class="t">21:04</span> <span class="bot">&lt;Convento&gt;</span> ◦◦•◦◦•◦◦\_✝&lt; ORA PRO NOBIS!</div>
+      <div><span class="t">21:04</span> <span class="n">&lt;peluche&gt;</span> .bang</div>
+      <div><span class="t">21:04</span> <span class="bot">&lt;Convento&gt;</span> peluche hai fatto secca una suora in 4 secondi! Ne hai stese 12 in #sbiffo. 🥈 2º, scavalcato morph.</div>
+      <div><span class="t">21:04</span> <span class="n">&lt;morph&gt;</span> .bang</div>
+      <div><span class="t">21:04</span> <span class="bot">&lt;Convento&gt;</span> morph: Non c'è nessuna suora! A cosa stai sparando? L'hai mancata per 3 secondi.</div>
+      <div><span class="t">22:31</span> <span class="bot">&lt;Convento&gt;</span> <span class="g">◦◦•◦◦•◦◦\_✝&lt; FRU FRU!</span></div>
+      <div><span class="t">22:31</span> <span class="n">&lt;bitflesh&gt;</span> .bang</div>
+      <div><span class="t">22:31</span> <span class="bot">&lt;Convento&gt;</span> <span class="g">bitflesh: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le restano 2 vite.</span></div>
+      <div><span class="t">22:32</span> <span class="n">&lt;katia&gt;</span> .bef</div>
+      <div><span class="t">22:32</span> <span class="bot">&lt;Convento&gt;</span> katia: La suora ti ha guardato male e ha tirato dritto. Riprova fra 7 secondi.</div>
+    </div>
+  </section>
 
   <div class="cards" id="cards"></div>
 
