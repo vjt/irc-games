@@ -310,4 +310,52 @@ assert "inceppato" in sent[-1][2] and "La prossima" not in sent[-1][2], sent
 suore.P_JAM = 0.0
 print("ok: bang e bef dicono la prossima, e tacciono se la suora e' li'")
 
+# --- .chiestato: chi ha fatto l'ultima cosa all'ultima suora -----------------
+# Ordine di vjt (#sbiffo 2026-09-10 23:36): «il comando .chiestato !chiestato
+# che mostra l'ultimo attore» / «dell'ultima operazione sull'ultima suora».
+d3 = suore.empty()
+sc = "azzurra/#sniffo"
+
+# A canale vergine non si inventa un colpevole.
+sent.clear()
+assert not suore.handle(d3, sc, "tizio", "chiestato", 0.0)
+assert "non e' stato nessuno" in sent[-1][2], sent
+
+# Dopo un bang: chi, cosa, e da quanto. Il verbo arriva da last_taken, che ora
+# lo scrive: senza, la riga direbbe chi ma mai cosa.
+d3["nuns"][sc] = {"chan": "#sniffo", "at": 0.0, "golden": False, "hp": 1}
+assert suore.handle(d3, sc, "Peluche", "bang", 10.0)
+assert d3["last_taken"][sc]["cmd"] == "bang", d3["last_taken"]
+sent.clear()
+assert not suore.handle(d3, sc, "tizio", "chiestato", 70.0)
+riga = sent[-1][2]
+assert "l'ha fatta fuori Peluche" in riga and "1m 00s fa" in riga, riga
+
+# Il bef ha il suo verbo, e la dorata si dichiara.
+d3["nuns"][sc] = {"chan": "#sniffo", "at": 100.0, "golden": True, "hp": 1}
+assert suore.handle(d3, sc, "katia", "bef", 110.0)
+sent.clear()
+assert not suore.handle(d3, sc, "tizio", "chiestato", 110.0)
+riga = sent[-1][2]
+assert "se l'e' fatta amica katia" in riga and "(era dorata)" in riga, riga
+
+# Stato vecchio, salvato prima che last_taken imparasse il verbo: si dice chi
+# l'ha presa e si tace su cosa, invece di indovinare.
+d3["last_taken"][sc] = {"at": 200.0, "nick": "alk"}
+sent.clear()
+assert not suore.handle(d3, sc, "tizio", "chiestato", 200.0)
+riga = sent[-1][2]
+assert "se l'e' presa alk" in riga and "fatta fuori" not in riga, riga
+
+# E' una domanda, non una giocata: non consuma la suora in giro.
+d3["nuns"][sc] = {"chan": "#sniffo", "at": 300.0, "golden": False, "hp": 1}
+assert not suore.handle(d3, sc, "tizio", "chiestato", 310.0)
+assert d3["nuns"][sc] is not None, d3["nuns"]
+
+# E la scrive il parser, con tutti e due i prefissi.
+assert suore.CMD_PAT.match(".chiestato").group("cmd").lower() == "chiestato"
+assert suore.CMD_PAT.match("!CHIESTATO").group("cmd").lower() == "chiestato"
+assert suore.CMD_PAT.match(".chiestatone") is None
+print("ok: .chiestato dice chi ha fatto cosa all'ultima suora, e non gioca")
+
 print("\nTUTTO VERDE, porco dio")

@@ -293,7 +293,7 @@ PRIVMSG_PAT = re.compile(
 # risposta), e spiega anche i `!bef` di deadbeef e katia finiti nel vuoto il 2/9.
 # Il separatore resta obbligatorio: `.bangalore` non e' `.bang`.
 CMD_PAT = re.compile(
-    r'^\s*[.!](?P<cmd>bang|bef|suore|killers)(?:\s.*)?$', re.IGNORECASE)
+    r'^\s*[.!](?P<cmd>bang|bef|suore|killers|chiestato)(?:\s.*)?$', re.IGNORECASE)
 CLASSIFICA_PAT = re.compile(
     r'^\s*[.!]\s*classifica(?:\s+(?P<game>\S+))?\s*$', re.IGNORECASE)
 MY_GAME = ("suore", "suora", "sparasuore")
@@ -651,6 +651,32 @@ def late_by(data, scope, now):
             f"{last.get('nick', 'qualcuno')}.")
 
 
+def chi_e_stato(data, scope, now):
+    """La riga di `.chiestato`: chi ha fatto l'ultima operazione sull'ultima
+    suora, cosa ha fatto e quanto fa.
+
+    Ordine di vjt, #sbiffo 2026-09-10 23:36: «aggiungi al bot convento il
+    comando .chiestato !chiestato che mostra l'ultimo attore» / «dell'ultima
+    operazione sull'ultima suora».
+
+    Legge `last_taken`, che esisteva gia' per `late_by()` ma teneva solo nick e
+    istante: il verbo e la dorata sono stati aggiunti alla scrittura insieme a
+    questo comando. Uno stato salvato PRIMA della modifica non ha il verbo, e in
+    quel caso la riga tace su cosa sia successo invece di inventarselo — e' il
+    motivo per cui `cmd` viene letto con `.get()` e non dato per scontato.
+    """
+    last = data.get("last_taken", {}).get(scope) or {}
+    if not last.get("at"):
+        return "Nessuna suora e' ancora passata di qui, quindi non e' stato nessuno."
+    chi = last.get("nick", "qualcuno")
+    quando = human_time(max(0, now - last["at"]))
+    dorata = " (era dorata)" if last.get("golden") else ""
+    verbo = {"bang": "l'ha fatta fuori", "bef": "se l'e' fatta amica"}.get(last.get("cmd"))
+    if not verbo:
+        return f"L'ultima suora se l'e' presa {chi}, {quando} fa{dorata}."
+    return f"L'ultima suora {verbo} {chi}, {quando} fa{dorata}."
+
+
 def handle(data, scope, nick, cmd, now):
     """Applica un comando dentro UNO scope. Ritorna True se lo stato e' cambiato."""
     net, chan = SCOPES[scope]
@@ -674,6 +700,13 @@ def handle(data, scope, nick, cmd, now):
                        f"fatte amiche {s['friends']} in {chan}. "
                        f"{when_line(data, scope, now)}")
         return True  # score_for puo' aver creato la riga del nick
+
+    if cmd in ("chiestato",):
+        # Sola lettura: non tocca punteggi, non consuma la suora in giro, e non
+        # e' soggetto a penalita' o ban — come `.classifica`, e' una domanda,
+        # non una giocata.
+        say(net, chan, chi_e_stato(data, scope, now))
+        return False
 
     if cmd in ("classifica", "killers"):
         # Due righe per ordine di vjt (#sbiffo 9/9, 01:32): «una per i machi e
@@ -736,7 +769,11 @@ def handle(data, scope, nick, cmd, now):
     data["nuns"][scope] = None
     # Chi l'ha presa e quando: lo legge late_by() per dire agli altri di quanto
     # sono arrivati tardi. Nick col casing visto ora, non canonicalizzato.
-    data.setdefault("last_taken", {})[scope] = {"at": now, "nick": nick}
+    # `cmd` e `golden` sono per `.chiestato` (vjt, 10/9): senza il verbo la riga
+    # potrebbe dire chi, mai cosa. Il nick resta col casing visto ora, non
+    # canonicalizzato — lo legge anche late_by().
+    data.setdefault("last_taken", {})[scope] = {"at": now, "nick": nick,
+                                                "cmd": cmd, "golden": golden}
     schedule(data, scope, now)   # l'attesa parte da qui, non dalla comparsa
     s = score_for(data, scope, nick)
     s["nick"] = nick          # il casing buono e' l'ultimo visto
