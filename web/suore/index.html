@@ -153,7 +153,10 @@ function renderScope(scope, s) {
     // scope, confrontato sul tempo e non sul nick: un pari merito resta
     // evidenziato in tutte e due le righe invece che in una sola.
     const mio = r.record === undefined ? null : r.record;
-    const top = mio !== null && s.record && Math.abs(mio - s.record.secs) < 0.005;
+    // il record di riga arriva arrotondato ai centesimi, quello di scope ai
+    // millesimi: si confrontano sulla stessa scala, o non combaciano mai.
+    const top = mio !== null && s.record
+      && Math.round(mio * 100) === Math.round(s.record.secs * 100);
     tr.appendChild(el("td", mio === null ? "nowt" : (top ? "best" : null),
       secs(mio)));
     tb.appendChild(tr);
