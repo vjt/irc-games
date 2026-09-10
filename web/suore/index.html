@@ -133,9 +133,13 @@
        riserva il posto e la pagina non salta quando l'immagine arriva.
        `image-rendering: pixelated` nel CSS: senza, il ridimensionamento
        interpola e la pixel art viene fuori sfocata.
-       WebP **lossless** (`-define webp:lossless=true`), non lossy: verificato
-       pixel per pixel contro il PNG originale con `magick compare -metric AE`,
-       che da' 0. Stessi 1254x1254, 340 KB in meno. -->
+       WebP lossy q=90 su ordine esplicito (il lossless faceva solo -18%, qui
+       si passa da 1861888 a 316422 byte, -83%). Due accortezze obbligate
+       perche' il soggetto e' una schermata piena di testo, non una foto:
+       `-sampling-factor 4:4:4` (niente sottocampionamento della crominanza, o
+       il verde su nero sbava) e `-define webp:use-sharp-yuv=true`. Insieme
+       tolgono un terzo dell'errore per un 7% di byte: RMSE 1.45% contro
+       2.15% del 4:2:0 alla stessa q. -->
   <img class="cover" src="cover.webp" width="1254" height="1254" decoding="async"
        alt="Pixel art: la Madre Superiora appare in un cimitero, cinque suore intorno e una canna di fucile in primo piano.">
 
