@@ -112,20 +112,45 @@ def list_channels(conn):
 
 PRESENCE_SAMPLE_SEC = 300       # membership snapshot every 5 minutes
 DAU_MIN_MSGS = 3                # messages/day needed to count as "active" (vjt)
+PRESENCE_TTL_SEC = 14 * 86400   # ghost cutoff, see presence_daily() — calibrated
 
 
 def presence_daily(conn, network, channel, sample_sec=PRESENCE_SAMPLE_SEC):
     """Replay the membership deltas -> {day: (median, min, max)} of humans present.
 
     The count is a STATE, not a sum: it is reconstructed by replaying 353/366
-    (baseline, reseeded on every JOIN of the bot) plus join/part/quit/nick/kick,
-    then snapshotting the set every `sample_sec`. The daily figure vjt asked for
-    is the MEDIAN of that day's snapshots — a netsplit dumps ~20 sessions for a
-    minute and would own any max-based bucket; min/max ride along as the band.
+    (baseline) plus join/part/quit/nick/kick, then snapshotting the set every
+    `sample_sec`. The daily figure vjt asked for is the MEDIAN of that day's
+    snapshots — a netsplit dumps ~20 sessions for a minute and would own any
+    max-based bucket; min/max ride along as the band.
 
-    Two honest limits, by construction: nothing exists before the bot first
-    joined a channel, and a log gap freezes the set (samples keep being emitted
-    with the last known membership).
+    GHOSTS, and why the TTL below is not decoration (vjt, 2026-09-11: "il
+    contatore di presenze e' sballato, conta troppa gente"). The NAMES baseline
+    is written ONCE per channel: grappa persists no 353/366 of its own, so
+    `ingest_grappa.seed_presence()` synthesises one from the archive and never
+    refreshes it. Anybody who leaves while grappa is disconnected leaves no
+    delta behind and stays in the set FOREVER — the error is not noise, it is
+    monotonically increasing. Measured against ground truth the same day:
+    `LIST #linux` said 88 users, the bare replay held 109 (+24%); on #grappa,
+    where a live NAMES is available, 38 in channel vs 52 replayed — 14 ghosts,
+    zero missing, the oldest idle since 27 May.
+
+    Mitigation, not a cure: a member with no observed activity (own presence
+    delta or message in this channel) for PRESENCE_TTL_SEC stops being counted,
+    relative to the SAMPLE's timestamp, so history stays consistent instead of
+    being rewritten by today. Calibration on those two ground truths: 14 days
+    gives 86 vs 88 on #linux and 40 vs 38 on #grappa (7 days: 82 and 38; 30
+    days: 96 and 43). The cure is upstream and is vjt's call — grappa persisting
+    a real membership snapshot per channel on every (re)connect, which would
+    reseed this replay exactly instead of letting it drift.
+
+    Cost of the mitigation, stated: a genuine lurker who never speaks and never
+    leaves for two weeks is indistinguishable from a ghost with this data, and
+    gets dropped. That is the -2 on #linux.
+
+    Two further limits, by construction: nothing exists before the archive's
+    first row, and a log gap freezes the set (samples keep being emitted with
+    the last known membership).
     """
     rows = conn.execute(
         "SELECT ts, kind, nick, extra FROM presence"
@@ -149,16 +174,31 @@ def presence_daily(conn, network, channel, sample_sec=PRESENCE_SAMPLE_SEC):
             klass_of[low] = k
         return k == "human"
 
+    # Activity stream, merged into the replay by timestamp: a message is proof
+    # of presence exactly like a JOIN, and without it every silent-but-present
+    # lurker would be evicted by the TTL after two weeks.
+    talk = conn.execute(
+        "SELECT ts, nick FROM events WHERE network=? AND channel=? ORDER BY ts",
+        (network, channel)).fetchall()
+    ti, seen = 0, {}
+
     members = set()
     pending = None          # names chunks accumulated between 353s and the 366
     seeded = False
-    cur = 0
     next_ts = None
     samples = defaultdict(list)
+
+    def live(now):
+        return sum(1 for n in members
+                   if now - seen.get(n, 0) <= PRESENCE_TTL_SEC and human(n))
+
     for ts, kind, nick, extra in rows:
+        while ti < len(talk) and talk[ti][0] <= ts:
+            seen[nick_key(talk[ti][1])] = talk[ti][0]
+            ti += 1
         if seeded:
             while next_ts is not None and next_ts <= ts:
-                samples[_rome_parts(next_ts)[1]].append(cur)
+                samples[_rome_parts(next_ts)[1]].append(live(next_ts))
                 next_ts += sample_sec
         if kind == "names":
             if pending is None:
@@ -174,17 +214,23 @@ def presence_daily(conn, network, channel, sample_sec=PRESENCE_SAMPLE_SEC):
             if pending is not None:
                 members = pending
                 pending = None
+                # A baseline IS an observation: without this stamp everyone in
+                # the seed would start the replay already two weeks stale and
+                # the channel would open at zero.
+                for n in members:
+                    seen[n] = max(seen.get(n, 0), ts)
                 if not seeded:
                     seeded, next_ts = True, ts
         elif kind == "join":
             members.add(nick_key(nick))
+            seen[nick_key(nick)] = ts
         elif kind in ("part", "kick", "quit"):
             members.discard(nick_key(nick))
         elif kind == "nick":
             if nick_key(nick) in members:
                 members.discard(nick_key(nick))
                 members.add(nick_key(extra))
-        cur = sum(1 for n in members if human(n))
+                seen[nick_key(extra)] = ts
     return {day: (_median(v), min(v), max(v)) for day, v in samples.items() if v}
 
 
