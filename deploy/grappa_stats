@@ -23,7 +23,8 @@ load_rc_config "$name"
 pidfile="/var/run/grappa_stats.pid"
 procname="/usr/local/bin/python3.11"
 command="/usr/sbin/daemon"
-command_args="-f -p ${pidfile} -u grappa -o /var/log/grappa_stats.log -t grappa-stats \
+daemon_pidfile="${pidfile%.pid}.daemon.pid"
+command_args="-f -P ${daemon_pidfile} -p ${pidfile} -u grappa -o /var/log/grappa_stats.log -t grappa-stats \
   /usr/bin/env SNIFFO_STATS_SOURCE=grappa \
   SNIFFO_STATS_DB=/var/db/grappa-stats/stats.db \
   SNIFFO_STATS_OUT=/var/db/grappa-stats/pages/st-XXXXXXXXXXXX \
@@ -31,4 +32,31 @@ command_args="-f -p ${pidfile} -u grappa -o /var/log/grappa_stats.log -t grappa-
   GRAPPA_DB=/home/grappa/grappa/runtime/grappa_prod.db \
   GRAPPA_USER=vjt \
   /usr/local/bin/python3.11 -u /opt/grappa-stats/daemon.py"
+# daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
+# stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
+# lo start dopo muore con «process already running» e il sidecar resta giu' in
+# silenzio (visto su convento_suore, 2026-09-11 23:33). -P da' al supervisore un
+# pidfile suo, e l'hook qui sotto lo miete sia dopo stop che prima di start.
+start_precmd="convento_reap_supervisor"
+stop_postcmd="convento_reap_supervisor"
+convento_reap_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	rm -f "${daemon_pidfile}"; return 0 ;;
+	esac
+	if kill -0 "${_dpid}" 2>/dev/null; then
+		# figlio vivo = supervisore sano: giu' le mani, ci pensa rc.subr a
+		# dire «already running».
+		if [ -r "${pidfile}" ] && kill -0 "$(cat ${pidfile} 2>/dev/null)" 2>/dev/null; then
+			return 0
+		fi
+		kill -TERM "${_dpid}" 2>/dev/null
+		sleep 1
+		kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	fi
+	rm -f "${daemon_pidfile}" "${pidfile}"
+}
+
 run_rc_command "$1"
