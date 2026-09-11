@@ -212,8 +212,21 @@ PENALTY = 7
 # nick, che per la classifica e' un difetto, qui e' esattamente cio' che serve:
 # `canon()` deve continuare a NON normalizzare l'underscore, o il ban del
 # client scriptato si porterebbe dietro anche l'altro.
+# 2026-09-11 23:23 Rome: stessa trappola, secondo pesce. Su ordine di vjt
+# (#sbiffo 23:21 «spara una suora finta da convento ora», poi «su sniffo / da
+# convento / scrivi sulla sua fifo») ho emesso a mano su #sniffo una riga di
+# comparsa generata da `spawn_line()` — formato e ZWSP identici, ma il gioco
+# non ha mai creato nessuna suora. Un secondo dopo, `t` (tsk, rinominato da
+# `tsk` alle 21:39) ha tirato `!bang`. Ban 96h + punto e record tolti, ordine
+# di vjt #sbiffo 23:24 («togli il punto a t e bannalo per 96 ore», «leva il
+# record»).
+#
+# Bannato solo `t`, non `tsk`: `canon()` non unisce i due nick e vjt ha nominato
+# quello. Il nick di una lettera pero' e' di chiunque lo prenda per primo —
+# se un altro ci finisce dentro, il ban e' sul NICK, non sulla persona.
 BANS = {
     "deadbeef": 1789290917,   # fino al 2026-09-13 09:15 UTC (11:15 Rome)
+    "t": 1789507514,          # fino al 2026-09-15 21:25 UTC (23:25 Rome)
 }
 
 ZWSP = "​"
