@@ -356,6 +356,18 @@ assert d3["nuns"][sc] is not None, d3["nuns"]
 assert suore.CMD_PAT.match(".chiestato").group("cmd").lower() == "chiestato"
 assert suore.CMD_PAT.match("!CHIESTATO").group("cmd").lower() == "chiestato"
 assert suore.CMD_PAT.match(".chiestatone") is None
+
+# L'alias `.chiesato` (Sythos #sbiffo 2026-09-11 23:25, vjt «mettiamo alias»):
+# stessa risposta, e il vecchio nome NON deve essere mangiato dal ramo corto
+# dell'alternanza.
+assert suore.CMD_PAT.match(".chiesato").group("cmd").lower() == "chiesato"
+assert suore.CMD_PAT.match("!CHIESATO").group("cmd").lower() == "chiesato"
+assert suore.CMD_PAT.match(".chiestato").group("cmd").lower() == "chiestato"
+assert suore.CMD_PAT.match(".chiesatone") is None
+sent.clear()
+assert not suore.handle(d3, sc, "tizio", "chiesato", 320.0)
+assert "se l'e' presa alk" in sent[-1][2], sent[-1][2]
+assert d3["nuns"][sc] is not None, d3["nuns"]
 print("ok: .chiestato dice chi ha fatto cosa all'ultima suora, e non gioca")
 
 print("\nTUTTO VERDE, porco dio")

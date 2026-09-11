@@ -305,8 +305,15 @@ PRIVMSG_PAT = re.compile(
 # su peluche (#sbiffo 12:07:22 con la coda, nessuna risposta; 12:07:27 nudo,
 # risposta), e spiega anche i `!bef` di deadbeef e katia finiti nel vuoto il 2/9.
 # Il separatore resta obbligatorio: `.bangalore` non e' `.bang`.
+# `chiesato` e' un alias di `chiestato`, non un comando nuovo: Sythos ha chiesto
+# di cambiare il nome (#sbiffo 2026-09-11 23:25) e vjt ha deciso «mettiamo
+# alias» (23:30) — il vecchio continua a rispondere, chi l'ha nelle dita non
+# resta a bocca asciutta. L'alias piu' lungo va PRIMA nell'alternanza: `re` non
+# e' greedy fra i rami, e con `chiesato|chiestato` un `.chiestato` matcherebbe
+# `chiesato` fermandosi alla `t`, che poi il separatore obbligatorio scarta.
 CMD_PAT = re.compile(
-    r'^\s*[.!](?P<cmd>bang|bef|suore|killers|chiestato)(?:\s.*)?$', re.IGNORECASE)
+    r'^\s*[.!](?P<cmd>bang|bef|suore|killers|chiestato|chiesato)(?:\s.*)?$',
+    re.IGNORECASE)
 CLASSIFICA_PAT = re.compile(
     r'^\s*[.!]\s*classifica(?:\s+(?P<game>\S+))?\s*$', re.IGNORECASE)
 MY_GAME = ("suore", "suora", "sparasuore")
@@ -714,7 +721,7 @@ def handle(data, scope, nick, cmd, now):
                        f"{when_line(data, scope, now)}")
         return True  # score_for puo' aver creato la riga del nick
 
-    if cmd in ("chiestato",):
+    if cmd in ("chiestato", "chiesato"):
         # Sola lettura: non tocca punteggi, non consuma la suora in giro, e non
         # e' soggetto a penalita' o ban — come `.classifica`, e' una domanda,
         # non una giocata.
