@@ -7,7 +7,8 @@
     "aufhundschwanzart",
     "CYbER-GPT",
     "NusuTh-GPT",
-    "StallBOT"
+    "StallBOT",
+    "Vertex"
   ],
   "_comment_uliak": "ULIAK e' misto — parte codice classico, parte LLM — ma non c'e' modo di separarlo per messaggio: gli origin tag li stampa solo bot.py sulle MIE righe, e per un bot altrui non esiste segnale. Sta in 'classic' perche' il grosso del suo traffico e' classico (parole di vjt, #sbiffo 2026-09-11 09:03). E' una scelta di bucket dichiarata, non una misura.",
   "classic": [
