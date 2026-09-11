@@ -160,7 +160,7 @@ __UPLOT_CSS__
 </section>
 
 <section id="s-hero">
-  <h2>Clanker vs Umani</h2>
+  <h2>Bot vs Umani</h2>
   <div class="hero">
     <div><div class="num" id="ratio-num"></div></div>
     <div class="lead">
@@ -317,8 +317,11 @@ const muted=new Set();
 function ratable(){return ["human","ai","classic"].filter(k=>!muted.has(k));}
 function drawRatio(){
   const num=document.getElementById("ratio-num");
-  const r = AGG.human? (AGG.ai/AGG.human):0;
-  num.innerHTML = `${r.toFixed(2)} <small>IA : umani</small>`;
+  // TUTTI i bot, non solo l'IA (vjt, #sbiffo 2026-09-11 09:10): su un canale
+  // dove il traffico automatico e' quasi tutto codice classico il rapporto
+  // IA:umani si leggeva 0.00 e la fetta grossa spariva dal titolo.
+  const r = AGG.human? ((AGG.ai+AGG.classic)/AGG.human):0;
+  num.innerHTML = `${r.toFixed(2)} <small>bot : umani</small>`;
 }
 function drawComposition(){
   const box=document.getElementById("composition");box.innerHTML="";
@@ -359,7 +362,8 @@ function drawTiles(){
     // per il periodo — mai la somma, vedi computeAgg.
     ["attivi al giorno", NF.format(AGG.dau_med),
      `${NF.format(AGG.dau_union)} distinti nel periodo · ultimo giorno ${NF.format(AGG.dau_last)}`],
-    ["ratio tutti-bot : umani", (AGG.allbots_vs_human||0).toFixed(2), ""],
+    // l'hero ora e' tutti-bot:umani, qui resta la quota della sola IA
+    ["ratio IA : umani", (AGG.ai_vs_human||0).toFixed(2), ""],
     ["bestemmie", NF.format(AGG.bestemmie), `${AGG.per100}/100 msg`],
   ];
   const box=document.getElementById("tiles");box.innerHTML="";

@@ -53,6 +53,47 @@ def _rome_parts(ts):
     return dt.hour, dt.strftime("%Y-%m-%d")
 
 
+# RFC 1459 casemapping — what the ircd itself uses to decide that two nicks are
+# THE SAME nick, so it is the only correct fold here: `[]\^` are the uppercase
+# of `{}|~` because the spec says so, not because of Unicode. Without this the
+# same person shows up twice in the top-talkers (vjt, #sbiffo 2026-09-11 09:11:
+# "abbiamo dreamsprogrammer e DreamsProgrammer").
+_RFC1459 = str.maketrans(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ[]\\^",
+    "abcdefghijklmnopqrstuvwxyz{}|~",
+)
+
+
+def nick_key(nick):
+    """Fold a nick to its ircd-equivalent key. Never shown — see NickDisplay."""
+    return nick.translate(_RFC1459)
+
+
+class NickDisplay:
+    """key -> the spelling to SHOW for it.
+
+    The DB keeps every line's nick exactly as it was typed (vjt policy: nicks
+    are real), so one person can arrive under several spellings. Aggregation
+    groups by `nick_key`; this picks which spelling that group wears. Rule:
+    the most used one, ties broken by the alphabetically first, so the choice
+    is deterministic across runs and does not flip between renders.
+    """
+
+    def __init__(self):
+        self._seen = defaultdict(lambda: defaultdict(int))
+
+    def add(self, nick):
+        key = nick_key(nick)
+        self._seen[key][nick] += 1
+        return key
+
+    def of(self, key):
+        spellings = self._seen.get(key)
+        if not spellings:
+            return key
+        return min(spellings.items(), key=lambda kv: (-kv[1], kv[0]))[0]
+
+
 def _excluded_channels():
     try:
         cfg = json.loads((HERE / "classes.json").read_text())
@@ -123,7 +164,11 @@ def presence_daily(conn, network, channel, sample_sec=PRESENCE_SAMPLE_SEC):
             if pending is None:
                 pending = set()
             # NAMES entries carry op/voice prefixes; the nick is what's after them.
-            pending.update(n.lstrip("@+%~&") for n in (extra or "").split() if n.strip("@+%~&"))
+            # Folded like everything else: a JOIN as `Tizio` and the QUIT as
+            # `tizio` are the same body, and a raw-spelling set would keep the
+            # ghost in the room forever.
+            pending.update(nick_key(n.lstrip("@+%~&")) for n in (extra or "").split()
+                           if n.strip("@+%~&"))
             continue
         if kind == "names_end":
             if pending is not None:
@@ -132,13 +177,13 @@ def presence_daily(conn, network, channel, sample_sec=PRESENCE_SAMPLE_SEC):
                 if not seeded:
                     seeded, next_ts = True, ts
         elif kind == "join":
-            members.add(nick)
+            members.add(nick_key(nick))
         elif kind in ("part", "kick", "quit"):
-            members.discard(nick)
+            members.discard(nick_key(nick))
         elif kind == "nick":
-            if nick in members:
-                members.discard(nick)
-                members.add(extra)
+            if nick_key(nick) in members:
+                members.discard(nick_key(nick))
+                members.add(nick_key(extra))
         cur = sum(1 for n in members if human(n))
     return {day: (_median(v), min(v), max(v)) for day, v in samples.items() if v}
 
@@ -160,30 +205,35 @@ def channel_metrics(conn, network, channel):
     talker_klass = {}
     best_by_user = defaultdict(int)
     human_nicks = set()
+    # Every per-nick bucket below is keyed by the RFC-1459 fold, never by the
+    # raw spelling: `Tizio` and `tizio` are one person to the ircd and must be
+    # one person here too. `disp` remembers which spelling to print.
+    disp = NickDisplay()
     # date -> {messages,human,ai,classic,service,bestemmie,irc,telegram}
     daily = defaultdict(lambda: defaultdict(int))
-    daily_humans = defaultdict(lambda: defaultdict(int))  # date -> {nick: msgs}
+    daily_humans = defaultdict(lambda: defaultdict(int))  # date -> {key: msgs}
     daily_hourly = defaultdict(lambda: [0] * 24)  # date -> [24] hour-of-day counts
     best_total = 0
     for ts, nick, klass, transport, best in rows:
+        key = disp.add(nick)
         totals[klass] += 1
         totals["messages"] += 1
         hour, day = _rome_parts(ts)
         hourly[hour] += 1
         daily_hourly[day][hour] += 1
-        talkers[nick] += 1
-        talker_klass[nick] = klass
+        talkers[key] += 1
+        talker_klass[key] = klass
         d = daily[day]
         d["messages"] += 1
         d[klass] += 1
         d["bestemmie"] += best
         if klass == "human":
-            human_nicks.add(nick)
-            daily_humans[day][nick] += 1
+            human_nicks.add(key)
+            daily_humans[day][key] += 1
             transport_human[transport] += 1
             d[transport] += 1  # per-day human transport (irc/telegram)
         if best:
-            best_by_user[nick] += best
+            best_by_user[key] += best
             best_total += best
 
     msgs = totals["messages"] or 1
@@ -214,8 +264,9 @@ def channel_metrics(conn, network, channel):
     # three drops the drive-by "ciao" and keeps the shape of the curve.
     dau_sets = {day: {n for n, c in cnt.items() if c >= DAU_MIN_MSGS}
                 for day, cnt in daily_humans.items()}
-    dau_table = sorted({n for s in dau_sets.values() for n in s})
-    dau_idx = {n: i for i, n in enumerate(dau_table)}
+    dau_keys = sorted({n for s in dau_sets.values() for n in s})
+    dau_idx = {n: i for i, n in enumerate(dau_keys)}
+    dau_table = [disp.of(n) for n in dau_keys]  # indices stay, spelling is shown
     history = [
         {"date": day,
          **{k: dd.get(k, 0) for k in
@@ -246,12 +297,13 @@ def channel_metrics(conn, network, channel):
         # Interning table for `history[].dau_nicks` — real nicks (vjt policy),
         # indices so the per-day sets stay a few bytes each.
         "dau_nick_table": dau_table,
-        "top_talkers": [{"nick": n, "klass": talker_klass[n], "count": c} for n, c in top_talkers],
+        "top_talkers": [{"nick": disp.of(n), "klass": talker_klass[n], "count": c}
+                        for n, c in top_talkers],
         "bestemmie": {
             "total": best_total,
             "per_100_msgs": round(per100, 2),
             "tier": bestemmia_tier(per100),
-            "by_user": [{"nick": n, "count": c} for n, c in top_best],
+            "by_user": [{"nick": disp.of(n), "count": c} for n, c in top_best],
         },
         "history": history,
     }
