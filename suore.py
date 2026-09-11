@@ -221,12 +221,16 @@ PENALTY = 7
 # di vjt #sbiffo 23:24 («togli il punto a t e bannalo per 96 ore», «leva il
 # record»).
 #
-# Bannato solo `t`, non `tsk`: `canon()` non unisce i due nick e vjt ha nominato
-# quello. Il nick di una lettera pero' e' di chiunque lo prenda per primo —
-# se un altro ci finisce dentro, il ban e' sul NICK, non sulla persona.
+# 2026-09-11 23:38 Rome: vjt estende il ban anche a `tsk` («anche tsk va
+# bannato», «che e' lo stesso client»). `canon()` non unisce i due nick, quindi
+# il secondo va scritto a mano qui: stessa scadenza di `t`, e via anche i suoi
+# due eventi su `azzurra/#sniffo` (la presa da 1.043s e il 109s backfillato) piu'
+# la riga in `scores`. Il nick di una lettera pero' e' di chiunque lo prenda per
+# primo — se un altro ci finisce dentro, il ban e' sul NICK, non sulla persona.
 BANS = {
     "deadbeef": 1789290917,   # fino al 2026-09-13 09:15 UTC (11:15 Rome)
     "t": 1789507514,          # fino al 2026-09-15 21:25 UTC (23:25 Rome)
+    "tsk": 1789507514,        # stesso client di `t`, stessa scadenza
 }
 
 ZWSP = "​"
