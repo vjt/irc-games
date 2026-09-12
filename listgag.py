@@ -89,69 +89,63 @@ LIST_PAT = re.compile(r"^\s*!\s*list\b[\s.!?]*$", re.IGNORECASE)
 
 # ---------------------------------------------------------------- generation
 
-TITLES = [
-    "Windows.XP.Corporate.FCKGW",
-    "Windows.98.SE.OEM.ITA",
-    "Photoshop.7.0.ITA",
-    "Nero.Burning.ROM.6",
-    "WinZip.8.1.ITA",
-    "Norton.Antivirus.2003",
-    "Office.XP.Professional.ITA",
-    "3DStudio.Max.5.0",
-    "AutoCAD.2002.ITA",
-    "Napster.Beta.Leaked",
-    "Kazaa.Lite.NoSpyware",
-    "GetRight.5.0.RETAIL",
-    "SubSeven.2.1.Bonus",
-    "mIRC.6.03.REGGED",
-    "Matrix.Reloaded.TS.ITA",
-    "Il.Signore.Degli.Anelli.SCREENER",
-    "Half.Life.2.ALPHA.LEAK",
-    "Diablo.II.LOD.NOCD",
-    "Counter.Strike.1.6.FULL",
-    "Encarta.2003.ITA.DVD",
-    "Divx.Codec.5.02.PRO",
-    "Winamp.2.95.CLASSIC",
-    "ICQ.2003b.NoAds",
-    "Age.Of.Empires.II.ITA",
-    "Grand.Theft.Auto.Vice.City",
+# Catalog as (release-name, size-pool): the name already looks like a real
+# scene release (year + source + codec for video, version for software), and
+# the size is drawn from a pool that FITS the content — vjt's order
+# 2026-09-12 ("i titoli devono essere piu' verosimili... in modo che sembri
+# vero"). A 47M "Windows XP ISO" reads as a broken generator, not warez.
+CATALOG = [
+    ("Il.Signore.Degli.Anelli.Le.Due.Torri.2002.iTALiAN.DVDRip.XviD", ["699M", "1.36G"]),
+    ("Matrix.Reloaded.2003.TS.iTALiAN.XviD", ["699M", "713M"]),
+    ("Kill.Bill.Vol.1.2003.DVDSCR.XviD", ["699M", "1.36G"]),
+    ("Pirates.of.the.Caribbean.2003.TS.XviD", ["699M", "1.40G"]),
+    ("Finding.Nemo.2003.iTALiAN.DVDRip.DivX", ["699M", "1.37G"]),
+    ("Il.Ritorno.Del.Re.2003.SCREENER.XviD", ["1.36G", "1.40G"]),
+    ("Windows.XP.Professional.SP1.iTA.Corporate.ISO", ["589M", "612M"]),
+    ("Windows.98.SE.OEM.iTA.ISO", ["198M", "231M"]),
+    ("Adobe.Photoshop.7.0.1.iTA.Retail", ["148M", "172M"]),
+    ("Nero.Burning.ROM.6.0.0.19.Multi", ["38M", "47M"]),
+    ("Office.XP.Professional.iTA.VOL.ISO", ["546M", "612M"]),
+    ("3ds.max.5.1.ISO", ["612M", "698M"]),
+    ("AutoCAD.2004.iTA.ISO", ["612M", "1.12G"]),
+    ("Norton.Antivirus.2003.Pro.iTA", ["38M", "62M"]),
+    ("WinZip.8.1.iTA.Reg", ["3.4M", "4.1M"]),
+    ("Counter.Strike.1.6.Full.NoSteam", ["312M", "428M"]),
+    ("Diablo.II.LOD.v1.10.NoCD.iTA", ["2.14G", "2.61G"]),
+    ("GTA.Vice.City.iTA.RIP", ["1.39G", "2.10G"]),
+    ("Age.of.Mythology.iTA.2CD", ["1.28G", "1.36G"]),
+    ("Half.Life.2.Beta.LEAK", ["2.9G", "3.1G"]),
 ]
 
-# Rationed: the SignalOS legend is canon, not a running joke. One in ten.
-LEGEND_TITLES = [
-    "SignalOS.1.0.FINAL.BOOTABLE",
-    "SignalOS.0.9b.SOURCE.LEAKED",
+# Rationed: the SignalOS legend is canon, not a running joke. ~1 in 10.
+LEGEND = [
+    ("SignalOS.1.0.FINAL.BOOTABLE.ISO", ["648M", "702M"]),
+    ("SignalOS.0.9b.SOURCE.LEAKED", ["14M", "22M"]),
 ]
 
-TAGS = [
-    "CRACK", "KEYGEN", "SERIAL", "ISO", "REPACK", "PROPER", "RETAIL",
-    "NOCD", "REGGED", "DVDRIP.XVID", "TS.ITA", "WORKING", "FIXED",
+# Real scene crews: the clean half of the crew pool, so the list reads
+# straight where the bestemmia is not carrying the gag.
+CLEAN_GROUPS = [
+    "TNT-Village", "RAZOR1911", "FAIRLIGHT", "PARADOX", "DEVIANCE",
+    "ECHELON", "CLASS", "iNTENSiON", "FLT", "PiZZA", "RELOADED", "DEViSE",
 ]
 
-# Bestemmie as scene tags: uppercase, no spaces, so they survive the
-# filename-field parse. Rotate the whole canon, never three of a kind.
-BESTEMMIA_TAGS = [
-    "PORCODIO", "DIOBOIA", "DIOBESTIA", "DIOCANE", "DIOSTRONZO",
-    "MADONNAPUTTANA", "PORCAMADONNA", "MADONNAMAIALA", "CRISTOCANE",
-    "DIOSERPENTE", "DIOLADRO", "PORCOGESU", "MADONNAIMPESTATA",
-    "DIOCANARO", "CRISTOSTORTO",
+# "Italian" crews with the bestemmia baked into the crew name, mixed-case so
+# it reads as a real group rather than a CAPS shout — present but not
+# prepotente (vjt, 2026-09-12). This is what carries the gag into the victim's
+# download-manager filename field; it must ride IN the name.
+BEST_GROUPS = [
+    "DioCaneTeam", "PorcoDioRG", "MadonnaMaiala", "CristoCane-iTA",
+    "DioBoiaCrew", "PorcaMadonnaTNT", "DioSerpente", "DioLadro-iTA",
+    "MadonnaImpestata", "DioBestiaRG", "DioStronzo-iTA", "PorcoGesuSFX",
 ]
 
-GROUPS = [
-    "cristocane", "RazorCD", "nfo", "PORCODIOteam", "CLASS", "DEVIANCE",
-    "RAZOR1911", "FAIRLIGHT", "diobestia", "TNT-Village", "PARADOX",
-    "madonnaporca", "DIOBOIAcrew", "ECHELON", "porcodioSFX",
+# Occasional extra bestemmia as an uppercase release sub-tag, as if a fixer
+# stamped it — sprinkled, not on every line.
+BEST_TAGS = [
+    "PORCODIO", "DIOCANE", "MADONNAMAIALA", "DIOBESTIA", "CRISTOCANE",
+    "DIOBOIA", "PORCAMADONNA",
 ]
-
-SIZES = [
-    "1.2G", "699M", "4.4G", "350M", "8.5G", "2.1G", "1.44M", "650M",
-    "13.9G", "47M", "3.7G", "128M",
-]
-
-# Nonexistent nicks: the /msg goes nowhere, and that IS the joke. Never a
-# real nick, never ours — a DM to us burns tokens (vjt order 2026-07-10).
-FAKE_NICKS = ["madonna-porca", "porco-dio", "cristo-cane", "dio-bestia",
-              "madonna-maiala", "dio-serpente"]
 
 SLOT_NOTES = [
     "Record: 6666.6kB/s",
@@ -177,54 +171,60 @@ THROTTLE_LINES = [
 ]
 
 
-def scene_name(rng, bestemmia, title):
-    """One filename token: no spaces, bestemmia inside, scene group suffix.
-
-    The caller picks both the bestemmia and the title so a dump can
-    guarantee three distinct ones; picking them here and patching afterwards
-    is how you end up replacing a tag the name never had.
-    """
-    # Some titles already carry a tag ("...SCREENER", "...TS.ITA"). Picking a
-    # tag the title already ends with produces `Matrix.Reloaded.TS.ITA.TS.ITA`,
-    # which reads as a broken generator rather than a scene name.
-    candidates = [t for t in TAGS if t not in title]
-    tag = rng.choice(candidates or TAGS)
-    return ".".join([title, tag, bestemmia]) + "-" + rng.choice(GROUPS)
-
-
-def pick_titles(rng, count):
-    """`count` distinct titles, with the SignalOS legend rationed to ~1 in 10.
+def pick_entries(rng, count):
+    """`count` distinct catalog entries, SignalOS legend rationed to ~1 in 10.
 
     The legend is canon ([[reference_signalos_canon]]), not a running joke;
     seeing it in every dump is how canon turns into a catchphrase.
     """
-    titles = rng.sample(TITLES, count)
+    entries = rng.sample(CATALOG, count)
     if rng.random() < 0.10:
-        titles[rng.randrange(count)] = rng.choice(LEGEND_TITLES)
-    return titles
+        entries[rng.randrange(count)] = rng.choice(LEGEND)
+    return entries
+
+
+def scene_name(rng, title, bestemmiata):
+    """One filename token: the release name plus a scene-crew suffix.
+
+    A bestemmiata line gets a BEST_GROUPS crew (bestemmia baked in, mixed
+    case) and ~1 time in 4 an extra uppercase sub-tag stamped into the name;
+    a clean line gets a real scene crew. No spaces either way, so whatever
+    bestemmia is present survives the download-manager filename parse.
+    """
+    if bestemmiata:
+        if rng.random() < 0.25:
+            title = f"{title}.{rng.choice(BEST_TAGS)}"
+        group = rng.choice(BEST_GROUPS)
+    else:
+        group = rng.choice(CLEAN_GROUPS)
+    return f"{title}-{group}"
 
 
 def build_dump(rng):
     """Header + three pack lines + footer + cross-promo, per the standing order."""
     packs = 3
     open_slots = rng.randint(0, 3)
-    fake = rng.choice(FAKE_NICKS)
 
+    # La richiesta si fa IN CANALE, non in /msg privato (vjt 2026-09-12:
+    # "vogliamo vederli in canale"). Il bot che ospita il gag raccoglie il
+    # `xdcc send #N` dal canale e serve la DCC al richiedente.
     lines = [
         f"** {packs} packs **  {open_slots} of 3 slots open, {rng.choice(SLOT_NOTES)}",
-        f"** To request a file, type: /msg {fake} xdcc send #N **",
+        "** Per richiedere un file scrivi in canale: xdcc send #N **",
     ]
 
-    # Three DISTINCT bestemmie — a dump with the same tag three times reads
-    # like a broken generator, not a gag.
-    tags = rng.sample(BESTEMMIA_TAGS, packs)
-    titles = pick_titles(rng, packs)
+    # Bestemmie present but not prepotente (vjt, 2026-09-12): 2 of 3 lines
+    # carry one, a third of the time all three. Never zero — the gag has to
+    # land — and the loud CAPS-in-the-middle tag is gone, it rides the crew.
+    entries = pick_entries(rng, packs)
+    n_best = packs if rng.random() < 0.33 else 2
+    best_rows = set(rng.sample(range(packs), n_best))
     total = 0.0
-    for i, (tag, title) in enumerate(zip(tags, titles), start=1):
-        name = scene_name(rng, tag, title)
-        size = rng.choice(SIZES)
+    for i, (title, sizes) in enumerate(entries):
+        size = rng.choice(sizes)
+        name = scene_name(rng, title, i in best_rows)
         downloads = rng.randint(1, 99)
-        lines.append(f"#{i}  {downloads}x [{size}] {name}")
+        lines.append(f"#{i + 1}  {downloads}x [{size}] {name}")
         total += _gigs(size)
 
     lines.append(
