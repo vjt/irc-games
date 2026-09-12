@@ -182,21 +182,11 @@ BEST_TAGS = [
     "DIOBOIA", "PORCAMADONNA",
 ]
 
-SLOT_NOTES = [
-    "Record: 6666.6kB/s",
-    "Record: 666.6kB/s",
-    "Record: 1.44kB/s",
-    "Record: 9999.9kB/s",
-]
-
-# The cross-promo vjt asked for: a real CristoBOT command, not an invented
-# one (`dio` is in its core command set — CristoBOT CLAUDE.md, "Commands").
-CROSS_PROMO = [
-    "** Per sapere di piu' prova !dio, !madonna o !bestemmia — CristoBOT serve h24 **",
-    "** Fuori catalogo? chiedi a CristoBOT: !dio, !santo, !storiella **",
-    "** Assistenza clienti: !dio a CristoBOT. Non risponde il centralino, risponde Lui **",
-    "** Il reparto teologico e' di CristoBOT: !bestemmia, !dio, !papa **",
-]
+def record_note(rng):
+    """Header `Record:` — a believable seedbox transfer record, not a meme
+    number (vjt 2026-09-13: "record random, deve esser verosimile"). A real
+    XDCC dump shows a few thousand kB/s, so we draw one at random each dump."""
+    return f"Record: {rng.uniform(850, 4900):.1f}kB/s"
 
 THROTTLE_LINES = [
     "{nick}: il catalogo e' quello di dieci secondi fa, porco dio. Aspetta.",
@@ -246,7 +236,7 @@ def build_dump(rng):
     # "vogliamo vederli in canale") — ma gli script XDCC la mandano in query, e
     # anche quella la serviamo. Il bot raccoglie il `xdcc send #N` e serve la DCC.
     lines = [
-        f"** {packs} packs **  {open_slots} of 3 slots open, {rng.choice(SLOT_NOTES)}",
+        f"** {packs} packs **  {open_slots} of 3 slots open, {record_note(rng)}",
         "** Per richiedere un file scrivi: xdcc send #N **",
     ]
 
@@ -270,7 +260,6 @@ def build_dump(rng):
         f"** Total Offered: {total:.1f}G  Total Transferred: "
         f"{total * rng.uniform(8, 99):.1f}G **"
     )
-    lines.append(rng.choice(CROSS_PROMO))
     return lines, names
 
 
