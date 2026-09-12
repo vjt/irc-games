@@ -100,6 +100,21 @@ LIST_PAT = re.compile(r"^\s*!\s*list\b[\s.!?]*$", re.IGNORECASE)
 # query there is no dump to look up, so a random title is used ("file a caso").
 XDCC_PAT = re.compile(r"^\s*xdcc\s+send\s+#?(\d+)\b", re.IGNORECASE)
 
+# In channel a leecher may address the bot by nick: `elitewarez: xdcc send #2`
+# (vjt 2026-09-13). Strip a leading `<selfnick>[:,]` before the xdcc match —
+# ONLY our own nick, so `othernick: xdcc ...` aimed at a different bot does not
+# false-trigger our dump. The nick is configurable per instance.
+SELF_NICK = os.environ.get("LIST_NICK", "elitewarez").lower()
+ADDRESS_PAT = re.compile(r"^\s*(?P<nick>[^\s:,]+)\s*[:,]\s*(?P<rest>.*)$")
+
+
+def strip_address(text):
+    """Drop a leading `<selfnick>:`/`,` address prefix, else return text as-is."""
+    m = ADDRESS_PAT.match(text)
+    if m and m["nick"].lower() == SELF_NICK:
+        return m["rest"]
+    return text
+
 # The one payload every request receives: the synthesised rickroll video (see
 # payload/make_rickroll_mp4.sh). No exe (vjt 2026-09-12). It lives in the bot's
 # BOT_DCC_DIR inside the jail; if it is missing bot.py declines the DCC, so the
@@ -386,7 +401,7 @@ def dispatch(nick, target, text, rng, last_fired, last_dump):
         if LIST_PAT.match(text):
             handle(nick, target, rng, last_fired, last_dump)
         else:
-            m = XDCC_PAT.match(text)
+            m = XDCC_PAT.match(strip_address(text))
             if m:
                 handle_xdcc(nick, target, int(m.group(1)), rng, last_dump)
     else:

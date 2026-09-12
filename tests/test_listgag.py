@@ -175,6 +175,32 @@ def test_dispatch_ignores_bots_and_unserved_channels():
     assert calls == {"say": [], "dcc": []}, calls
 
 
+def test_dispatch_channel_addressed_xdcc():
+    calls = _recording()
+    rng = random.Random(4)
+    lf, ld = {}, {}
+    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf, ld)
+    titles = ld["#sbiffo"]
+    # forma addressed `elitewarez: xdcc send #2` -> come la forma nuda (vjt 2026-09-13)
+    listgag.dispatch("mario", "#sbiffo", "elitewarez: xdcc send #2", rng, lf, ld)
+    assert len(calls["dcc"]) == 1, calls
+    nick, fname, offer = calls["dcc"][0]
+    assert nick == "mario" and offer == f"{titles[1]}.mp4", (offer, titles)
+    # virgola invece dei due punti, e casing misto: sempre valido
+    listgag.dispatch("mario", "#sbiffo", "EliteWarez, xdcc send #1", rng, lf, ld)
+    assert len(calls["dcc"]) == 2, calls
+
+
+def test_dispatch_addressed_to_other_nick_ignored():
+    calls = _recording()
+    rng = random.Random(4)
+    lf, ld = {}, {}
+    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf, ld)
+    # xdcc indirizzato a UN ALTRO bot: non e' roba nostra, muto
+    listgag.dispatch("mario", "#sbiffo", "cristobot: xdcc send #2", rng, lf, ld)
+    assert calls["dcc"] == [], calls
+
+
 if __name__ == "__main__":
     test_catalog_is_films_only()
     print("ok: catalogo solo film recenti, no software, LEGEND vuota")
@@ -200,4 +226,8 @@ if __name__ == "__main__":
     print("ok: !list dumpa solo in canale, non in query")
     test_dispatch_ignores_bots_and_unserved_channels()
     print("ok: ignora bot e canali non serviti")
+    test_dispatch_channel_addressed_xdcc()
+    print("ok: `elitewarez: xdcc send #N` addressed -> come la forma nuda")
+    test_dispatch_addressed_to_other_nick_ignored()
+    print("ok: xdcc indirizzato ad altro nick -> muto")
     print("\nTUTTO VERDE, porco dio")
