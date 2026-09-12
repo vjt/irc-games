@@ -8,3 +8,5 @@ __pycache__/
 grappa_stats/slug.salt
 grappa_stats/stats.db
 grappa_stats/*.log
+payload/rickroll.mp4
+payload/*.mp4
