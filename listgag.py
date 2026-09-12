@@ -93,54 +93,55 @@ LIST_PAT = re.compile(r"^\s*!\s*list\b[\s.!?]*$", re.IGNORECASE)
 # The follow-through: a victim who bites types `xdcc send #N`. Real XDCC
 # leechers send it in a private query to the bot; humans watching the gag send
 # it in channel (vjt 2026-09-12: "vogliamo vederli in canale"). We honour both.
-# `#` optional, trailing junk tolerated. The pack number is decorative: every
-# request gets the same rickroll (vjt: "mandagli un file a caso magari solo
-# l'mp4, e niente exe"), so we do not track or validate which pack #N was.
+# `#` optional, trailing junk tolerated. The pack number now MATTERS: in channel
+# we look up which title pack #N was in the last dump and offer the rickroll
+# UNDER THAT NAME (vjt 2026-09-12: "non deve essere rickroll.mp4, deve esse lo
+# stesso titolo richiesto quindi si va conservato dello stato"). In a private
+# query there is no dump to look up, so a random title is used ("file a caso").
 XDCC_PAT = re.compile(r"^\s*xdcc\s+send\s+#?(\d+)\b", re.IGNORECASE)
 
 # The one payload every request receives: the synthesised rickroll video (see
 # payload/make_rickroll_mp4.sh). No exe (vjt 2026-09-12). It lives in the bot's
 # BOT_DCC_DIR inside the jail; if it is missing bot.py declines the DCC, so the
 # wiring lands even before the file is deployed. The name must satisfy bot.py's
-# DCC_NAME_PAT ([A-Za-z0-9._-]{1,80}) — a basename, no slashes.
+# DCC_NAME_PAT ([A-Za-z0-9._-]{1,80}) — a basename, no slashes. What the VICTIM
+# sees is not this name but the pack title (see the DCC offer alias in bot.py).
 PAYLOAD_FILE = os.environ.get("LIST_PAYLOAD", "rickroll.mp4")
 
 
 # ---------------------------------------------------------------- generation
 
 # Catalog as (release-name, size-pool): the name already looks like a real
-# scene release (year + source + codec for video, version for software), and
-# the size is drawn from a pool that FITS the content — vjt's order
-# 2026-09-12 ("i titoli devono essere piu' verosimili... in modo che sembri
-# vero"). A 47M "Windows XP ISO" reads as a broken generator, not warez.
+# modern scene release (year + resolution + source + codec) and the size is
+# drawn from a pool that FITS the content — vjt's order 2026-09-12 ("i titoli
+# devono essere piu' verosimili... in modo che sembri vero"), tightened the
+# same day to films only, and RECENT ones ("il set offerto dovrebbero esser
+# solo film / non software / e film recenti"). No software, no games: nobody
+# leeches Windows XP in 2026, and a WEB-DL of a film in cinemas is what an
+# XDCC catcher actually bites on. Sizes are modern-encode plausible: 1080p
+# WEB-DL/BluRay in the single-digit-to-low-teens GB, 2160p UHD in the 18-40G.
 CATALOG = [
-    ("Il.Signore.Degli.Anelli.Le.Due.Torri.2002.iTALiAN.DVDRip.XviD", ["699M", "1.36G"]),
-    ("Matrix.Reloaded.2003.TS.iTALiAN.XviD", ["699M", "713M"]),
-    ("Kill.Bill.Vol.1.2003.DVDSCR.XviD", ["699M", "1.36G"]),
-    ("Pirates.of.the.Caribbean.2003.TS.XviD", ["699M", "1.40G"]),
-    ("Finding.Nemo.2003.iTALiAN.DVDRip.DivX", ["699M", "1.37G"]),
-    ("Il.Ritorno.Del.Re.2003.SCREENER.XviD", ["1.36G", "1.40G"]),
-    ("Windows.XP.Professional.SP1.iTA.Corporate.ISO", ["589M", "612M"]),
-    ("Windows.98.SE.OEM.iTA.ISO", ["198M", "231M"]),
-    ("Adobe.Photoshop.7.0.1.iTA.Retail", ["148M", "172M"]),
-    ("Nero.Burning.ROM.6.0.0.19.Multi", ["38M", "47M"]),
-    ("Office.XP.Professional.iTA.VOL.ISO", ["546M", "612M"]),
-    ("3ds.max.5.1.ISO", ["612M", "698M"]),
-    ("AutoCAD.2004.iTA.ISO", ["612M", "1.12G"]),
-    ("Norton.Antivirus.2003.Pro.iTA", ["38M", "62M"]),
-    ("WinZip.8.1.iTA.Reg", ["3.4M", "4.1M"]),
-    ("Counter.Strike.1.6.Full.NoSteam", ["312M", "428M"]),
-    ("Diablo.II.LOD.v1.10.NoCD.iTA", ["2.14G", "2.61G"]),
-    ("GTA.Vice.City.iTA.RIP", ["1.39G", "2.10G"]),
-    ("Age.of.Mythology.iTA.2CD", ["1.28G", "1.36G"]),
-    ("Half.Life.2.Beta.LEAK", ["2.9G", "3.1G"]),
+    ("Dune.Parte.Due.2024.iTA.ENG.2160p.UHD.BluRay.x265", ["24.6G", "38.2G"]),
+    ("Deadpool.e.Wolverine.2024.iTA.ENG.1080p.BluRay.x264", ["8.7G", "12.4G"]),
+    ("Inside.Out.2.2024.iTA.1080p.WEB-DL.DDP5.1.H264", ["4.9G", "7.1G"]),
+    ("Il.Gladiatore.II.2024.iTA.ENG.1080p.WEB-DL.x264", ["6.2G", "9.8G"]),
+    ("Furiosa.A.Mad.Max.Saga.2024.iTA.2160p.WEB-DL.H265", ["18.4G", "27.9G"]),
+    ("Wicked.2024.iTA.ENG.1080p.WEB-DL.DDP5.1.H264", ["7.3G", "10.6G"]),
+    ("Oppenheimer.2023.iTA.ENG.1080p.BluRay.x264", ["11.2G", "15.8G"]),
+    ("Cattivissimo.Me.4.2024.iTA.1080p.WEB-DL.H264", ["4.1G", "6.3G"]),
+    ("Beetlejuice.Beetlejuice.2024.iTA.1080p.BluRay.x264", ["8.1G", "11.9G"]),
+    ("Il.Robot.Selvaggio.2024.iTA.ENG.1080p.WEB-DL.x264", ["5.4G", "7.8G"]),
+    ("Alien.Romulus.2024.iTA.ENG.2160p.UHD.BluRay.x265", ["22.1G", "34.7G"]),
+    ("Venom.The.Last.Dance.2024.iTA.1080p.WEB-DL.H264", ["6.6G", "9.2G"]),
+    ("Sonic.3.Il.Film.2024.iTA.1080p.WEB-DL.DDP5.1.H264", ["5.1G", "7.4G"]),
+    ("Mufasa.Il.Re.Leone.2024.iTA.1080p.WEB-DL.x264", ["6.9G", "10.1G"]),
 ]
 
-# Rationed: the SignalOS legend is canon, not a running joke. ~1 in 10.
-LEGEND = [
-    ("SignalOS.1.0.FINAL.BOOTABLE.ISO", ["648M", "702M"]),
-    ("SignalOS.0.9b.SOURCE.LEAKED", ["14M", "22M"]),
-]
+# SignalOS canon ([[reference_signalos_canon]]) is retired from the dump: it is
+# an OS, and the offered set is films only now (vjt 2026-09-12). The reference
+# survives here; if vjt wants the legend back, it returns as its own gag, not in
+# a film catalogue.
+LEGEND = []
 
 # Real scene crews: the clean half of the crew pool, so the list reads
 # straight where the bestemmia is not carrying the gag.
@@ -191,13 +192,13 @@ THROTTLE_LINES = [
 
 
 def pick_entries(rng, count):
-    """`count` distinct catalog entries, SignalOS legend rationed to ~1 in 10.
+    """`count` distinct catalog entries, LEGEND rationed to ~1 in 10 if present.
 
-    The legend is canon ([[reference_signalos_canon]]), not a running joke;
-    seeing it in every dump is how canon turns into a catchphrase.
+    LEGEND is empty under the films-only order, so the ration is a no-op; the
+    guard keeps it wired for the day the legend comes back as its own gag.
     """
     entries = rng.sample(CATALOG, count)
-    if rng.random() < 0.10:
+    if LEGEND and rng.random() < 0.10:
         entries[rng.randrange(count)] = rng.choice(LEGEND)
     return entries
 
@@ -220,7 +221,9 @@ def scene_name(rng, title, bestemmiata):
 
 
 def build_dump(rng):
-    """Header + three pack lines + footer + cross-promo, per the standing order."""
+    """Build one dump. Returns `(lines, names)`: the IRC lines to recite and the
+    ordered scene names offered as packs #1..#N, so `xdcc send #N` can offer the
+    rickroll under the title the victim actually asked for (vjt 2026-09-12)."""
     packs = 3
     open_slots = rng.randint(0, 3)
 
@@ -239,9 +242,11 @@ def build_dump(rng):
     n_best = packs if rng.random() < 0.33 else 2
     best_rows = set(rng.sample(range(packs), n_best))
     total = 0.0
+    names = []
     for i, (title, sizes) in enumerate(entries):
         size = rng.choice(sizes)
         name = scene_name(rng, title, i in best_rows)
+        names.append(name)
         downloads = rng.randint(1, 99)
         lines.append(f"#{i + 1}  {downloads}x [{size}] {name}")
         total += _gigs(size)
@@ -251,7 +256,7 @@ def build_dump(rng):
         f"{total * rng.uniform(8, 99):.1f}G **"
     )
     lines.append(rng.choice(CROSS_PROMO))
-    return lines
+    return lines, names
 
 
 def _gigs(size):
@@ -287,18 +292,28 @@ def say(chan, message):
         fifo.write(f"SAY:list {chan} {message}\n")
 
 
-def send_dcc(nick, fname):
-    """Offer `fname` (a basename in BOT_DCC_DIR) to `nick` over CTCP DCC SEND.
+def send_dcc(nick, fname, offer=None):
+    """Offer `fname` (a basename in BOT_DCC_DIR) to `nick` over CTCP DCC SEND,
+    announced to the peer as `offer` if given (the requested pack title) else as
+    `fname` itself — see the DCC offer alias in bot.py.
 
     No `:list` origin tag: the DCC verb is not a channel line, it goes straight
     to the requester. If the file is missing bot.py declines the offer, which is
     exactly what we want while the payloads are not in place yet.
     """
+    line = f"DCC {nick} {fname}" + (f" {offer}\n" if offer else "\n")
     with FIFO.open("w") as fifo:
-        fifo.write(f"DCC {nick} {fname}\n")
+        fifo.write(line)
 
 
-def handle(nick, chan, rng, last_fired):
+def offer_name(scene):
+    """Turn a pack's scene name into a DCC offer name: append a `.mp4` extension
+    (the payload is a video) and clip to bot.py's DCC_OFFER_NAME_PAT limit of
+    120 chars. Scene names are already [A-Za-z0-9.-], so they are CTCP-safe."""
+    return f"{scene}.mp4"[:120]
+
+
+def handle(nick, chan, rng, last_fired, last_dump):
     key = (nick.lower(), chan.lower())
     now = time.time()
     previous = last_fired.get(key, 0.0)
@@ -308,9 +323,29 @@ def handle(nick, chan, rng, last_fired):
         say(chan, rng.choice(THROTTLE_LINES).format(nick=nick))
         return
 
-    for line in build_dump(rng):
+    lines, names = build_dump(rng)
+    last_dump[chan.lower()] = names
+    for line in lines:
         say(chan, line)
         time.sleep(LINE_GAP_S)
+
+
+def handle_xdcc(nick, chan, n, rng, last_dump):
+    """Serve the rickroll for `xdcc send #n`.
+
+    In channel, `#n` indexes the channel's last dump and the offer carries that
+    pack's title; a number with no matching pack gets one burbero line and no
+    transfer. In a private query (`chan` is None) there is no dump to index, so
+    a random catalog title is offered (vjt: "file a caso")."""
+    if chan is None:
+        title, _sizes = rng.choice(CATALOG)
+        send_dcc(nick, PAYLOAD_FILE, offer_name(scene_name(rng, title, False)))
+        return
+    names = last_dump.get(chan.lower())
+    if not names or not (1 <= n <= len(names)):
+        say(chan, f"{nick}: pack #{n}? Non c'e', porco dio. Fai !list e leggi.")
+        return
+    send_dcc(nick, PAYLOAD_FILE, offer_name(names[n - 1]))
 
 
 def tail(path):
@@ -338,35 +373,41 @@ def tail(path):
                 break
 
 
-def dispatch(nick, target, text, rng, last_fired):
+def dispatch(nick, target, text, rng, last_fired, last_dump):
     """Act on one inbound PRIVMSG: `!list`/channel `xdcc` or a private query."""
     if nick.lower() in IGNORE_NICKS:
         return
     if target.startswith("#"):
         # In channel: `!list` dumps the catalog; `xdcc send #N` from a human
-        # watching the gag gets the payload.
+        # watching the gag gets the payload, offered under pack #N's title.
         chan = target.lower()
         if chan not in CHANNELS or chan in {m.lower() for m in muted_channels()}:
             return
         if LIST_PAT.match(text):
-            handle(nick, target, rng, last_fired)
-        elif XDCC_PAT.match(text):
-            send_dcc(nick, PAYLOAD_FILE)
-    elif XDCC_PAT.match(text):
-        # Private query to the bot: an XDCC leecher's auto-downloader. Same
-        # rickroll, no channel context needed.
-        send_dcc(nick, PAYLOAD_FILE)
+            handle(nick, target, rng, last_fired, last_dump)
+        else:
+            m = XDCC_PAT.match(text)
+            if m:
+                handle_xdcc(nick, target, int(m.group(1)), rng, last_dump)
+    else:
+        m = XDCC_PAT.match(text)
+        if m:
+            # Private query to the bot: an XDCC leecher's auto-downloader. No
+            # channel context, so a random title (vjt: "file a caso").
+            handle_xdcc(nick, None, int(m.group(1)), rng, last_dump)
 
 
 def main():
     rng = random.Random()
     last_fired = {}
+    last_dump = {}
     for line in tail(LOG):
         match = PRIVMSG_PAT.search(line)
         if not match:
             continue
         try:
-            dispatch(match["nick"], match["target"], match["text"], rng, last_fired)
+            dispatch(match["nick"], match["target"], match["text"],
+                     rng, last_fired, last_dump)
         except OSError as exc:
             print(f"list_sidecar: FIFO write failed: {exc}", file=sys.stderr, flush=True)
 

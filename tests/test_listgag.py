@@ -7,7 +7,9 @@ tag CAPS in mezzo a ogni riga.
 
 Poi il wiring `xdcc send #N` -> DCC del rickroll (vjt 2026-09-12): gli XDCC
 leecher lo mandano in QUERY al bot, gli umani in canale; entrambi ricevono lo
-stesso file (mp4), niente exe, il numero del pack e' decorativo.
+stesso file (mp4), niente exe. Il numero del pack ora CONTA: in canale l'offerta
+porta il titolo del pack #N dell'ultimo dump (stato per-canale); in query, dove
+non c'e' dump, un titolo a caso. E il catalogo e' solo film recenti, no software.
 """
 import os
 import random
@@ -26,12 +28,24 @@ DCC_NAME = re.compile(r"[A-Za-z0-9._-]{1,80}\Z")
 SIZE_BY_TITLE = {t: set(sizes) for t, sizes in listgag.CATALOG + listgag.LEGEND}
 
 
+def test_catalog_is_films_only():
+    # vjt 2026-09-12: solo film, no software/giochi. Niente ISO/exe/ROM/keygen
+    # nei titoli, e ogni titolo porta un marcatore da film (anno + risoluzione).
+    bad = re.compile(r"\b(ISO|OEM|Retail|NoCD|NoSteam|keygen|crack)\b", re.I)
+    for title, _sizes in listgag.CATALOG:
+        assert not bad.search(title), title
+        assert re.search(r"\b(1080p|2160p|720p)\b", title), title
+    assert listgag.LEGEND == [], listgag.LEGEND
+
+
 def test_shape_and_sizes():
     rng = random.Random(1)
     for _ in range(500):
-        lines = listgag.build_dump(rng)
+        lines, names = listgag.build_dump(rng)
         packs = [PACK.match(l) for l in lines if l.startswith("#")]
         assert len(packs) == 3 and all(packs), lines
+        # i nomi restituiti sono esattamente quelli mostrati, in ordine
+        assert [m.group(4) for m in packs] == names, (packs, names)
         for m in packs:
             name, size = m.group(4), m.group(3)
             assert " " not in name, name
@@ -44,7 +58,7 @@ def test_bestemmia_level():
     rng = random.Random(2)
     seen = set()
     for _ in range(500):
-        lines = listgag.build_dump(rng)
+        lines, _names = listgag.build_dump(rng)
         packs = [l for l in lines if l.startswith("#")]
         n = sum(1 for l in packs if BEST.search(l))
         assert 2 <= n <= 3, (n, packs)  # presente ma non prepotente, mai zero
@@ -54,7 +68,7 @@ def test_bestemmia_level():
 
 def test_invite_line():
     rng = random.Random(3)
-    lines = listgag.build_dump(rng)
+    lines, _names = listgag.build_dump(rng)
     req = next(l for l in lines if "xdcc send" in l.lower())
     assert "/msg" not in req, req  # niente /msg hard-coded: query e canale ok
 
@@ -81,54 +95,89 @@ def test_xdcc_pattern():
     assert listgag.XDCC_PAT.match("please xdcc send #1") is None  # anchored
 
 
+# l'offer name: stessa regola di bot.py DCC_OFFER_NAME_PAT, limite 120.
+DCC_OFFER = re.compile(r"[A-Za-z0-9._-]{1,120}\Z")
+
+
 def _recording():
     """Sostituisce say/send_dcc/sleep con registratori."""
     calls = {"say": [], "dcc": []}
     listgag.say = lambda chan, msg: calls["say"].append((chan, msg))
-    listgag.send_dcc = lambda nick, fname: calls["dcc"].append((nick, fname))
+    listgag.send_dcc = lambda nick, fname, offer=None: calls["dcc"].append(
+        (nick, fname, offer))
     listgag.time.sleep = lambda _s: None
     return calls
 
 
-def test_dispatch_channel_and_query_serve_the_payload():
+def test_dispatch_channel_offers_under_pack_title():
     calls = _recording()
     rng = random.Random(4)
-    lf = {}
-    # xdcc send #N in un canale servito -> DCC del payload al richiedente
-    listgag.dispatch("mario", "#sbiffo", "xdcc send #2", rng, lf)
-    assert calls["dcc"] == [("mario", listgag.PAYLOAD_FILE)], calls
-    # stessa cosa in query privata al bot (target = nick, non canale)
-    calls["dcc"].clear()
-    listgag.dispatch("mario", "EliteWarez", "xdcc send #1", rng, lf)
-    assert calls["dcc"] == [("mario", listgag.PAYLOAD_FILE)], calls
+    lf, ld = {}, {}
+    # prima un !list popola lo stato per-canale
+    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf, ld)
+    titles = ld["#sbiffo"]
+    assert len(titles) == 3, ld
+    # xdcc send #2 -> DCC del payload, offerto col TITOLO del pack #2 + .mp4
+    listgag.dispatch("mario", "#sbiffo", "xdcc send #2", rng, lf, ld)
+    assert len(calls["dcc"]) == 1, calls
+    nick, fname, offer = calls["dcc"][0]
+    assert nick == "mario" and fname == listgag.PAYLOAD_FILE, calls
+    assert offer == f"{titles[1]}.mp4", (offer, titles)
+    assert DCC_OFFER.match(offer), offer
+
+
+def test_dispatch_channel_out_of_range_no_dcc():
+    calls = _recording()
+    rng = random.Random(41)
+    lf, ld = {}, {}
+    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf, ld)
+    calls["say"].clear()
+    # #9 non esiste: una riga burbera, nessuna DCC
+    listgag.dispatch("mario", "#sbiffo", "xdcc send #9", rng, lf, ld)
+    assert calls["dcc"] == [], calls
+    assert len(calls["say"]) == 1 and "#9" in calls["say"][0][1], calls
+
+
+def test_dispatch_query_offers_random_title():
+    calls = _recording()
+    rng = random.Random(42)
+    lf, ld = {}, {}
+    # query privata al bot: nessun dump, titolo a caso ma offerta valida
+    listgag.dispatch("mario", "EliteWarez", "xdcc send #1", rng, lf, ld)
+    assert len(calls["dcc"]) == 1, calls
+    nick, fname, offer = calls["dcc"][0]
+    assert nick == "mario" and fname == listgag.PAYLOAD_FILE, calls
+    assert offer.endswith(".mp4") and DCC_OFFER.match(offer), offer
 
 
 def test_dispatch_list_dumps_only_in_channel():
     calls = _recording()
     rng = random.Random(5)
-    lf = {}
+    lf, ld = {}, {}
     # !list in canale servito -> un dump (piu' righe), niente DCC
-    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf)
+    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf, ld)
     assert len(calls["say"]) >= 5 and calls["dcc"] == [], calls
     # !list in query NON dumpa (solo xdcc funziona in query)
     calls["say"].clear()
-    listgag.dispatch("mario", "EliteWarez", "!list", rng, lf)
+    listgag.dispatch("mario", "EliteWarez", "!list", rng, lf, ld)
     assert calls["say"] == [] and calls["dcc"] == [], calls
 
 
 def test_dispatch_ignores_bots_and_unserved_channels():
     calls = _recording()
     rng = random.Random(6)
-    lf = {}
+    lf, ld = {}, {}
     # un altro bot che spara xdcc: niente (o e' flood a due macchine)
-    listgag.dispatch("cristobot", "#sbiffo", "xdcc send #1", rng, lf)
-    listgag.dispatch("elitewarez", "EliteWarez", "xdcc send #1", rng, lf)
+    listgag.dispatch("cristobot", "#sbiffo", "xdcc send #1", rng, lf, ld)
+    listgag.dispatch("elitewarez", "EliteWarez", "xdcc send #1", rng, lf, ld)
     # canale non servito: muto
-    listgag.dispatch("mario", "#grappa", "xdcc send #1", rng, lf)
+    listgag.dispatch("mario", "#grappa", "xdcc send #1", rng, lf, ld)
     assert calls == {"say": [], "dcc": []}, calls
 
 
 if __name__ == "__main__":
+    test_catalog_is_films_only()
+    print("ok: catalogo solo film recenti, no software, LEGEND vuota")
     test_shape_and_sizes()
     print("ok: 3 pack a dump, nomi senza spazi, taglie dal pool del titolo")
     test_bestemmia_level()
@@ -141,8 +190,12 @@ if __name__ == "__main__":
     print("ok: PRIVMSG_PAT cattura target canale e query")
     test_xdcc_pattern()
     print("ok: XDCC_PAT ancorato, # opzionale, junk in coda tollerato")
-    test_dispatch_channel_and_query_serve_the_payload()
-    print("ok: xdcc in canale e in query -> DCC del payload")
+    test_dispatch_channel_offers_under_pack_title()
+    print("ok: xdcc #N in canale -> DCC offerto col titolo del pack")
+    test_dispatch_channel_out_of_range_no_dcc()
+    print("ok: #N fuori range -> riga burbera, nessuna DCC")
+    test_dispatch_query_offers_random_title()
+    print("ok: xdcc in query -> titolo a caso, offerta valida")
     test_dispatch_list_dumps_only_in_channel()
     print("ok: !list dumpa solo in canale, non in query")
     test_dispatch_ignores_bots_and_unserved_channels()
