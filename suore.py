@@ -929,9 +929,12 @@ def _rank_line(head, rank, field, maxlen, gold=False, rest=()):
     parts, out = [], head
     for s in rank:
         i = sum(1 for altro in rank if altro[field] > s[field])
-        medaglia = MEDAGLIE[i] if i < len(MEDAGLIE) else "·"
+        # Dal 4° in giu' NIENTE medaglia: il separatore fra le voci e' gia'
+        # ` · `, e un '·' anche come medaglia dava `· · alk 3` (vjt, #sbiffo
+        # 13/9 19:02: «perche' ci sono 2 pallini?»).
+        medaglia = f"{MEDAGLIE[i]} " if i < len(MEDAGLIE) else ""
         dorate = s.get("golden", 0) if gold else 0
-        piece = (f"{medaglia} \x02{s['nick']}\x02 {s[field]}"
+        piece = (f"{medaglia}\x02{s['nick']}\x02 {s[field]}"
                  + (f", di cui {dorate} ⭐" if dorate else ""))
         if len(out) + len(piece) + 3 > budget:
             parts.append("…")
