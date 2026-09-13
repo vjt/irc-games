@@ -12,6 +12,9 @@ rcvar="ambrogio_yt_enable"
 load_rc_config "$name"
 : ${ambrogio_yt_enable:="NO"}
 : ${ambrogio_yt_chans:="#sniffo,#sbiffo"}
+# Data API v3 key: dall'IP della jail la pagina watch risponde LOGIN_REQUIRED,
+# quindi qui la chiave non e' un lusso, e' l'unica via (vjt, 11:57).
+: ${ambrogio_yt_key_file:="/usr/local/etc/convento/yt_api_key"}
 pidfile="/var/run/convento/yt.pid"
 procname="/usr/local/bin/python3.11"
 command="/usr/sbin/daemon"
@@ -20,6 +23,7 @@ command_args="-f -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/conv
   /usr/bin/env YT_LOG=/var/log/convento/ambrogio.log \
   YT_FIFO=/var/run/convento/ambrogio.send \
   YT_CHANS=${ambrogio_yt_chans} \
+  YT_API_KEY_FILE=${ambrogio_yt_key_file} \
   /usr/local/bin/python3.11 -u /opt/irc-games/yt_preview.py"
 # Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr
 # insegue il FIGLIO (procname), quindi uno stop che trova il python gia' morto

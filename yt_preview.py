@@ -22,15 +22,23 @@ YouTube black on white, the rest plain. Written as real 0x03 bytes here —
 never copy them back out of bot.log, the log strips them (see the bot repo's
 `feedback_irc_color_byte_lost_in_log`).
 
-NO API KEY. The YouTube Data API v3 wants a project with the API enabled and
-the key on this host (`~/.config/gemini-api-key`, project 934892539014) is
-blocked for it (`API_KEY_SERVICE_BLOCKED`, measured 2026-09-13). The watch page
-carries everything we print in `ytInitialPlayerResponse.videoDetails` (title,
-lengthSeconds, viewCount) plus `"likeCount"` a few KB further down, and the
-search page carries `videoRenderer` entries — so we parse the page. That is
-scraping, and it will break the day YouTube renames a key: every field degrades
-on its own (a missing one prints `-`), and a page we cannot parse at all prints
-nothing rather than a wrong line.
+Two sources, in this order.
+
+  * The **Data API v3** when a key is configured — vjt's call (#sbiffo 11:57,
+    "no usiamo l'api key, poi la registro"), because the page route does not
+    survive the jail: from convento's IP YouTube answers `LOGIN_REQUIRED`
+    ("Accedi per confermare di non essere un bot") to the watch page, to
+    innertube on WEB/MWEB/ANDROID/IOS/TVHTML5, and to the public Piped and
+    Invidious mirrors. Only oembed replies there, and it carries the title
+    alone. The API does not care about the IP: the key is the identity.
+  * The **watch page**, scraped, as the fallback for a host with no key — it
+    works from a residential address and it is what built this line first.
+    `ytInitialPlayerResponse.videoDetails` has title/lengthSeconds/viewCount,
+    `"likeCount"` sits a few KB further down, and the search page carries
+    `videoRenderer` entries.
+
+Both degrade field by field (a missing one prints `-`); a source we cannot read
+at all prints nothing rather than a wrong line.
 
 Shape is the house sidecar shape (chanstats_sidecar.py, next_counter.py): tail
 bot.log, match, write verbs into the bot.send FIFO, non-blocking, so a dead bot
@@ -42,9 +50,11 @@ Usage:
   yt_preview.py --search <keywords>  # print the !yt line, send nothing
 
 Env:
-  YT_LOG    bot.log to tail       (default: the vjt-claude repo one)
-  YT_FIFO   bot.send to write     ('' disables talking — dry runs stay mute)
-  YT_CHANS  comma separated list  (default: #sniffo,#sbiffo)
+  YT_LOG           bot.log to tail       (default: the vjt-claude repo one)
+  YT_FIFO          bot.send to write     ('' disables talking — dry runs mute)
+  YT_CHANS         comma separated list  (default: #sniffo,#sbiffo)
+  YT_API_KEY       Data API v3 key, or
+  YT_API_KEY_FILE  a file holding it (default /usr/local/etc/convento/yt_api_key)
 """
 
 import json
@@ -62,6 +72,29 @@ LOG = os.environ.get("YT_LOG", str(ROOT / "bot.log"))
 FIFO = os.environ.get("YT_FIFO", str(ROOT / "bot.send"))
 CHANNELS = {c.strip() for c in os.environ.get(
     "YT_CHANS", "#sniffo,#sbiffo").split(",") if c.strip()}
+
+# Data API v3 key. vjt's call (#sbiffo 2026-09-13 11:57, "no usiamo l'api key,
+# poi la registro") after the scraper turned out to be unusable from the jail:
+# YouTube answers LOGIN_REQUIRED ("prove you are not a bot") to convento's IP on
+# the watch page, on innertube for every client, and on the public Piped and
+# Invidious mirrors. The API answers an IP it does not like just fine, because
+# the key is the identity.
+#
+# Quota, so nobody is surprised: 10.000 units/day. `videos.list` costs 1, so a
+# pasted link is free in practice; `search.list` costs 100, so `!yt` has room
+# for ~100 searches a day. The scraper below stays as the fallback for a host
+# that has no key.
+API_KEY = os.environ.get("YT_API_KEY", "")
+if not API_KEY:
+    for _p in (os.environ.get("YT_API_KEY_FILE"),
+               "/usr/local/etc/convento/yt_api_key",
+               str(Path.home() / ".config" / "youtube-api-key")):
+        try:
+            API_KEY = Path(_p).read_text().strip()
+            break
+        except (OSError, TypeError):
+            continue
+API = "https://www.googleapis.com/youtube/v3"
 
 # One preview per channel per this many seconds, and never the same video twice
 # inside it: a link pasted three times in a row is one line, not three.
@@ -165,12 +198,63 @@ def _likes(html):
     return None
 
 
+ISO_DUR_PAT = re.compile(
+    r'P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?\Z')
+
+
+def iso_seconds(s):
+    """`PT1M55S` -> 115. The API speaks ISO 8601, the line speaks m:ss."""
+    m = ISO_DUR_PAT.match(s or "")
+    if not m:
+        return None
+    d, h, mi, sec = (int(x or 0) for x in m.groups())
+    return ((d * 24 + h) * 60 + mi) * 60 + sec
+
+
+def api(path, **params):
+    params["key"] = API_KEY
+    url = f"{API}/{path}?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
+        return json.loads(r.read(MAX_BYTES))
+
+
+def api_video_info(video_id):
+    items = api("videos", part="snippet,contentDetails,statistics",
+                id=video_id).get("items") or []
+    if not items:
+        return None
+    it = items[0]
+    stats = it.get("statistics") or {}
+
+    def num(v):
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return None
+    return {
+        "id": video_id,
+        "title": " ".join((it["snippet"]["title"]).split()),
+        "seconds": iso_seconds((it.get("contentDetails") or {}).get("duration")),
+        "views": num(stats.get("viewCount")),
+        # Absent, not zero, when the uploader hides likes — `-` says so.
+        "likes": num(stats.get("likeCount")),
+    }
+
+
 def video_info(video_id):
-    """title/seconds/views/likes for one id, or None if the page is unreadable.
+    """title/seconds/views/likes for one id, or None if nothing is readable.
 
     Every field but the title degrades on its own: a line with `Visual: -` is
     still useful, a line with a wrong number is not.
     """
+    if API_KEY:
+        try:
+            info = api_video_info(video_id)
+            if info:
+                return info
+        except Exception:
+            pass  # key revoked, quota gone, API down: try the page.
     html = fetch(f"https://www.youtube.com/watch?v={video_id}&hl=it")
     data = _first_json(html, "ytInitialPlayerResponse", want="videoDetails")
     details = (data or {}).get("videoDetails") or {}
@@ -193,6 +277,14 @@ def video_info(video_id):
 
 def search_first(query):
     """First video hit for `query`. Playlists/channels/ads are not videos."""
+    if API_KEY:
+        try:
+            items = api("search", part="id", q=query, type="video",
+                        maxResults=1).get("items") or []
+            if items:
+                return items[0]["id"]["videoId"]
+        except Exception:
+            pass  # same reasoning as video_info: fall through to the page.
     url = ("https://www.youtube.com/results?hl=it&search_query="
            + urllib.parse.quote_plus(query))
     data = _first_json(fetch(url), "ytInitialData", want="contents")
