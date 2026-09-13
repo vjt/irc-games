@@ -98,7 +98,10 @@ LIST_PAT = re.compile(r"^\s*!\s*list\b[\s.!?]*$", re.IGNORECASE)
 # UNDER THAT NAME (vjt 2026-09-12: "non deve essere rickroll.mp4, deve esse lo
 # stesso titolo richiesto quindi si va conservato dello stato"). In a private
 # query there is no dump to look up, so a random title is used ("file a caso").
-XDCC_PAT = re.compile(r"^\s*xdcc\s+send\s+#?(\d+)\b", re.IGNORECASE)
+# `send` is optional (vjt 2026-09-13): a victim who types `xdcc 1` or `xdcc #1`
+# has bitten just as hard as one who spells out `xdcc send #1`, and dropping his
+# request on a syntax detail wastes the whole setup.
+XDCC_PAT = re.compile(r"^\s*xdcc\s+(?:send\s+)?#?(\d+)\b", re.IGNORECASE)
 
 # In channel a leecher may address the bot by nick: `elitewarez: xdcc send #2`
 # (vjt 2026-09-13). Strip a leading `<selfnick>[:,]` before the xdcc match —

@@ -93,6 +93,10 @@ def test_xdcc_pattern():
     assert listgag.XDCC_PAT.match("  xdcc  send  #7  ").group(1) == "7"
     assert listgag.XDCC_PAT.match("xdcc list") is None
     assert listgag.XDCC_PAT.match("please xdcc send #1") is None  # anchored
+    # `send` opzionale (vjt 2026-09-13): chi scrive `xdcc 1` ha abboccato uguale
+    assert listgag.XDCC_PAT.match("xdcc 1").group(1) == "1"
+    assert listgag.XDCC_PAT.match("xdcc #1").group(1) == "1"
+    assert listgag.XDCC_PAT.match("XDCC  #42  grazie").group(1) == "42"
 
 
 # l'offer name: stessa regola di bot.py DCC_OFFER_NAME_PAT, limite 120.
