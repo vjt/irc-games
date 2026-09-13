@@ -847,14 +847,15 @@ def handle(data, scope, nick, cmd, now):
     return True
 
 
-def leaderboard(data, scope, limit=12, maxlen=380):
+def leaderboard(data, scope, limit=7, maxlen=380):
     """Una riga sola, come rex: i primi in grassetto, troncati con '...'.
 
     Il tetto e' in byte utili, non in voci: un nick lungo ne vale tre corti, e
     il server taglia a 512 la riga intera comprese le intestazioni."""
     # Solo chi ha sparato: e' la classifica dei killer, come `.killers` di rex.
     # Chi fa solo amicizia non e' ultimo in classifica, e' in un'altra partita.
-    rank = board(data, scope, "kills")[:limit]
+    tutti = board(data, scope, "kills")
+    rank, resto = tutti[:limit], tutti[limit:]
     if not rank:
         return ("🔫 [Sparasuore] Classifica vuota: nessuno ha ancora sparato "
                 "a una suora. Che noia.")
@@ -874,10 +875,10 @@ def leaderboard(data, scope, limit=12, maxlen=380):
     has_gold = any(s.get("golden", 0) for s in rank)
     head = ("🔫 [Sparasuore] Classifica (⭐ = dorate): " if has_gold
             else "🔫 [Sparasuore] Classifica: ")
-    return _rank_line(head, rank, "kills", maxlen, gold=True)
+    return _rank_line(head, rank, "kills", maxlen, gold=True, rest=resto)
 
 
-def marpioni(data, scope, limit=12, maxlen=380):
+def marpioni(data, scope, limit=7, maxlen=380):
     """La riga gemella di chi le suore se le fa amiche (ordine di vjt, 9/9).
 
     Si chiamava «Crumiri» fino al 2026-09-09 16:59: rinominata su proposta di
@@ -891,17 +892,24 @@ def marpioni(data, scope, limit=12, maxlen=380):
     Torna None quando nessuno ha ancora convertito una suora: una riga che
     dice "nessun marpione" e' rumore su ogni `.classifica` di un canale che
     gioca solo a sparare."""
-    rank = board(data, scope, "friends")[:limit]
+    tutti = board(data, scope, "friends")
+    rank, resto = tutti[:limit], tutti[limit:]
     if not rank:
         return None
-    return _rank_line("😏 [Sparasuore] Marpioni: ", rank, "friends", maxlen)
+    return _rank_line("😏 [Sparasuore] Marpioni: ", rank, "friends", maxlen,
+                      rest=resto)
 
 
-def _rank_line(head, rank, field, maxlen, gold=False):
+def _rank_line(head, rank, field, maxlen, gold=False, rest=()):
     """Il corpo comune alle due righe: medaglia, nick in grassetto, numero.
 
     Il tetto e' in byte utili e non in voci, quindi si tronca con '…' appena
-    il pezzo successivo sfora: un nick lungo ne vale tre corti."""
+    il pezzo successivo sfora: un nick lungo ne vale tre corti.
+
+    `rest` sono i giocatori tagliati fuori dal cap: si chiudono in una voce
+    sola `altri N (M)` invece di sparire (vjt, #sbiffo 13/9 18:55). La coda
+    e' un numero, non una lista: chi vuole il proprio punteggio esatto e'
+    fuori dai primi e la riga non e' il posto dove cercarlo."""
     # Il parimerito prende la STESSA medaglia (vjt, #sbiffo 9/9 01:34: «tra i
     # marpioni deadbeef_ e katia sono a parimerito»): la medaglia la decide il
     # punteggio, non la posizione nella lista. Due a pari sono due ori, e il
@@ -911,6 +919,13 @@ def _rank_line(head, rank, field, maxlen, gold=False):
     # davvero davanti, quindi due primi bruciano il secondo posto. L'ordine
     # dentro il gruppo resta quello del sort, che ha gia' i suoi spareggi:
     # qui si tolgono solo le medaglie diverse a chi ha lo stesso punteggio.
+    # La coda si calcola PRIMA e il suo costo si scala dal tetto: se il
+    # troncamento la mangiasse, la riga direbbe "…" senza mai dire quanti
+    # sono gli altri — e il conto e' proprio la cosa che il cap serve a non
+    # perdere.
+    coda = (f"altri {len(rest)} ({sum(s[field] for s in rest)})"
+            if rest else "")
+    budget = maxlen - (len(coda) + 3 if coda else 0)
     parts, out = [], head
     for s in rank:
         i = sum(1 for altro in rank if altro[field] > s[field])
@@ -918,11 +933,13 @@ def _rank_line(head, rank, field, maxlen, gold=False):
         dorate = s.get("golden", 0) if gold else 0
         piece = (f"{medaglia} \x02{s['nick']}\x02 {s[field]}"
                  + (f", di cui {dorate} ⭐" if dorate else ""))
-        if len(out) + len(piece) + 3 > maxlen:
+        if len(out) + len(piece) + 3 > budget:
             parts.append("…")
             break
         parts.append(piece)
         out = head + " · ".join(parts)
+    if coda:
+        parts.append(coda)
     return head + " · ".join(parts)
 
 
