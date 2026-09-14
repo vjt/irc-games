@@ -226,19 +226,48 @@ def test_dcc_done_pat_reads_the_bot_log_line():
         "22:41:03 < :tizio!~t@host PRIVMSG #sbiffo :DCC_DONE TO=mario") is None
 
 
-def test_query_request_is_announced_in_every_channel():
+def test_query_request_announced_where_the_nick_was_last_seen():
+    # vjt 2026-09-14: "solo sul chan dove e' stata fatta la req, non su
+    # entrambi". Una richiesta in query un canale non ce l'ha, quindi si usa
+    # l'ultimo canale servito in cui quel nick ha parlato.
     calls = _recording()
     rng = random.Random(42)
     lf, ld, pending = {}, {}, {}
+    listgag.last_seen.clear()
+    listgag.last_dump_chan = None
+    listgag.dispatch("mario", "#sbiffo", "ciao a tutti", rng, lf, ld, pending)
     listgag.dispatch("mario", "EliteWarez", "xdcc send #1", rng, lf, ld, pending)
     assert len(calls["dcc"]) == 1, calls
     offer = calls["dcc"][0][2]
-    # una riga per canale servito, col nick e il pack dentro
-    assert sorted(c for c, _ in calls["say"]) == sorted(listgag.CHANNELS), calls
-    for _chan, msg in calls["say"]:
-        assert "mario" in msg and offer in msg, msg
-    # e ce lo ricordiamo, senza canale: la richiesta non veniva da uno
-    assert pending["mario"][0] == offer and pending["mario"][1] is None, pending
+    assert len(calls["say"]) == 1, calls
+    chan, msg = calls["say"][0]
+    assert chan == "#sbiffo" and "mario" in msg and offer in msg, calls
+    assert pending["mario"][0] == offer and pending["mario"][1] == "#sbiffo", pending
+
+
+def test_query_request_falls_back_to_the_last_dump_channel():
+    calls = _recording()
+    rng = random.Random(42)
+    lf, ld, pending = {}, {}, {}
+    listgag.last_seen.clear()
+    listgag.last_dump_chan = None
+    # `mario` non ha mai parlato: si ripiega sul canale dell'ultimo dump
+    listgag.dispatch("tizio", "#sniffo", "!list", rng, lf, ld, pending)
+    calls["say"].clear()
+    listgag.dispatch("mario", "EliteWarez", "xdcc send #1", rng, lf, ld, pending)
+    assert [c for c, _ in calls["say"]] == ["#sniffo"], calls
+
+
+def test_query_request_with_no_channel_at_all_is_silent():
+    calls = _recording()
+    rng = random.Random(42)
+    lf, ld, pending = {}, {}, {}
+    listgag.last_seen.clear()
+    listgag.last_dump_chan = None
+    # sidecar appena riavviato, nessun contesto: la DCC parte lo stesso, ma non
+    # inventiamo un canale in cui annunciarla
+    listgag.dispatch("mario", "EliteWarez", "xdcc send #1", rng, lf, ld, pending)
+    assert len(calls["dcc"]) == 1 and calls["say"] == [], calls
 
 
 def test_channel_request_is_not_announced():
@@ -270,15 +299,19 @@ def test_done_announced_where_the_pack_was_asked():
     assert "mario" not in pending, pending
 
 
-def test_done_without_pending_goes_to_every_channel():
+def test_done_without_pending_still_announces_once():
     calls = _recording()
     rng = random.Random(7)
-    # nessuno stato (sidecar riavviato a meta' transfer): si annuncia ovunque,
-    # col nome del file, che e' gia' il titolo del pack (bot.py offre l'alias)
+    lf, ld = {}, {}
+    listgag.last_seen.clear()
+    listgag.last_dump_chan = None
+    # sidecar riavviato a meta' transfer: lo stato pendente non c'e' piu', ma
+    # il completamento si annuncia SEMPRE (vjt 2026-09-14), in un canale solo
+    listgag.dispatch("mario", "#sniffo", "oh", rng, lf, ld, None)
     listgag.announce_done("mario", "Wicked.2024.iTA.mp4", 900, rng, {})
-    assert sorted(c for c, _ in calls["say"]) == sorted(listgag.CHANNELS), calls
-    for _chan, msg in calls["say"]:
-        assert "Wicked.2024.iTA.mp4" in msg, msg
+    assert len(calls["say"]) == 1, calls
+    chan, msg = calls["say"][0]
+    assert chan == "#sniffo" and "Wicked.2024.iTA.mp4" in msg, calls
 
 
 def test_pending_entries_expire():
@@ -321,14 +354,18 @@ if __name__ == "__main__":
     print("ok: xdcc indirizzato ad altro nick -> muto")
     test_dcc_done_pat_reads_the_bot_log_line()
     print("ok: DCC_DONE_PAT legge la riga di bot.log, non i PRIVMSG")
-    test_query_request_is_announced_in_every_channel()
-    print("ok: richiesta in query -> annuncio su ogni canale servito")
+    test_query_request_announced_where_the_nick_was_last_seen()
+    print("ok: richiesta in query -> annuncio dove il nick e' stato visto")
+    test_query_request_falls_back_to_the_last_dump_channel()
+    print("ok: nick mai visto -> canale dell'ultimo dump")
+    test_query_request_with_no_channel_at_all_is_silent()
+    print("ok: nessun contesto -> DCC si, annuncio no")
     test_channel_request_is_not_announced()
     print("ok: richiesta in canale -> nessun doppione")
     test_done_announced_where_the_pack_was_asked()
     print("ok: DCC_DONE annunciato nel canale della richiesta, stato consumato")
-    test_done_without_pending_goes_to_every_channel()
-    print("ok: DCC_DONE orfano -> annuncio ovunque col nome del file")
+    test_done_without_pending_still_announces_once()
+    print("ok: DCC_DONE orfano -> annuncio comunque, in un canale solo")
     test_pending_entries_expire()
     print("ok: le richieste pendenti scadono")
     print("\nTUTTO VERDE, porco dio")

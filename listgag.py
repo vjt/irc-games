@@ -338,9 +338,38 @@ DONE_LINES = [
 ]
 
 # How long an offer stays pending before we forget which channel it came from.
-# A DCC that lands after this window still gets announced, just to every channel
-# the gag serves instead of only the one it was asked in.
+# A DCC that lands after this window still gets announced — vjt 2026-09-14:
+# "dovrebbe sempre annunciare il dcc complete" — just with the channel resolved
+# the same way a query request is.
 PENDING_TTL_S = 3600
+
+# ONE channel per announce, never both (vjt 2026-09-14: "dovrebbe annunciare
+# solo sul chan dove e' stata fatta la req, non su entrambi"). A request typed
+# in channel carries its own answer; a request that arrives in /msg does not, so
+# we resolve it to the last served channel that nick was seen talking in. That
+# is the channel whose crew watched him bite, which is the whole point of the
+# announce. Fallback when he has never spoken: the channel of the most recent
+# dump — the gag is live there by definition.
+LAST_SEEN_TTL_S = 6 * 3600
+last_seen = {}       # nick_lower -> (chan, ts)
+last_dump_chan = None  # channel of the most recent !list dump
+
+
+def note_seen(nick, chan):
+    now = time.time()
+    for key, (_chan, ts) in list(last_seen.items()):
+        if now - ts > LAST_SEEN_TTL_S:
+            del last_seen[key]
+    last_seen[nick.lower()] = (chan.lower(), now)
+
+
+def resolve_channel(nick):
+    """Which single channel an announce about `nick` belongs in, or None when we
+    have no idea (nobody has spoken and no dump has fired since the restart)."""
+    entry = last_seen.get(nick.lower())
+    if entry and time.time() - entry[1] <= LAST_SEEN_TTL_S:
+        return entry[0]
+    return last_dump_chan
 
 
 def remember_offer(pending, nick, offer, chan):
@@ -364,16 +393,16 @@ def human_size(n):
 
 
 def announce_done(nick, fname, nbytes, rng, pending):
-    """Announce a completed DCC. The channel the pack was asked in wins; a query
-    request (or one we no longer remember) goes to every channel we serve."""
+    """Announce a completed DCC — always, in exactly one channel: the one the
+    pack was asked in, or the one that nick was last seen in when the request
+    came in query (or when we no longer remember it)."""
     entry = (pending or {}).pop(nick.lower(), None)
     pack = entry[0] if entry else fname
-    chan = entry[1] if entry else None
-    targets = [chan] if chan else sorted(CHANNELS)
-    line = rng.choice(DONE_LINES).format(
-        nick=nick, pack=pack, size=human_size(nbytes))
-    for target in targets:
-        say(target, line)
+    chan = (entry[1] if entry else None) or resolve_channel(nick)
+    if chan is None:
+        return
+    say(chan, rng.choice(DONE_LINES).format(
+        nick=nick, pack=pack, size=human_size(nbytes)))
 
 
 def offer_name(scene):
@@ -393,8 +422,10 @@ def handle(nick, chan, rng, last_fired, last_dump):
         say(chan, rng.choice(THROTTLE_LINES).format(nick=nick))
         return
 
+    global last_dump_chan
     lines, names = build_dump(rng)
     last_dump[chan.lower()] = names
+    last_dump_chan = chan.lower()
     for line in lines:
         say(chan, line)
         time.sleep(LINE_GAP_S)
@@ -415,9 +446,11 @@ def handle_xdcc(nick, chan, n, rng, last_dump, pending=None):
         title, _sizes = rng.choice(CATALOG)
         offer = offer_name(scene_name(rng, title, False))
         send_dcc(nick, PAYLOAD_FILE, offer)
-        remember_offer(pending, nick, offer, None)
-        for target in sorted(CHANNELS):
-            say(target, rng.choice(REQUEST_LINES).format(nick=nick, pack=offer))
+        chan_for_announce = resolve_channel(nick)
+        remember_offer(pending, nick, offer, chan_for_announce)
+        if chan_for_announce is not None:
+            say(chan_for_announce,
+                rng.choice(REQUEST_LINES).format(nick=nick, pack=offer))
         return
     names = last_dump.get(chan.lower())
     if not names or not (1 <= n <= len(names)):
@@ -463,6 +496,9 @@ def dispatch(nick, target, text, rng, last_fired, last_dump, pending=None):
         chan = target.lower()
         if chan not in CHANNELS or chan in {m.lower() for m in muted_channels()}:
             return
+        # Every line in a served channel is a location fix: a later query
+        # request from this nick is announced where the crew last heard him.
+        note_seen(nick, chan)
         if LIST_PAT.match(text):
             handle(nick, target, rng, last_fired, last_dump)
         else:
