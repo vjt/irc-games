@@ -205,6 +205,91 @@ def test_dispatch_addressed_to_other_nick_ignored():
     assert calls["dcc"] == [], calls
 
 
+# ---------------------------------------------------------- broadcast in chan
+# vjt 2026-09-14: "se la gente chiede roba a elitewarez ... lo scrive in canale:
+# nick ha richiesto file e poi nick ha ricevuto file se lo scaricano", precisato
+# subito dopo con "intendo se la chiedono in query". Quindi: la RICHIESTA si
+# annuncia solo quando arriva in /msg (in canale l'hanno gia' letta tutti), la
+# RICEZIONE sempre, e l'evento di fine transfer lo scrive bot.py in bot.log
+# ("scrivi l'evento in bot log", stessa serata).
+
+
+def test_dcc_done_pat_reads_the_bot_log_line():
+    line = ("22:41:03 * DCC_DONE TO=mario "
+            "FILE=Dune.Parte.Due.2024.iTA.ENG.2160p.UHD.BluRay.x265-SPARKS.mp4 "
+            "BYTES=246254 ACK=246254\n")
+    m = listgag.DCC_DONE_PAT.search(line)
+    assert m and m["nick"] == "mario" and m["bytes"] == "246254", line
+    assert m["file"].endswith(".mp4"), m["file"]
+    # una riga PRIVMSG normale non deve mai matchare
+    assert listgag.DCC_DONE_PAT.search(
+        "22:41:03 < :tizio!~t@host PRIVMSG #sbiffo :DCC_DONE TO=mario") is None
+
+
+def test_query_request_is_announced_in_every_channel():
+    calls = _recording()
+    rng = random.Random(42)
+    lf, ld, pending = {}, {}, {}
+    listgag.dispatch("mario", "EliteWarez", "xdcc send #1", rng, lf, ld, pending)
+    assert len(calls["dcc"]) == 1, calls
+    offer = calls["dcc"][0][2]
+    # una riga per canale servito, col nick e il pack dentro
+    assert sorted(c for c, _ in calls["say"]) == sorted(listgag.CHANNELS), calls
+    for _chan, msg in calls["say"]:
+        assert "mario" in msg and offer in msg, msg
+    # e ce lo ricordiamo, senza canale: la richiesta non veniva da uno
+    assert pending["mario"][0] == offer and pending["mario"][1] is None, pending
+
+
+def test_channel_request_is_not_announced():
+    calls = _recording()
+    rng = random.Random(4)
+    lf, ld, pending = {}, {}, {}
+    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf, ld, pending)
+    calls["say"].clear()
+    listgag.dispatch("mario", "#sbiffo", "xdcc send #2", rng, lf, ld, pending)
+    # l'hanno letta tutti mentre la scriveva: niente seconda riga
+    assert calls["say"] == [], calls
+    assert pending["mario"][1] == "#sbiffo", pending
+
+
+def test_done_announced_where_the_pack_was_asked():
+    calls = _recording()
+    rng = random.Random(4)
+    lf, ld, pending = {}, {}, {}
+    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf, ld, pending)
+    listgag.dispatch("mario", "#sbiffo", "xdcc send #2", rng, lf, ld, pending)
+    offer = calls["dcc"][0][2]
+    calls["say"].clear()
+    listgag.announce_done("mario", offer, 3 * 1024 * 1024, rng, pending)
+    assert len(calls["say"]) == 1, calls
+    chan, msg = calls["say"][0]
+    assert chan == "#sbiffo" and "mario" in msg and offer in msg, calls
+    assert "3.0MB" in msg, msg
+    # consumata: un secondo DCC_DONE non ha piu' un canale da cui pescare
+    assert "mario" not in pending, pending
+
+
+def test_done_without_pending_goes_to_every_channel():
+    calls = _recording()
+    rng = random.Random(7)
+    # nessuno stato (sidecar riavviato a meta' transfer): si annuncia ovunque,
+    # col nome del file, che e' gia' il titolo del pack (bot.py offre l'alias)
+    listgag.announce_done("mario", "Wicked.2024.iTA.mp4", 900, rng, {})
+    assert sorted(c for c, _ in calls["say"]) == sorted(listgag.CHANNELS), calls
+    for _chan, msg in calls["say"]:
+        assert "Wicked.2024.iTA.mp4" in msg, msg
+
+
+def test_pending_entries_expire():
+    pending = {}
+    listgag.remember_offer(pending, "vecchio", "a.mp4", "#sbiffo")
+    pending["vecchio"] = ("a.mp4", "#sbiffo",
+                          pending["vecchio"][2] - listgag.PENDING_TTL_S - 1)
+    listgag.remember_offer(pending, "nuovo", "b.mp4", None)
+    assert "vecchio" not in pending and "nuovo" in pending, pending
+
+
 if __name__ == "__main__":
     test_catalog_is_films_only()
     print("ok: catalogo solo film recenti, no software, LEGEND vuota")
@@ -234,4 +319,16 @@ if __name__ == "__main__":
     print("ok: `elitewarez: xdcc send #N` addressed -> come la forma nuda")
     test_dispatch_addressed_to_other_nick_ignored()
     print("ok: xdcc indirizzato ad altro nick -> muto")
+    test_dcc_done_pat_reads_the_bot_log_line()
+    print("ok: DCC_DONE_PAT legge la riga di bot.log, non i PRIVMSG")
+    test_query_request_is_announced_in_every_channel()
+    print("ok: richiesta in query -> annuncio su ogni canale servito")
+    test_channel_request_is_not_announced()
+    print("ok: richiesta in canale -> nessun doppione")
+    test_done_announced_where_the_pack_was_asked()
+    print("ok: DCC_DONE annunciato nel canale della richiesta, stato consumato")
+    test_done_without_pending_goes_to_every_channel()
+    print("ok: DCC_DONE orfano -> annuncio ovunque col nome del file")
+    test_pending_entries_expire()
+    print("ok: le richieste pendenti scadono")
     print("\nTUTTO VERDE, porco dio")

@@ -313,6 +313,69 @@ def send_dcc(nick, fname, offer=None):
         fifo.write(line)
 
 
+# bot.py stamps its DCC lifecycle events into bot.log as well as on its stdout
+# (vjt's ruling, 2026-09-14: "scrivi l'evento in bot log"), because this sidecar
+# only ever tails the PRIVMSG log — the stdout stream belongs to the Monitor.
+# Shape: `HH:MM:SS * DCC_DONE TO=<nick> FILE=<offer> BYTES=<n> ACK=<n|none>`.
+# FILE= carries the OFFER name, i.e. the pack title the victim asked for, not
+# the payload on disk — so the announce reads right even with no pending entry.
+DCC_DONE_PAT = re.compile(
+    r"\*\s+DCC_DONE\s+TO=(?P<nick>\S+)\s+FILE=(?P<file>\S+)\s+BYTES=(?P<bytes>\d+)\b"
+)
+
+# Request announced in channel when it arrives in a private query; completion
+# announced when the transfer actually lands. The whole point is that the crew
+# sees who is leeching (vjt 2026-09-14: "essi senno non sappiamo").
+REQUEST_LINES = [
+    "{nick} ha chiesto {pack} in query, il timido.",
+    "{nick} vuole {pack} e lo chiede di nascosto in /msg, porco dio.",
+    "richiesta in query da {nick}: {pack}. Glielo mando.",
+]
+DONE_LINES = [
+    "{nick} si e' scaricato {pack} ({size}). Buona visione.",
+    "{nick} ha ricevuto {pack}, {size} di roba. Se la merita tutta.",
+    "transfer completo: {pack} -> {nick} ({size}).",
+]
+
+# How long an offer stays pending before we forget which channel it came from.
+# A DCC that lands after this window still gets announced, just to every channel
+# the gag serves instead of only the one it was asked in.
+PENDING_TTL_S = 3600
+
+
+def remember_offer(pending, nick, offer, chan):
+    """Record who we just offered what, so the completion can be announced in
+    the right place. `pending` is None in unit tests that only exercise the
+    offer path."""
+    if pending is None:
+        return
+    now = time.time()
+    for key, (_offer, _chan, ts) in list(pending.items()):
+        if now - ts > PENDING_TTL_S:
+            del pending[key]
+    pending[nick.lower()] = (offer, chan, now)
+
+
+def human_size(n):
+    """Byte count as the gag would print it: MB with one decimal, KB below."""
+    if n >= 1024 * 1024:
+        return f"{n / (1024 * 1024):.1f}MB"
+    return f"{max(n // 1024, 1)}KB"
+
+
+def announce_done(nick, fname, nbytes, rng, pending):
+    """Announce a completed DCC. The channel the pack was asked in wins; a query
+    request (or one we no longer remember) goes to every channel we serve."""
+    entry = (pending or {}).pop(nick.lower(), None)
+    pack = entry[0] if entry else fname
+    chan = entry[1] if entry else None
+    targets = [chan] if chan else sorted(CHANNELS)
+    line = rng.choice(DONE_LINES).format(
+        nick=nick, pack=pack, size=human_size(nbytes))
+    for target in targets:
+        say(target, line)
+
+
 def offer_name(scene):
     """Turn a pack's scene name into a DCC offer name: append a `.mp4` extension
     (the payload is a video) and clip to bot.py's DCC_OFFER_NAME_PAT limit of
@@ -337,22 +400,32 @@ def handle(nick, chan, rng, last_fired, last_dump):
         time.sleep(LINE_GAP_S)
 
 
-def handle_xdcc(nick, chan, n, rng, last_dump):
+def handle_xdcc(nick, chan, n, rng, last_dump, pending=None):
     """Serve the rickroll for `xdcc send #n`.
 
     In channel, `#n` indexes the channel's last dump and the offer carries that
     pack's title; a number with no matching pack gets one burbero line and no
     transfer. In a private query (`chan` is None) there is no dump to index, so
-    a random catalog title is offered (vjt: "file a caso")."""
+    a random catalog title is offered (vjt: "file a caso").
+
+    A query request is ANNOUNCED in channel (vjt 2026-09-14: "se la chiedono in
+    query ... lo scrive in canale: nick ha richiesto file"). A channel request
+    is not: everybody already read the line the victim typed."""
     if chan is None:
         title, _sizes = rng.choice(CATALOG)
-        send_dcc(nick, PAYLOAD_FILE, offer_name(scene_name(rng, title, False)))
+        offer = offer_name(scene_name(rng, title, False))
+        send_dcc(nick, PAYLOAD_FILE, offer)
+        remember_offer(pending, nick, offer, None)
+        for target in sorted(CHANNELS):
+            say(target, rng.choice(REQUEST_LINES).format(nick=nick, pack=offer))
         return
     names = last_dump.get(chan.lower())
     if not names or not (1 <= n <= len(names)):
         say(chan, f"{nick}: pack #{n}? Non c'e', porco dio. Fai !list e leggi.")
         return
-    send_dcc(nick, PAYLOAD_FILE, offer_name(names[n - 1]))
+    offer = offer_name(names[n - 1])
+    send_dcc(nick, PAYLOAD_FILE, offer)
+    remember_offer(pending, nick, offer, chan)
 
 
 def tail(path):
@@ -380,7 +453,7 @@ def tail(path):
                 break
 
 
-def dispatch(nick, target, text, rng, last_fired, last_dump):
+def dispatch(nick, target, text, rng, last_fired, last_dump, pending=None):
     """Act on one inbound PRIVMSG: `!list`/channel `xdcc` or a private query."""
     if nick.lower() in IGNORE_NICKS:
         return
@@ -395,26 +468,35 @@ def dispatch(nick, target, text, rng, last_fired, last_dump):
         else:
             m = XDCC_PAT.match(strip_address(text))
             if m:
-                handle_xdcc(nick, target, int(m.group(1)), rng, last_dump)
+                handle_xdcc(nick, target, int(m.group(1)), rng, last_dump, pending)
     else:
         m = XDCC_PAT.match(text)
         if m:
             # Private query to the bot: an XDCC leecher's auto-downloader. No
             # channel context, so a random title (vjt: "file a caso").
-            handle_xdcc(nick, None, int(m.group(1)), rng, last_dump)
+            handle_xdcc(nick, None, int(m.group(1)), rng, last_dump, pending)
 
 
 def main():
     rng = random.Random()
     last_fired = {}
     last_dump = {}
+    pending = {}
     for line in tail(LOG):
+        done = DCC_DONE_PAT.search(line)
+        if done:
+            try:
+                announce_done(done["nick"], done["file"], int(done["bytes"]),
+                              rng, pending)
+            except OSError as exc:
+                print(f"list_sidecar: FIFO write failed: {exc}", file=sys.stderr, flush=True)
+            continue
         match = PRIVMSG_PAT.search(line)
         if not match:
             continue
         try:
             dispatch(match["nick"], match["target"], match["text"],
-                     rng, last_fired, last_dump)
+                     rng, last_fired, last_dump, pending)
         except OSError as exc:
             print(f"list_sidecar: FIFO write failed: {exc}", file=sys.stderr, flush=True)
 
