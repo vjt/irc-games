@@ -362,6 +362,21 @@ def hidden_letters(answer, revealed):
 
 
 MEDAGLIE = ("🥇", "🥈", "🥉")
+ZWSP = "​"
+
+
+def sprinkle(s, n=3):
+    """Infila n spazi a larghezza zero in posizioni casuali.
+
+    Non è un vezzo: è il motivo per cui la riga di rex non si può copiare e
+    rimandare per finta. Le posizioni sono interne (mai in testa o in coda),
+    così la riga resta identica all'occhio."""
+    out = list(s)
+    for _ in range(n):
+        if len(out) < 2:
+            break
+        out.insert(random.randrange(1, len(out)), ZWSP)
+    return "".join(out)
 
 
 def podio(rows, top=10):
@@ -371,7 +386,7 @@ def podio(rows, top=10):
     vjt, #sbiffo 16:25) — una funzione sola, cosi' non divergono al prossimo
     ritocco."""
     return " · ".join(
-        f"{MEDAGLIE[i] if i < len(MEDAGLIE) else '·'} {r['nick']} {r['points']}"
+        f"{MEDAGLIE[i] if i < len(MEDAGLIE) else '·'} {sprinkle(r['nick'])} {r['points']}"
         for i, r in enumerate(rows[:top]))
 
 

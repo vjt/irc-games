@@ -264,14 +264,14 @@ def sprinkle(s, n=3):
     così la riga resta identica all'occhio."""
     out = list(s)
     for _ in range(n):
-        if len(out) < 3:
+        if len(out) < 2:
             break
         out.insert(random.randrange(1, len(out)), ZWSP)
     return "".join(out)
 
 
 def spawn_line(golden=False):
-    trail = TRAIL
+    trail = sprinkle(TRAIL, n=6)
     if golden:
         head, call = random.choice(GOLDEN_HEADS), random.choice(GOLDEN_CALLS)
         # SOLO grassetto, niente colore: ordine di vjt (#sbiffo 02:22
@@ -934,7 +934,8 @@ def _rank_line(head, rank, field, maxlen, gold=False, rest=()):
         # 13/9 19:02: «perche' ci sono 2 pallini?»).
         medaglia = f"{MEDAGLIE[i]} " if i < len(MEDAGLIE) else ""
         dorate = s.get("golden", 0) if gold else 0
-        piece = (f"{medaglia}\x02{s['nick']}\x02 {s[field]}"
+        nick = sprinkle(s['nick'], n=3)
+        piece = (f"{medaglia}\x02{nick}\x02 {s[field]}"
                  + (f", di cui {dorate} ⭐" if dorate else ""))
         if len(out) + len(piece) + 3 > budget:
             parts.append("…")
