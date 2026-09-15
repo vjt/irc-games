@@ -118,13 +118,17 @@ def strip_address(text):
         return m["rest"]
     return text
 
-# The one payload every request receives: the synthesised rickroll video (see
-# payload/make_rickroll_mp4.sh). No exe (vjt 2026-09-12). It lives in the bot's
-# BOT_DCC_DIR inside the jail; if it is missing bot.py declines the DCC, so the
-# wiring lands even before the file is deployed. The name must satisfy bot.py's
-# DCC_NAME_PAT ([A-Za-z0-9._-]{1,80}) — a basename, no slashes. What the VICTIM
-# sees is not this name but the pack title (see the DCC offer alias in bot.py).
-PAYLOAD_FILE = os.environ.get("LIST_PAYLOAD", "rickroll.mp4")
+# The payload pool: one file is drawn at random per offer (vjt 2026-09-15,
+# "inviato a random"). No exe (vjt 2026-09-12). They live in the bot's
+# BOT_DCC_DIR inside the jail; if one is missing bot.py declines that DCC, so
+# the wiring lands even before the files are deployed. Each name must satisfy
+# bot.py's DCC_NAME_PAT ([A-Za-z0-9._-]{1,80}) — a basename, no slashes. What
+# the VICTIM sees is not this name but the pack title (see the DCC offer alias
+# in bot.py). LIST_PAYLOAD is a comma-separated list.
+PAYLOAD_FILES = [p.strip() for p in os.environ.get(
+    "LIST_PAYLOAD",
+    "rickroll.mp4,rickroll-universal.mp4,mosconi-universal.mp4",
+).split(",") if p.strip()]
 
 
 # ---------------------------------------------------------------- generation
@@ -445,7 +449,7 @@ def handle_xdcc(nick, chan, n, rng, last_dump, pending=None):
     if chan is None:
         title, _sizes = rng.choice(CATALOG)
         offer = offer_name(scene_name(rng, title, False))
-        send_dcc(nick, PAYLOAD_FILE, offer)
+        send_dcc(nick, rng.choice(PAYLOAD_FILES), offer)
         chan_for_announce = resolve_channel(nick)
         remember_offer(pending, nick, offer, chan_for_announce)
         if chan_for_announce is not None:
@@ -457,7 +461,7 @@ def handle_xdcc(nick, chan, n, rng, last_dump, pending=None):
         say(chan, f"{nick}: pack #{n}? Non c'e', porco dio. Fai !list e leggi.")
         return
     offer = offer_name(names[n - 1])
-    send_dcc(nick, PAYLOAD_FILE, offer)
+    send_dcc(nick, rng.choice(PAYLOAD_FILES), offer)
     remember_offer(pending, nick, offer, chan)
 
 
