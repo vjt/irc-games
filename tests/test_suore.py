@@ -185,6 +185,14 @@ assert suore_events.parse_took("2h 03m 04s") == 7384
 assert suore_events.parse_took("una vita") is None
 print("ok: i tre formati di human_time() si rileggono come secondi")
 
+# il decimo sotto i 5 secondi (vjt, #sbiffo 2026-09-17 00:56): distingue lo
+# zero dal quasi-zero e si rilegge come numero; dalla soglia in su resta intero.
+assert suore.human_time(0.44) == "0.4 secondi"
+assert suore.human_time(4.96) == "5.0 secondi"
+assert suore.human_time(5.4) == "5 secondi"
+assert suore_events.parse_took(suore.human_time(0.44)) == 0.4
+print("ok: decimi sotto i 5 secondi, interi sopra")
+
 # --- json per la pagina ------------------------------------------------------
 # Anche questo si e' scritto da solo: handle() lo rifa' a ogni comparsa risolta.
 import suore_stats

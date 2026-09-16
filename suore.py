@@ -478,6 +478,9 @@ def plural(n, one, many):
     return one if n == 1 else many
 
 
+SUBSECOND_WINDOW = 5.0   # sotto questa soglia il tempo esce con un decimo
+
+
 def human_time(secs):
     """Il tempo di presa in forma leggibile. Ordine di peluche (#sbiffo
     2026-09-07 13:17-13:18), via di vjt («toca toca» / «fallo el mejor»):
@@ -489,7 +492,15 @@ def human_time(secs):
     («togli i millisecondi sotto al minuto», implicito nell'ordine di prima).
     Quindi via ovunque: interi sotto il minuto, h/m/s sopra.
 
-    Ore e minuti a zero spariscono, come chiesto: mai un `0h` davanti."""
+    Ore e minuti a zero spariscono, come chiesto: mai un `0h` davanti.
+
+    Un decimo torna sotto i 5 secondi, e solo li': peluche (#sbiffo 2026-09-17
+    00:53) si e' lamentato del suo stesso ordine perche' un colpo mancato per
+    0.4s stampava «0 secondi», via di vjt alle 00:56 («si metti i decimi di
+    secondo»). Sopra la soglia resta tutto intero: i millesimi restano morti,
+    qui si sta solo distinguendo lo zero dal quasi-zero."""
+    if secs < SUBSECOND_WINDOW:
+        return f"{secs:.1f} secondi"
     if round(secs) < 60:         # sull'intero: 59.6 e' gia' un minuto
         return f"{round(secs)} secondi"
     secs = int(round(secs))
