@@ -92,6 +92,8 @@ riga viene troncata: rex non manda mai un muro di testo.
 * **Suore, non papere** (ordine di vjt).
 * **Italiano.**
 * **`!bang` e `!bef` oltre a `.bang` e `.bef`** (ordine di vjt). Idem per le statistiche.
+* **`pew` e `pewpew` sono alias di `bang`** (ordine di vjt, #sbiffo 2026-09-17 11:10), col
+  punto come col botto: `.pew`, `!pew`, `.pewpew`, `!pewpew`.
 * **Solo su #sniffo** (ordine di vjt). Il canale è parametrico, il default è quello.
 * Il conteggio è **per nick e per canale**, come rex. Nessun host, nessun ident, nessun
   IP nello stato: solo il nick, come in tutti gli altri sidecar.

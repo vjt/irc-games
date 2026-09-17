@@ -378,4 +378,27 @@ assert "se l'e' presa alk" in sent[-1][2], sent[-1][2]
 assert d3["nuns"][sc] is not None, d3["nuns"]
 print("ok: .chiestato dice chi ha fatto cosa all'ultima suora, e non gioca")
 
+# --- pew / pewpew, alias di bang (ordine di vjt, #sbiffo 17/9 11:10) ---------
+# Il punto e' che arrivino a handle() gia' normalizzati in "bang", col punto
+# come col botto, e che `.pewpewpew` NON passi: la coda vuole uno spazio.
+for testo in (".pew", "!pew", ".pewpew", "!PewPew", ".pew a caso"):
+    m = suore.CMD_PAT.match(testo)
+    assert m, testo
+    c = m.group("cmd").lower()
+    assert suore.ALIAS.get(c, c) == "bang", (testo, c)
+for testo in (".pewpewpew", ".pewa", "pew"):
+    assert not suore.CMD_PAT.match(testo), testo
+
+d4 = suore.empty()
+sc = "azzurra/#sniffo"
+suore.P_JAM = suore.P_NOPE = 0.0
+d4["nuns"][sc] = {"chan": "#sniffo", "at": 0.0, "golden": False, "hp": 1}
+sent.clear()
+riga = ("11:11:11 < :vjt!~vjt@due.dita.di.grappa.chat "
+        "PRIVMSG #sniffo :.pewpew")
+assert suore.process(suore.SCOPES[sc][0], riga, d4, 5.0)
+assert d4["nuns"][sc] is None, d4["nuns"]
+assert d4["scores"][sc]["vjt"]["kills"] == 1, d4["scores"]
+print("ok: pew e pewpew sparano come bang")
+
 print("\nTUTTO VERDE, porco dio")

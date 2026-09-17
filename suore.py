@@ -315,9 +315,16 @@ PRIVMSG_PAT = re.compile(
 # resta a bocca asciutta. L'alias piu' lungo va PRIMA nell'alternanza: `re` non
 # e' greedy fra i rami, e con `chiesato|chiestato` un `.chiestato` matcherebbe
 # `chiesato` fermandosi alla `t`, che poi il separatore obbligatorio scarta.
+# `pew` e `pewpew` sono alias di `bang` (vjt, #sbiffo 2026-09-17 11:10): stesso
+# comando, normalizzato in ALIAS prima di arrivare a handle(), cosi' il resto
+# del file continua a vedere solo `bang` e non c'e' un secondo ramo da tenere
+# allineato. `pewpew` sta prima di `pew` nell'alternanza solo per leggibilita':
+# il separatore obbligato fa gia' fallire `pew` su `.pewpew`.
 CMD_PAT = re.compile(
-    r'^\s*[.!](?P<cmd>bang|bef|suore|killers|chiestato|chiesato)(?:\s.*)?$',
+    r'^\s*[.!](?P<cmd>bang|pewpew|pew|bef|suore|killers|chiestato|chiesato)'
+    r'(?:\s.*)?$',
     re.IGNORECASE)
+ALIAS = {"pew": "bang", "pewpew": "bang"}
 CLASSIFICA_PAT = re.compile(
     r'^\s*[.!]\s*classifica(?:\s+(?P<game>\S+))?\s*$', re.IGNORECASE)
 MY_GAME = ("suore", "suora", "sparasuore")
@@ -984,7 +991,8 @@ def process(net, line, data, now, talk=True):
         return False
     if not talk:
         return False
-    return handle(data, scope, nick, c.group("cmd").lower(), now)
+    cmd = c.group("cmd").lower()
+    return handle(data, scope, nick, ALIAS.get(cmd, cmd), now)
 
 
 def daemon():
