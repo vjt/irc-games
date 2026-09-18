@@ -675,22 +675,39 @@ NOPES = [
 LATE_WINDOW = 120.0
 
 
-def late_by(data, scope, now):
+# Il verbo per quando la suora se l'e' presa chi sta sparando adesso. Stessa
+# tabella di `.chiestato`, altra persona: li' si parla di un terzo, qui di chi
+# ha appena premuto il grilletto. Uno stato salvato prima che `cmd` esistesse
+# cade sul generico invece di indovinare il come.
+SELF_VERB = {"bang": "L'hai stesa tu", "bef": "Te la sei fatta amica tu"}
+
+
+def late_by(data, scope, nick, now):
     """La coda «l'hai mancata per X» quando spari a suora gia' presa.
 
     RFE di katia (#sbiffo 2026-09-09 02:17: «quando manchi la suora di poco,
     dire di quanto l'hai mancata»), via di vjt in DM alle 16:59. Sopra i due
     minuti tace: chi arriva dopo mezz'ora non l'ha mancata di poco, ha solo
     sparato al vuoto, e la riga diventerebbe rumore fisso su ogni `.bang` a
-    canale spento."""
+    canale spento.
+
+    Se a sparare e' lo STESSO che se l'e' presa, «l'hai mancata: se l'e' presa
+    vjt» e' falso due volte — non ha mancato niente e quel nick e' il suo.
+    Ordine di vjt (#sbiffo 2026-09-18 21:22: «"l'hai stesa" non "l'hai mancata"
+    in questo caso»), che si era scaricato il tamburo sul vuoto dopo aver steso
+    la dorata. Il confronto passa da `canon()`: lo stato tiene il casing visto
+    al colpo, e `vjt` che ritira col nick in maiuscolo e' sempre lui."""
     last = data.get("last_taken", {}).get(scope)
     if not last:
         return ""
     gap = now - last.get("at", 0)
     if gap < 0 or gap > LATE_WINDOW:
         return ""
-    return (f" L'hai mancata per {human_time(gap)}: se l'e' presa "
-            f"{last.get('nick', 'qualcuno')}.")
+    chi = last.get("nick", "qualcuno")
+    if canon(chi) == canon(nick):
+        verbo = SELF_VERB.get(last.get("cmd"), "Te la sei presa tu")
+        return f" {verbo} {human_time(gap)} fa."
+    return f" L'hai mancata per {human_time(gap)}: se l'e' presa {chi}."
 
 
 def chi_e_stato(data, scope, now):
@@ -779,11 +796,11 @@ def handle(data, scope, nick, cmd, now):
         prossima = next_tail(data, scope, now)
         if cmd == "bang":
             say(net, chan, f"{nick}: Non c'e' nessuna suora! A cosa stai sparando?"
-                           f"{late_by(data, scope, now)}{prossima}")
+                           f"{late_by(data, scope, nick, now)}{prossima}")
         else:
             say(net, chan, f"{nick}: Hai provato a fare amicizia con una suora "
                            f"inesistente. Robaccia da denuncia."
-                           f"{late_by(data, scope, now)}{prossima}")
+                           f"{late_by(data, scope, nick, now)}{prossima}")
         return False
 
     if cmd == "bang" and random.random() < P_JAM:

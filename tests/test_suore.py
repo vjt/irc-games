@@ -401,4 +401,53 @@ assert d4["nuns"][sc] is None, d4["nuns"]
 assert d4["scores"][sc]["vjt"]["kills"] == 1, d4["scores"]
 print("ok: pew e pewpew sparano come bang")
 
+
+# --- late_by: chi ha steso la suora non l'ha "mancata" (vjt, #sbiffo 18/9) ---
+# Il ramo «non c'e' nessuna suora» attaccava sempre «l'hai mancata per X: se
+# l'e' presa <nick>», anche quando <nick> era chi stava sparando: due bugie in
+# una riga. Ora quel caso dice cos'ha fatto e quanto fa.
+d5 = suore.empty()
+sc = "azzurra/#sbiffo"
+suore.P_JAM = suore.P_NOPE = 0.0
+
+d5["last_taken"][sc] = {"at": 100.0, "nick": "vjt", "cmd": "bang", "golden": True}
+sent.clear()
+assert not suore.handle(d5, sc, "vjt", "bang", 130.0)
+riga = sent[-1][2]
+assert "L'hai stesa tu 30 secondi fa." in riga, riga
+assert "mancata" not in riga, riga
+
+# Il casing non c'entra: lo stato tiene quello visto al colpo, il nick IRC e'
+# case-insensitive.
+sent.clear()
+assert not suore.handle(d5, sc, "VJT", "bang", 130.0)
+assert "L'hai stesa tu" in sent[-1][2], sent[-1][2]
+
+# Un altro che spara tardi resta col messaggio di prima: li' ha mancato davvero.
+sent.clear()
+assert not suore.handle(d5, sc, "peluche", "bang", 130.0)
+riga = sent[-1][2]
+assert "L'hai mancata per 30 secondi: se l'e' presa vjt." in riga, riga
+
+# Col `.bef` il verbo cambia, e vale anche per il ramo «suora inesistente».
+d5["last_taken"][sc] = {"at": 200.0, "nick": "katia", "cmd": "bef", "golden": False}
+sent.clear()
+assert not suore.handle(d5, sc, "katia", "bef", 210.0)
+assert "Te la sei fatta amica tu 10 secondi fa." in sent[-1][2], sent[-1][2]
+
+# Stato vecchio senza verbo: si dice che e' roba tua, non si inventa il come.
+d5["last_taken"][sc] = {"at": 300.0, "nick": "alk"}
+sent.clear()
+assert not suore.handle(d5, sc, "alk", "bang", 310.0)
+assert "Te la sei presa tu 10 secondi fa." in sent[-1][2], sent[-1][2]
+
+# Oltre la finestra tace come prima, anche per chi l'ha presa: dopo due minuti
+# non e' piu' una coda utile, e' rumore su ogni colpo a canale spento.
+d5["last_taken"][sc] = {"at": 400.0, "nick": "vjt", "cmd": "bang"}
+sent.clear()
+assert not suore.handle(d5, sc, "vjt", "bang", 400.0 + suore.LATE_WINDOW + 1)
+riga = sent[-1][2]
+assert "stesa" not in riga and "mancata" not in riga, riga
+print("ok: chi ha steso la suora non se la sente dire 'mancata'")
+
 print("\nTUTTO VERDE, porco dio")
