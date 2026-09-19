@@ -14,7 +14,7 @@ pidfile="/var/run/convento/cena_ito.pid"
 procname="/usr/local/bin/python3.11"
 command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
-command_args="-f -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/cena_ito.log -t ambrogio-cena-ito \
+command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/cena_ito.log -t ambrogio-cena-ito \
   /usr/bin/env CENA_LOG=/var/log/convento/ambrogio.log \
   CENA_FIFO=/var/run/convento/ambrogio.send \
   CENA_STATE=/var/db/convento/cena_ito_state.json \
@@ -50,6 +50,24 @@ convento_reap_supervisor()
 		kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
 	fi
 	rm -f "${daemon_pidfile}" "${pidfile}"
+}
+
+# Con -R il supervisore rigenera il figlio dopo 5s, quindi uno stop che
+# ammazza solo il python non ferma niente: il supervisore muore PRIMA
+# (daemon(8) inoltra il TERM al figlio e se ne va), e rc.subr trova il
+# campo gia sgombro. Ordine di vjt 2026-09-19: "rendilo resilient convento".
+stop_precmd="convento_kill_supervisor"
+convento_kill_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	return 0 ;;
+	esac
+	kill -TERM "${_dpid}" 2>/dev/null
+	sleep 2
+	kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	return 0
 }
 
 run_rc_command "$1"
