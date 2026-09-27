@@ -231,6 +231,10 @@ BANS = {
     "deadbeef": 1789290917,   # fino al 2026-09-13 09:15 UTC (11:15 Rome)
     "t": 1789507514,          # fino al 2026-09-15 21:25 UTC (23:25 Rome)
     "tsk": 1789507514,        # stesso client di `t`, stessa scadenza
+    # 2026-09-27 22:51 Rome, vjt #sbiffo: «banna vertex dallo sparasuore su
+    # ircnet», «e levagli i punti». Nessuna scadenza data: per sempre. Tolti
+    # anche la riga in `scores` di ircnet/#cybernet e i suoi due `.bef`.
+    "vertex": float("inf"),
 }
 
 ZWSP = "​"
@@ -780,6 +784,9 @@ def handle(data, scope, nick, cmd, now):
     # bannato puo' ancora leggere la classifica, non giocarci. Parla ogni
     # volta, apposta — «diglielo» era parte dell'ordine.
     until = BANS.get(canon(nick), 0)
+    if until == float("inf"):
+        say(net, chan, f"{nick}: sei bannato dal gioco.")
+        return False
     if now < until:
         say(net, chan, f"{nick}: sei bannato dal gioco per aver scriptato — beccato "
                        f"con una suora finta che il sidecar non ha mai emesso. "
