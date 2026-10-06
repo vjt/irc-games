@@ -45,6 +45,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import ingest  # noqa: E402  (classification canon — never duplicated here)
+import metrics  # noqa: E402
 
 # Default location inside the `grappa-new` jail on m42, where this daemon runs:
 # a WAL reader has to be able to write the -shm sidecar, so it must live on the
@@ -209,6 +210,13 @@ def seed_presence(conn, network, channel):
     as a synthetic `names`/`names_end` pair stamped one second before the first
     real delta, which is exactly the shape the replay already knows how to read.
 
+    Only exits within PRESENCE_TTL_SEC of the first row count. A nick whose first
+    unexplained exit comes later joined during a gap in the archive (grappa
+    disconnected), not before it: seeding those put 60 ghosts on #sniffo on day
+    one where 45 first left more than two weeks later, and the TTL then held them
+    in the count until the cliff on 12/5 (vjt, #sbiffo 2026-10-06: "60 utenti a
+    maggio? impossibile"). Past the TTL a seeded nick would be evicted anyway.
+
     Idempotent: a channel that already has a `names` row is left alone, so a
     later catch-up never re-seeds a set that has since been replayed forward.
     """
@@ -223,22 +231,23 @@ def seed_presence(conn, network, channel):
         (network, channel)).fetchall()
     if not rows:
         return
+    horizon = rows[0][0] + metrics.PRESENCE_TTL_SEC
     present = set()
     seed = []
-    for _ts, kind, nick, extra in rows:
+    for ts, kind, nick, extra in rows:
         low = nick.lower()
         if kind == "join":
             present.add(low)
             continue
         if kind == "nick":
-            if low not in present:
+            if low not in present and ts <= horizon:
                 seed.append(nick)
             present.discard(low)
             if extra:
                 present.add(extra.lower())
             continue
         # part / quit / kick
-        if low not in present:
+        if low not in present and ts <= horizon:
             seed.append(nick)
         present.discard(low)
     if not seed:
