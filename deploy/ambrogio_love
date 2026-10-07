@@ -1,0 +1,69 @@
+#!/bin/sh
+# PROVIDE: ambrogio_love
+# REQUIRE: ambrogio_bot
+# KEYWORD: shutdown
+#
+# Il `!love` del vecchio TOOLS di IRCnet dietro ad Ambrogio (vjt, 2026-10-07).
+# Nessuno stato su disco e nessuna rete: legge il log, pesca una frase, scrive
+# una riga nella FIFO. Canali da rc.conf (ambrogio_love_chans): #it-opers fuori
+# di default, il leak guard di bot.py bloccherebbe la stessa frase altrove.
+. /etc/rc.subr
+name="ambrogio_love"
+rcvar="ambrogio_love_enable"
+load_rc_config "$name"
+: ${ambrogio_love_enable:="NO"}
+: ${ambrogio_love_chans:="#sniffo,#sbiffo"}
+# Data API v3 key: dall'IP della jail la pagina watch risponde LOGIN_REQUIRED,
+# quindi qui la chiave non e' un lusso, e' l'unica via (vjt, 11:57).
+pidfile="/var/run/convento/love.pid"
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+daemon_pidfile="${pidfile%.pid}.daemon.pid"
+command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/love.log -t ambrogio-love \
+  /usr/bin/env LOVE_LOG=/var/log/convento/ambrogio.log \
+  LOVE_FIFO=/var/run/convento/ambrogio.send \
+  LOVE_CHANS=${ambrogio_love_chans} \
+  /usr/local/bin/python3.11 -u /opt/irc-games/love.py"
+# Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr
+# insegue il FIGLIO (procname), quindi uno stop che trova il python gia' morto
+# lascia vivo il supervisore col suo pidfile e lo start dopo muore con
+# «process already running». Vedi ambrogio_next per la storia (2026-09-11).
+start_precmd="convento_reap_supervisor"
+stop_postcmd="convento_reap_supervisor"
+convento_reap_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	rm -f "${daemon_pidfile}"; return 0 ;;
+	esac
+	if kill -0 "${_dpid}" 2>/dev/null; then
+		if [ -r "${pidfile}" ] && kill -0 "$(cat ${pidfile} 2>/dev/null)" 2>/dev/null; then
+			return 0
+		fi
+		kill -TERM "${_dpid}" 2>/dev/null
+		sleep 1
+		kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	fi
+	rm -f "${daemon_pidfile}" "${pidfile}"
+}
+
+# Con -R il supervisore rigenera il figlio dopo 5s, quindi uno stop che
+# ammazza solo il python non ferma niente: il supervisore muore PRIMA
+# (daemon(8) inoltra il TERM al figlio e se ne va), e rc.subr trova il
+# campo gia sgombro. Ordine di vjt 2026-09-19: "rendilo resilient convento".
+stop_precmd="convento_kill_supervisor"
+convento_kill_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	return 0 ;;
+	esac
+	kill -TERM "${_dpid}" 2>/dev/null
+	sleep 2
+	kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	return 0
+}
+
+run_rc_command "$1"
