@@ -303,12 +303,23 @@ def find_title(query):
     return ".".join(w[:1].upper() + w[1:] for w in words)[:FIND_MAX_TITLE].strip(".")
 
 
+# Un anno nei termini cercati ("matrix 1999") diventa l'anno della release.
+FIND_YEAR_PAT = re.compile(r"(?:^|\.)((?:19|20)\d\d)(?=\.|$)")
+
+
 def build_find(rng, title):
     """Il nome scene del pack "trovato" e la sua taglia. Bestemmiato sempre:
-    e' una riga sola, la battuta deve atterrare li'."""
+    e' una riga sola, la battuta deve atterrare li'.
+
+    L'anno NON si inventa: "Amici.Miei.2020" e' sgamato al primo sguardo (Lucy,
+    #sbiffo 2026-10-08). Se chi cerca l'ha scritto, va in coda al titolo come
+    nelle release vere; se no la release esce senza anno."""
     tags, (lo, hi) = rng.choice(FIND_RELEASES)
-    year = rng.randint(2019, 2025)
-    name = scene_name(rng, f"{title}.{year}.{tags}", True)
+    m = FIND_YEAR_PAT.search(title)
+    if m:
+        title = (title[:m.start()] + title[m.end():]).strip(".") or title
+        title = f"{title}.{m.group(1)}"
+    name = scene_name(rng, f"{title}.{tags}", True)
     return name, f"{rng.uniform(lo, hi):.1f}G"
 
 

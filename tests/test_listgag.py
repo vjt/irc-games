@@ -368,6 +368,16 @@ def test_dispatch_find_empty_query_no_pack():
     assert len(calls["say"]) == 1 and ld.get("#sbiffo") in (None, []), (calls, ld)
 
 
+def test_find_year_only_from_query():
+    # Lucy 2026-10-08: "amici miei del 2020" -> mai inventare l'anno.
+    rng = random.Random(11)
+    for _ in range(50):
+        name, _ = listgag.build_find(rng, listgag.find_title("amici miei"))
+        assert not re.search(r"\.(19|20)\d\d\.", name), name
+    name, _ = listgag.build_find(rng, listgag.find_title("1975 amici miei"))
+    assert name.startswith("Amici.Miei.1975."), name
+
+
 def test_find_offer_fits_dcc_limit():
     # titolo lungo + tag + crew + .mp4 deve restare dentro i 120 di bot.py
     rng = random.Random(10)
