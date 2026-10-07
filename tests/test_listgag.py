@@ -75,7 +75,8 @@ def test_invite_line():
 
 def test_payload_is_a_valid_dcc_name():
     # se il nome non passa DCC_NAME_PAT, bot.py rifiuta ogni transfer.
-    assert DCC_NAME.match(listgag.PAYLOAD_FILE), listgag.PAYLOAD_FILE
+    for fname in listgag.PAYLOAD_FILES:
+        assert DCC_NAME.match(fname), fname
 
 
 def test_privmsg_pat_captures_channel_and_query():
@@ -125,7 +126,7 @@ def test_dispatch_channel_offers_under_pack_title():
     listgag.dispatch("mario", "#sbiffo", "xdcc send #2", rng, lf, ld)
     assert len(calls["dcc"]) == 1, calls
     nick, fname, offer = calls["dcc"][0]
-    assert nick == "mario" and fname == listgag.PAYLOAD_FILE, calls
+    assert nick == "mario" and fname in listgag.PAYLOAD_FILES, calls
     assert offer == f"{titles[1]}.mp4", (offer, titles)
     assert DCC_OFFER.match(offer), offer
 
@@ -150,7 +151,7 @@ def test_dispatch_query_offers_random_title():
     listgag.dispatch("mario", "EliteWarez", "xdcc send #1", rng, lf, ld)
     assert len(calls["dcc"]) == 1, calls
     nick, fname, offer = calls["dcc"][0]
-    assert nick == "mario" and fname == listgag.PAYLOAD_FILE, calls
+    assert nick == "mario" and fname in listgag.PAYLOAD_FILES, calls
     assert offer.endswith(".mp4") and DCC_OFFER.match(offer), offer
 
 
@@ -323,6 +324,60 @@ def test_pending_entries_expire():
     assert "vecchio" not in pending and "nuovo" in pending, pending
 
 
+def test_find_title_folds_to_scene_safe_name():
+    # accenti piegati, punteggiatura via, parole capitalizzate e unite da punti
+    assert listgag.find_title("il signore degli anelli") == "Il.Signore.Degli.Anelli"
+    assert listgag.find_title("Perché sì!? (2024)") == "Perche.Si.2024"
+    assert listgag.find_title("  ?!  ") is None
+
+
+def test_dispatch_find_offers_pack_with_search_terms():
+    # Lucy 2026-10-07: @find <termini> -> un pack "trovato" coi termini, e
+    # `xdcc send #N` lo consegna sotto quel nome (il payload resta il pool).
+    calls = _recording()
+    rng = random.Random(7)
+    lf, ld = {}, {}
+    listgag.dispatch("cliff", "#sbiffo", "!list", rng, lf, ld)
+    calls["say"].clear()
+    listgag.dispatch("cliff", "#sbiffo", "@find greyhound", rng, lf, ld)
+    assert len(calls["say"]) == 1, calls
+    line = calls["say"][0][1]
+    assert "#4" in line and "Greyhound." in line, line
+    assert BEST.search(ld["#sbiffo"][3]), ld
+    listgag.dispatch("cliff", "#sbiffo", "xdcc send #4", rng, lf, ld)
+    nick, fname, offer = calls["dcc"][0]
+    assert fname in listgag.PAYLOAD_FILES, calls
+    assert offer.startswith("Greyhound.") and DCC_OFFER.match(offer), offer
+
+
+def test_dispatch_find_without_list_and_addressed():
+    # nessun !list prima: il pack trovato e' il #1. Anche `elitewarez: !find`.
+    calls = _recording()
+    rng = random.Random(8)
+    lf, ld = {}, {}
+    listgag.dispatch("vjt", "#sbiffo", "EliteWarez: !find the matrix", rng, lf, ld)
+    assert "#1" in calls["say"][0][1], calls
+    assert ld["#sbiffo"][0].startswith("The.Matrix."), ld
+
+
+def test_dispatch_find_empty_query_no_pack():
+    calls = _recording()
+    rng = random.Random(9)
+    lf, ld = {}, {}
+    listgag.dispatch("vjt", "#sbiffo", "@find ???", rng, lf, ld)
+    assert len(calls["say"]) == 1 and ld.get("#sbiffo") in (None, []), (calls, ld)
+
+
+def test_find_offer_fits_dcc_limit():
+    # titolo lungo + tag + crew + .mp4 deve restare dentro i 120 di bot.py
+    rng = random.Random(10)
+    title = listgag.find_title("x" * 30 + " " + "y" * 30 + " zzz www kkk jjj")
+    for _ in range(200):
+        name, _size = listgag.build_find(rng, title)
+        assert DCC_OFFER.match(listgag.offer_name(name)), name
+        assert len(f"{name}.mp4") <= 120, name
+
+
 if __name__ == "__main__":
     test_catalog_is_films_only()
     print("ok: catalogo solo film recenti, no software, LEGEND vuota")
@@ -333,7 +388,7 @@ if __name__ == "__main__":
     test_invite_line()
     print("ok: riga invito senza /msg hard-coded")
     test_payload_is_a_valid_dcc_name()
-    print("ok: PAYLOAD_FILE passa DCC_NAME_PAT di bot.py")
+    print("ok: PAYLOAD_FILES passano DCC_NAME_PAT di bot.py")
     test_privmsg_pat_captures_channel_and_query()
     print("ok: PRIVMSG_PAT cattura target canale e query")
     test_xdcc_pattern()

@@ -34,6 +34,7 @@ import re
 import subprocess
 import sys
 import time
+import unicodedata
 from pathlib import Path
 
 # I default sono i path storici sul Pi: finche' il gag girava nel checkout del
@@ -268,6 +269,63 @@ def build_dump(rng):
         f"{total * rng.uniform(8, 99):.1f}G **"
     )
     return lines, names
+
+
+# `@find <termini>` (Lucy, #sbiffo 2026-10-07, via di vjt): il leecher "scafato"
+# che non abbocca al !list cerca il suo titolo, e il bot lo "trova" sempre — un
+# pack fabbricato coi termini cercati, sotto lo stesso nome che poi `xdcc send`
+# gli consegna (payload dal solito pool: rickroll o Mosconi). `!find` uguale.
+FIND_PAT = re.compile(r"^\s*[@!]find\s+(?P<q>\S.*?)\s*$", re.IGNORECASE)
+# Quanti termini/caratteri del titolo cercato finiscono nel nome scene: basta a
+# riconoscere la propria ricerca, non abbastanza da sforare DCC_OFFER_NAME_PAT.
+FIND_MAX_WORDS = 6
+FIND_MAX_TITLE = 40
+# Il pack trovato si accoda al listino del canale (#4, #5, ...): `xdcc send #N`
+# lo indicizza come gli altri. Oltre questa soglia il listino riparte da zero.
+FIND_MAX_PACKS = 30
+FIND_RELEASES = [
+    ("iTA.ENG.1080p.WEB-DL.DDP5.1.H264", (4.2, 11.8)),
+    ("iTA.1080p.BluRay.x264", (6.5, 14.9)),
+    ("iTA.ENG.2160p.UHD.BluRay.x265", (18.0, 39.5)),
+    ("iTA.720p.WEB-DL.x264", (1.4, 3.9)),
+]
+FIND_EMPTY_LINE = "{nick}: @find di cosa, porco dio? Scrivi cosa cerchi."
+
+
+def find_title(query):
+    """Termini cercati -> titolo scene (`Il.Signore.Degli.Anelli`), o None se
+    non resta niente di stampabile. Accenti piegati in ASCII: il nome deve
+    restare [A-Za-z0-9.-], o il DCC offer non passa."""
+    ascii_q = unicodedata.normalize("NFKD", query).encode("ascii", "ignore").decode()
+    words = re.findall(r"[A-Za-z0-9]+", ascii_q)[:FIND_MAX_WORDS]
+    if not words:
+        return None
+    return ".".join(w[:1].upper() + w[1:] for w in words)[:FIND_MAX_TITLE].strip(".")
+
+
+def build_find(rng, title):
+    """Il nome scene del pack "trovato" e la sua taglia. Bestemmiato sempre:
+    e' una riga sola, la battuta deve atterrare li'."""
+    tags, (lo, hi) = rng.choice(FIND_RELEASES)
+    year = rng.randint(2019, 2025)
+    name = scene_name(rng, f"{title}.{year}.{tags}", True)
+    return name, f"{rng.uniform(lo, hi):.1f}G"
+
+
+def handle_find(nick, chan, query, rng, last_dump):
+    title = find_title(query)
+    if title is None:
+        say(chan, FIND_EMPTY_LINE.format(nick=nick))
+        return
+    name, size = build_find(rng, title)
+    names = last_dump.setdefault(chan.lower(), [])
+    if len(names) >= FIND_MAX_PACKS:
+        names.clear()
+    names.append(name)
+    n = len(names)
+    say(chan, f"{nick}: 1 pack trovato per \"{query.strip()[:60]}\": "
+              f"#{n}  {rng.randint(1, 99)}x [{size}] {name}  "
+              f"** scrivi: xdcc send #{n} **")
 
 
 def _gigs(size):
@@ -505,6 +563,10 @@ def dispatch(nick, target, text, rng, last_fired, last_dump, pending=None):
         note_seen(nick, chan)
         if LIST_PAT.match(text):
             handle(nick, target, rng, last_fired, last_dump)
+            return
+        find = FIND_PAT.match(strip_address(text))
+        if find:
+            handle_find(nick, target, find["q"], rng, last_dump)
         else:
             m = XDCC_PAT.match(strip_address(text))
             if m:
