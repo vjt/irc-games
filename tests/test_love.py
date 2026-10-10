@@ -239,8 +239,7 @@ def test_doccia_and_sessualizza_are_action_pools():
     # vjt 2026-10-10 14:01 (tom's ask); !sessua is the short alias.
     assert love.parse("!doccia tom") == ("doccia", "tom")
     assert love.parse("!sessua tom") == ("sessua", "tom")
-    assert love.parse("!sessualizza tom") == ("sessualizza", "tom")
-    assert not set(love.POOLS["sessua"]) & set(love.POOLS["sessualizza"])
-    for cmd in ("doccia", "sessualizza", "sessua"):
+    assert love.parse("!sessualizza tom") == ("sessua", "tom")
+    for cmd in ("doccia", "sessua"):
         assert all(p.startswith("/me ") and "{to}" in p and "{from}" in p
                    for p in love.POOLS[cmd])
