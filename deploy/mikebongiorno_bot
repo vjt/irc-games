@@ -37,7 +37,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   IRC_NICK=MikeBongiorno IRC_IDENT=mike IRC_REAL=github.com/vjt/irc-games \
   BOT_LOG=/var/log/convento/mike.log BOT_FIFO=/var/run/convento/mike.send \
   BOT_TRUST=/opt/convento/bot.trust.mike BOT_ENV=/opt/convento/.env.mike \
-  BOT_STARTUP=/opt/convento/bot.startup.mike \
+  BOT_STARTUP=/opt/convento/bot.startup.mike BOT_DM_REJECT= \
   /usr/local/bin/python3.11 -u /opt/convento/bot.py"
 # daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
 # stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
