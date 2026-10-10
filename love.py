@@ -45,6 +45,8 @@ Env:
   LOVE_CHANS     comma separated list  (default: #sniffo,#sbiffo)
   LOVE_COOLDOWN  seconds between two lines in the same channel (default 2)
   LOVE_NICK      the bot's own nick     (default: Ambrogio)
+  LOVE_SKIP      commands off per channel, `#chan:cmd,cmd;#chan2:cmd`
+                 (default none; IRCnet #cybernet has TOOLS for love/slap)
 """
 
 import os
@@ -66,6 +68,20 @@ COOLDOWN_SEC = float(os.environ.get("LOVE_COOLDOWN", "2"))
 # The bot never targets itself (vjt, #sbiffo 2026-10-10 13:54: «evitare il
 # self-slap»): `!slap Ambrogio` bounces back on whoever typed it.
 BOT_NICK = os.environ.get("LOVE_NICK", "Ambrogio")
+
+
+def parse_skip(spec):
+    """`#a:love,slap;#b:love` -> {"#a": {"love", "slap"}, "#b": {"love"}}."""
+    out = {}
+    for part in filter(None, (p.strip() for p in spec.split(";"))):
+        chan, _, cmds = part.partition(":")
+        out[chan.strip().lower()] = {c.strip().lower() for c in cmds.split(",") if c.strip()}
+    return out
+
+
+# On IRCnet #cybernet TOOLS already answers !love and !slap (vjt, #sbiffo
+# 2026-10-10 13:57): Ambrogio keeps only the commands TOOLS lacks there.
+SKIP = parse_skip(os.environ.get("LOVE_SKIP", ""))
 
 # A target is echoed back into the channel: cap it so a 400-byte "nick" does
 # not wrap the line into two.
@@ -319,10 +335,11 @@ class Love:
     """The per-channel memory: last line time and last phrase. In RAM only —
     a restart forgets it, and nothing about that is worth a file."""
 
-    def __init__(self, rng=None, cooldown=COOLDOWN_SEC, chans=None):
+    def __init__(self, rng=None, cooldown=COOLDOWN_SEC, chans=None, skip=None):
         self.rng = rng or random.Random()
         self.cooldown = cooldown
         self.chans = CHANNELS if chans is None else chans
+        self.skip = SKIP if skip is None else skip
         self.last_at = {}
         self.last_phrase = {}
 
@@ -338,6 +355,8 @@ class Love:
         if not cmd:
             return None
         cmd, to = cmd
+        if cmd in self.skip.get(chan.lower(), ()):
+            return None
         frm = m.group("nick")
         if to.lower() == BOT_NICK.lower():
             to = frm
