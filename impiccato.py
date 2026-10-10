@@ -252,14 +252,19 @@ SET_ALIASES = {
 # Niente backtick: IRC li mostra cosi' come sono.
 HELP_PAT = re.compile(r'^!\s*(?:help|giochi)\s*$', re.IGNORECASE)
 HELP_LINES = (
-    "Giochi di MikeBongiorno: Trivial (quiz a impiccato) e Sillabah "
-    "(parole con la sillaba). !classifica [trivial|sillabah] per i punti.",
-    "Trivial: !trivial <set> [n] apre una partita da n domande (alias !trivia, "
-    "!allegria), !trivial da solo elenca i set. In gioco: una lettera o la "
-    "risposta intera, .h scopre una lettera, .v le vocali, !stop chiude.",
-    "Sillabah: !sillabah [n] apre n manche, !sillabah stop chiude. Le parole si "
-    "mandano in query al bot, -delete ritira la tua. !sillaba la manche in "
-    "corso, !valori i punti delle lettere, !punti [nick] il punteggio.",
+    "\x0312\x02Giochi di MikeBongiorno\x02\x03: \x02Trivial\x02 (quiz a "
+    "impiccato) e \x02Sillabah\x02 (parole con la sillaba). "
+    "\x02!classifica\x02 [trivial|sillabah] per i punti.",
+    "\x0303\x02Trivial\x02\x03: \x02!trivial\x02 <set> [n] apre una "
+    "partita da n domande (alias \x02!trivia\x02, \x02!allegria\x02), "
+    "\x02!trivial\x02 da solo elenca i set. In gioco: una lettera o la "
+    "risposta intera, \x02.h\x02 scopre una lettera, \x02.v\x02 le "
+    "vocali, \x02!stop\x02 chiude.",
+    "\x0307\x02Sillabah\x02\x03: \x02!sillabah\x02 [n] apre n manche, "
+    "\x02!sillabah stop\x02 chiude. Le parole si mandano \x02in query\x02 "
+    "al bot, \x02-delete\x02 ritira la tua. \x02!sillaba\x02 la manche in "
+    "corso, \x02!valori\x02 i punti delle lettere, \x02!punti\x02 [nick] "
+    "il punteggio.",
 )
 # Secondi fra due help allo stesso nick: chi martella `!help` non fa floodare
 # il bot (le NOTICE escono dalla stessa coda delle PRIVMSG di gioco).
