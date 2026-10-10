@@ -497,3 +497,11 @@ def test_syllable_choice_respects_exclusions():
 def test_selftest_runs(capsys):
     S.selftest()
     assert "selftest ok" in capsys.readouterr().out
+
+
+def test_notice_in_query_gets_notice_back(diz, tmp_path):
+    g = gioco(diz, tmp_path)
+    g.handle("pippo", BOT, "!valori", now=0, notice=True)
+    assert [t for t, _ in g.notices] == ["pippo"] and not g.sent
+    g.handle("pluto", BOT, "!valori", now=0)
+    assert [t for t, _ in g.sent] == ["pluto"] and len(g.notices) == 1

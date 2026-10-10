@@ -410,13 +410,14 @@ class Sillabah:
         self.rng = rng or random.Random()
         self.state = load_state(state_path)
         self.sent = []                  # solo per le prove
+        self.notices = []               # idem, le risposte in NOTICE
         self._last_reply = {}           # nick -> istante dell'ultima risposta in query
         self._budget = deque()          # istanti delle ultime risposte in query
 
     # --- uscita ---------------------------------------------------------
 
-    def say(self, target, text):
-        self.sent.append((target, text))
+    def say(self, target, text, verb="SAY"):
+        (self.notices if verb == "NOTICE" else self.sent).append((target, text))
         if not self.talk or not self.fifo:
             return
         try:
@@ -426,7 +427,7 @@ class Sillabah:
         try:
             # SAY:sillabah — il tag viaggia sul verbo e non arriva in rete:
             # bot.py lo stampa nel bot.log, come per SAY:impiccato.
-            os.write(fd, f"SAY:sillabah {target} {text}\n".encode("utf-8"))
+            os.write(fd, f"{verb}:sillabah {target} {text}\n".encode("utf-8"))
         except OSError:
             pass
         finally:
@@ -436,9 +437,10 @@ class Sillabah:
         for line in joined_lines(parts):
             self.say(chan, line)
 
-    def reply(self, nick, text, now):
+    def reply(self, nick, text, now, notice=False):
         """Risposta in query, col freno: vedi QUERY_GAP e QUERY_BUDGET.
-        True se e' uscita."""
+        In NOTICE se il giocatore ha scritto in NOTICE: risponde dove ha
+        scritto, senza aprirgli un buffer. True se e' uscita."""
         key = nick.casefold()
         last = self._last_reply.get(key)
         if last is not None and now - last < QUERY_GAP:
@@ -453,7 +455,7 @@ class Sillabah:
         if len(self._last_reply) > 500:
             for k, _ in sorted(self._last_reply.items(), key=lambda kv: kv[1])[:100]:
                 self._last_reply.pop(k, None)
-        self.say(nick, text)
+        self.say(nick, text, "NOTICE" if notice else "SAY")
         return True
 
     # --- partita ---------------------------------------------------------
@@ -664,7 +666,7 @@ class Sillabah:
 
     # --- ingresso: query ---------------------------------------------------
 
-    def handle_query(self, nick, text, now):
+    def handle_query(self, nick, text, now, notice=False):
         """Una riga mandata al bot in privato. True se lo stato e' cambiato."""
         if text.startswith("\x01"):
             return False                # CTCP: affare di bot.py
@@ -673,15 +675,15 @@ class Sillabah:
             return False
 
         if VALORI_PAT.match(text):
-            self.reply(nick, riga_valori(), now)
+            self.reply(nick, riga_valori(), now, notice)
             return False
 
         g = self.game()
         if SILLABA_PAT.match(text):
             if g and g.get("fase") == "manche":
-                self.reply(nick, self.annuncio(g, now), now)
+                self.reply(nick, self.annuncio(g, now), now, notice)
             else:
-                self.reply(nick, "Nessuna manche aperta adesso.", now)
+                self.reply(nick, "Nessuna manche aperta adesso.", now, notice)
             return False
         if text.startswith("!"):
             # Un comando di canale scritto in query: silenzio, non e' una parola
@@ -690,11 +692,11 @@ class Sillabah:
 
         if not g:
             self.reply(nick, "Nessuna partita in corso: si comincia con "
-                             "`!sillabah` in canale.", now)
+                             "`!sillabah` in canale.", now, notice)
             return False
         if g.get("fase") != "manche":
             left = max(0, int(g["deadline"] - now))
-            self.reply(nick, f"Manche chiusa, la prossima tra {left}s.", now)
+            self.reply(nick, f"Manche chiusa, la prossima tra {left}s.", now, notice)
             return False
 
         key = nick.casefold()
@@ -702,14 +704,14 @@ class Sillabah:
         if DELETE_PAT.match(text):
             old = parole.pop(key, None)
             if old:
-                self.reply(nick, f"🗑️ Ritirata: {old['parola'].upper()}.", now)
+                self.reply(nick, f"🗑️ Ritirata: {old['parola'].upper()}.", now, notice)
                 return True
-            self.reply(nick, "Non avevi parole in gioco.", now)
+            self.reply(nick, "Non avevi parole in gioco.", now, notice)
             return False
 
         forma, motivo = valuta(self.diz, g["sillaba"], g["limite"], text)
         if forma is None:
-            self.reply(nick, f"❌ {motivo}.", now)
+            self.reply(nick, f"❌ {motivo}.", now, notice)
             return False
         old = parole.get(key)
         pts = punteggio(forma)
@@ -718,14 +720,14 @@ class Sillabah:
         msg = f"✅ Parola accettata: {text.strip().upper()} ({pts} punti)"
         if old and old["forma"] != forma:
             msg += f", sostituisce {old['parola'].upper()}"
-        self.reply(nick, msg + ".", now)
+        self.reply(nick, msg + ".", now, notice)
         return True
 
-    def handle(self, nick, target, text, now=None):
+    def handle(self, nick, target, text, now=None, notice=False):
         now = float(now if now is not None else time.time())
         if target.startswith(("#", "&")):
             return self.handle_chan(nick, target, text.strip(), now)
-        return self.handle_query(nick, text, now)
+        return self.handle_query(nick, text, now, notice)
 
     # --- tempo -------------------------------------------------------------
 
@@ -769,7 +771,8 @@ class Sillabah:
                     m = PRIVMSG_PAT.search(line)
                     if m and is_input(m):
                         changed |= self.handle(m.group("nick"), m.group("target"),
-                                               m.group("text"))
+                                               m.group("text"),
+                                               notice=m.group("verb") == "NOTICE")
                 changed |= self.tick()
                 if changed:
                     save_state(self.state_path, self.state)
