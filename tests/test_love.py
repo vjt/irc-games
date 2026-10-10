@@ -115,8 +115,48 @@ def test_self_love_and_braces_in_nick():
 def test_no_control_bytes_reach_the_fifo():
     # Le frasi non portano colori ne' a capo: una riga, una PRIVMSG.
     bad = re.compile(r"[\x00-\x1f\x7f]")
-    for p in love.PHRASES:
-        assert not bad.search(p), repr(p)
+    for pool in love.POOLS.values():
+        for p in pool:
+            assert not bad.search(p), repr(p)
+
+
+def test_slap_and_pernacchio_pools_render_with_both_nicks():
+    # !slap e !pernacchio (vjt 2026-10-10): pool proprio, mittente e target
+    # sempre nominati, niente doppioni, niente frasi prese in prestito.
+    for cmd in ("slap", "pernacchio"):
+        pool = love.POOLS[cmd]
+        assert len(pool) == len(set(pool)) >= 20, cmd
+        assert not set(pool) & set(love.PHRASES), cmd
+        for p in pool:
+            assert "{from}" in p and "{to}" in p, p
+            out = love.render(p, "katia", "vjt")
+            assert "{" not in out and "}" not in out, p
+
+
+def test_parse_knows_the_three_commands():
+    assert love.parse("!slap nano nudo") == ("slap", "nano")
+    assert love.parse("!PERNACCHIO vjt") == ("pernacchio", "vjt")
+    assert love.parse("!love katia") == ("love", "katia")
+    for t in ("!slap", "!pernacchio  ", "!slapped nano", "!pernacchione vjt",
+              "ciao !slap nano"):
+        assert love.parse(t) is None, t
+
+
+def test_each_command_draws_from_its_own_pool():
+    lv = fresh(cooldown=0)
+    for i, cmd in enumerate(("slap", "pernacchio", "love") * 30):
+        _, text = lv.handle(line("katia", "#sbiffo", f"!{cmd} vjt"), now=i)
+        assert text in {love.render(p, "katia", "vjt")
+                        for p in love.POOLS[cmd]}, (cmd, text)
+
+
+def test_cooldown_is_shared_across_commands():
+    # Un canale, un cooldown: alternare i comandi non aggira l'anti-flood.
+    lv = fresh(cooldown=2)
+    assert lv.handle(line("a", "#sbiffo", "!love b"), now=100)
+    assert lv.handle(line("a", "#sbiffo", "!slap b"), now=101) is None
+    assert lv.handle(line("a", "#sbiffo", "!pernacchio b"), now=101) is None
+    assert lv.handle(line("a", "#sbiffo", "!pernacchio b"), now=102)
 
 
 if __name__ == "__main__":
@@ -142,4 +182,12 @@ if __name__ == "__main__":
     print("ok: autoamore e graffe nel nick")
     test_no_control_bytes_reach_the_fifo()
     print("ok: niente byte di controllo nelle frasi")
+    test_slap_and_pernacchio_pools_render_with_both_nicks()
+    print("ok: !slap e !pernacchio, pool propri e completi")
+    test_parse_knows_the_three_commands()
+    print("ok: parse riconosce i tre comandi e basta")
+    test_each_command_draws_from_its_own_pool()
+    print("ok: ogni comando pesca dal suo pool")
+    test_cooldown_is_shared_across_commands()
+    print("ok: cooldown condiviso fra i comandi")
     print("\nTUTTO VERDE, porco dio")
