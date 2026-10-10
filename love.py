@@ -44,6 +44,7 @@ Env:
   LOVE_FIFO      bot.send to write     ('' disables talking — dry runs mute)
   LOVE_CHANS     comma separated list  (default: #sniffo,#sbiffo)
   LOVE_COOLDOWN  seconds between two lines in the same channel (default 2)
+  LOVE_NICK      the bot's own nick     (default: Ambrogio)
 """
 
 import os
@@ -62,6 +63,9 @@ CHANNELS = {c.strip().lower() for c in os.environ.get(
 # TOOLS answered three `!love` 3 s apart, so the cooldown has to stay under
 # that or it stops being the same command. It exists for paste floods.
 COOLDOWN_SEC = float(os.environ.get("LOVE_COOLDOWN", "2"))
+# The bot never targets itself (vjt, #sbiffo 2026-10-10 13:54: «evitare il
+# self-slap»): `!slap Ambrogio` bounces back on whoever typed it.
+BOT_NICK = os.environ.get("LOVE_NICK", "Ambrogio")
 
 # A target is echoed back into the channel: cap it so a 400-byte "nick" does
 # not wrap the line into two.
@@ -334,6 +338,9 @@ class Love:
         if not cmd:
             return None
         cmd, to = cmd
+        frm = m.group("nick")
+        if to.lower() == BOT_NICK.lower():
+            to = frm
         key = chan.lower()
         now = time.time() if now is None else now
         if now - self.last_at.get(key, float("-inf")) < self.cooldown:
@@ -341,7 +348,7 @@ class Love:
         phrase = pick(self.rng, self.last_phrase.get(key), POOLS[cmd])
         self.last_at[key] = now
         self.last_phrase[key] = phrase
-        return chan, render(phrase, m.group("nick"), to)
+        return chan, render(phrase, frm, to)
 
 
 def daemon():
