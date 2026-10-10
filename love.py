@@ -303,6 +303,22 @@ SESSUA_PHRASES = [
     "/me si sdraia sul divano, batte la mano sul cuscino e guarda {to}, da parte di {from}",
     "/me dice a {to}: «hai un culo che manco un server Sun», da parte di {from}",
     "/me spegne la luce e dice a {to}: «adesso si va in modalita' stealth», da parte di {from}",
+    # The nerd-flirting set, kept and pushed harder (vjt, #sbiffo 14:10).
+    "/me guarda {to} come un server con 128 core e zero carico, e si lecca le labbra, da parte di {from}",
+    "/me sussurra a {to}: «hai un uptime che mi fa venire voglia di riavviarti a mano», da parte di {from}",
+    "/me manda a {to} un DCC CHAT con scritto solo «sono gia' in mutande», da parte di {from}",
+    "/me dice a {to}: «compilami senza -O2, che stanotte la voglio lenta», da parte di {from}",
+    "/me abbassa le luci, mette Barry White e fa /query {to} con la vestaglia aperta, da parte di {from}",
+    "/me dice a {to}: «hai delle porte aperte e io ho nmap in mano», da parte di {from}",
+    "/me dice a {to}: «fammi fare il three-way handshake, poi ci mettiamo in ESTABLISHED», da parte di {from}",
+    "/me dice a {to}: «sono la root, e stanotte ti faccio chmod 777», da parte di {from}",
+    "/me propone a {to} una cena a lume di CRT e il dessert sotto la scrivania, da parte di {from}",
+    "/me dice a {to}: «mettimi +o e poi fai di me quello che vuoi», da parte di {from}",
+    "/me infila il cavo seriale nella porta di {to} e chiede: «senti la portante?», da parte di {from}",
+    "/me dice a {to}: «fammi un fork(), che dopo nove mesi abbiamo un processo figlio», da parte di {from}",
+    "/me dice a {to}: «ti faccio il defrag fino all'ultimo settore», da parte di {from}",
+    "/me dice a {to}: «stanotte niente firewall, accetto tutto in ingresso», da parte di {from}",
+    "/me dice a {to}: «ho un buffer che va in overflow solo a guardarti», da parte di {from}",
 ]
 
 # command -> phrase pool. All of them share the target rule and the cooldown.
