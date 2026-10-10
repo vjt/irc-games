@@ -69,6 +69,32 @@ Niente FIFO e niente IRC: `say()` intercettata, log finti. Copre le cose che
 prima erano rotte — una suora per canale, i colpi che non attraversano le reti,
 i punteggi che non si travasano, la cadenza per canale, la migrazione.
 
+## Sillabah
+
+`sillabah.py`, il gioco delle sillabe del forum di rinoadiary.it (2008), dietro
+a MikeBongiorno. Stessa forma dell'impiccato (tail del log, stato json, FIFO),
+config in `SILLABAH_NETS` col formato di `IMPICCATO_NETS`, rc.d in
+`deploy/mikebongiorno_sillabah`.
+
+Ogni manche (60s) il bot annuncia una sillaba e un limite di lettere; si gioca
+mandando in **query** al bot una parola che contiene la sillaba e sta nel
+limite. Una parola a testa per manche, l'ultima vince, `-delete` la ritira. Le
+lettere hanno un valore (`!valori`), la parola vale la somma, e a fine manche
+il canale vede le migliori e i punti vanno in classifica (per rete). In canale:
+`!sillabah [n]`, `!sillabah stop`, `!sillaba`, `!valori`, `!punti [nick]`,
+`!classifica sillabah`. Si chiude da solo dopo due manche senza parole.
+
+Il dizionario è `sillabah_parole.txt`: derivato da
+[Morph-it!](https://docs.sslmit.unibo.it/doku.php?id=resources:morph-it) 0.4.8
+(Baroni, Zanchetta — SSLMIT Bologna), licenza **CC BY-SA 2.0** (l'originale è
+doppia CC BY-SA 2.0 / LGPL). Forme flesse fino a 10 lettere, senza nomi propri
+né verbi tronchi; la ricetta esatta sta in testa al file.
+
+```
+python3 -m pytest tests/test_sillabah.py
+python3 sillabah.py prova 10     # dieci manche pescate dal dizionario vero
+```
+
 ## Deployment
 
 Jail `convento` su m42, `/opt/convento`. Un vhost per bot, via AAAA + PTR:

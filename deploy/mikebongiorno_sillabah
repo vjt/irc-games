@@ -1,0 +1,81 @@
+#!/bin/sh
+# PROVIDE: mikebongiorno_sillabah
+# REQUIRE: mikebongiorno_bot
+# KEYWORD: shutdown
+#
+# Sillabah (il gioco delle sillabe) dietro a MikeBongiorno, accanto al quiz:
+# stesso bot, stesso log, stessa FIFO. Ordine di vjt (2026-10-10 23:43).
+# Le parole arrivano in QUERY al bot: il sidecar le legge dal bot.log, dove
+# bot.py le scrive comunque, ma con BOT_DM_REJECT al default ogni giocatore si
+# prende anche la NOTICE «si parla in canale» al primo /msg. Va spenta sul
+# bot (BOT_DM_REJECT vuoto in mikebongiorno_bot o in .env.mike) prima di aprire.
+#
+# SILLABAH_NETS ha lo stesso formato di IMPICCATO_NETS:
+#   nome|log|fifo|#canali
+# e come li' il valore va fra APICI SINGOLI: rc.subr fa eval di command_args,
+# quindi senza apici la '|' diventa una pipe di shell e la '#' apre un commento.
+#
+# Un canale solo, #sbiffo: una partita per rete alla volta (le parole in query
+# non dicono da che canale vengono), e il resto si apre quando vjt lo dice.
+. /etc/rc.subr
+name="mikebongiorno_sillabah"
+rcvar="mikebongiorno_sillabah_enable"
+load_rc_config "$name"
+: ${mikebongiorno_sillabah_enable:="NO"}
+pidfile="/var/run/convento/sillabah.pid"
+# Vedi mikebongiorno_bot: daemon(8) scrive il pid del figlio.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+daemon_pidfile="${pidfile%.pid}.daemon.pid"
+command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/sillabah.log -t mike-sillabah \
+  /usr/bin/env SILLABAH_HOME=/var/db/convento \
+  SILLABAH_PAROLE=/opt/irc-games/sillabah_parole.txt \
+  SILLABAH_NICK=MikeBongiorno \
+  'SILLABAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo' \
+  /usr/local/bin/python3.11 -u /opt/irc-games/sillabah.py --net azzurra daemon"
+# daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
+# stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
+# lo start dopo muore con «process already running» e il sidecar resta giu' in
+# silenzio (visto su convento_suore, 2026-09-11 23:33). -P da' al supervisore un
+# pidfile suo, e l'hook qui sotto lo miete sia dopo stop che prima di start.
+start_precmd="convento_reap_supervisor"
+stop_postcmd="convento_reap_supervisor"
+convento_reap_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	rm -f "${daemon_pidfile}"; return 0 ;;
+	esac
+	if kill -0 "${_dpid}" 2>/dev/null; then
+		# figlio vivo = supervisore sano: giu' le mani, ci pensa rc.subr a
+		# dire «already running».
+		if [ -r "${pidfile}" ] && kill -0 "$(cat ${pidfile} 2>/dev/null)" 2>/dev/null; then
+			return 0
+		fi
+		kill -TERM "${_dpid}" 2>/dev/null
+		sleep 1
+		kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	fi
+	rm -f "${daemon_pidfile}" "${pidfile}"
+}
+
+# Con -R il supervisore rigenera il figlio dopo 5s, quindi uno stop che
+# ammazza solo il python non ferma niente: il supervisore muore PRIMA
+# (daemon(8) inoltra il TERM al figlio e se ne va), e rc.subr trova il
+# campo gia sgombro. Ordine di vjt 2026-09-19: "rendilo resilient convento".
+stop_precmd="convento_kill_supervisor"
+convento_kill_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	return 0 ;;
+	esac
+	kill -TERM "${_dpid}" 2>/dev/null
+	sleep 2
+	kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	return 0
+}
+
+run_rc_command "$1"
