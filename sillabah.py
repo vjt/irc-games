@@ -470,7 +470,7 @@ class Sillabah:
         left = max(0, int(g["deadline"] - now))
         return (f"🔤 [{g['count']}/{g['limit_manche']}] Sillaba "
                 f"{g['sillaba'].upper()}, max {g['limite']} lettere, {left}s. "
-                f"Parole in query: /msg {BOT_NICK} <parola>")
+                f"Parole in query: /msg o /notice {BOT_NICK} <parola>")
 
     def start_game(self, chan, n, now):
         self.state["games"][chan] = {
