@@ -221,13 +221,15 @@ PERNACCHIO_PHRASES = [
 
 # command -> phrase pool. All three share the target rule and the cooldown.
 POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES}
+# alias -> command (vjt, #sbiffo 2026-10-10 13:40): people type the feminine.
+ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio"}
 
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!\S+\s+PRIVMSG\s+(?P<chan>#\S+)\s+:(?P<text>.*?)$')
 # `!love` then whitespace or end: `!lovely` is not the command. Only the first
 # word is the target, like TOOLS ("!love inverno nucleare" -> inverno).
 CMD_PAT = re.compile(
-    r'^\s*!(?P<cmd>' + '|'.join(POOLS) + r')(?:\s+(?P<to>\S+).*)?\s*$', re.I)
+    r'^\s*!(?P<cmd>' + '|'.join([*POOLS, *ALIASES]) + r')(?:\s+(?P<to>\S+).*)?\s*$', re.I)
 CTRL = re.compile(r'[\x00-\x1f\x7f]')
 
 
@@ -237,7 +239,8 @@ def parse(text):
     if not m or not m.group("to"):
         return None
     to = CTRL.sub("", m.group("to"))[:TARGET_MAX]
-    return (m.group("cmd").lower(), to) if to else None
+    cmd = m.group("cmd").lower()
+    return (ALIASES.get(cmd, cmd), to) if to else None
 
 
 def target_of(text):
