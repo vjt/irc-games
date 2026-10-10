@@ -28,7 +28,8 @@ repeat — that was the part nobody would miss).
 
 `!slap` and `!pernacchio` (vjt, #sbiffo 2026-10-10 12:44, on katia's ask:
 "tipo !love però pernacchio") are the same command with another pool: same
-target rule, same cooldown, same no-repeat. One daemon serves all three.
+target rule, same cooldown, same no-repeat. One daemon serves them all;
+`!sculaccia` (13:51) joined later, a `/me` pool like `!slap`.
 
 Shape is the house sidecar shape (yt_preview.py, next_counter.py): tail
 bot.log, match, write verbs into the bot.send FIFO, non-blocking, so a dead
@@ -219,8 +220,33 @@ PERNACCHIO_PHRASES = [
     "{from} chiude la query con {to} cosi': PRRRRRRRRRRRRRRRRRRRRT",
 ]
 
-# command -> phrase pool. All three share the target rule and the cooldown.
-POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES}
+SCULACCIA_PHRASES = [
+    "/me prende {to} sulle ginocchia e gli rifila una sculacciata da manuale, da parte di {from}",
+    "/me sculaccia {to} con una ciabatta da casa, modello nonna, da parte di {from}",
+    "/me da' a {to} una sculacciata cosi' forte che gli parte un ping timeout, da parte di {from}",
+    "/me sculaccia {to} col mestolo di legno della pasta al forno, da parte di {from}",
+    "/me rifila a {to} tre sculaccioni, uno per ogni netsplit, da parte di {from}",
+    "/me sculaccia {to} con una copia rilegata dell'RFC 1459, da parte di {from}",
+    "/me sculaccia {to} a ritmo di excess flood: PAF PAF PAF PAF, da parte di {from}",
+    "/me da' a {to} una sculacciata in base64: U0NVTEFDQ0lB, da parte di {from}",
+    "/me sculaccia {to} con un floppy da 3.5 pollici, protetto in scrittura, da parte di {from}",
+    "/me sculaccia {to} col cavo del modem 56k, e si sente pure la portante, da parte di {from}",
+    "/me sculaccia {to} come ChanServ con un +b, senza appello, da parte di {from}",
+    "/me da' a {to} una sculacciata con rimbalzo, roba da bouncer, da parte di {from}",
+    "/me sculaccia {to} con la tastiera, layout IT, barra spaziatrice compresa, da parte di {from}",
+    "/me prende la cintura e sculaccia {to} come negli anni '80, da parte di {from}",
+    "/me sculaccia {to} con il manuale di bahamut, capitolo sui K-line, da parte di {from}",
+    "/me sculaccia {to} in stereo: PAF (sx) PAF (dx), da parte di {from}",
+    "/me da' a {to} una sculacciata che gli resetta il nick, da parte di {from}",
+    "/me sculaccia {to} col battipanni della suocera, da parte di {from}",
+    "/me sculaccia {to} con una trota del Brenta, che fa piu' male, da parte di {from}",
+    "/me rifila a {to} una sculacciata a cinque dita, IPv4 e IPv6, da parte di {from}",
+]
+
+# command -> phrase pool. All of them share the target rule and the cooldown.
+POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES,
+         # vjt, #sbiffo 2026-10-10 13:51, on katia's ask.
+         "sculaccia": SCULACCIA_PHRASES}
 # alias -> command (vjt, #sbiffo 2026-10-10 13:40): people type the feminine.
 ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio"}
 

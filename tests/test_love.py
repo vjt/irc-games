@@ -123,7 +123,7 @@ def test_no_control_bytes_reach_the_fifo():
 def test_slap_and_pernacchio_pools_render_with_both_nicks():
     # !slap e !pernacchio (vjt 2026-10-10): pool proprio, mittente e target
     # sempre nominati, niente doppioni, niente frasi prese in prestito.
-    for cmd in ("slap", "pernacchio"):
+    for cmd in ("slap", "pernacchio", "sculaccia"):
         pool = love.POOLS[cmd]
         assert len(pool) == len(set(pool)) >= 20, cmd
         assert not set(pool) & set(love.PHRASES), cmd
@@ -205,3 +205,9 @@ def test_slap_is_an_action_and_nicks_are_bold():
         assert p.startswith("/me "), p
     out = love.render("{from} -> {to}", "katia", "vjt")
     assert out == "\x02katia\x02 -> \x02vjt\x02"
+
+
+def test_sculaccia_is_a_ctcp_action_pool():
+    # !sculaccia (vjt 2026-10-10 13:51): every phrase is a /me, like !slap.
+    assert love.parse("!sculaccia vjt") == ("sculaccia", "vjt")
+    assert all(p.startswith("/me ") for p in love.POOLS["sculaccia"])
