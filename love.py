@@ -281,26 +281,8 @@ DOCCIA_PHRASES = [
     "/me fa a {to} una doccia di pacchetti persi, 100% packet loss, da parte di {from}",
 ]
 
-SESSUALIZZA_PHRASES = [
-    "/me guarda {to} come si guarda un server con 128 core e zero carico, da parte di {from}",
-    "/me sussurra a {to}: «hai un uptime che mi fa girare la testa», da parte di {from}",
-    "/me fa l'occhiolino a {to} e gli manda un DCC CHAT, da parte di {from}",
-    "/me dice a {to}: «sei piu' sexy di un kernel compilato senza warning», da parte di {from}",
-    "/me abbassa le luci, mette Barry White e fa /query {to}, da parte di {from}",
-    "/me dice a {to}: «hai delle porte aperte che vorrei scansionare», da parte di {from}",
-    "/me fischia dietro a {to} come un modem 56k in handshake, da parte di {from}",
-    "/me dice a {to}: «sei l'unico ping a cui risponderei sempre», da parte di {from}",
-    "/me manda a {to} una rosa e un /mode +v, da parte di {from}",
-    "/me dice a {to}: «con te farei un three-way handshake», da parte di {from}",
-    "/me arrossisce davanti a {to} come un LED di attivita' del disco, da parte di {from}",
-    "/me dice a {to}: «sei la root che vorrei avere», da parte di {from}",
-    "/me propone a {to} una cena a lume di monitor CRT, da parte di {from}",
-    "/me dice a {to}: «hai un nick che mi manda in excess flood», da parte di {from}",
-    "/me scrive il nome di {to} nel motd con i cuoricini, da parte di {from}",
-]
-
-# !sessua: its own pool, cruder than !sessualizza (vjt, #sbiffo 14:08:
-# «deve essere un set separato e piu' spinto»). Cinepanettone register:
+# !sessua (alias !sessualizza): its own pool (vjt, #sbiffo 14:08: «deve
+# essere un set separato e piu' spinto»). Cinepanettone register:
 # double meaning and innuendo, nothing graphic.
 SESSUA_PHRASES = [
     "/me si slaccia la cravatta, guarda {to} e dice: «stasera ti faccio il port forwarding», da parte di {from}",
@@ -328,10 +310,11 @@ POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES
          # vjt, #sbiffo 2026-10-10 13:51, on katia's ask.
          "sculaccia": SCULACCIA_PHRASES,
          # vjt, #sbiffo 2026-10-10 14:01, on tom's ask.
-         "doccia": DOCCIA_PHRASES, "sessualizza": SESSUALIZZA_PHRASES,
-         "sessua": SESSUA_PHRASES}
+         "doccia": DOCCIA_PHRASES, "sessua": SESSUA_PHRASES}
 # alias -> command (vjt, #sbiffo 2026-10-10 13:40): people type the feminine.
-ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio"}
+ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio",
+           # vjt, #sbiffo 2026-10-10 14:09.
+           "sessualizza": "sessua"}
 
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!\S+\s+PRIVMSG\s+(?P<chan>#\S+)\s+:(?P<text>.*?)$')
