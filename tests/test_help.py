@@ -111,7 +111,8 @@ def test_classifica_risponde_al_nome_usato_nell_help():
 def test_help_elenca_solo_comandi_noti():
     """Ogni token `!xxx` o `.x` del testo e' fra quelli verificati sopra."""
     noti = {c.split()[0] for c in COMANDI} | {"!help", "!giochi"}
-    testo = " ".join(I.HELP_LINES)
+    # via bold e colori: il "10" di \x0310 attaccato al "!" nasconderebbe il comando
+    testo = re.sub(r'\x03\d{0,2}(?:,\d{1,2})?|\x02', "", " ".join(I.HELP_LINES))
     trovati = set(re.findall(r'(?<!\w)[!.-][a-z]+', testo))
     assert trovati <= noti, trovati - noti
     # e i comandi principali ci sono tutti

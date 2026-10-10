@@ -254,18 +254,18 @@ SET_ALIASES = {
 # Niente backtick: IRC li mostra cosi' come sono.
 HELP_PAT = re.compile(r'^!\s*(?:help|giochi)\s*$', re.IGNORECASE)
 HELP_LINES = (
-    "\x0312\x02Giochi di MikeBongiorno\x02\x03: \x02Trivial\x02 (quiz a "
+    "\x02Giochi di MikeBongiorno\x02: \x02Trivial\x02 (quiz a "
     "impiccato) e \x02Sillabah\x02 (parole con la sillaba). "
-    "\x02!classifica\x02 [trivial|sillabah] per i punti.",
-    "\x0303\x02Trivial\x02\x03: \x02!trivial\x02 <set> [n] apre una "
-    "partita da n domande (alias \x02!trivia\x02, \x02!allegria\x02), "
-    "\x02!trivial\x02 da solo elenca i set. In gioco: una lettera o la "
-    "risposta intera, \x02.h\x02 scopre una lettera, \x02.v\x02 le "
-    "vocali, \x02!stop\x02 chiude.",
-    "\x0307\x02Sillabah\x02\x03: \x02!sillabah\x02 [n] apre n manche, "
-    "\x02!sillabah stop\x02 chiude. Le parole si mandano \x02in query\x02 "
-    "al bot, \x02-delete\x02 ritira la tua. \x02!sillaba\x02 la manche in "
-    "corso, \x02!valori\x02 i punti delle lettere, \x02!punti\x02 [nick] "
+    "\x02\x0310!classifica\x03\x02 [trivial|sillabah] per i punti.",
+    "\x02Trivial\x02: \x02\x0310!trivial\x03\x02 <set> [n] apre una "
+    "partita da n domande (alias \x02\x0310!trivia\x03\x02, \x02\x0310!allegria\x03\x02), "
+    "\x02\x0310!trivial\x03\x02 da solo elenca i set. In gioco: una lettera o la "
+    "risposta intera, \x02\x0310.h\x03\x02 scopre una lettera, \x02\x0310.v\x03\x02 le "
+    "vocali, \x02\x0310!stop\x03\x02 chiude.",
+    "\x02Sillabah\x02: \x02\x0310!sillabah\x03\x02 [n] apre n manche, "
+    "\x02\x0310!sillabah stop\x03\x02 chiude. Le parole si mandano \x02in query\x02 "
+    "al bot, \x02\x0310-delete\x03\x02 ritira la tua. \x02\x0310!sillaba\x03\x02 la manche in "
+    "corso, \x02\x0310!valori\x03\x02 i punti delle lettere, \x02\x0310!punti\x03\x02 [nick] "
     "il punteggio.",
 )
 # Secondi fra due help allo stesso nick: chi martella `!help` non fa floodare
