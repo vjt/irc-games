@@ -58,6 +58,17 @@ def test_privmsg_parses_channel_and_query():
     assert (m["nick"], m["target"], m["text"]) == ("pippo", BOT, "riso")
 
 
+def test_notice_in_query_is_input_but_not_from_services_or_channels():
+    def m(nick, target, text="riso"):
+        return S.PRIVMSG_PAT.search(
+            log_line(nick, target, text).replace(" PRIVMSG ", " NOTICE "))
+    assert S.is_input(m("pippo", BOT))
+    assert m("pippo", BOT)["text"] == "riso"
+    assert not S.is_input(m("NickServ", BOT, "This nickname is registered"))
+    assert not S.is_input(m("pippo", "#sbiffo"))
+    assert S.is_input(S.PRIVMSG_PAT.search(log_line("pippo", "#sbiffo", "!sillabah")))
+
+
 def test_own_outbound_lines_are_not_input():
     # bot.py logga le nostre righe con '>': rileggerle come input farebbe
     # giocare il bot contro se stesso.

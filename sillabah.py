@@ -170,10 +170,23 @@ VALORI = {
 # Il target puo' essere un canale O il bot stesso (query): tutto quello che non
 # comincia con '#' o '&' e' una query a noi. Le righe '>' sono le nostre e non
 # combaciano: il pattern vuole '<'.
+# Le parole valgono anche in NOTICE al bot (/notice MikeBongiorno parola): cosi'
+# non si cambia buffer (Malekith, via vjt 2026-10-11). Solo in query, e mai dai
+# servizi: NickServ & co mandano NOTICE al bot, e ognuna si piglierebbe un
+# «Nessuna partita in corso» di risposta.
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!(?P<ident>[^@\s]+)@(?P<host>\S+)\s+'
-    r'PRIVMSG\s+(?P<target>\S+)\s+:(?P<text>.*?)$'
+    r'(?P<verb>PRIVMSG|NOTICE)\s+(?P<target>\S+)\s+:(?P<text>.*?)$'
 )
+
+
+def is_input(m):
+    """Una riga che il gioco deve guardare: ogni PRIVMSG, NOTICE solo in
+    query e non dai servizi."""
+    if m["verb"] == "PRIVMSG":
+        return True
+    return (not m["target"].startswith(("#", "&"))
+            and not m["nick"].lower().endswith("serv"))
 
 # `!sillabah` apre, `!sillabah 15` apre con 15 manche, `!sillabah stop` chiude.
 # Niente `!stop` nudo: l'impiccato sta negli stessi canali e lo raccoglie gia',
@@ -754,7 +767,7 @@ class Sillabah:
                     if not line:
                         break
                     m = PRIVMSG_PAT.search(line)
-                    if m:
+                    if m and is_input(m):
                         changed |= self.handle(m.group("nick"), m.group("target"),
                                                m.group("text"))
                 changed |= self.tick()

@@ -263,7 +263,7 @@ HELP_LINES = (
     "risposta intera, \x02\x0310.h\x03\x02 scopre una lettera, \x02\x0310.v\x03\x02 le "
     "vocali, \x02\x0310!stop\x03\x02 chiude.",
     "\x02Sillabah\x02: \x02\x0310!sillabah\x03\x02 [n] apre n manche, "
-    "\x02\x0310!sillabah stop\x03\x02 chiude. Le parole si mandano \x02in query\x02 "
+    "\x02\x0310!sillabah stop\x03\x02 chiude. Le parole si mandano \x02in query\x02 o \x02/notice\x02 "
     "al bot, \x02\x0310-delete\x03\x02 ritira la tua. \x02\x0310!sillaba\x03\x02 la manche in "
     "corso, \x02\x0310!valori\x03\x02 i punti delle lettere, \x02\x0310!punti\x03\x02 [nick] "
     "il punteggio.",
