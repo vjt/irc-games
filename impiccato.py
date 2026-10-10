@@ -241,8 +241,10 @@ SET_ALIASES = {
     "religione": "religioni", "animali": "natura", "cibo": "cucina",
 }
 # `!help` / `!giochi`: l'elenco dei comandi di TUTTI i giochi di MikeBongiorno,
-# in NOTICE a chi lo chiede e non in canale. Richiesta del founder di #italia,
-# via libera di vjt (2026-10-10): «un comando !help per i giochi». Risponde
+# in canale, con cooldown per canale. Richiesta del founder di #italia, via
+# libera di vjt (2026-10-10): «un comando !help per i giochi». Prima andava
+# in NOTICE al nick, ma grappa le butta nel tab server: in canale (vjt+Malekith
+# 2026-10-11), e il cooldown tiene a bada chi lo martella. Risponde
 # SOLO questo sidecar: sillabah.py sta sullo stesso log e la stessa FIFO, e se
 # rispondessero tutti e due arriverebbe l'help doppio. Per questo il testo
 # copre anche Sillabah, e tests/test_help.py controlla che ogni comando
@@ -267,7 +269,7 @@ HELP_LINES = (
     "il punteggio.",
 )
 # Secondi fra due help allo stesso nick: chi martella `!help` non fa floodare
-# il bot (le NOTICE escono dalla stessa coda delle PRIVMSG di gioco).
+# il canale (le righe di help escono dalla stessa coda di quelle di gioco).
 HELP_COOLDOWN = 30
 HINT_PAT = re.compile(r'^\.\s*h\s*$', re.IGNORECASE)
 VOWEL_PAT = re.compile(r'^\.\s*v\s*$', re.IGNORECASE)
@@ -459,18 +461,13 @@ class Impiccato:
         self.talk = talk
         self.state = load_state(state_path)
         self.sent = []          # solo per il selftest
-        self.notices = []       # idem, le NOTICE: (nick, testo)
-        self.help_seen = {}     # nick casefold -> ultimo help mandato
+        self.help_seen = {}     # canale casefold -> ultimo help mandato
 
     # --- uscita ---------------------------------------------------------
 
     def say(self, chan, text):
         self.sent.append((chan, text))
         self._fifo("SAY", chan, text)
-
-    def notice(self, nick, text):
-        self.notices.append((nick, text))
-        self._fifo("NOTICE", nick, text)
 
     def _fifo(self, verb, target, text):
         if not self.talk or not self.fifo:
@@ -739,17 +736,17 @@ class Impiccato:
         # le due si leggono come una classifica sola.
         self.say(chan, f"🏆 [Trivial] Classifica ({self.net}): {podio(rows)}")
 
-    def help(self, nick, now):
-        """HELP_LINES in NOTICE a `nick`, al massimo una volta ogni
-        HELP_COOLDOWN secondi. Il cooldown sta in memoria: un riavvio lo
+    def help(self, chan, now):
+        """HELP_LINES in `chan`, al massimo una volta ogni HELP_COOLDOWN
+        secondi per canale. Il cooldown sta in memoria: un riavvio lo
         azzera, e va bene cosi' — non e' stato di gioco."""
-        key = nick.casefold()
+        key = chan.casefold()
         last = self.help_seen.get(key)
         if last is not None and now - last < HELP_COOLDOWN:
             return
         self.help_seen[key] = now
         for line in HELP_LINES:
-            self.notice(nick, line)
+            self.say(chan, line)
 
     # --- ingresso --------------------------------------------------------
 
@@ -763,7 +760,7 @@ class Impiccato:
         now = int(now if now is not None else time.time())
 
         if HELP_PAT.match(text):
-            self.help(nick, now)
+            self.help(chan, now)
             return False
 
         k = CLASSIFICA_PAT.match(text)
@@ -1212,15 +1209,14 @@ def selftest():
         assert g15.game("#t") is None
         assert "prima del numero" in g15.sent[-1][1], g15.sent[-1]
 
-        # `!help` / `!giochi`: NOTICE al nick, niente in canale, cooldown.
+        # `!help` / `!giochi`: in canale, cooldown per canale.
         gh = Impiccato("test", "/dev/null", "", st, {"#t"}, dom, talk=False)
         assert gh.handle("Pippo", "#t", "!help", now=1000) is False
-        assert [n for n, _ in gh.notices] == ["Pippo"] * len(HELP_LINES)
-        assert not gh.sent
-        gh.handle("pippo", "#t", "!giochi", now=1000 + HELP_COOLDOWN - 1)
-        assert len(gh.notices) == len(HELP_LINES)
+        assert gh.sent == [("#t", t) for t in HELP_LINES]
+        gh.handle("Pluto", "#t", "!giochi", now=1000 + HELP_COOLDOWN - 1)
+        assert len(gh.sent) == len(HELP_LINES)
         gh.handle("Pippo", "#t", "!giochi", now=1000 + HELP_COOLDOWN)
-        assert len(gh.notices) == 2 * len(HELP_LINES)
+        assert len(gh.sent) == 2 * len(HELP_LINES)
         assert all(len(t.encode("utf-8")) <= MAX_LINE and "`" not in t
                    for t in HELP_LINES)
 

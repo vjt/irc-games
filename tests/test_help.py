@@ -1,8 +1,8 @@
 """`!help` / `!giochi` di MikeBongiorno: una risposta sola (impiccato.py), in
-NOTICE al nick, con cooldown, e un testo che non promette comandi che non
+canale, con cooldown per canale, e un testo che non promette comandi che non
 esistono.
 
-Niente FIFO e niente IRC: talk=False, `notices` raccoglie le NOTICE.
+Niente FIFO e niente IRC: talk=False, `sent` raccoglie le righe.
 """
 import os
 import random
@@ -30,46 +30,43 @@ def sill(tmp_path, chans=("#t",)):
 
 
 @pytest.mark.parametrize("cmd", ["!help", "!giochi", "!HELP", "! giochi "])
-def test_help_va_in_notice_al_nick(tmp_path, cmd):
+def test_help_va_in_canale(tmp_path, cmd):
     g = quiz(tmp_path)
     assert g.handle("Pippo", "#t", cmd, now=100) is False
-    assert g.notices == [("Pippo", line) for line in I.HELP_LINES]
-    assert g.sent == []                     # niente in canale
+    assert g.sent == [("#t", line) for line in I.HELP_LINES]
 
 
 def test_help_solo_nei_canali_configurati(tmp_path):
     g = quiz(tmp_path)
     g.handle("Pippo", "#altro", "!help", now=100)
-    assert g.notices == []
+    assert g.sent == []
 
 
 def test_help_non_prende_argomenti_ne_varianti(tmp_path):
     g = quiz(tmp_path)
     for t in ("!help trivial", "!helpme", "!gioco", "help"):
         g.handle("Pippo", "#t", t, now=100)
-    assert g.notices == []
+    assert g.sent == []
 
 
-def test_cooldown_per_nick(tmp_path):
-    g = quiz(tmp_path)
+def test_cooldown_per_canale(tmp_path):
+    g = quiz(tmp_path, chans=("#t", "#u"))
     n = len(I.HELP_LINES)
     g.handle("Pippo", "#t", "!help", now=100)
-    g.handle("PIPPO", "#t", "!giochi", now=100 + I.HELP_COOLDOWN - 1)
-    assert len(g.notices) == n              # stesso nick, case diverso: muto
-    g.handle("Pluto", "#t", "!help", now=101)
-    assert len(g.notices) == 2 * n          # un altro nick non aspetta
+    g.handle("Pluto", "#t", "!giochi", now=100 + I.HELP_COOLDOWN - 1)
+    assert len(g.sent) == n                 # stesso canale, altro nick: muto
+    g.handle("Pluto", "#u", "!help", now=101)
+    assert len(g.sent) == 2 * n             # un altro canale non aspetta
     g.handle("pippo", "#t", "!help", now=100 + I.HELP_COOLDOWN)
-    assert len(g.notices) == 3 * n
+    assert len(g.sent) == 3 * n
 
 
 def test_help_non_tocca_la_partita(tmp_path):
     g = quiz(tmp_path)
     g.handle("a", "#t", "!trivial t", now=100)
     q = dict(g.game("#t"))
-    g.sent.clear()
     g.handle("b", "#t", "!help", now=101)
     assert g.game("#t") == q
-    assert g.sent == []
 
 
 def test_righe_corte_e_senza_markdown():
