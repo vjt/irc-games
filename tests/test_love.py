@@ -211,3 +211,12 @@ def test_sculaccia_is_a_ctcp_action_pool():
     # !sculaccia (vjt 2026-10-10 13:51): every phrase is a /me, like !slap.
     assert love.parse("!sculaccia vjt") == ("sculaccia", "vjt")
     assert all(p.startswith("/me ") for p in love.POOLS["sculaccia"])
+
+
+def test_the_bot_never_targets_itself():
+    # vjt 2026-10-10 13:54: `!sculaccia Ambrogio` bounces on the sender.
+    lv = fresh()
+    for i, cmd in enumerate(("slap", "pernacchio", "sculaccia", "love")):
+        _, text = lv.handle(line("vjt", "#sbiffo", f"!{cmd} AMBROGIO"), now=i * 10)
+        assert "Ambrogio" not in text and "AMBROGIO" not in text
+        assert "vjt" in text
