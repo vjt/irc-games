@@ -220,3 +220,16 @@ def test_the_bot_never_targets_itself():
         _, text = lv.handle(line("vjt", "#sbiffo", f"!{cmd} AMBROGIO"), now=i * 10)
         assert "Ambrogio" not in text and "AMBROGIO" not in text
         assert "vjt" in text
+
+
+def test_skip_turns_commands_off_per_channel():
+    # vjt 2026-10-10 13:57: on #cybernet TOOLS does !love/!slap, keep the rest.
+    skip = love.parse_skip("#Cybernet:love,slap; #x:love")
+    assert skip == {"#cybernet": {"love", "slap"}, "#x": {"love"}}
+    lv = love.Love(rng=random.Random(1), cooldown=0,
+                   chans={"#cybernet", "#italia"}, skip=skip)
+    assert lv.handle(line("a", "#cybernet", "!love b"), now=0) is None
+    assert lv.handle(line("a", "#cybernet", "!slap b"), now=1) is None
+    assert lv.handle(line("a", "#cybernet", "!prrr b"), now=2)
+    assert lv.handle(line("a", "#cybernet", "!sculaccia b"), now=3)
+    assert lv.handle(line("a", "#italia", "!love b"), now=4)
