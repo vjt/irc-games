@@ -505,3 +505,29 @@ def test_notice_in_query_gets_notice_back(diz, tmp_path):
     assert [t for t, _ in g.notices] == ["pippo"] and not g.sent
     g.handle("pluto", BOT, "!valori", now=0)
     assert [t for t, _ in g.sent] == ["pluto"] and len(g.notices) == 1
+
+
+def test_status_line_during_manche(diz, tmp_path):
+    g = gioco(diz, tmp_path)
+    g.handle("a", "#t", "!sillabah 3", now=0)
+    forza(g, "#t")
+    g.sent.clear()
+    g.tick(now=S.STATUS_GAP)                    # nessuna parola: zitto
+    assert g.sent == []
+    g.handle("uno", BOT, "riso", now=16)
+    g.handle("due", BOT, "rima", now=17)
+    g.sent.clear()
+    g.tick(now=18)
+    assert g.sent == [("#t", f"📝 2 parole in gioco, mancano {S.MANCHE_S - 18}s.")]
+    g.sent.clear()
+    g.tick(now=25)                              # numero uguale: zitto
+    g.handle("tre", BOT, "rimb", now=26)
+    g.sent.clear()
+    g.tick(now=28)                              # troppo presto dall'ultima
+    assert g.sent == []
+    g.tick(now=33)
+    assert [t for _, t in g.sent] == [f"📝 3 parole in gioco, mancano {S.MANCHE_S - 33}s."]
+    g.handle("quattro", BOT, "risa", now=40)
+    g.sent.clear()
+    g.tick(now=S.MANCHE_S - S.STATUS_MIN_LEFT + 1)  # a ridosso della scadenza: zitto
+    assert g.sent == []

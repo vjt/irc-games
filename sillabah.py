@@ -151,6 +151,11 @@ TICK = 5
 # Una manche scaduta da piu' di cosi' (il processo era giu') si butta in
 # silenzio: annunciare il risultato di una manche di tre ore fa e' rumore.
 STALE_S = 300
+# Le parole arrivano in query e il canale sembra morto: durante la manche una
+# riga di stato, solo se il numero di parole e' cambiato, al piu' una ogni
+# STATUS_GAP secondi, e non a ridosso della scadenza (STATUS_MIN_LEFT).
+STATUS_GAP = 15
+STATUS_MIN_LEFT = 8
 # Tetto in byte di una riga accorpata, come nell'impiccato (vedi MAX_LINE li').
 MAX_LINE = 380
 # Freno alle risposte in query. bot.py non ha un pacing suo in uscita, e uno
@@ -506,6 +511,8 @@ class Sillabah:
             "soluzioni": nsol,
             "parole": {},
             "deadline": now + MANCHE_S,
+            "status_ts": now,
+            "status_n": 0,
         })
         g["usate"] = list(g.get("usate", [])) + [s]
         self.emit(chan, list(lead) + [self.annuncio(g, now)])
@@ -515,6 +522,19 @@ class Sillabah:
         l'ha mandata prima."""
         return sorted(g.get("parole", {}).values(),
                       key=lambda r: (-r["punti"], r["ts"], r["nick"].casefold()))
+
+    def stato_manche(self, chan, now):
+        """La riga di stato durante la manche: quante parole, quanto manca.
+        Niente parole ne' nick: in query si gioca alla cieca."""
+        g = self.state["games"][chan]
+        n = len(g.get("parole", {}))
+        left = int(g["deadline"] - now)
+        if (n == g.get("status_n", 0) or left < STATUS_MIN_LEFT
+                or now - g.get("status_ts", 0) < STATUS_GAP):
+            return
+        g["status_n"], g["status_ts"] = n, now
+        self.say(chan, f"📝 {n} {'parola' if n == 1 else 'parole'} in gioco, "
+                       f"mancano {left}s.")
 
     def end_manche(self, chan, now):
         """Chiude la manche: punti in classifica, riga in canale, e poi pausa,
@@ -747,6 +767,8 @@ class Sillabah:
                 else:
                     self.start_manche(chan, now)
                 changed = True
+            elif g.get("fase") == "manche":
+                self.stato_manche(chan, now)
         return changed
 
     def next_wake(self, now):
