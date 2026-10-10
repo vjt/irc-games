@@ -299,14 +299,39 @@ SESSUALIZZA_PHRASES = [
     "/me scrive il nome di {to} nel motd con i cuoricini, da parte di {from}",
 ]
 
+# !sessua: its own pool, cruder than !sessualizza (vjt, #sbiffo 14:08:
+# «deve essere un set separato e piu' spinto»). Cinepanettone register:
+# double meaning and innuendo, nothing graphic.
+SESSUA_PHRASES = [
+    "/me si slaccia la cravatta, guarda {to} e dice: «stasera ti faccio il port forwarding», da parte di {from}",
+    "/me infila un euro nell'elastico delle mutande di {to}, da parte di {from}",
+    "/me dice a {to}: «ho un hard disk da 2 tera e non e' una metafora», da parte di {from}",
+    "/me spalma l'olio di semi su {to} e dice che e' per il cooling, da parte di {from}",
+    "/me si toglie la camicia davanti a {to} come Boldi in un cinepanettone, da parte di {from}",
+    "/me propone a {to} un /join #camera-da-letto, chiave in topic, da parte di {from}",
+    "/me palpa il sedere di {to} e dice che cercava il cavo di rete, da parte di {from}",
+    "/me dice a {to}: «fammi vedere il tuo bouncer che ti mostro il mio daemon», da parte di {from}",
+    "/me accende le candele, apre una Ceres e fa a {to} lo sguardo da letto, da parte di {from}",
+    "/me sussurra a {to}: «stanotte niente ping timeout, si va avanti fino all'alba», da parte di {from}",
+    "/me dice a {to}: «ho la banda larga, se capisci cosa intendo», da parte di {from}",
+    "/me fa a {to} la mossa del bacino alla Elvis, con ritorno di fiamma, da parte di {from}",
+    "/me chiede a {to} se vuole vedere la sua collezione di floppy, quelli da 5 pollici e un quarto, da parte di {from}",
+    "/me dice a {to}: «io ti faccio il kernel panic, altro che uptime», da parte di {from}",
+    "/me mette a {to} una mano sulla coscia e dice: «tranquillo, e' solo un handshake», da parte di {from}",
+    "/me si sdraia sul divano, batte la mano sul cuscino e guarda {to}, da parte di {from}",
+    "/me dice a {to}: «hai un culo che manco un server Sun», da parte di {from}",
+    "/me spegne la luce e dice a {to}: «adesso si va in modalita' stealth», da parte di {from}",
+]
+
 # command -> phrase pool. All of them share the target rule and the cooldown.
 POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES,
          # vjt, #sbiffo 2026-10-10 13:51, on katia's ask.
          "sculaccia": SCULACCIA_PHRASES,
          # vjt, #sbiffo 2026-10-10 14:01, on tom's ask.
-         "doccia": DOCCIA_PHRASES, "sessualizza": SESSUALIZZA_PHRASES}
+         "doccia": DOCCIA_PHRASES, "sessualizza": SESSUALIZZA_PHRASES,
+         "sessua": SESSUA_PHRASES}
 # alias -> command (vjt, #sbiffo 2026-10-10 13:40): people type the feminine.
-ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio", "sessua": "sessualizza"}
+ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio"}
 
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!\S+\s+PRIVMSG\s+(?P<chan>#\S+)\s+:(?P<text>.*?)$')
