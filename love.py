@@ -263,12 +263,50 @@ SCULACCIA_PHRASES = [
     "/me rifila a {to} una sculacciata a cinque dita, IPv4 e IPv6, da parte di {from}",
 ]
 
+DOCCIA_PHRASES = [
+    "/me rovescia su {to} un secchio d'acqua gelata, da parte di {from}",
+    "/me apre la doccia fredda su {to} e si porta via l'asciugamano, da parte di {from}",
+    "/me infila {to} sotto la doccia con lo scaldabagno rotto dal 1997, da parte di {from}",
+    "/me lava {to} con l'idropulitrice, modalita' sverniciatura, da parte di {from}",
+    "/me fa a {to} una doccia col sapone di Marsiglia e lo spazzolone dei cessi, da parte di {from}",
+    "/me spruzza {to} col tubo del giardino come un gatto sul divano, da parte di {from}",
+    "/me mette {to} sotto la doccia e gli stacca l'acqua calda a meta' shampoo, da parte di {from}",
+    "/me lava {to} a 90 gradi con la centrifuga a 1400 giri, da parte di {from}",
+    "/me fa a {to} una doccia di /quit: piove gente che esce, da parte di {from}",
+    "/me spara su {to} l'idrante dei pompieri, che puzzava, da parte di {from}",
+    "/me fa a {to} una doccia di ghiaccio, poi gli chiede se era meglio il flood, da parte di {from}",
+    "/me lava {to} con la candeggina, ma solo i calzini, da parte di {from}",
+    "/me mette {to} sotto la doccia del campeggio a gettoni, con un gettone solo, da parte di {from}",
+    "/me spruzza {to} con l'acqua santa e vede se fuma, da parte di {from}",
+    "/me fa a {to} una doccia di pacchetti persi, 100% packet loss, da parte di {from}",
+]
+
+SESSUALIZZA_PHRASES = [
+    "/me guarda {to} come si guarda un server con 128 core e zero carico, da parte di {from}",
+    "/me sussurra a {to}: «hai un uptime che mi fa girare la testa», da parte di {from}",
+    "/me fa l'occhiolino a {to} e gli manda un DCC CHAT, da parte di {from}",
+    "/me dice a {to}: «sei piu' sexy di un kernel compilato senza warning», da parte di {from}",
+    "/me abbassa le luci, mette Barry White e fa /query {to}, da parte di {from}",
+    "/me dice a {to}: «hai delle porte aperte che vorrei scansionare», da parte di {from}",
+    "/me fischia dietro a {to} come un modem 56k in handshake, da parte di {from}",
+    "/me dice a {to}: «sei l'unico ping a cui risponderei sempre», da parte di {from}",
+    "/me manda a {to} una rosa e un /mode +v, da parte di {from}",
+    "/me dice a {to}: «con te farei un three-way handshake», da parte di {from}",
+    "/me arrossisce davanti a {to} come un LED di attivita' del disco, da parte di {from}",
+    "/me dice a {to}: «sei la root che vorrei avere», da parte di {from}",
+    "/me propone a {to} una cena a lume di monitor CRT, da parte di {from}",
+    "/me dice a {to}: «hai un nick che mi manda in excess flood», da parte di {from}",
+    "/me scrive il nome di {to} nel motd con i cuoricini, da parte di {from}",
+]
+
 # command -> phrase pool. All of them share the target rule and the cooldown.
 POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES,
          # vjt, #sbiffo 2026-10-10 13:51, on katia's ask.
-         "sculaccia": SCULACCIA_PHRASES}
+         "sculaccia": SCULACCIA_PHRASES,
+         # vjt, #sbiffo 2026-10-10 14:01, on tom's ask.
+         "doccia": DOCCIA_PHRASES, "sessualizza": SESSUALIZZA_PHRASES}
 # alias -> command (vjt, #sbiffo 2026-10-10 13:40): people type the feminine.
-ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio"}
+ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio", "sessua": "sessualizza"}
 
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!\S+\s+PRIVMSG\s+(?P<chan>#\S+)\s+:(?P<text>.*?)$')

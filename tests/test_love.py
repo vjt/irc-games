@@ -233,3 +233,13 @@ def test_skip_turns_commands_off_per_channel():
     assert lv.handle(line("a", "#cybernet", "!prrr b"), now=2)
     assert lv.handle(line("a", "#cybernet", "!sculaccia b"), now=3)
     assert lv.handle(line("a", "#italia", "!love b"), now=4)
+
+
+def test_doccia_and_sessualizza_are_action_pools():
+    # vjt 2026-10-10 14:01 (tom's ask); !sessua is the short alias.
+    assert love.parse("!doccia tom") == ("doccia", "tom")
+    assert love.parse("!sessua tom") == ("sessualizza", "tom")
+    assert love.parse("!sessualizza tom") == ("sessualizza", "tom")
+    for cmd in ("doccia", "sessualizza"):
+        assert all(p.startswith("/me ") and "{to}" in p and "{from}" in p
+                   for p in love.POOLS[cmd])
