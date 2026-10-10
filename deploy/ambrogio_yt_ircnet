@@ -11,7 +11,7 @@ name="ambrogio_yt_ircnet"
 rcvar="ambrogio_yt_ircnet_enable"
 load_rc_config "$name"
 : ${ambrogio_yt_ircnet_enable:="NO"}
-: ${ambrogio_yt_ircnet_chans:="#cybernet,#italia"}
+: ${ambrogio_yt_ircnet_chans:="#italia"}
 # Data API v3 key: dall'IP della jail la pagina watch risponde LOGIN_REQUIRED,
 # quindi qui la chiave non e' un lusso, e' l'unica via (vjt, 11:57).
 : ${ambrogio_yt_ircnet_key_file:="/usr/local/etc/convento/yt_api_key"}
