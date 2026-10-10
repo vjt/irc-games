@@ -197,3 +197,11 @@ def test_pernacchio_aliases():
     for alias in ("!pernacchia vjt", "!prrr vjt", "!PRRR vjt"):
         assert love.parse(alias) == ("pernacchio", "vjt")
     assert love.parse("!prrrr vjt") is None
+
+
+def test_slap_is_an_action_and_nicks_are_bold():
+    # vjt 2026-10-10: !slap esce come CTCP ACTION, i nick in grassetto.
+    for p in love.POOLS["slap"]:
+        assert p.startswith("/me "), p
+    out = love.render("{from} -> {to}", "katia", "vjt")
+    assert out == "\x02katia\x02 -> \x02vjt\x02"

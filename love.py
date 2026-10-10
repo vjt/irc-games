@@ -164,31 +164,31 @@ NEW_PHRASES = [
 PHRASES = TOOLS_PHRASES + NEW_PHRASES
 
 SLAP_PHRASES = [
-    "* {from} slaps {to} around a bit with a large trout",
-    "* {from} prende una trota da tre chili e la stampa in faccia a {to}",
-    "(╯°□°)╯ {from} tira un ceffone a {to} che fa netsplit da solo",
-    "* {from} schiaffeggia {to} con un baccala' sotto sale, stagionato 1997",
-    "* {from} rifila a {to} uno schiaffo a cinque dita, una per ogni ping timeout",
-    "* {from} prende a sberle {to} con la tastiera, layout IT, tasto Invio compreso",
-    "* {from} colpisce {to} con un /kill a mano aperta",
-    "* {from} schiaffeggia {to} col manuale di bahamut, edizione rilegata",
-    "* {from} tira a {to} uno sganassone che gli fa cambiare nick",
-    "* {from} schiaffeggia {to} con un modem 56k, ancora attaccato al doppino",
-    "* {from} da' a {to} un ceffone in base64: Q0VGRk9ORQ==",
-    "* {from} prende un floppy da 1.44 e lo sbatte in fronte a {to}",
-    "* {from} schiaffeggia {to} con un cavo seriale null-modem",
-    "* {from} prende {to} a sberle a ritmo di excess flood",
-    "* {from} schiaffeggia {to} con una trota del Brenta, che fa piu' male",
-    "* {from} tira a {to} un manrovescio che neanche un K-line",
-    "* {from} prende {to} a schiaffi col motd di Azzurra stampato in A3",
-    "* {from} schiaffeggia {to} con un 'porco dio' a mano aperta",
-    "* {from} assesta a {to} uno schiaffo con rimbalzo, roba da ChanServ",
-    "* {from} sventola una sardina sotto il naso di {to} e poi gliela tira",
-    "* {from} schiaffeggia {to} con la riga di comando, opzione -f",
-    "* {from} sbatte {to} contro il muro dei banlist",
-    "* {from} da' a {to} uno schiaffo cosi' forte che gli si resetta il bouncer",
-    "* {from} prende a sberle {to} con una copia di linux&c del 1999",
-    "* {from} schiaffeggia {to} con un salmone affumicato, e poi se lo mangia",
+    "/me slaps {to} around a bit with a large trout, on behalf of {from}",
+    "/me prende una trota da tre chili e la stampa in faccia a {to}, da parte di {from}",
+    "/me (╯°□°)╯ tira un ceffone a {to} che fa netsplit da solo, da parte di {from}",
+    "/me schiaffeggia {to} con un baccala' sotto sale, stagionato 1997, da parte di {from}",
+    "/me rifila a {to} uno schiaffo a cinque dita, una per ogni ping timeout, da parte di {from}",
+    "/me prende a sberle {to} con la tastiera, layout IT, tasto Invio compreso, da parte di {from}",
+    "/me colpisce {to} con un /kill a mano aperta, da parte di {from}",
+    "/me schiaffeggia {to} col manuale di bahamut, edizione rilegata, da parte di {from}",
+    "/me tira a {to} uno sganassone che gli fa cambiare nick, da parte di {from}",
+    "/me schiaffeggia {to} con un modem 56k, ancora attaccato al doppino, da parte di {from}",
+    "/me da' a {to} un ceffone in base64: Q0VGRk9ORQ==, da parte di {from}",
+    "/me prende un floppy da 1.44 e lo sbatte in fronte a {to}, da parte di {from}",
+    "/me schiaffeggia {to} con un cavo seriale null-modem, da parte di {from}",
+    "/me prende {to} a sberle a ritmo di excess flood, da parte di {from}",
+    "/me schiaffeggia {to} con una trota del Brenta, che fa piu' male, da parte di {from}",
+    "/me tira a {to} un manrovescio che neanche un K-line, da parte di {from}",
+    "/me prende {to} a schiaffi col motd di Azzurra stampato in A3, da parte di {from}",
+    "/me schiaffeggia {to} con un 'porco dio' a mano aperta, da parte di {from}",
+    "/me assesta a {to} uno schiaffo con rimbalzo, roba da ChanServ, da parte di {from}",
+    "/me sventola una sardina sotto il naso di {to} e poi gliela tira, da parte di {from}",
+    "/me schiaffeggia {to} con la riga di comando, opzione -f, da parte di {from}",
+    "/me sbatte {to} contro il muro dei banlist, da parte di {from}",
+    "/me da' a {to} uno schiaffo cosi' forte che gli si resetta il bouncer, da parte di {from}",
+    "/me prende a sberle {to} con una copia di linux&c del 1999, da parte di {from}",
+    "/me schiaffeggia {to} con un salmone affumicato, e poi se lo mangia, da parte di {from}",
 ]
 
 PERNACCHIO_PHRASES = [
@@ -252,7 +252,8 @@ def target_of(text):
 def render(phrase, frm, to):
     # str.format substitutes values without re-parsing them, so a `{` in a
     # nick is printed as-is.
-    return phrase.format(**{"from": frm, "to": to})
+    # Nicks in bold (vjt, #sbiffo 2026-10-10 13:44).
+    return phrase.format(**{"from": f"\x02{frm}\x02", "to": f"\x02{to}\x02"})
 
 
 def pick(rng, last=None, pool=PHRASES):
@@ -273,8 +274,11 @@ def say(chan, text):
     except OSError:
         return
     try:
-        # SAY:love — origin tag, log-only; see bot.py process_cmd.
-        os.write(fd, f"SAY:love {chan} {text}\n".encode())
+        # SAY:love — origin tag, log-only; see bot.py process_cmd. A `/me `
+        # phrase (the !slap pool) goes out as a CTCP ACTION, like a real slap.
+        verb = "ACT" if text.startswith("/me ") else "SAY"
+        text = text[4:] if verb == "ACT" else text
+        os.write(fd, f"{verb}:love {chan} {text}\n".encode())
     except OSError:
         pass
     finally:
