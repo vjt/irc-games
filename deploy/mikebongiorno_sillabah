@@ -31,7 +31,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   /usr/bin/env SILLABAH_HOME=/var/db/convento \
   SILLABAH_PAROLE=/opt/irc-games/sillabah_parole.txt \
   SILLABAH_NICK=MikeBongiorno \
-  'SILLABAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo' \
+  'SILLABAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo,#sniffo,#italia' \
   /usr/local/bin/python3.11 -u /opt/irc-games/sillabah.py --net azzurra daemon"
 # daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
 # stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
