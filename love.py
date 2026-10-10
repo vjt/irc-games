@@ -26,13 +26,17 @@ Two things on top, both cheap: a short per-channel cooldown against floods,
 and no immediate repeat of the phrase just said in that channel (TOOLS did
 repeat — that was the part nobody would miss).
 
+`!slap` and `!pernacchio` (vjt, #sbiffo 2026-10-10 12:44, on katia's ask:
+"tipo !love però pernacchio") are the same command with another pool: same
+target rule, same cooldown, same no-repeat. One daemon serves all three.
+
 Shape is the house sidecar shape (yt_preview.py, next_counter.py): tail
 bot.log, match, write verbs into the bot.send FIFO, non-blocking, so a dead
 bot costs a skipped line and not a wedged daemon. Stateless: nothing on disk.
 
 Usage:
-  love.py                    # daemon (tail bot.log)
-  love.py --once FROM TO     # print one line, send nothing
+  love.py                        # daemon (tail bot.log)
+  love.py --once FROM TO [CMD]   # print one line (CMD default love), send nothing
 
 Env:
   LOVE_LOG       bot.log to tail       (default: the vjt-claude repo one)
@@ -159,21 +163,87 @@ NEW_PHRASES = [
 
 PHRASES = TOOLS_PHRASES + NEW_PHRASES
 
+SLAP_PHRASES = [
+    "* {from} slaps {to} around a bit with a large trout",
+    "* {from} prende una trota da tre chili e la stampa in faccia a {to}",
+    "(╯°□°)╯ {from} tira un ceffone a {to} che fa netsplit da solo",
+    "* {from} schiaffeggia {to} con un baccala' sotto sale, stagionato 1997",
+    "* {from} rifila a {to} uno schiaffo a cinque dita, una per ogni ping timeout",
+    "* {from} prende a sberle {to} con la tastiera, layout IT, tasto Invio compreso",
+    "* {from} colpisce {to} con un /kill a mano aperta",
+    "* {from} schiaffeggia {to} col manuale di bahamut, edizione rilegata",
+    "* {from} tira a {to} uno sganassone che gli fa cambiare nick",
+    "* {from} schiaffeggia {to} con un modem 56k, ancora attaccato al doppino",
+    "* {from} da' a {to} un ceffone in base64: Q0VGRk9ORQ==",
+    "* {from} prende un floppy da 1.44 e lo sbatte in fronte a {to}",
+    "* {from} schiaffeggia {to} con un cavo seriale null-modem",
+    "* {from} prende {to} a sberle a ritmo di excess flood",
+    "* {from} schiaffeggia {to} con una trota del Brenta, che fa piu' male",
+    "* {from} tira a {to} un manrovescio che neanche un K-line",
+    "* {from} prende {to} a schiaffi col motd di Azzurra stampato in A3",
+    "* {from} schiaffeggia {to} con un 'porco dio' a mano aperta",
+    "* {from} assesta a {to} uno schiaffo con rimbalzo, roba da ChanServ",
+    "* {from} sventola una sardina sotto il naso di {to} e poi gliela tira",
+    "* {from} schiaffeggia {to} con la riga di comando, opzione -f",
+    "* {from} sbatte {to} contro il muro dei banlist",
+    "* {from} da' a {to} uno schiaffo cosi' forte che gli si resetta il bouncer",
+    "* {from} prende a sberle {to} con una copia di linux&c del 1999",
+    "* {from} schiaffeggia {to} con un salmone affumicato, e poi se lo mangia",
+]
+
+PERNACCHIO_PHRASES = [
+    "{from} fa a {to} una pernacchia: PRRRRRRRRRRRRRT",
+    "{from} -> {to}: PFFFFFFFRRRRRRRRRRRT 💨",
+    "{from} gonfia le guance e spara a {to} una pernacchia da stadio: BRRRRRRRRRRRRRRRRT",
+    "{from} dedica a {to} una pernacchia napoletana, di quelle di Eduardo: PPPRRRRRR",
+    "{from} fa a {to} una pernacchia in stereo: PRRRT (sx) PRRRT (dx)",
+    "{from} manda a {to} un CTCP PERNACCHIO: PRRRRRRRRRRRRT",
+    "{from} fa a {to} una pernacchia da 4 giga via DCC SEND: PRRRRRRRR...RRRRT",
+    "{from} risponde a {to} con una pernacchia in excess flood: PRT PRT PRT PRT PRT (excess flood)",
+    "{from} fa a {to} una pernacchia cosi' lunga che va in ping timeout: PRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "{from} si mette la mano sotto l'ascella e fa a {to}: PFRRRT PFRRRT",
+    "{from} soffia sul braccio una pernacchia per {to}: PFFFFFRRRRRT",
+    "{from} fa una pernacchia a {to} e poi si scusa. No, non si scusa: PRRRRRT",
+    "{from} -> {to}: 🎺 PRRRRRRRRRT 🎺",
+    "{from} fa a {to} una pernacchia in base64: UFJSUlJSUlJU",
+    "{from} saluta {to} alla romana: AAAAH... PRRRRRRRRRRT",
+    "{from} fa a {to} una pernacchia con scappellamento a destra: PRRRT come se fosse antani",
+    "{from} sfoggia per {to} la pernacchia del Marchese del Grillo: io so' io e tu PRRRRRT",
+    "{from} fa a {to} la pernacchia del modem 56k: PSHHHHHHKRRRRRRRRRT",
+    "{from} fa a {to} una pernacchia con eco: PRRRT... prrrt... prt...",
+    "{from} regala a {to} una pernacchia in +v, cosi' si sente anche nel +m: PRRRRRRRT",
+    "{from} si gira verso {to}, chiude gli occhi e... PPPPPRRRRRRRRRRRRRT",
+    "{from} fa a {to} una pernacchia in Do maggiore: PRRRT-PRRRT-PRRRRRRRT",
+    "{from} sputacchia addosso a {to} una pernacchia bagnata: PFFTHHHHHPPPT",
+    "{from} fa a {to} una pernacchia a doppio canale, IPv4 e IPv6: PRRRT::PRRRT",
+    "{from} chiude la query con {to} cosi': PRRRRRRRRRRRRRRRRRRRRT",
+]
+
+# command -> phrase pool. All three share the target rule and the cooldown.
+POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES}
+
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!\S+\s+PRIVMSG\s+(?P<chan>#\S+)\s+:(?P<text>.*?)$')
 # `!love` then whitespace or end: `!lovely` is not the command. Only the first
 # word is the target, like TOOLS ("!love inverno nucleare" -> inverno).
-CMD_PAT = re.compile(r'^\s*!love(?:\s+(?P<to>\S+).*)?\s*$', re.I)
+CMD_PAT = re.compile(
+    r'^\s*!(?P<cmd>' + '|'.join(POOLS) + r')(?:\s+(?P<to>\S+).*)?\s*$', re.I)
 CTRL = re.compile(r'[\x00-\x1f\x7f]')
 
 
-def target_of(text):
-    """`!love <who> [...]` -> who, or None (not the command, or bare)."""
+def parse(text):
+    """`!<cmd> <who> [...]` -> (cmd, who), or None (not a command, or bare)."""
     m = CMD_PAT.match(text)
     if not m or not m.group("to"):
         return None
     to = CTRL.sub("", m.group("to"))[:TARGET_MAX]
-    return to or None
+    return (m.group("cmd").lower(), to) if to else None
+
+
+def target_of(text):
+    """`!love <who> [...]` -> who, or None (not the command, or bare)."""
+    p = parse(text)
+    return p[1] if p else None
 
 
 def render(phrase, frm, to):
@@ -182,11 +252,11 @@ def render(phrase, frm, to):
     return phrase.format(**{"from": frm, "to": to})
 
 
-def pick(rng, last=None):
+def pick(rng, last=None, pool=PHRASES):
     """A random phrase, never the one said last in that channel."""
     while True:
-        p = rng.choice(PHRASES)
-        if p != last or len(PHRASES) == 1:
+        p = rng.choice(pool)
+        if p != last or len(pool) == 1:
             return p
 
 
@@ -227,14 +297,15 @@ class Love:
         chan = m.group("chan")
         if chan.lower() not in self.chans:
             return None
-        to = target_of(m.group("text"))
-        if not to:
+        cmd = parse(m.group("text"))
+        if not cmd:
             return None
+        cmd, to = cmd
         key = chan.lower()
         now = time.time() if now is None else now
         if now - self.last_at.get(key, float("-inf")) < self.cooldown:
             return None
-        phrase = pick(self.rng, self.last_phrase.get(key))
+        phrase = pick(self.rng, self.last_phrase.get(key), POOLS[cmd])
         self.last_at[key] = now
         self.last_phrase[key] = phrase
         return chan, render(phrase, m.group("nick"), to)
@@ -252,8 +323,9 @@ def daemon():
 
 def main():
     argv = sys.argv[1:]
-    if argv[:1] == ["--once"] and len(argv) == 3:
-        print(render(pick(random.Random()), argv[1], argv[2]))
+    if argv[:1] == ["--once"] and len(argv) in (3, 4):
+        pool = POOLS[argv[3].lower()] if len(argv) == 4 else PHRASES
+        print(render(pick(random.Random(), pool=pool), argv[1], argv[2]))
         return 0
     daemon()
     return 0

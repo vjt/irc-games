@@ -3,7 +3,8 @@
 # REQUIRE: ambrogio_bot
 # KEYWORD: shutdown
 #
-# Il `!love` del vecchio TOOLS di IRCnet dietro ad Ambrogio (vjt, 2026-10-07).
+# Il `!love` del vecchio TOOLS di IRCnet dietro ad Ambrogio (vjt, 2026-10-07),
+# piu' `!slap` e `!pernacchio` dallo stesso processo (vjt, 2026-10-10).
 # Nessuno stato su disco e nessuna rete: legge il log, pesca una frase, scrive
 # una riga nella FIFO. Canali da rc.conf (ambrogio_love_chans): #it-opers fuori
 # di default, il leak guard di bot.py bloccherebbe la stessa frase altrove.
