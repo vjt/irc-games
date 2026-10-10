@@ -191,3 +191,9 @@ if __name__ == "__main__":
     test_cooldown_is_shared_across_commands()
     print("ok: cooldown condiviso fra i comandi")
     print("\nTUTTO VERDE, porco dio")
+
+
+def test_pernacchio_aliases():
+    for alias in ("!pernacchia vjt", "!prrr vjt", "!PRRR vjt"):
+        assert love.parse(alias) == ("pernacchio", "vjt")
+    assert love.parse("!prrrr vjt") is None
