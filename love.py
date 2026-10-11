@@ -300,72 +300,24 @@ DOCCIA_PHRASES = [
     "/me fa a {to} una doccia di pacchetti persi, 100% packet loss, da parte di {from}",
 ]
 
-# !sessua (alias !sessualizza): its own pool (vjt, #sbiffo 14:08: «deve
-# essere un set separato e piu' spinto»). Cinepanettone register:
-# double meaning and innuendo, nothing graphic.
+# !sessua (alias !sessualizza): its own pool (vjt, #sbiffo 2026-10-10 14:08:
+# «deve essere un set separato e piu' spinto»). Crude, not graphic.
 SESSUA_PHRASES = [
-    "/me si slaccia la cravatta, guarda {to} e dice: «stasera ti faccio il port forwarding», da parte di {from}",
-    "/me infila un euro nell'elastico delle mutande di {to}, da parte di {from}",
-    "/me dice a {to}: «ho un hard disk da 2 tera e non e' una metafora», da parte di {from}",
-    "/me spalma l'olio di semi su {to} e dice che e' per il cooling, da parte di {from}",
-    "/me si toglie la camicia davanti a {to} come Boldi in un cinepanettone, da parte di {from}",
-    "/me propone a {to} un /join #camera-da-letto, chiave in topic, da parte di {from}",
-    "/me palpa il sedere di {to} e dice che cercava il cavo di rete, da parte di {from}",
-    "/me dice a {to}: «fammi vedere il tuo bouncer che ti mostro il mio daemon», da parte di {from}",
-    "/me sussurra a {to}: «stanotte niente ping timeout, si va avanti fino all'alba», da parte di {from}",
-    "/me dice a {to}: «ho la banda larga, se capisci cosa intendo», da parte di {from}",
-    "/me chiede a {to} se vuole vedere la sua collezione di floppy, quelli da 5 pollici e un quarto, da parte di {from}",
-    "/me dice a {to}: «io ti faccio il kernel panic, altro che uptime», da parte di {from}",
-    "/me mette a {to} una mano sulla coscia e dice: «tranquillo, e' solo un handshake», da parte di {from}",
-    "/me dice a {to}: «hai un culo che manco un server Sun», da parte di {from}",
-    # Turned up again (vjt, #sbiffo 14:11: «ancora troppo soft»).
+    # The old lines with teeth; the cute and nerd-only ones are out
+    # (vjt 2026-10-11: «le righe vecchie sceme levali»).
     "/me si cala le braghe davanti a {to} e dice: «questo e' il mio pull request», da parte di {from}",
     "/me dice a {to}: «girati, che ti faccio vedere come si fa il push --force», da parte di {from}",
-    "/me afferra {to} per i fianchi e dice: «qui il cooldown non esiste», da parte di {from}",
     "/me dice a {to}: «stanotte ti sfondo il buffer, altro che overflow», da parte di {from}",
-    "/me si spoglia nudo come un mainframe senza case e salta addosso a {to}, da parte di {from}",
     "/me dice a {to}: «ho un'erezione da 99.999% di uptime», da parte di {from}",
     "/me sbatte {to} sulla scrivania tra il monitor e la tastiera, da parte di {from}",
-    "/me dice a {to}: «ti faccio urlare piu' forte di una ventola a 6000 giri», da parte di {from}",
-    # The nerd-flirting set, kept and pushed harder (vjt, #sbiffo 14:10).
-    "/me guarda {to} come un server con 128 core e zero carico, e si lecca le labbra, da parte di {from}",
-    "/me sussurra a {to}: «hai un uptime che mi fa venire voglia di riavviarti a mano», da parte di {from}",
-    "/me manda a {to} un DCC CHAT con scritto solo «sono gia' in mutande», da parte di {from}",
-    "/me dice a {to}: «compilami senza -O2, che stanotte la voglio lenta», da parte di {from}",
-    "/me abbassa le luci, mette Barry White e fa /query {to} con la vestaglia aperta, da parte di {from}",
-    "/me dice a {to}: «hai delle porte aperte e io ho nmap in mano», da parte di {from}",
-    "/me dice a {to}: «fammi fare il three-way handshake, poi ci mettiamo in ESTABLISHED», da parte di {from}",
-    "/me dice a {to}: «sono la root, e stanotte ti faccio chmod 777», da parte di {from}",
-    "/me propone a {to} una cena a lume di CRT e il dessert sotto la scrivania, da parte di {from}",
-    "/me dice a {to}: «mettimi +o e poi fai di me quello che vuoi», da parte di {from}",
     "/me infila il cavo seriale nella porta di {to} e chiede: «senti la portante?», da parte di {from}",
-    "/me dice a {to}: «fammi un fork(), che dopo nove mesi abbiamo un processo figlio», da parte di {from}",
-    "/me dice a {to}: «ti faccio il defrag fino all'ultimo settore», da parte di {from}",
-    "/me dice a {to}: «stanotte niente firewall, accetto tutto in ingresso», da parte di {from}",
-    "/me dice a {to}: «ho un buffer che va in overflow solo a guardarti», da parte di {from}",
-    # Plain-Italian lines for non-nerds (vjt, TG 2026-10-10 14:18: sarahbean
-    # doesn't get the nerd ones — keep them, add more that anyone gets).
-    "/me fa l'occhiolino a {to} e dice: «io e te, stasera, e il materasso non lo sa ancora», da parte di {from}",
-    "/me dice a {to}: «sei come la Nutella, ti mangerei col cucchiaio direttamente dal barattolo», da parte di {from}",
     "/me porta {to} in macchina, abbassa il sedile e dice: «non e' rotto, e' una scelta», da parte di {from}",
     "/me dice a {to}: «hai un bel davanzale, posso affacciarmi?», da parte di {from}",
-    "/me pizzica il sedere a {to} in fila alla posta e fa finta di niente, da parte di {from}",
     "/me dice a {to}: «non sono un idraulico, ma i tubi te li sistemo lo stesso», da parte di {from}",
-    "/me dice a {to}: «il letto e' a una piazza e mezza, la mezza sei tu», da parte di {from}",
-    "/me si presenta da {to} con solo l'accappatoio e una bottiglia di prosecco, da parte di {from}",
-    "/me dice a {to}: «domani ti porto il caffe' a letto, ma prima ti tocca guadagnartelo», da parte di {from}",
-    "/me dice a {to}: «ho le mani fredde, posso scaldarle sotto la tua maglietta?», da parte di {from}",
-    "/me balla un lento con {to} e la mano scende, scende, scende, da parte di {from}",
-    "/me dice a {to}: «sei come le lasagne della nonna: ti voglio tutte le domeniche», da parte di {from}",
-    "/me chiede a {to}: «da te o da me? Da te, che da me c'e' mia madre», da parte di {from}",
     "/me dice a {to}: «io i preliminari li salto, come la pubblicita'», da parte di {from}",
-    "/me guarda {to} dalla testa ai piedi e poi torna su, lentamente, fermandosi a meta', da parte di {from}",
-    "/me dice a {to}: «stasera spegniamo la tv, tanto c'e' solo Bruno Vespa», da parte di {from}",
-    "/me dice a {to}: «ti faccio vedere le stelle, e non parlo del planetario», da parte di {from}",
-    "/me infila un bigliettino nella tasca dei jeans di {to}, quella dietro, con la mano lenta, da parte di {from}",
-    "/me dice a {to}: «sei piu' bollente della moka lasciata sul fuoco», da parte di {from}",
+    "/me dice a {to}: «la cintura di castita' te la slaccio coi denti», da parte di {from}",
     # Sboccato, Alvaro Vitali register (vjt, #sbiffo 2026-10-11 12:41:
-    # «piu' strong, non ci sono bambini qui»). Crude, still not graphic.
+    # «piu' strong, non ci sono bambini qui»).
     "/me dice a {to}: «stasera ti trombo come un materasso in offerta da Mondo Convenienza», da parte di {from}",
     "/me si abbassa la zip davanti a {to} e dice: «ti presento il mio avvocato, parla lui», da parte di {from}",
     "/me dice a {to}: «ti scopo cosi' forte che i vicini chiamano i carabinieri, e i carabinieri restano a guardare», da parte di {from}",
@@ -384,17 +336,6 @@ SESSUA_PHRASES = [
     "/me dice a {to}: «mettiti a pecorina che facciamo il presepe vivente», da parte di {from}",
     "/me dice a {to}: «stanotte ti faccio vedere il paradiso, e San Pietro ci chiede di abbassare la voce», da parte di {from}",
     "/me dice a {to}: «c'ho due palle cosi' piene che ci gioca a bocce tutto il circolo anziani», da parte di {from}",
-    "/me spalma la crema solare sulla schiena di {to} e si dimentica dove finisce la schiena, da parte di {from}",
-    "/me dice a {to}: «in cucina sono un disastro, ma in camera ho tre stelle Michelin», da parte di {from}",
-    "/me sussurra a {to}: «i vicini stanotte chiamano i carabinieri», da parte di {from}",
-    "/me dice a {to}: «ho comprato le lenzuola di raso, scivolano che e' un piacere», da parte di {from}",
-    "/me dice a {to}: «la cintura di castita' te la slaccio coi denti», da parte di {from}",
-    "/me fa a {to} il piedino sotto il tavolo della cena di Natale, davanti alla suocera, da parte di {from}",
-    "/me dice a {to}: «sei come il mare d'agosto: caldo, affollato di pensieri sconci», da parte di {from}",
-    "/me dice a {to}: «io non russo, io ruggisco, e dopo stanotte lo sai», da parte di {from}",
-    "/me dice a {to}: «ti tolgo il reggiseno con una mano sola, l'altra la tengo per il telecomando», da parte di {from}",
-    "/me dice a {to}: «questa sera niente mal di testa, ho portato l'aspirina», da parte di {from}",
-    "/me si siede sulle ginocchia di {to} come a Babbo Natale e dice: «sono stata cattiva», da parte di {from}",
 ]
 
 # command -> phrase pool. All of them share the target rule and the cooldown.
