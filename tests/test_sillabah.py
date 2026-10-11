@@ -461,8 +461,8 @@ def test_state_roundtrip(diz, tmp_path):
 
 def test_real_dictionary_shape(vero):
     assert len(vero) > 100_000
-    assert max(len(f) for f in vero.grafia) <= 10
-    assert S.LIMITE_MAX <= 10, "il dizionario e' tagliato a 10 lettere"
+    assert max(len(f) for f in vero.grafia) <= 15
+    assert S.LIMITE_MAX <= 15, "il dizionario e' tagliato a 15 lettere"
     for w in ("casa", "abate", "perche", "piu", "citta", "gatto"):
         assert w in vero, w
     # niente nomi propri, niente verbi tronchi

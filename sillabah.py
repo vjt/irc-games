@@ -138,8 +138,8 @@ MAX_MANCHE = 30
 # Il limite di lettere. Il minimo assoluto vale per le sillabe corte, ma il
 # limite resta sempre almeno due lettere sopra la sillaba: una sillaba di tre
 # lettere con limite tre lascia in gioco solo la sillaba stessa.
-LIMITE_MIN = 5
-LIMITE_MAX = 9
+LIMITE_MIN = 6
+LIMITE_MAX = 15
 SILLABA_LEN = (2, 3)
 # Parole valide che il dizionario deve avere perche' una manche si giochi.
 MIN_SOLUZIONI = 20
