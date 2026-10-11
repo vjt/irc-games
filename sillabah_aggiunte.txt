@@ -1,0 +1,55 @@
+# sillabah_aggiunte.txt — parole che Morph-it! (2009) non ha e il regolamento
+# originale ammette: le straniere d'uso comune («Winchester, western, weekend»).
+# Una per riga, minuscole. Si aggiungono qui e si rigenera il dizionario:
+#   python3 tools/sillabah_dizionario.py morph-it_048.txt > sillabah_parole.txt
+winchester
+western
+weekend
+smartphone
+selfie
+chat
+download
+upload
+router
+login
+logout
+password
+app
+tablet
+fitness
+ketchup
+sandwich
+bitcoin
+streaming
+podcast
+email
+mouse
+computer
+software
+hardware
+internet
+online
+offline
+blog
+social
+hashtag
+browser
+server
+backup
+desktop
+laptop
+notebook
+wifi
+bluetooth
+jeans
+shopping
+manager
+marketing
+privacy
+startup
+brunch
+toast
+hamburger
+hotdog
+popcorn
+pizzeria
