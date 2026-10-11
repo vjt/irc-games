@@ -10,3 +10,5 @@ grappa_stats/stats.db
 grappa_stats/*.log
 payload/rickroll.mp4
 payload/*.mp4
+/sillabah_parole.db
+/sillabah_parole.tmp

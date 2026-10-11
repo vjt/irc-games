@@ -54,6 +54,7 @@ CLI:
 Env:
   SILLABAH_HOME    dove sta lo stato (default: la directory del file)
   SILLABAH_PAROLE  path del dizionario
+  SILLABAH_DB      path del db sqlite costruito dal dizionario (default nello stato)
   SILLABAH_NETS    nome|log|fifo|#chan1,#chan2 ; nome2|...  (formato di IMPICCATO_NETS)
   SILLABAH_LOG     override del bot.log da seguire
   SILLABAH_FIFO    override della FIFO del bot ('' zittisce del tutto)
@@ -66,11 +67,13 @@ import os
 import random
 import re
 import select
+import sqlite3
 import subprocess
 import sys
 import time
 import unicodedata
 from collections import deque
+from collections.abc import Mapping
 from pathlib import Path
 
 # Stato e dati vivono in posti diversi nella jail (vedi IMPICCATO_HOME): il
@@ -78,6 +81,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = Path(os.environ.get("SILLABAH_HOME", HERE))
 PAROLE = Path(os.environ.get("SILLABAH_PAROLE", HERE / "sillabah_parole.txt"))
+DB = Path(os.environ.get("SILLABAH_DB", REPO / "sillabah_parole.db"))
 BOT_NICK = os.environ.get("SILLABAH_NICK", "MikeBongiorno")
 
 
@@ -237,18 +241,33 @@ def punteggio(forma):
 class Dizionario:
     """Le parole ammesse, in forma normalizzata, con la grafia da mostrare.
 
+    Stanno in sqlite, non in RAM: 845k forme in un dict erano 200 MB di
+    processo (vjt, 2026-10-11: «perche' tenerlo in memoria»). Il default e'
+    un db in memoria, per i test; load_parole() ne apre uno su file.
+
     Due grafie possono dare la stessa forma (`papa` e `papà`): per il gioco
     sono la stessa parola, e si mostra la prima in ordine alfabetico."""
 
-    def __init__(self, parole):
-        self.grafia = {}
-        for p in sorted(parole):
-            f = fold(p)
-            if re.fullmatch(r"[a-z]+", f):
-                self.grafia.setdefault(f, p)
+    def __init__(self, parole=None, db=":memory:"):
+        self.db = sqlite3.connect(db)
+        if parole is not None:
+            self.riempi(parole)
+        self.grafia = _Grafia(self.db)
         # Solo le parole che possono stare sotto un limite: sono queste che si
-        # scandiscono a ogni scelta di sillaba.
-        self.corte = sorted(f for f in self.grafia if len(f) <= LIMITE_MAX)
+        # pescano e si scandiscono a ogni scelta di sillaba.
+        self.n_corte = self.db.execute(
+            "SELECT count(*) FROM parole WHERE len <= ?", (LIMITE_MAX,)).fetchone()[0]
+
+    def riempi(self, parole):
+        with self.db:
+            self.db.execute("DROP TABLE IF EXISTS parole")
+            self.db.execute("CREATE TABLE parole (forma TEXT PRIMARY KEY, "
+                            "grafia TEXT NOT NULL, len INTEGER NOT NULL)")
+            # INSERT OR IGNORE in ordine alfabetico: vince la prima grafia.
+            self.db.executemany(
+                "INSERT OR IGNORE INTO parole VALUES (?, ?, ?)",
+                ((f, p, len(f)) for p in sorted(parole)
+                 for f in [fold(p)] if re.fullmatch(r"[a-z]+", f)))
 
     def __contains__(self, forma):
         return forma in self.grafia
@@ -256,21 +275,74 @@ class Dizionario:
     def __len__(self):
         return len(self.grafia)
 
+    def a_caso(self, rng=random):
+        """Una forma corta a caso. L'OFFSET scandisce, ma una volta per
+        tentativo su un db da 10 MB e' un millisecondo."""
+        return self.db.execute(
+            "SELECT forma FROM parole WHERE len <= ? LIMIT 1 OFFSET ?",
+            (LIMITE_MAX, rng.randrange(self.n_corte))).fetchone()[0]
+
     def soluzioni(self, sillaba, limite):
-        return [f for f in self.corte if len(f) <= limite and sillaba in f]
+        return [f for (f,) in self.db.execute(
+            "SELECT forma FROM parole WHERE len <= ? AND instr(forma, ?) > 0 "
+            "ORDER BY forma", (limite, sillaba))]
 
 
-def load_parole(path=None):
+class _Grafia(Mapping):
+    """forma -> grafia da mostrare, letta dal db a richiesta."""
+
+    def __init__(self, db):
+        self.db = db
+
+    def __getitem__(self, forma):
+        r = self.db.execute("SELECT grafia FROM parole WHERE forma = ?",
+                            (forma,)).fetchone()
+        if r is None:
+            raise KeyError(forma)
+        return r[0]
+
+    def __iter__(self):
+        return (f for (f,) in self.db.execute("SELECT forma FROM parole"))
+
+    def __len__(self):
+        return self.db.execute("SELECT count(*) FROM parole").fetchone()[0]
+
+
+def load_parole(path=None, db=None):
+    """Il dizionario su file sqlite, ricostruito dal txt quando il txt cambia.
+
+    Il db sta con lo stato (SILLABAH_HOME), non col codice: nella jail il
+    codice e' di sola lettura per il bot. La firma del txt (dimensione e
+    mtime) sta nel db: un deploy del txt nuovo lo fa ricostruire al riavvio."""
     path = Path(path or PAROLE)
-    out = []
-    with open(path, encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if line and not line.startswith("#"):
-                out.append(line)
-    if not out:
-        raise SystemExit(f"sillabah: dizionario vuoto: {path}")
-    return Dizionario(out)
+    db = Path(db or DB)
+    st = path.stat()
+    firma = f"{st.st_size}:{st.st_mtime_ns}"
+    try:
+        con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+        ok = con.execute("SELECT v FROM meta WHERE k = 'firma'").fetchone() == (firma,)
+        con.close()
+    except sqlite3.Error:
+        ok = False
+    if not ok:
+        tmp = db.with_suffix(".tmp")
+        tmp.unlink(missing_ok=True)
+        out = []
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    out.append(line)
+        if not out:
+            raise SystemExit(f"sillabah: dizionario vuoto: {path}")
+        d = Dizionario(out, db=str(tmp))
+        with d.db:
+            d.db.execute("CREATE TABLE meta (k TEXT PRIMARY KEY, v TEXT)")
+            d.db.execute("INSERT INTO meta VALUES ('firma', ?)", (firma,))
+        d.db.close()
+        del out, d
+        tmp.replace(db)
+    return Dizionario(db=str(db))
 
 
 def valuta(diz, sillaba, limite, testo):
@@ -304,7 +376,7 @@ def scegli_sillaba(diz, rng=random, escludi=(), tentativi=300):
     sillaba+2. Sotto MIN_SOLUZIONI parole valide si ripesca."""
     escludi = set(escludi)
     for _ in range(tentativi):
-        w = rng.choice(diz.corte)
+        w = diz.a_caso(rng)
         n = rng.choice(SILLABA_LEN)
         if len(w) < n:
             continue
@@ -863,7 +935,7 @@ def main():
     elif cmd == "prova":
         diz = load_parole()
         n = int(argv[1]) if len(argv) > 1 else 10
-        print(f"dizionario: {len(diz)} forme, {len(diz.corte)} entro {LIMITE_MAX} lettere")
+        print(f"dizionario: {len(diz)} forme, {diz.n_corte} entro {LIMITE_MAX} lettere")
         for _ in range(n):
             s, limite, best, nsol = scegli_sillaba(diz)
             print(f"  {s.upper():<4} max {limite}  {nsol:>5} soluzioni  "
