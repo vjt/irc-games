@@ -59,6 +59,9 @@ def test_not_the_command():
 
 def test_target_sanitized_and_capped():
     assert love.target_of("!love na\x02no") == "nano"
+    assert love.target_of("!love \x034,20\x0313,37\x0300,00") is None
+    assert love.target_of("!love \x0304nano\x03") == "nano"
+    assert love.target_of("!love \x04ff0000,00ff00nano") == "nano"
     assert len(love.target_of("!love " + "x" * 500)) == love.TARGET_MAX
 
 

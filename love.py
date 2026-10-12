@@ -887,6 +887,11 @@ PRIVMSG_PAT = re.compile(
 # word is the target, like TOOLS ("!love inverno nucleare" -> inverno).
 CMD_PAT = re.compile(
     r'^\s*!(?P<cmd>' + '|'.join([*POOLS, *ALIASES]) + r')(?:\s+(?P<to>\S+).*)?\s*$', re.I)
+# mIRC colour codes carry their parameters as plain digits: stripping the
+# \x03 byte alone turns `!sessua ^C4,20^C13,37` into the nick «4,2013,37»
+# (puppy, #sniffo 2026-10-12 14:40). Eat the numbers with the byte, and the
+# hex form of \x04 too, before the generic control strip.
+COLOR = re.compile(r'\x03(?:\d{1,2}(?:,\d{1,2})?)?|\x04(?:[0-9a-fA-F]{6}(?:,[0-9a-fA-F]{6})?)?')
 CTRL = re.compile(r'[\x00-\x1f\x7f]')
 
 
@@ -895,7 +900,7 @@ def parse(text):
     m = CMD_PAT.match(text)
     if not m or not m.group("to"):
         return None
-    to = CTRL.sub("", m.group("to"))[:TARGET_MAX]
+    to = CTRL.sub("", COLOR.sub("", m.group("to")))[:TARGET_MAX]
     cmd = m.group("cmd").lower()
     return (ALIASES.get(cmd, cmd), to) if to else None
 
