@@ -38,7 +38,7 @@ daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/suore.log -t convento-suore \
   /usr/bin/env SUORE_HOME=/var/db/convento SUORE_NET=ircnet \
   SUORE_STATE=/var/db/convento/suore_state.json \
-  'SUORE_NETS=ircnet|/var/log/convento/bot.log|/var/run/convento/bot.send|#cybernet:90-240;azzurra|/var/log/convento/bot.azzurra.log|/var/run/convento/bot.azzurra.send|#sniffo:90-240,#sbiffo:60-180,#porcodio:90-240' \
+  'SUORE_NETS=ircnet|/var/log/convento/bot.log|/var/run/convento/bot.send|#cybernet:90-240;azzurra|/var/log/convento/bot.azzurra.log|/var/run/convento/bot.azzurra.send|#sniffo:90-240,#sbiffo:60-180,#porcodio:50-70' \
   /usr/local/bin/python3.11 -u /opt/irc-games/suore.py"
 # daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
 # stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
