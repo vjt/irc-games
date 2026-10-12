@@ -243,3 +243,32 @@ def test_doccia_and_sessualizza_are_action_pools():
     for cmd in ("doccia", "sessua"):
         assert all(p.startswith("/me ") and "{to}" in p and "{from}" in p
                    for p in love.POOLS[cmd])
+
+
+def test_deck_says_the_whole_pool_before_repeating():
+    # vjt, #sbiffo 2026-10-12: «sempre le stesse frasi». One deck per
+    # (channel, command): N calls say N different lines, then it reshuffles.
+    for cmd, pool in love.POOLS.items():
+        lv = fresh(cooldown=0)
+        seen = [lv.handle(line("a", "#sniffo", f"!{cmd} b"), now=i)[1]
+                for i in range(len(pool))]
+        assert len(set(seen)) == len(pool), cmd
+        nxt = lv.handle(line("a", "#sniffo", f"!{cmd} b"), now=len(pool))[1]
+        assert nxt != seen[-1], cmd
+
+
+def test_decks_are_per_command():
+    # A !slap in the middle does not burn cards of the !sessua deck.
+    lv = fresh(cooldown=0)
+    pool = love.POOLS["sessua"]
+    seen = []
+    for i in range(len(pool)):
+        seen.append(lv.handle(line("a", "#sniffo", "!sessua b"), now=2 * i)[1])
+        lv.handle(line("a", "#sniffo", "!slap b"), now=2 * i + 1)
+    assert len(set(seen)) == len(pool)
+
+
+def test_every_pool_has_at_least_100_lines():
+    # vjt, #sbiffo 2026-10-12 12:49: «almeno 100 frasi ognuno».
+    for cmd, pool in love.POOLS.items():
+        assert len(set(pool)) == len(pool) >= 100, (cmd, len(pool))
