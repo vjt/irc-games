@@ -34,7 +34,7 @@ command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/mike.stdout.log -t mikebongiorno \
   /usr/bin/env IRC_BIND=2a03:4000:20:2d3:fffc::a11e IRC_HOST=irc.azzurra.chat \
-  IRC_NICK=MikeBongiorno IRC_IDENT=mike IRC_REAL=github.com/vjt/irc-games \
+  IRC_NICK=MikeBongiorno IRC_IDENT=mike IRC_REAL='Allegria!' \
   BOT_LOG=/var/log/convento/mike.log BOT_FIFO=/var/run/convento/mike.send \
   BOT_TRUST=/opt/convento/bot.trust.mike BOT_ENV=/opt/convento/.env.mike \
   BOT_STARTUP=/opt/convento/bot.startup.mike BOT_DM_REJECT= \

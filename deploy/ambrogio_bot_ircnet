@@ -25,7 +25,7 @@ command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/ambrogio.ircnet.stdout.log -t ambrogio-ircnet \
   /usr/bin/env IRC_BIND=2a03:4000:20:2d3:fffc::abbe IRC_HOST=irc.ircnet.com IRC_TLS_VERIFY=0 \
-  IRC_NICK=Ambrogio IRC_IDENT=ambrogio IRC_REAL=github.com/vjt/irc-games \
+  IRC_NICK=Ambrogio IRC_IDENT=ambrogio IRC_REAL='Ambrogio, avverto un certo languorino' \
   BOT_LOG=/var/log/convento/ambrogio.ircnet.log BOT_FIFO=/var/run/convento/ambrogio.ircnet.send \
   BOT_TRUST=/opt/convento/bot.trust.ambrogio BOT_ENV=/opt/convento/.env.convento \
   BOT_STARTUP=/opt/convento/bot.startup.ambrogio.ircnet \

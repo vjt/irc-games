@@ -30,7 +30,7 @@ command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/warez.stdout.log -t elitewarez \
   /usr/bin/env IRC_BIND=2a03:4000:20:2d3:fffc::e117 IRC_HOST=irc.azzurra.chat \
-  IRC_NICK=EliteWarez IRC_IDENT=warez IRC_REAL=github.com/vjt/irc-games \
+  IRC_NICK=EliteWarez IRC_IDENT=warez IRC_REAL='0-day warez dal 1996' \
   BOT_LOG=/var/log/convento/warez.log BOT_FIFO=/var/run/convento/warez.send \
   BOT_TRUST=/opt/convento/bot.trust.list BOT_ENV=/opt/convento/.env.list \
   BOT_STARTUP=/opt/convento/bot.startup.list \
