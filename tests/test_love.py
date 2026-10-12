@@ -121,14 +121,17 @@ def test_no_control_bytes_reach_the_fifo():
 
 
 def test_slap_and_pernacchio_pools_render_with_both_nicks():
-    # !slap e !pernacchio (vjt 2026-10-10): pool proprio, mittente e target
-    # sempre nominati, niente doppioni, niente frasi prese in prestito.
+    # !slap e !pernacchio (vjt 2026-10-10): pool proprio, target sempre
+    # nominato, niente doppioni, niente frasi prese in prestito. Le /me non
+    # dicono piu' chi le manda: il comando sta una riga sopra (Malekith,
+    # #sbiffo 2026-10-12 12:59, «vai» di vjt).
     for cmd in ("slap", "pernacchio", "sculaccia"):
         pool = love.POOLS[cmd]
         assert len(pool) == len(set(pool)) >= 20, cmd
         assert not set(pool) & set(love.PHRASES), cmd
         for p in pool:
-            assert "{from}" in p and "{to}" in p, p
+            assert "{to}" in p, p
+            assert p.startswith("/me ") != ("{from}" in p), p
             out = love.render(p, "katia", "vjt")
             assert "{" not in out and "}" not in out, p
 
@@ -241,7 +244,7 @@ def test_doccia_and_sessualizza_are_action_pools():
     assert love.parse("!sessua tom") == ("sessua", "tom")
     assert love.parse("!sessualizza tom") == ("sessua", "tom")
     for cmd in ("doccia", "sessua"):
-        assert all(p.startswith("/me ") and "{to}" in p and "{from}" in p
+        assert all(p.startswith("/me ") and "{to}" in p and "{from}" not in p
                    for p in love.POOLS[cmd])
 
 
