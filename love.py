@@ -433,12 +433,7 @@ SCULACCIA_PHRASES = [
     "/me prende {to} sulle ginocchia e gli rifila una sculacciata da manuale, da parte di {from}",
     "/me sculaccia {to} con una ciabatta da casa, modello nonna, da parte di {from}",
     "/me sculaccia {to} col mestolo di legno della pasta al forno, da parte di {from}",
-    "/me sculaccia {to} con una copia rilegata dell'RFC 1459, da parte di {from}",
-    "/me sculaccia {to} con un floppy da 3.5 pollici, protetto in scrittura, da parte di {from}",
-    "/me sculaccia {to} col cavo del modem 56k, e si sente pure la portante, da parte di {from}",
-    "/me sculaccia {to} con la tastiera, layout IT, barra spaziatrice compresa, da parte di {from}",
     "/me prende la cintura e sculaccia {to} come negli anni '80, da parte di {from}",
-    "/me sculaccia {to} con il manuale di bahamut, capitolo sui K-line, da parte di {from}",
     "/me sculaccia {to} col battipanni della suocera, da parte di {from}",
     # Plain-Italian lines, same reason as SLAP_PHRASES.
     "/me sculaccia {to} col cucchiaio di legno, come la nonna quando rubavi il ragu' dalla pentola, da parte di {from}",
