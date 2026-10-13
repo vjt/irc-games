@@ -91,11 +91,11 @@ PATTERNS = (
         rf"^{_NICK} hai fatto secca una suora in {_TOOK}! "
         rf"Ne hai stese \d+ in {_CHAN}\.")),
     ("bef", True, re.compile(
-        rf"^{_NICK} si e' fatto amico la SUORA DORATA in {_TOOK}! "
+        rf"^{_NICK} (?:si e' fatto amico|ha fatto amicizia con) la SUORA DORATA in {_TOOK}! "
         rf"Ne ha convertite \d+ in {_CHAN}, di cui \d+ dorat[ae]\.")),
     ("bef", False, re.compile(
         rf"^{_NICK} hai fatto amicizia con una suora in {_TOOK}! "
-        rf"Ora sei amico di \d+ suor[ae] in {_CHAN}\.")),
+        rf"Ora (?:sei amico di|hai) \d+ suor[ae] (?:amic[ah]e? )?in {_CHAN}\.")),
 )
 
 

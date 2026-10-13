@@ -826,7 +826,7 @@ def handle(data, scope, nick, cmd, now):
         nun["hp"] -= 1
         verbo = "Il colpo l'ha presa in pieno" if cmd == "bang" else "Ha quasi ceduto"
         say(net, chan, f"\x02{nick}: {verbo}, ma la suora dorata regge ancora: "
-                       f"le restano {nun['hp']} "
+                       f"le {plural(nun['hp'], 'resta', 'restano')} {nun['hp']} "
                        f"{plural(nun['hp'], 'vita', 'vite')}.\x0F")
         return True
 
@@ -878,14 +878,14 @@ def handle(data, scope, nick, cmd, now):
                            f"Ne hai stese {s['kills']} in {chan}.{tail}{prossima}")
     else:
         if golden:
-            say(net, chan, f"\x02{nick} si e' fatto amico la SUORA DORATA in "
+            say(net, chan, f"\x02{nick} ha fatto amicizia con la SUORA DORATA in "
                            f"{took}!\x0F Ne ha convertite {s['friends']} in "
                            f"{chan}, di cui {s['golden']} "
                            f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}{prossima}")
         else:
             say(net, chan, f"{nick} hai fatto amicizia con una suora in {took}! "
-                           f"Ora sei amico di {s['friends']} "
-                           f"{plural(s['friends'], 'suora', 'suore')} in {chan}.{tail}{prossima}")
+                           f"Ora hai {s['friends']} "
+                           f"{plural(s['friends'], 'suora amica', 'suore amiche')} in {chan}.{tail}{prossima}")
     return True
 
 
