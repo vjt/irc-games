@@ -478,8 +478,8 @@ assert suore.grado(4, "kills") == "chierichetto"
 assert suore.grado(5, "kills") == "sagrestano"
 assert suore.grado(20, "kills") == "diacono"
 assert suore.grado(9999, "kills") == "antipapa"
-assert suore.grado(15, "friends") == "cascamortə"
-assert suore.promosso(4, 5, "kills") == " Promossə a sagrestano!"
+assert suore.grado(15, "friends") == "corteggiante"
+assert suore.promosso(4, 5, "kills") == " Nuovo grado: sagrestano!"
 assert suore.promosso(5, 6, "kills") == ""
 print("ok: gradi e promozioni")
 

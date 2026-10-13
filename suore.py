@@ -705,11 +705,12 @@ SOGLIE = (0, 5, 15, 30, 60, 100, 200, 350, 500)
 GRADI = {
     "kills": ("chierichetto", "sagrestano", "diacono", "parroco", "monsignore",
               "vescovo", "inquisitore", "cardinale", "antipapa"),
-    # Senza genere, o con la schwa: la prima versione era tutta maschile
-    # (dongiovanni, casanova…) e puppy l'ha rimandata indietro («che
-    # maschilismo», «aggiusta»).
-    "friends": ("spasimante", "rubacuori", "cascamortə", "seduttorə",
-                "ammaliante", "latin lover", "tentatorə", "serpente dell'Eden",
+    # Parole invariabili, niente genere da marcare: la prima versione era
+    # tutta maschile (dongiovanni, casanova…) e puppy l'ha rimandata indietro
+    # («che maschilismo»); la seconda aveva la schwa, e Malekith ha fatto
+    # notare che cascamortə & co. il genere lo segnano comunque.
+    "friends": ("spasimante", "rubacuori", "corteggiante", "seducente",
+                "ammaliante", "latin lover", "irresistibile", "serpente dell'Eden",
                 "Lilith"),
 }
 
@@ -745,9 +746,9 @@ def find_rpg(data, scope, nick, net, chan):
 
 
 def promosso(prima, dopo, field):
-    """La coda « Promossə a X!» quando il punto appena fatto passa una soglia."""
+    """La coda « Nuovo grado: X!» quando il punto appena fatto passa una soglia."""
     g = grado(dopo, field)
-    return f" Promossə a {g}!" if g != grado(prima, field) else ""
+    return f" Nuovo grado: {g}!" if g != grado(prima, field) else ""
 
 
 LATE_WINDOW = 120.0
