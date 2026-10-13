@@ -135,21 +135,23 @@
   .stelle .kill { color: #c4583f; }
   .stelle .amica { color: #e87ba4; }
   /* Heatmap settimana x ora (puppy, #sbiffo 13/10): una tinta sola, piu'
-     carica dove si spara di piu'; le celle vuote restano il fondo. */
-  .heat { margin-top: 1.4rem; max-width: 30rem; }
+     carica dove si spara di piu'; le celle vuote restano il fondo. Accanto,
+     nottambuli e soffiate (puppy: «2 column»). */
+  .duo { display: grid; grid-template-columns: minmax(0, 30rem) minmax(0, 1fr); gap: 1.6rem; margin-top: 1.4rem; align-items: start; }
+  @media (max-width: 40rem) { .duo { grid-template-columns: minmax(0, 1fr); } }
   .heat .grid { display: grid; grid-template-columns: 1.8rem repeat(24, minmax(0, 1fr)); gap: 1px; font-size: .58rem; color: var(--dim); }
   /* Nella cella l'iniziale di chi ci spara di piu' (puppy, 13/10): i primi
      tre per intero nel title. */
   .heat .c { aspect-ratio: 1; border-radius: 2px; background: var(--line); display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, .85); font-size: .5rem; line-height: 1; overflow: hidden; cursor: default; }
   .heat .c:hover { outline: 1px solid var(--gold); }
-  .heat .gufi { margin-top: .5rem; font-size: .8rem; color: var(--dim); }
-  .heat .gufi b { color: var(--ink); }
   .heat .lbl { align-self: center; }
   .heat .h { text-align: center; }
-  /* Rivalita' su una riga sola (puppy, 13/10: «occupa molto spazio»). */
-  .rival { margin-top: .6rem; font-size: .8rem; color: var(--dim); }
-  .rival b { color: var(--ink); font-weight: 600; }
-  .rival .n { color: var(--gold); font-weight: 700; }
+  .lato { font-size: .8rem; display: grid; gap: 1rem; }
+  .lato ol { margin: 0; padding-left: 1.3rem; }
+  .lato li::marker { color: var(--dim); }
+  .lato li { margin-bottom: .1rem; max-width: 16rem; }
+  .lato li .n { float: right; color: var(--gold); font-weight: 700; }
+  .lato b { font-weight: 600; }
   .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
   .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
   .howto li { margin-bottom: .35rem; }
@@ -594,7 +596,9 @@ function renderScope(scope, s, G) {
     box.appendChild(leg);
   }
 
-  // Heatmap: quando si spara, per giorno della settimana e ora (puppy, 13/10).
+  // Due colonne (puppy, 13/10): a sinistra quando si spara, a destra
+  // nottambuli e soffiate. Sotto i 40rem si impilano.
+  const duo = el("div", "duo");
   if (s.heatmap && s.heatmap.some(r => r.some(v => v))) {
     const GG = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"];
     const hmax = Math.max(1, ...s.heatmap.map(r => Math.max(...r)));
@@ -618,28 +622,35 @@ function renderScope(scope, s, G) {
       });
     });
     heat.appendChild(grid);
-    if (s.nottambuli && s.nottambuli.length) {
-      const gufi = el("div", "gufi");
-      gufi.innerHTML = "🦉 Nottambulə (0–6): " + s.nottambuli.map(x =>
-        "<b>" + x[0].replace(/[<>&]/g, "") + "</b> " + x[1]).join(", ");
-      heat.appendChild(gufi);
-    }
-    box.appendChild(heat);
+    duo.appendChild(heat);
   }
 
-  // Rivalita': chi ha soffiato piu' suore a chi, arrivato prima per un soffio.
-  if (s.rivalita && s.rivalita.length) {
-    const riv = el("div", "rival");
-    riv.title = "chi l'ha soffiata a chi, arrivando prima per un soffio";
-    riv.appendChild(document.createTextNode("⚔️ Soffiate: "));
-    s.rivalita.forEach((r, i) => {
-      if (i) riv.appendChild(document.createTextNode(" · "));
-      riv.appendChild(el("b", null, r.chi));
-      riv.appendChild(document.createTextNode(" → " + r.vittima + " "));
-      riv.appendChild(el("span", "n", String(r.n)));
+  const lato = el("div", "lato");
+  function lista(titolo, righe) {
+    const blk = el("div", "blk");
+    blk.appendChild(el("h2", null, titolo));
+    const ol = el("ol");
+    righe.forEach(([chi, n]) => {
+      const li = el("li");
+      li.appendChild(chi);
+      li.appendChild(el("span", "n", String(n)));
+      ol.appendChild(li);
     });
-    box.appendChild(riv);
+    blk.appendChild(ol);
+    lato.appendChild(blk);
   }
+  if (s.nottambuli && s.nottambuli.length)
+    lista("🦉 Nottambulə 0–6", s.nottambuli.map(x => [el("b", null, x[0]), x[1]]));
+  // Chi l'ha soffiata a chi, arrivando prima per un soffio.
+  if (s.rivalita && s.rivalita.length)
+    lista("⚔️ Soffiate", s.rivalita.map(r => {
+      const sp = el("span");
+      sp.appendChild(el("b", null, r.chi));
+      sp.appendChild(document.createTextNode(" → " + r.vittima));
+      return [sp, r.n];
+    }));
+  if (lato.children.length) duo.appendChild(lato);
+  if (duo.children.length) box.appendChild(duo);
 
   if (s.discrepanza) {
     const w = el("div", "warn");
