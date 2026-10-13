@@ -140,8 +140,8 @@
   .duo { display: grid; grid-template-columns: minmax(0, 30rem) minmax(0, 1fr); gap: 1.6rem; margin-top: 1.4rem; align-items: start; }
   @media (max-width: 40rem) { .duo { grid-template-columns: minmax(0, 1fr); } }
   .heat .grid { display: grid; grid-template-columns: 1.8rem repeat(24, minmax(0, 1fr)); gap: 1px; font-size: .58rem; color: var(--dim); }
-  /* Nella cella l'iniziale di chi ci spara di piu' (puppy, 13/10): i primi
-     tre per intero nel title. */
+  /* Nella cella il numero di suore (puppy, 13/10): i primi tre tiratori
+     per intero nel title. */
   .heat .c { aspect-ratio: 1; border-radius: 2px; background: var(--line); display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, .85); font-size: .5rem; line-height: 1; overflow: hidden; cursor: default; }
   .heat .c:hover { outline: 1px solid var(--gold); }
   .heat .lbl { align-self: center; }
@@ -631,8 +631,7 @@ function renderScope(scope, s, G) {
       celle.forEach(x => {
         const n = conta(x);
         x.c.style.background = n ? "rgba(196, 88, 63, " + (0.18 + 0.82 * n / max) + ")" : "";
-        x.c.textContent = !n ? "" : chi ? String(n)
-          : x.chi.length ? x.chi[0][0].replace(/^[^A-Za-z0-9]+/, "").charAt(0).toUpperCase() : "";
+        x.c.textContent = n ? String(n) : "";
       });
     }
     pinta(null);
