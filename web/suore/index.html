@@ -701,15 +701,16 @@ function renderScope(scope, s, G) {
     }));
   // Rivalita' dorata (puppy, 13/10): chi ha chiuso la dorata su cui un altro
   // aveva gia' sparato, e chi toglie l'ultima vita sul lavoro altrui.
+  // Solo i primi 5 per lista: per intero rubavano la colonna (puppy, 13/10).
   if (s.dorate_rubate && s.dorate_rubate.length)
-    lista("✨ Dorate soffiate", s.dorate_rubate.map(r => {
+    lista("✨ Dorate soffiate", s.dorate_rubate.slice(0, 5).map(r => {
       const sp = el("span");
       sp.appendChild(el("b", null, r.chi));
       sp.appendChild(document.createTextNode(" → " + r.vittima));
       return [sp, r.n];
     }));
   if (s.ultime_vite && s.ultime_vite.length)
-    lista("🎯 Ultima vita", s.ultime_vite.map(x => [el("b", null, x[0]), x[1]]));
+    lista("🎯 Ultima vita", s.ultime_vite.slice(0, 5).map(x => [el("b", null, x[0]), x[1]]));
   if (lato.children.length) duo.appendChild(lato);
   if (duo.children.length) box.appendChild(duo);
 
