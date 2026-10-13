@@ -143,6 +143,23 @@
   .dorate .storia:empty { display: none; }
   .stelle .kill { color: #c4583f; }
   .stelle .amica { color: #e87ba4; }
+  /* La pacchianata (puppy, 13/10: «a mo di demo/keygen»): dietro le stelle
+     un canvas WebGL con un tunnel di stelline d'oro che gira, le copper bar
+     e lo scroller a onda in fondo. Il canvas sta SOTTO (z-index 0) e non
+     prende il mouse, cosi' le stelle vere restano cliccabili e col loro
+     title. La classe `demo` la mette lo script solo se WebGL parte: senza,
+     la sezione resta com'era, padding compreso. */
+  .dorate.demo { position: relative; isolation: isolate; padding: 3rem 0 4.2rem; }
+  .dorate.demo canvas {
+    position: absolute; top: 0; bottom: 0; left: -1.1rem; right: -1.1rem;
+    width: calc(100% + 2.2rem); height: 100%; z-index: 0; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 94%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 94%, transparent);
+  }
+  .dorate.demo .stelle, .dorate.demo .storia { position: relative; z-index: 1; }
+  .dorate.demo .stelle span { text-shadow: 0 0 3px #000, 0 0 6px #000; }
+  .dorate.demo .stelle span:hover, .dorate.demo .stelle span.on { text-shadow: 0 0 3px #000, 0 0 .5rem currentColor; }
+  .dorate.demo .storia { background: rgba(15, 16, 18, .85); border: 1px solid var(--line); border-radius: 4px; padding: .5rem .7rem; }
   /* Heatmap settimana x ora (puppy, #sbiffo 13/10): una tinta sola, piu'
      carica dove si spara di piu'; le celle vuote restano il fondo. Accanto,
      nottambuli e soffiate (puppy: «2 column»). */
@@ -1003,6 +1020,262 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
     document.getElementById("sub").textContent =
       "I dati non si caricano (" + e.message + "). Riprova fra poco.";
   });
+</script>
+<!-- La pacchianata dietro le dorate (puppy, 13/10): intro da keygen anni '90.
+     WebGL a mano e non three.js: la CSP di dioschifoso.it ha `script-src
+     'unsafe-inline'` e basta, uno script da cdnjs verrebbe bloccato, e per
+     due draw call 600 KB di libreria non servono. Due programmi: le stelline
+     (un solo buffer statico di GL_POINTS, il moto lo fa tutto il vertex
+     shader dal tempo) e un triangolo a tutto schermo per copper bar e
+     scroller (il testo e' una texture disegnata una volta sola). Nel ciclo
+     nessuna allocazione: solo uniform e due draw. Parte quando la sezione
+     si avvicina, si ferma fuori schermo e a scheda nascosta; con
+     prefers-reduced-motion disegna un fotogramma fermo. Senza WebGL niente. -->
+<script>
+(function () {
+  "use strict";
+  const box = document.getElementById("dorate");
+  if (!box || !window.IntersectionObserver || !window.ResizeObserver) return;
+
+  const N = 700;                      // stelline nel tunnel
+  const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+  const fermo = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const VS_STELLE = `
+    attribute vec4 aP;               // xy sul tubo, z profondita', w fase
+    uniform float uT, uPx;
+    uniform vec2 uAsp;
+    varying float vB, vRot, vK;
+    void main() {
+      float z = fract(aP.z + uT * 0.11);           // 0 in fondo, 1 in faccia
+      float ang = uT * 0.35 + z * 3.4;             // la torsione del tunnel
+      float c = cos(ang), s = sin(ang);
+      vec2 xy = mat2(c, -s, s, c) * aP.xy;
+      xy.y += 0.18 * sin(uT * 0.9 + z * 6.0);      // e ondeggia, che fa demo
+      float sc = 1.0 / (2.3 - 2.05 * z);
+      gl_Position = vec4(xy * sc * uAsp * 0.62, 0.0, 1.0);
+      gl_PointSize = min(uPx * sc, 44.0);
+      vB = smoothstep(0.0, 0.3, z) * (1.0 - smoothstep(0.86, 1.0, z));
+      vRot = aP.w * 6.2832 + uT * (0.8 + aP.w * 1.6);
+      vK = aP.w;
+    }`;
+  const FS_STELLE = `
+    precision mediump float;
+    varying float vB, vRot, vK;
+    void main() {
+      vec2 p = gl_PointCoord * 2.0 - 1.0;
+      float r = length(p);
+      if (r > 1.0) discard;
+      float a = atan(p.y, p.x) + vRot;
+      float k = pow(0.5 + 0.5 * cos(5.0 * a), 2.0);
+      float e = mix(0.32, 0.92, k);
+      float st = 1.0 - smoothstep(e - 0.14, e, r);
+      float glow = 0.3 * (1.0 - r) * (1.0 - r);
+      float al = (st + glow) * vB;
+      // quasi tutte d'oro, ogni tanto una rossa: sono le stese
+      vec3 col = vK > 0.93 ? vec3(0.77, 0.35, 0.25) : vec3(0.85, 0.64, 0.26);
+      col = mix(col, vec3(1.0, 0.95, 0.8), st * (1.0 - r));
+      gl_FragColor = vec4(col * al, al);
+    }`;
+  const VS_SFONDO = `
+    attribute vec2 aV;
+    void main() { gl_Position = vec4(aV, 0.0, 1.0); }`;
+  const FS_SFONDO = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+    uniform vec2 uR;
+    uniform float uT, uD, uOff;
+    uniform vec3 uTx;                // larghezza e altezza texture, altezza a schermo
+    uniform sampler2D uTex;
+    void main() {
+      vec2 f = gl_FragCoord.xy;
+      vec3 col = vec3(0.0);
+      float al = 0.0;
+      // copper bar: quattro fasce che salgono e scendono, sfumate al centro
+      for (int i = 0; i < 4; i++) {
+        float fi = float(i);
+        float cy = uR.y * (0.55 + 0.36 * sin(uT * 1.15 + fi * 0.85));
+        float b = max(0.0, 1.0 - abs(f.y - cy) / (22.0 * uD));
+        vec3 rame = mix(vec3(0.45, 0.2, 0.05), vec3(1.0, 0.86, 0.5), b * b);
+        float a = b * 0.3;
+        col += rame * a * (1.0 - al);
+        al += a * (1.0 - al);
+      }
+      // lo scroller, che balla sul seno
+      float y0 = 14.0 * uD + sin(f.x / (48.0 * uD) + uT * 2.6) * 6.0 * uD;
+      float v = (f.y - y0) / uTx.z;
+      if (v > 0.0 && v < 1.0) {
+        float s = uTx.z / uTx.y;
+        float u = mod(f.x / s + uOff, uTx.x) / uTx.x;
+        float ta = texture2D(uTex, vec2(u, 1.0 - v)).a;
+        vec3 g = mix(vec3(0.6, 0.3, 0.06), vec3(1.0, 0.93, 0.62), v);
+        col = col * (1.0 - ta) + g * ta;
+        al = al * (1.0 - ta) + ta;
+      }
+      gl_FragColor = vec4(col, al);
+    }`;
+
+  let gl, cv, pS, pF, uS = {}, uF = {}, bS, bF, aP, aV, tex, texW = 1, texH = 1;
+  let vicino = false, inVista = false, gira = false, raf = 0, t = 0, ultimo = 0;
+
+  function shader(tipo, src) {
+    const s = gl.createShader(tipo);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+  }
+  function programma(vs, fs, nomi, u) {
+    const a = shader(gl.VERTEX_SHADER, vs), b = shader(gl.FRAGMENT_SHADER, fs);
+    if (!a || !b) return null;
+    const p = gl.createProgram();
+    gl.attachShader(p, a); gl.attachShader(p, b); gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) return null;
+    nomi.forEach(n => { u[n] = gl.getUniformLocation(p, n); });
+    return p;
+  }
+
+  // Il testo dello scroller, disegnato una volta in un canvas 2D e caricato
+  // come texture alfa. Il conto delle dorate lo prende dalla bacheca.
+  function scritta() {
+    const n = box.querySelectorAll(".stelle span").length;
+    const testo = "      *** SPARASUORE KEYGEN v6.66 *** CRACKED BY IL CONVENTO "
+      + "*** " + n + " DORATE IN BACHECA, PER NON DIMENTICARE *** .BANG PER STENDERLE, "
+      + ".BEF PER CONVERTIRLE *** GREETZ TO #SNIFFO #SBIFFO E A TUTTE LE SUORE "
+      + "CADUTE *** NO SCRIPT, NO COPIA-INCOLLA, SOLO FUCILE *** CIAO MAMMA ***";
+    const c = document.createElement("canvas"), x = c.getContext("2d");
+    const font = "bold 40px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+    x.font = font;
+    const max = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    texH = 48;
+    texW = Math.min(max, Math.ceil(x.measureText(testo).width) + 8);
+    c.width = texW; c.height = texH;
+    x.font = font; x.textBaseline = "middle"; x.fillStyle = "#fff";
+    x.fillText(testo, 0, texH / 2 + 2);
+    tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  }
+
+  function avvia() {
+    cv = document.createElement("canvas");
+    cv.setAttribute("aria-hidden", "true");
+    const opz = {alpha: true, antialias: false, depth: false, stencil: false,
+      premultipliedAlpha: true, powerPreference: "low-power"};
+    try { gl = cv.getContext("webgl", opz) || cv.getContext("experimental-webgl", opz); } catch (e) { gl = null; }
+    if (!gl) return false;
+    pS = programma(VS_STELLE, FS_STELLE, ["uT", "uPx", "uAsp"], uS);
+    pF = programma(VS_SFONDO, FS_SFONDO, ["uR", "uT", "uD", "uOff", "uTx", "uTex"], uF);
+    if (!pS || !pF) return false;
+    aP = gl.getAttribLocation(pS, "aP");
+    aV = gl.getAttribLocation(pF, "aV");
+
+    // Le stelline su un tubo di raggio 0.35..1: al centro non si ammucchiano.
+    const dati = new Float32Array(N * 4);
+    for (let i = 0; i < N; i++) {
+      const a = Math.random() * 6.2832, r = 0.35 + 0.65 * Math.sqrt(Math.random());
+      dati[i * 4] = Math.cos(a) * r;
+      dati[i * 4 + 1] = Math.sin(a) * r;
+      dati[i * 4 + 2] = Math.random();
+      dati[i * 4 + 3] = Math.random();
+    }
+    bS = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, bS);
+    gl.bufferData(gl.ARRAY_BUFFER, dati, gl.STATIC_DRAW);
+    bF = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, bF);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    scritta();
+
+    gl.disable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.clearColor(0, 0, 0, 0);
+    cv.addEventListener("webglcontextlost", e => { e.preventDefault(); ferma(); gl = null; });
+
+    box.classList.add("demo");
+    box.insertBefore(cv, box.firstChild);
+    new ResizeObserver(misura).observe(cv);
+    new IntersectionObserver(v => { inVista = v[v.length - 1].isIntersecting; decidi(); }).observe(box);
+    document.addEventListener("visibilitychange", decidi);
+    misura();
+    return true;
+  }
+
+  function misura() {
+    if (!gl) return;
+    const w = Math.max(1, Math.round(cv.clientWidth * DPR)), h = Math.max(1, Math.round(cv.clientHeight * DPR));
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+    gl.viewport(0, 0, w, h);
+    if (!gira) disegna();
+  }
+
+  function disegna() {
+    const w = cv.width, h = cv.height;
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.useProgram(pF);
+    gl.bindBuffer(gl.ARRAY_BUFFER, bF);
+    gl.enableVertexAttribArray(aV);
+    gl.vertexAttribPointer(aV, 2, gl.FLOAT, false, 0, 0);
+    const scrH = 26 * DPR, s = scrH / texH;
+    gl.uniform2f(uF.uR, w, h);
+    gl.uniform1f(uF.uT, t);
+    gl.uniform1f(uF.uD, DPR);
+    gl.uniform1f(uF.uOff, (t * 95 * DPR / s) % texW);
+    gl.uniform3f(uF.uTx, texW, texH, scrH);
+    gl.uniform1i(uF.uTex, 0);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.disableVertexAttribArray(aV);
+
+    gl.useProgram(pS);
+    gl.bindBuffer(gl.ARRAY_BUFFER, bS);
+    gl.enableVertexAttribArray(aP);
+    gl.vertexAttribPointer(aP, 4, gl.FLOAT, false, 0, 0);
+    gl.uniform1f(uS.uT, t);
+    gl.uniform1f(uS.uPx, 7 * DPR);
+    // il tunnel tiene la forma: si scala sul lato corto
+    if (w > h) gl.uniform2f(uS.uAsp, h / w, 1); else gl.uniform2f(uS.uAsp, 1, w / h);
+    gl.drawArrays(gl.POINTS, 0, N);
+    gl.disableVertexAttribArray(aP);
+  }
+
+  function giro(ms) {
+    if (!gira) return;
+    // il tempo avanza solo mentre si vede: niente salti al ritorno
+    t += Math.min(0.05, Math.max(0, (ms - ultimo) / 1000));
+    ultimo = ms;
+    disegna();
+    raf = requestAnimationFrame(giro);
+  }
+  function ferma() { gira = false; cancelAnimationFrame(raf); }
+  function decidi() {
+    if (!gl || fermo) return;
+    const deve = inVista && !document.hidden;
+    if (deve && !gira) { gira = true; ultimo = performance.now(); raf = requestAnimationFrame(giro); }
+    else if (!deve && gira) ferma();
+  }
+
+  // Si accende quando la sezione e' a 300px dallo schermo, una volta sola.
+  // La sezione resta `hidden` finche' non arrivano i dati: fino ad allora
+  // l'observer non la vede, ed e' giusto cosi'.
+  const prima = new IntersectionObserver(v => {
+    if (vicino || !v[v.length - 1].isIntersecting) return;
+    vicino = true;
+    prima.disconnect();
+    if (fermo) t = 7.3;               // un fotogramma fermo, ma bello
+    if (!avvia()) { gl = null; box.classList.remove("demo"); if (cv) cv.remove(); }
+  }, {rootMargin: "300px 0px"});
+  prima.observe(box);
+})();
 </script>
 <!-- Audio far west (vjt): tutto sintetizzato in WebAudio, niente file e niente
      media-src da aprire nella CSP. Fischio in La minore + chitarra pizzicata +
