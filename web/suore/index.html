@@ -125,6 +125,13 @@
   .legend { color: var(--dim); font-size: .75rem; margin-top: .8rem; }
   .legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px; margin-right: .25rem; vertical-align: baseline; font-style: normal; }
   .warn { color: var(--gold); font-size: .78rem; margin-top: .8rem; }
+  /* Bacheca delle dorate (puppy, 13/10): una stella per dorata, rosse le
+     stese e rosa le convertite. Le due file hanno ognuna la sua etichetta,
+     cosi' il rosso e il rosa non devono distinguersi da soli. */
+  .stelle { font-size: 1.1rem; line-height: 1.3; letter-spacing: .08em; word-break: break-all; margin: .2rem 0 .9rem; }
+  .stelle.kill { color: #c4583f; }
+  .stelle.amica { color: #e87ba4; }
+  .stelle-k { color: var(--dim); font-size: .78rem; }
   .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
   .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
   .howto li { margin-bottom: .35rem; }
@@ -256,8 +263,12 @@
 
   <div class="cards" id="cards"></div>
 
+  <section class="scope" id="totale" hidden><h2>Tutti i canali, giorno per giorno</h2></section>
+
   <h2>Per canale</h2>
   <div id="scopes"></div>
+
+  <section class="scope" id="dorate" hidden><h2>Bacheca delle dorate</h2></section>
 
   <footer id="foot"></footer>
 </div>
@@ -641,6 +652,82 @@ function renderTop(scope, d) {
   note.appendChild(document.createTextNode("."));
 }
 
+// Un colore per canale, nell'ordine dei canali (dal piu' sanguinoso): blu,
+// arancio, acqua, ocra. Validati sul fondo scuro della pagina (dataviz).
+const COLORI = ["#3987e5", "#d95926", "#199e70", "#c98500"];
+
+// Il totale di tutti i canali, barre impilate per canale (puppy, 13/10).
+function renderTotale(scopes, d, G) {
+  const tutti = giorniFra(G.primo, G.ultimo);
+  const conta = (k, g) => { const c = d.scopes[k].per_giorno[g]; return c ? c.bang + c.bef : 0; };
+  const totale = g => scopes.reduce((a, k) => a + conta(k, g), 0);
+  const max = Math.max(1, ...tutti.map(totale));
+  const rec = tutti.reduce((a, g) => totale(g) > totale(a) ? g : a, tutti[0]);
+  const oggi = new Date().toLocaleDateString("sv-SE", {timeZone: "Europe/Rome"});
+  const colore = k => COLORI[scopes.indexOf(k)] || "#8d8b86";
+  const chart = el("div", "chart");
+  const bars = el("div", "bars");
+  const axis = el("div", "axis");
+  tutti.forEach(g => {
+    const lun = new Date(g + "T00:00:00Z").getUTCDay() === 1;
+    const col = el("div", "col" + (lun ? " lun" : "")
+      + (g === rec ? " rec" : "") + (g === oggi ? " oggi" : ""));
+    col.title = day(g) + ": " + scopes.filter(k => conta(k, g))
+      .map(k => k.split("/")[1] + " " + conta(k, g)).join(", ");
+    scopes.forEach(k => {
+      const v = conta(k, g);
+      if (!v) return;
+      const seg = el("div", "seg");
+      seg.style.height = (v / max * 100) + "%";
+      seg.style.background = colore(k);
+      col.appendChild(seg);
+    });
+    if (totale(g)) {
+      const num = el("span", "n", totale(g));
+      num.style.bottom = (totale(g) / max * 100) + "%";
+      col.appendChild(num);
+    }
+    bars.appendChild(col);
+    axis.appendChild(el("span", null, lun ? day(g) : ""));
+  });
+  chart.appendChild(bars);
+  chart.appendChild(axis);
+  const box = document.getElementById("totale");
+  box.appendChild(chart);
+  const leg = el("div", "legend");
+  scopes.forEach(k => {
+    const i = el("i");
+    i.style.background = colore(k);
+    leg.appendChild(i);
+    leg.appendChild(document.createTextNode(k.split("/")[1] + "   "));
+  });
+  const r = el("span", null, "■");
+  r.style.color = "var(--gold)";
+  leg.appendChild(r);
+  leg.appendChild(document.createTextNode(" giorno record"));
+  box.appendChild(leg);
+  box.hidden = false;
+}
+
+// Una stella per ogni dorata, di tutti i canali (puppy, 13/10).
+function renderDorate(scopes, d) {
+  let stese = 0, amiche = 0;
+  scopes.forEach(k => {
+    const s = d.scopes[k];
+    const gf = (s.classifica || []).reduce((a, r) => a + (r.golden_friends || 0), 0);
+    amiche += gf;
+    stese += (s.totali.golden || 0) - gf;
+  });
+  if (!stese && !amiche) return;
+  const box = document.getElementById("dorate");
+  [["kill", stese, "dorate stese"], ["amica", amiche, "dorate fatte amiche"]]
+    .forEach(([cls, n, label]) => {
+      box.appendChild(el("div", "stelle-k", n + " " + label));
+      box.appendChild(el("div", "stelle " + cls, "★".repeat(n) || "—"));
+    });
+  box.hidden = false;
+}
+
 function render(d) {
   // Canali dal piu' sanguinoso, per suore stese (puppy, #sbiffo 13/10);
   // a pari stese decide il nome, cosi' l'ordine non balla fra un refresh e l'altro.
@@ -668,6 +755,8 @@ function render(d) {
     max: Math.max(1, ...scopes.map(k => Object.values(d.scopes[k].per_giorno)
       .reduce((a, g) => a + g.bang, 0)))};
   scopes.forEach(k => box.appendChild(renderScope(k, d.scopes[k], G)));
+  if (G.primo) renderTotale(scopes, d, G);
+  renderDorate(scopes, d);
 
   // Il canale di partenza e' quello piu' giocato, non uno scritto qui dentro:
   // i canali vanno e vengono, e una preferenza fissa invecchia male.
