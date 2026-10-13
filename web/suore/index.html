@@ -645,12 +645,20 @@ function renderScope(scope, s, G) {
     });
     // Filtro per nick (puppy, 13/10): tocchi un nick e restano accese solo le
     // sue celle, scalate sul suo massimo; ritocchi e torna la mappa di tutti.
+    const MAGMA = [[45, 17, 96], [114, 31, 129], [183, 55, 121], [241, 96, 93], [254, 176, 120], [252, 253, 191]];
+    function magma(t) {
+      const f = t * (MAGMA.length - 1), i = Math.min(MAGMA.length - 2, Math.floor(f)), u = f - i;
+      return "rgb(" + MAGMA[i].map((v, k) => Math.round(v + (MAGMA[i + 1][k] - v) * u)).join(",") + ")";
+    }
     function pinta(chi) {
       const conta = x => chi ? ((x.chi.find(y => y[0] === chi) || [])[1] || 0) : x.v;
       const max = Math.max(1, ...celle.map(conta));
       celle.forEach(x => {
         const n = conta(x);
-        x.c.style.background = n ? "rgba(196, 88, 63, " + (0.18 + 0.82 * n / max) + ")" : "";
+        // Rampa magma, radice quadrata: piu' contrasto e piu' colore (puppy, 13/10).
+        const t = n ? Math.sqrt(n / max) : 0;
+        x.c.style.background = n ? magma(t) : "";
+        x.c.style.color = n ? (t > 0.6 ? "#1a1a1a" : "#f2f2f2") : "";
         x.c.textContent = n ? String(n) : "";
       });
     }
