@@ -85,7 +85,9 @@
   th.sort { cursor: pointer; user-select: none; }
   th.sort:hover, th.on { color: var(--ink); }
   th.on::after { content: " ▾"; }
-  th .ico { width: 1.15em; height: 1.15em; vertical-align: -.2em; }
+  th .ico { width: 1.35em; height: 1.35em; vertical-align: -.3em; overflow: visible; }
+  /* Una riga fra colonna e colonna (puppy, #sbiffo 14/10). */
+  th + th, td + td { border-left: 1px solid var(--line); }
   td.nick, th.nick { text-align: left; width: 40%; }
   tr:last-child td { border-bottom: 0; }
   .medal { width: 1.3em; display: inline-block; }
@@ -492,15 +494,16 @@ function renderScope(scope, s, G) {
   const ASC = {mediana: 1, media: 1, record: 1};
   // Le intestazioni dei conteggi sono icone, la parola resta nell'hover
   // (puppy, #sbiffo 14/10: «stese e convertite son lunghe, un pugno
-  // all'occhio»). currentColor, cosi' l'hover e la colonna attiva le colorano
-  // come il testo delle altre.
-  const svg = d => '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'
-    + '<path fill="currentColor" d="' + d + '"/></svg>';
+  // all'occhio»). Colorate, chiare e con un filo di bordo bianco (puppy,
+  // stessa sera): il colore e' quello della loro partita, schiarito.
+  const svg = (fill, d) => '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'
+    + '<path fill="' + fill + '" stroke="#fff" stroke-width="1.2"'
+    + ' stroke-linejoin="round" d="' + d + '"/></svg>';
   const ICONS = {
-    tot: "#",
-    kills: svg("M10 2h4v6h6v4h-6v10h-4V12H4V8h6z"),
-    friends: svg("M12 21s-7.5-4.6-9.5-9.2C1 8.3 3.2 4.5 7 4.5c2.1 0 3.7 1.1 5 2.9 1.3-1.8 2.9-2.9 5-2.9 3.8 0 6 3.8 4.5 7.3C19.5 16.4 12 21 12 21z"),
-    golden: svg("M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"),
+    tot: svg("#e6e4df", "M8 2h3l-.7 5h4l.7-5h3l-.7 5H21v3h-3.6l-.6 4H20v3h-3.6l-.7 5h-3l.7-5h-4l-.7 5H6l.7-5H3v-3h4.1l.6-4H4V7h4.1zm2.3 8l-.6 4h4l.6-4z"),
+    kills: svg("#ff7a5c", "M10 2h4v6h6v4h-6v10h-4V12H4V8h6z"),
+    friends: svg("#ff9cc2", "M12 21s-7.5-4.6-9.5-9.2C1 8.3 3.2 4.5 7 4.5c2.1 0 3.7 1.1 5 2.9 1.3-1.8 2.9-2.9 5-2.9 3.8 0 6 3.8 4.5 7.3C19.5 16.4 12 21 12 21z"),
+    golden: svg("#ffd166", "M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"),
   };
   const thead = el("thead"), hr = el("tr");
   const tb = el("tbody");
