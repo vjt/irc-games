@@ -113,7 +113,7 @@
   .bars .col.rec > .seg:last-of-type { box-shadow: 0 -2px 0 var(--gold); }
   .bars .col.rec .n { color: var(--gold); font-weight: 700; }
   .bars .col.oggi .seg { opacity: .45; }
-  .bars svg.media { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+
   /* Cumulata delle stese sopra la tabella: alta poco, larga quanto la
      tabella, stessa scala per tutti i canali cosi' si confrontano a occhio. */
   .cum { position: relative; height: 1.1rem; max-width: 100%; margin-left: auto; align-self: center; }
@@ -555,36 +555,12 @@ function renderScope(scope, s, G) {
       // Un'etichetta a settimana, il lunedi': una al giorno non si legge.
       axis.appendChild(el("span", null, lun ? day(d) : ""));
     });
-    // Media mobile a 7 giorni sopra le barre: il trend senza il rumore.
-    if (tutti.length >= 7) {
-      const NS = "http://www.w3.org/2000/svg", N = tutti.length;
-      const svg = document.createElementNS(NS, "svg");
-      svg.setAttribute("class", "media");
-      svg.setAttribute("viewBox", "0 0 " + N + " 100");
-      svg.setAttribute("preserveAspectRatio", "none");
-      const pts = [];
-      for (let i = 6; i < N; i++) {
-        let m = 0;
-        for (let j = i - 6; j <= i; j++) m += totale(tutti[j]);
-        pts.push((i + .5) + "," + (100 - m / 7 / max * 100));
-      }
-      const pl = document.createElementNS(NS, "polyline");
-      pl.setAttribute("points", pts.join(" "));
-      pl.setAttribute("fill", "none");
-      pl.setAttribute("stroke", "#e8e6e1");
-      pl.setAttribute("stroke-width", "1.5");
-      pl.setAttribute("stroke-dasharray", "4 3");
-      pl.setAttribute("vector-effect", "non-scaling-stroke");
-      svg.appendChild(pl);
-      bars.appendChild(svg);
-    }
     chart.appendChild(bars);
     chart.appendChild(axis);
     box.appendChild(chart);
     const leg = el("div", "legend");
     leg.innerHTML = '<i style="background:#c4583f"></i>stese &nbsp; '
       + '<i style="background:#3a8fc0"></i>convertite &nbsp; '
-      + '<i style="background:none;border-top:2px dashed #e8e6e1;height:0;width:1rem"></i>media 7 giorni &nbsp; '
       + '<span style="color:var(--gold)">■</span> giorno record';
     box.appendChild(leg);
   }
