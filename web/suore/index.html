@@ -111,7 +111,7 @@
   .bars { margin-top: .9rem; }
   /* Cumulata delle stese sopra la tabella: alta poco, larga quanto la
      tabella, stessa scala per tutti i canali cosi' si confrontano a occhio. */
-  .cum { position: relative; height: 2rem; margin: 0 0 .6rem; }
+  .cum { position: relative; height: 1.5rem; max-width: 100%; margin: 0 0 .6rem; }
   .cum svg { display: block; width: 100%; height: 100%; overflow: visible; }
   .cum .tip { position: absolute; top: -1.2rem; transform: translateX(-50%); font-size: .68rem; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0 .3rem; white-space: nowrap; pointer-events: none; display: none; }
   .axis { display: flex; gap: 2px; margin-top: .3rem; color: var(--dim); font-size: .66rem; }
@@ -384,6 +384,8 @@ function cumulata(s, G) {
   svg.appendChild(area);
   svg.appendChild(line);
   const wrap = el("div", "cum");
+  // Piccola, larga quanto i giorni: 3px l'uno (puppy, 13/10).
+  wrap.style.width = (giorni.length * 3) + "px";
   wrap.title = "suore stese in totale, stessa scala per tutti i canali";
   wrap.appendChild(svg);
   const tip = el("span", "tip");
