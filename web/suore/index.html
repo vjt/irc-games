@@ -367,7 +367,10 @@ function cumulata(s, G) {
   let acc = 0;
   const punti = giorni.map(d => (acc += (s.per_giorno[d] || {bang: 0}).bang));
   const W = 1000, H = 100, n = Math.max(giorni.length - 1, 1);
-  const x = i => i / n * W, y = v => H - v / G.max * H;
+  // Scala log (puppy, 13/10): in lineare i canali piccoli sono una riga
+  // piatta in fondo; in log si vede quando hanno preso il ritmo.
+  const x = i => i / n * W,
+    y = v => H - Math.log1p(v) / Math.log1p(G.max) * H;
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
