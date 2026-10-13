@@ -108,7 +108,12 @@
   /* Il lunedi' apre la settimana con una riga verticale (puppy, 13/10). */
   .bars .col.lun { box-shadow: -1px 0 0 0 var(--line); }
   .bars .n { position: absolute; left: 50%; transform: translateX(-50%); color: var(--dim); font-size: .58rem; line-height: 1; padding-bottom: 1px; white-space: nowrap; }
-  .bars { margin-top: .9rem; }
+  .bars { margin-top: .9rem; position: relative; }
+  /* Giorno record in oro, oggi sbiadito perche' ancora a meta' (puppy, 13/10). */
+  .bars .col.rec > .seg:last-of-type { box-shadow: 0 -2px 0 var(--gold); }
+  .bars .col.rec .n { color: var(--gold); font-weight: 700; }
+  .bars .col.oggi .seg { opacity: .45; }
+  .bars svg.media { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
   /* Cumulata delle stese sopra la tabella: alta poco, larga quanto la
      tabella, stessa scala per tutti i canali cosi' si confrontano a occhio. */
   .cum { position: relative; height: 1.1rem; max-width: 100%; margin-left: auto; align-self: center; }
@@ -522,13 +527,17 @@ function renderScope(scope, s, G) {
     const tutti = giorniFra(giorni[0], giorni[giorni.length - 1]);
     const conta = d => s.per_giorno[d] || {bang: 0, bef: 0};
     const max = Math.max(...tutti.map(d => conta(d).bang + conta(d).bef), 1);
+    const totale = d => conta(d).bang + conta(d).bef;
+    const rec = tutti.reduce((a, d) => totale(d) > totale(a) ? d : a, tutti[0]);
+    const oggi = new Date().toLocaleDateString("sv-SE", {timeZone: "Europe/Rome"});
     const chart = el("div", "chart");
     const bars = el("div", "bars");
     const axis = el("div", "axis");
     tutti.forEach(d => {
       const c = conta(d);
       const lun = new Date(d + "T00:00:00Z").getUTCDay() === 1;
-      const col = el("div", lun ? "col lun" : "col");
+      const col = el("div", "col" + (lun ? " lun" : "")
+        + (d === rec ? " rec" : "") + (d === oggi ? " oggi" : ""));
       col.title = day(d) + ": " + c.bang + " stese, " + c.bef + " convertite";
       [["bang", c.bang], ["bef", c.bef]].forEach(([k, v]) => {
         if (!v) return;
@@ -546,12 +555,37 @@ function renderScope(scope, s, G) {
       // Un'etichetta a settimana, il lunedi': una al giorno non si legge.
       axis.appendChild(el("span", null, lun ? day(d) : ""));
     });
+    // Media mobile a 7 giorni sopra le barre: il trend senza il rumore.
+    if (tutti.length >= 7) {
+      const NS = "http://www.w3.org/2000/svg", N = tutti.length;
+      const svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("class", "media");
+      svg.setAttribute("viewBox", "0 0 " + N + " 100");
+      svg.setAttribute("preserveAspectRatio", "none");
+      const pts = [];
+      for (let i = 6; i < N; i++) {
+        let m = 0;
+        for (let j = i - 6; j <= i; j++) m += totale(tutti[j]);
+        pts.push((i + .5) + "," + (100 - m / 7 / max * 100));
+      }
+      const pl = document.createElementNS(NS, "polyline");
+      pl.setAttribute("points", pts.join(" "));
+      pl.setAttribute("fill", "none");
+      pl.setAttribute("stroke", "#e8e6e1");
+      pl.setAttribute("stroke-width", "1.5");
+      pl.setAttribute("stroke-dasharray", "4 3");
+      pl.setAttribute("vector-effect", "non-scaling-stroke");
+      svg.appendChild(pl);
+      bars.appendChild(svg);
+    }
     chart.appendChild(bars);
     chart.appendChild(axis);
     box.appendChild(chart);
     const leg = el("div", "legend");
     leg.innerHTML = '<i style="background:#c4583f"></i>stese &nbsp; '
-      + '<i style="background:#3a8fc0"></i>convertite &nbsp; · al giorno';
+      + '<i style="background:#3a8fc0"></i>convertite &nbsp; '
+      + '<i style="background:none;border-top:2px dashed #e8e6e1;height:0;width:1rem"></i>media 7 giorni &nbsp; '
+      + '<span style="color:var(--gold)">■</span> giorno record';
     box.appendChild(leg);
   }
 
