@@ -599,17 +599,23 @@ def next_tail(data, scope, now):
     return f" La prossima {fra_quanto(win[0], now)}." if win else ""
 
 
-def when_line(data, scope, now):
+def when_line(data, scope, now, nick=None):
     """La coda di `.suore`: quand'e' stata l'ultima e quando esce la prossima.
 
     «quando c'e' stata == quando e' stata sparata / fatta amica l'ultima.
     insomma l'ultimo evento» (vjt, #sniffo 19:17) ⇒ si legge `last_taken`, che
-    handle() scrive per il `.bang` come per il `.bef`, non i soli colpi."""
+    handle() scrive per il `.bang` come per il `.bef`, non i soli colpi.
+
+    Se chi chiede e' lo stesso che se l'e' presa, si parla in seconda persona:
+    «te la sei presa tu» (vjt, #sbiffo 2026-10-13 22:35), come gia' fa
+    `late_by`. Il confronto passa da `canon()`."""
     last = data.get("last_taken", {}).get(scope) or {}
     at = last.get("at")
     if at is not None:      # `if at` no: uno zero e' un istante, non un'assenza
-        pezzi = [f"Ultima suora {human_time(now - at)} fa, "
-                 f"se l'e' presa {last.get('nick', 'qualcuno')}."]
+        chi = last.get("nick", "qualcuno")
+        presa = ("te la sei presa tu" if nick and canon(chi) == canon(nick)
+                 else f"se l'e' presa {chi}")
+        pezzi = [f"Ultima suora {human_time(now - at)} fa, {presa}."]
     else:
         pezzi = ["Ultima suora: nessuna, in questo canale non e' ancora"
                  " successo niente."]
@@ -875,7 +881,7 @@ def handle(data, scope, nick, cmd, now):
                        f"{grado(s['kills'], 'kills')} e "
                        f"{grado(s['friends'], 'friends')}"
                        f"{', con un RPG in tasca' if canon(nick) in data.get('rpg', {}).get(scope, {}) else ''}. "
-                       f"{when_line(data, scope, now)}")
+                       f"{when_line(data, scope, now, nick)}")
         return True  # score_for puo' aver creato la riga del nick
 
     if cmd in ("chiestato", "chiesato"):

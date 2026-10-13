@@ -265,6 +265,8 @@ stato = {"nuns": {}, "next_spawn": {"x/#y": 7200.0},
 riga = suore.when_line(stato, "x/#y", 3600.0)
 assert "Tizio" in riga and "1h 00m 00s fa" in riga, riga
 assert "tra un'ora" in riga, riga
+mia = suore.when_line(stato, "x/#y", 3600.0, "TIZIO")
+assert "te la sei presa tu" in mia and "Tizio" not in mia, mia
 stato["nuns"]["x/#y"] = {"at": 1}
 assert "ADESSO" in suore.when_line(stato, "x/#y", 3600.0)
 vuoto = suore.when_line({"nuns": {}, "next_spawn": {}, "last_taken": {}}, "x/#y", 0)
