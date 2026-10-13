@@ -111,7 +111,8 @@
   .bars { margin-top: .9rem; }
   /* Cumulata delle stese sopra la tabella: alta poco, larga quanto la
      tabella, stessa scala per tutti i canali cosi' si confrontano a occhio. */
-  .cum { position: relative; height: 1.5rem; max-width: 100%; margin: 0 0 .6rem; }
+  .cum { position: relative; height: 1.1rem; max-width: 100%; margin-left: auto; align-self: center; }
+  .cum + .tot { margin-left: 0; }
   .cum svg { display: block; width: 100%; height: 100%; overflow: visible; }
   .cum .tip { position: absolute; top: -1.2rem; transform: translateX(-50%); font-size: .68rem; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0 .3rem; white-space: nowrap; pointer-events: none; display: none; }
   .axis { display: flex; gap: 2px; margin-top: .3rem; color: var(--dim); font-size: .66rem; }
@@ -417,11 +418,11 @@ function renderScope(scope, s, G) {
   tot.innerHTML = "<b>" + s.totali.kills + "</b> stese · <b>"
     + s.totali.friends + "</b> convertite"
     + (s.totali.golden ? " · <b class='star'>" + s.totali.golden + "</b> dorate" : "");
+  // La cumulata sta subito a sinistra dei totali (puppy, 13/10).
+  if (G.primo) head.appendChild(cumulata(s, G));
   head.appendChild(tot);
   box.appendChild(head);
   box.appendChild(el("p", "quando", quandoLine(s)));
-
-  if (G.primo) box.appendChild(cumulata(s, G));
 
   const scroll = el("div", "scroll");
   const t = el("table");
