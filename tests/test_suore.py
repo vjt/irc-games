@@ -465,14 +465,11 @@ assert "(⭐ = dorate)" in marp and "di cui 2 ⭐" in marp, marp
 print("ok: dorate divise fra killer e marpioni")
 
 
-# la figuraccia resta al nick come tagline, senza nick e senza "Riprova fra"
-assert suore.tagline("pippo: La suora ha detto no. Riprova fra 7 secondi.") \
-    == "La suora ha detto no."
-assert suore.tagline("{nick}: Il fucile si e' inceppato! Riprova fra {p} secondi.") \
-    == "Il fucile si e' inceppato!"
-st = suore_stats.build([], {"scores": {"t/#x": {"pippo": {"nick": "Pippo", "kills": 1, "friends": 0}}},
-                            "taglines": {"t/#x": {"pippo": "La suora ha detto no."}}}, 0)
-assert st["scopes"]["t/#x"]["classifica"][0]["tagline"] == "La suora ha detto no.", st
-print("ok: tagline dalle figuracce")
+# le figuracce diventano percentuali sui tentativi: 1 jam su 1+3 colpi = 25%
+st = suore_stats.build([], {"scores": {"t/#x": {"pippo": {"nick": "Pippo", "kills": 3, "friends": 0}}},
+                            "flops": {"t/#x": {"pippo": {"jam": 1, "nope": 0}}}}, 0)
+r = st["scopes"]["t/#x"]["classifica"][0]
+assert r["jam_pct"] == 25 and r["nope_pct"] is None, r
+print("ok: percentuali delle figuracce")
 
 print("\nTUTTO VERDE, porco dio")

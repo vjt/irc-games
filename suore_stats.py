@@ -96,7 +96,12 @@ def _ultima(events, state, scope):
     return None
 
 
-def _scope_stats(events, scores, taglines=None):
+def _pct(flop, fatte):
+    tentate = flop + fatte
+    return round(100 * flop / tentate) if tentate else None
+
+
+def _scope_stats(events, scores, flops=None):
     """Statistiche di uno scope. `events` gia' filtrati, `scores` dallo stato."""
     per_day = collections.defaultdict(lambda: {"bang": 0, "bef": 0})
     per_hour = [0] * 24
@@ -137,9 +142,13 @@ def _scope_stats(events, scores, taglines=None):
             # Di quelle, quante convertite: la pagina mette la stella sulla
             # classifica giusta invece di darle tutte ai killer.
             "golden_friends": row.get("golden_friends", 0),
-            # L'ultima figuraccia (fucile inceppato, suora che tira dritto),
-            # chiave canonica come `scores`.
-            "tagline": (taglines or {}).get(canon),
+            # Figuracce in percentuale (puppy, #sbiffo 13/10): fucile
+            # inceppato sui colpi tentati, suora che tira dritto sui .bef
+            # tentati. Tentati = andati a segno + andati a vuoto.
+            "jam_pct": _pct(((flops or {}).get(canon) or {}).get("jam", 0),
+                            row.get("kills", 0)),
+            "nope_pct": _pct(((flops or {}).get(canon) or {}).get("nope", 0),
+                             row.get("friends", 0)),
             # Media E mediana: la suora resta li' finche' qualcuno non la vede,
             # quindi un colpo dato dopo venti minuti trascina la media in cielo
             # (misurato: medie da 1255 s con reazioni tipiche da 20). La mediana
@@ -179,7 +188,7 @@ def build(events, state, generated):
         suoi = [e for e in events if e["scope"] == scope]
         per_scope[scope] = _scope_stats(
             suoi, scores.get(scope, {}),
-            (state.get("taglines") or {}).get(scope))
+            (state.get("flops") or {}).get(scope))
         per_scope[scope]["ultima"] = _ultima(suoi, state, scope)
         per_scope[scope]["prossima"] = _prossima(state, scope)
 

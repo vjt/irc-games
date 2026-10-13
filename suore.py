@@ -666,21 +666,16 @@ def on_penalty(data, scope, nick, now):
     return now < until
 
 
-def tagline(riga):
-    """La figuraccia senza il nick davanti e senza il "Riprova fra" in coda:
-    e' la parte che resta vera anche fuori dal momento."""
-    return riga.split(": ", 1)[-1].split(" Riprova fra ")[0]
-
-
-def flop(data, scope, nick, riga, net, chan):
-    """Fucile inceppato o suora che tira dritto: la riga va in canale, e la
-    sua parte buona resta al nick come tagline sulla pagina (puppy, #sbiffo
-    13/10). Sta fuori da `scores` apposta: chi ha solo figuracce non e' in
-    classifica. Il JSON si rifa' qui perche' altrimenti la pagina la
-    vedrebbe solo alla prossima suora presa."""
+def flop(data, scope, nick, riga, net, chan, kind):
+    """Fucile inceppato (`jam`) o suora che tira dritto (`nope`): la riga va
+    in canale e la figuraccia si conta per nick, cosi' la pagina ne fa la
+    percentuale (puppy, #sbiffo 13/10). Sta fuori da `scores` apposta: chi
+    ha solo figuracce non e' in classifica. Il JSON si rifa' qui perche'
+    altrimenti la pagina la vedrebbe solo alla prossima suora presa."""
     say(net, chan, riga.format(nick=nick, p=PENALTY))
-    data.setdefault("taglines", {}).setdefault(scope, {})[canon(nick)] = \
-        tagline(riga)
+    conto = data.setdefault("flops", {}).setdefault(scope, {}) \
+        .setdefault(canon(nick), {"jam": 0, "nope": 0})
+    conto[kind] = conto.get(kind, 0) + 1
     suore_stats.write(STATS, suore_events.read(EVENTS), data, time.time())
 
 
@@ -837,11 +832,11 @@ def handle(data, scope, nick, cmd, now):
 
     if cmd == "bang" and random.random() < P_JAM:
         punish(data, scope, nick, now)
-        flop(data, scope, nick, random.choice(JAMS), net, chan)
+        flop(data, scope, nick, random.choice(JAMS), net, chan, "jam")
         return True
     if cmd == "bef" and random.random() < P_NOPE:
         punish(data, scope, nick, now)
-        flop(data, scope, nick, random.choice(NOPES), net, chan)
+        flop(data, scope, nick, random.choice(NOPES), net, chan, "nope")
         return True
 
     # La dorata incassa: il colpo va a segno ma non la porta via, e chi l'ha

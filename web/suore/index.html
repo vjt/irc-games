@@ -86,7 +86,6 @@
   th.sort:hover, th.on { color: var(--ink); }
   th.on::after { content: " ▾"; }
   td.nick, th.nick { text-align: left; width: 40%; }
-  td.tagline, th.tagline { text-align: left; white-space: normal; min-width: 16rem; font-size: .8rem; color: var(--dim); }
   tr:last-child td { border-bottom: 0; }
   .medal { width: 1.3em; display: inline-block; }
   .star { color: var(--gold); }
@@ -94,11 +93,20 @@
   .nowt { color: var(--dim); }
   .record { margin-top: 1rem; font-size: .87rem; color: var(--dim); }
   .record b { color: var(--gold); }
-  .bars { display: flex; align-items: flex-end; gap: 3px; height: 4.5rem; margin-top: 1rem; }
-  .bars div { flex: 1; background: var(--hit); border-radius: 2px 2px 0 0; min-height: 2px; position: relative; }
-  .bars div.bef { background: var(--friend); }
-  .axis { display: flex; gap: 3px; margin-top: .3rem; color: var(--dim); font-size: .66rem; }
-  .axis span { flex: 1; text-align: center; overflow: hidden; }
+  /* Barre impilate per giorno (puppy, #sbiffo 13/10): rosso le stese, blu
+     le convertite. Il verde di --friend accanto al rosso non si distingue
+     per chi non vede i colori, il blu si'. I giorni a zero ci sono come
+     buchi veri, cosi' l'asse e' il tempo e non l'elenco dei giorni giocati. */
+  .chart { position: relative; margin-top: 1.2rem; padding-left: 1.6rem; }
+  .chart .ymax { position: absolute; left: 0; top: -.35rem; color: var(--dim); font-size: .66rem; }
+  .bars { display: flex; align-items: flex-end; gap: 2px; height: 5rem; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .bars .col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column-reverse; }
+  .bars .col:hover { background: rgba(255, 255, 255, .05); }
+  .bars .bang { background: #c4583f; }
+  .bars .bef { background: #3a8fc0; }
+  .bars .col > :last-child { border-radius: 2px 2px 0 0; }
+  .axis { display: flex; gap: 2px; margin-top: .3rem; color: var(--dim); font-size: .66rem; }
+  .axis span { flex: 1; min-width: 0; white-space: nowrap; overflow: visible; }
   .legend { color: var(--dim); font-size: .75rem; margin-top: .8rem; }
   .legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px; margin-right: .25rem; vertical-align: baseline; font-style: normal; }
   .warn { color: var(--gold); font-size: .78rem; margin-top: .8rem; }
@@ -365,12 +373,12 @@ function renderScope(scope, s) {
   // le due partite contano uguale finche' non si clicca una colonna.
   const COLS = [["nick", "chi"], ["tot", "totale"], ["kills", "stese"],
     ["friends", "convertite"], ["golden", "dorate"], ["mediana", "mediana"], ["media", "media"],
-    ["record", "record"], ["tagline", "tagline"]];
+    ["record", "record"], ["jam_pct", "% inceppato"], ["nope_pct", "% rifiutato"]];
   const ASC = {mediana: 1, media: 1, record: 1};
   const thead = el("thead"), hr = el("tr");
   const tb = el("tbody");
   COLS.forEach(([k, label]) => {
-    if (k === "nick" || k === "tagline") {
+    if (k === "nick") {
       hr.appendChild(el("th", k, label)); return;
     }
     const th = el("th", "sort", label);
@@ -421,9 +429,13 @@ function renderScope(scope, s) {
       && Math.round(mio * 100) === Math.round(s.record.secs * 100);
     tr.appendChild(el("td", mio === null ? "nowt" : (top ? "best" : null),
       secs(mio)));
-    // L'ultima figuraccia del nick in questo canale (puppy, 13/10).
-    tr.appendChild(el("td", r.tagline ? "tagline" : "tagline nowt",
-      r.tagline || "—"));
+    // Figuracce in percentuale sui tentativi (puppy, 13/10): fucile
+    // inceppato sui .bang, suora che tira dritto sui .bef.
+    ["jam_pct", "nope_pct"].forEach(k => {
+      const v = r[k] === undefined ? null : r[k];
+      tr.appendChild(el("td", v === null ? "nowt" : null,
+        v === null ? "—" : v + "%"));
+    });
     tb.appendChild(tr);
   }
   fill("tot");
@@ -440,21 +452,41 @@ function renderScope(scope, s) {
 
   const giorni = Object.keys(s.per_giorno);
   if (giorni.length) {
-    const max = Math.max(...giorni.map(d =>
-      s.per_giorno[d].bang + s.per_giorno[d].bef), 1);
+    // Tutti i giorni dal primo all'ultimo, anche quelli senza suore.
+    const tutti = [];
+    const fine = new Date(giorni[giorni.length - 1] + "T00:00:00Z");
+    for (let t = new Date(giorni[0] + "T00:00:00Z"); t <= fine;
+         t.setUTCDate(t.getUTCDate() + 1)) {
+      tutti.push(t.toISOString().slice(0, 10));
+    }
+    const conta = d => s.per_giorno[d] || {bang: 0, bef: 0};
+    const max = Math.max(...tutti.map(d => conta(d).bang + conta(d).bef), 1);
+    const chart = el("div", "chart");
+    chart.appendChild(el("span", "ymax", max));
     const bars = el("div", "bars");
     const axis = el("div", "axis");
-    giorni.forEach(d => {
-      const v = s.per_giorno[d].bang + s.per_giorno[d].bef;
-      const b = el("div");
-      b.style.height = Math.round(v / max * 100) + "%";
-      b.title = d + ": " + s.per_giorno[d].bang + " stese, "
-        + s.per_giorno[d].bef + " convertite";
-      bars.appendChild(b);
-      axis.appendChild(el("span", null, day(d)));
+    tutti.forEach(d => {
+      const c = conta(d);
+      const col = el("div", "col");
+      col.title = day(d) + ": " + c.bang + " stese, " + c.bef + " convertite";
+      [["bang", c.bang], ["bef", c.bef]].forEach(([k, v]) => {
+        if (!v) return;
+        const seg = el("div", k);
+        seg.style.height = (v / max * 100) + "%";
+        col.appendChild(seg);
+      });
+      bars.appendChild(col);
+      // Un'etichetta a settimana, il lunedi': una al giorno non si legge.
+      const lun = new Date(d + "T00:00:00Z").getUTCDay() === 1;
+      axis.appendChild(el("span", null, lun ? day(d) : ""));
     });
-    box.appendChild(bars);
-    box.appendChild(axis);
+    chart.appendChild(bars);
+    chart.appendChild(axis);
+    box.appendChild(chart);
+    const leg = el("div", "legend");
+    leg.innerHTML = '<i style="background:#c4583f"></i>stese &nbsp; '
+      + '<i style="background:#3a8fc0"></i>convertite &nbsp; · al giorno';
+    box.appendChild(leg);
   }
 
   if (s.discrepanza) {
