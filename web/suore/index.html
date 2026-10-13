@@ -156,6 +156,8 @@
   .lato li { margin-bottom: .1rem; max-width: 16rem; }
   .lato li .n { float: right; color: var(--gold); font-weight: 700; }
   .lato b { font-weight: 600; }
+  .lato .inl { margin: 0 0 .2rem; max-width: 16rem; line-height: 1.35; }
+  .lato .inl .n { color: var(--gold); font-weight: 700; }
   .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
   .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
   .howto li { margin-bottom: .35rem; }
@@ -700,17 +702,28 @@ function renderScope(scope, s, G) {
       return [sp, r.n];
     }));
   // Rivalita' dorata (puppy, 13/10): chi ha chiuso la dorata su cui un altro
-  // aveva gia' sparato, e chi toglie l'ultima vita sul lavoro altrui.
-  // Solo i primi 5 per lista: per intero rubavano la colonna (puppy, 13/10).
+  // aveva gia' sparato, e chi toglie l'ultima vita sul lavoro altrui. Un
+  // blocco solo, righe in linea e non liste: occupavano troppo (puppy).
+  const dorate = [];
   if (s.dorate_rubate && s.dorate_rubate.length)
-    lista("✨ Dorate soffiate", s.dorate_rubate.slice(0, 5).map(r => {
-      const sp = el("span");
-      sp.appendChild(el("b", null, r.chi));
-      sp.appendChild(document.createTextNode(" → " + r.vittima));
-      return [sp, r.n];
-    }));
+    dorate.push(["soffiate", s.dorate_rubate.slice(0, 5).map(r => [r.chi + " → " + r.vittima, r.n])]);
   if (s.ultime_vite && s.ultime_vite.length)
-    lista("🎯 Ultima vita", s.ultime_vite.slice(0, 5).map(x => [el("b", null, x[0]), x[1]]));
+    dorate.push(["ultima vita", s.ultime_vite.slice(0, 5).map(x => [x[0], x[1]])]);
+  if (dorate.length) {
+    const blk = el("div", "blk");
+    blk.appendChild(el("h2", null, "✨ Dorate"));
+    dorate.forEach(([etichetta, voci]) => {
+      const p = el("p", "inl");
+      p.appendChild(el("span", "nowt", etichetta + ": "));
+      voci.forEach(([chi, n], k) => {
+        if (k) p.appendChild(el("span", "nowt", " · "));
+        p.appendChild(el("b", null, chi));
+        p.appendChild(el("span", "n", " " + n));
+      });
+      blk.appendChild(p);
+    });
+    lato.appendChild(blk);
+  }
   if (lato.children.length) duo.appendChild(lato);
   if (duo.children.length) box.appendChild(duo);
 
