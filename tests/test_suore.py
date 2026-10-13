@@ -291,10 +291,10 @@ d2 = suore.empty()
 sc = "azzurra/#sniffo"
 d2["next_spawn"][sc] = 7200.0
 sent.clear()
-assert not suore.handle(d2, sc, "tizio", "bang", 0.0)
+assert suore.handle(d2, sc, "tizio", "bang", 0.0)   # a vuoto: conta la cilecca
 assert "tra due ore" in sent[-1][2], sent
 sent.clear()
-assert not suore.handle(d2, sc, "tizio", "bef", 0.0)
+assert suore.handle(d2, sc, "tizio", "bef", 0.0)
 assert "tra due ore" in sent[-1][2], sent
 
 # Sulla presa la finestra e' quella NUOVA, fissata da schedule() un attimo prima:
@@ -445,7 +445,7 @@ assert "Te la sei presa tu 10 secondi fa." in sent[-1][2], sent[-1][2]
 # non e' piu' una coda utile, e' rumore su ogni colpo a canale spento.
 d5["last_taken"][sc] = {"at": 400.0, "nick": "vjt", "cmd": "bang"}
 sent.clear()
-assert not suore.handle(d5, sc, "vjt", "bang", 400.0 + suore.LATE_WINDOW + 1)
+assert suore.handle(d5, sc, "vjt", "bang", 400.0 + suore.LATE_WINDOW + 1)   # fuori finestra: a vuoto, si conta
 riga = sent[-1][2]
 assert "stesa" not in riga and "mancata" not in riga, riga
 print("ok: chi ha steso la suora non se la sente dire 'mancata'")
@@ -526,3 +526,16 @@ assert list(dr["rpg"][sc]) == ["puppy"], dr["rpg"]
 print("ok: col .bef niente RPG")
 
 print("\nTUTTO VERDE, porco dio")
+
+# colpo a vuoto per sondare il timer = cilecca (Malekith, #sbiffo 13/10);
+# chi l'ha mancata di poco invece no
+dv = suore.empty()
+sv = "azzurra/#sbiffo"
+sent.clear()
+assert suore.handle(dv, sv, "Sonda", "bef", 20000.0)
+assert dv["flops"][sv]["sonda"]["vuoto"] == 1, dv["flops"]
+assert "Robaccia" in sent[-1][2], sent
+dv["last_taken"] = {sv: {"nick": "altro", "at": 20100.0, "cmd": "bang"}}
+assert not suore.handle(dv, sv, "Tardi", "bang", 20110.0)
+assert "tardi" not in dv["flops"][sv], dv["flops"]
+print("ok: colpo a vuoto contato, mancata di poco no")

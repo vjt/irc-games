@@ -673,6 +673,14 @@ def flop(data, scope, nick, riga, net, chan, kind):
     ha solo figuracce non e' in classifica. Il JSON si rifa' qui perche'
     altrimenti la pagina la vedrebbe solo alla prossima suora presa."""
     say(net, chan, riga.format(nick=nick, p=PENALTY))
+    conta_flop(data, scope, nick, kind)
+
+
+def conta_flop(data, scope, nick, kind):
+    """La figuraccia sul conto del nick, senza riga in canale. `vuoto` e' il
+    colpo a canale spento dato per sondare il timer (Malekith, #sbiffo
+    13/10: «penalizzare chi fa .bang/.bef solo per vedere entro quanto
+    arriva»): la previsione resta, ordine di vjt, ma si paga in cilecca %."""
     conto = data.setdefault("flops", {}).setdefault(scope, {}) \
         .setdefault(canon(nick), {"jam": 0, "nope": 0})
     conto[kind] = conto.get(kind, 0) + 1
@@ -883,18 +891,22 @@ def handle(data, scope, nick, cmd, now):
         # La previsione va in coda al buco: e' proprio qui che serve a chi ha
         # sparato al vuoto e vuole sapere quando riprovare.
         prossima = next_tail(data, scope, now)
+        mancata = late_by(data, scope, nick, now)
+        # Chi l'ha mancata di poco stava giocando, non sondando: niente conto.
+        if not mancata:
+            conta_flop(data, scope, nick, "vuoto")
         if rpg:
             say(net, chan, f"{nick}: hai sparato l'RPG contro il nulla. Sprecato."
-                           f"{late_by(data, scope, nick, now)}{prossima}")
+                           f"{mancata}{prossima}")
             return True
         if cmd == "bang":
             say(net, chan, f"{nick}: Non c'e' nessuna suora! A cosa stai sparando?"
-                           f"{late_by(data, scope, nick, now)}{prossima}")
+                           f"{mancata}{prossima}")
         else:
             say(net, chan, f"{nick}: Hai provato a fare amicizia con una suora "
                            f"inesistente. Robaccia da denuncia."
-                           f"{late_by(data, scope, nick, now)}{prossima}")
-        return False
+                           f"{mancata}{prossima}")
+        return not mancata
 
     if rpg:
         if random.random() < P_RPG_BOOM:
