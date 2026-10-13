@@ -105,7 +105,7 @@ suore.spawn(data, scope, now)
 sent.clear()
 assert suore.handle(data, scope, "vjt", "bang", now + 10)
 msg = sent[0][2]
-assert "🥈 2º, scavalcato morph." in msg, msg
+assert "🥈 2º, supera morph." in msg, msg
 print("ok: il colpo annuncia medaglia, posizione e sorpasso")
 
 # chi resta dov'è non scavalca nessuno, e fuori dal podio niente medaglia
@@ -113,7 +113,7 @@ suore.spawn(data, scope, now + 20)
 sent.clear()
 assert suore.handle(data, scope, "alk", "bang", now + 30)
 msg = sent[0][2]
-assert " 4º." in msg and "scavalcato" not in msg, msg
+assert " 4º." in msg and "supera" not in msg, msg
 assert not any(m in msg for m in suore.MEDALS.values()), msg
 print("ok: niente medaglia fuori dal podio, niente sorpasso inventato")
 
@@ -124,7 +124,7 @@ suore.spawn(data, scope, now + 40)
 sent.clear()
 assert suore.handle(data, scope, "katia", "bef", now + 50)
 msg = sent[0][2]
-assert "🥇 1º, scavalcato morph." in msg, msg
+assert "🥇 1º, supera morph." in msg, msg
 # e non e' la classifica dei killer: katia li' non c'e' proprio (0 kills)
 assert "katia" not in [s["nick"] for s in suore.board(data, scope, "kills")]
 print("ok: il .bef annuncia la posizione fra i marpioni, non fra i killer")

@@ -460,7 +460,7 @@ def standing(data, scope, nick, passed, field="kills"):
     medal = MEDALS.get(pos)
     out = f" {medal} {pos}º" if medal else f" {pos}º"
     if passed:
-        out += f", scavalcato {join_nicks([s['nick'] for s in passed])}"
+        out += f", supera {join_nicks([s['nick'] for s in passed])}"
     return out + "."
 
 
@@ -672,7 +672,7 @@ JAMS = [
 NOPES = [
     "{nick}: Chi l'avrebbe detto che le suore fossero cosi' schizzinose? Riprova fra {p} secondi.",
     "{nick}: La suora ha detto no. Magari corrompila con una pizza, alle suore piace la pizza no? Riprova fra {p} secondi.",
-    "{nick}: La suora ti ha guardato male e ha tirato dritto. Riprova fra {p} secondi.",
+    "{nick}: La suora ti ha lanciato un'occhiataccia e ha tirato dritto. Riprova fra {p} secondi.",
 ]
 
 
@@ -785,11 +785,11 @@ def handle(data, scope, nick, cmd, now):
     # volta, apposta — «diglielo» era parte dell'ordine.
     until = BANS.get(canon(nick), 0)
     if until == float("inf"):
-        say(net, chan, f"{nick}: sei bannato dal gioco.")
+        say(net, chan, f"{nick}: per te il gioco è chiuso, sei in ban.")
         return False
     if now < until:
-        say(net, chan, f"{nick}: sei bannato dal gioco per aver scriptato — beccato "
-                       f"con una suora finta che il sidecar non ha mai emesso. "
+        say(net, chan, f"{nick}: ban dal gioco per scripting — hai colpito una suora "
+                       f"finta che il sidecar non ha mai emesso. "
                        f"Rientri fra {human_time(until - now)}.")
         return False
 

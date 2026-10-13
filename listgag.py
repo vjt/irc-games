@@ -331,12 +331,12 @@ DCC_DONE_PAT = re.compile(
 # announced when the transfer actually lands. The whole point is that the crew
 # sees who is leeching (vjt 2026-09-14: "essi senno non sappiamo").
 REQUEST_LINES = [
-    "{nick} ha chiesto {pack} in query, il timido.",
+    "{nick} ha chiesto {pack} in query, che timidezza.",
     "{nick} vuole {pack} e lo chiede di nascosto in /msg, porco dio.",
     "richiesta in query da {nick}: {pack}. Glielo mando.",
 ]
 DONE_LINES = [
-    "{nick} si e' scaricato {pack} ({size}). Buona visione.",
+    "{nick} ha scaricato {pack} ({size}). Buona visione.",
     "{nick} ha ricevuto {pack}, {size} di roba. Se la merita tutta.",
     "transfer completo: {pack} -> {nick} ({size}).",
 ]

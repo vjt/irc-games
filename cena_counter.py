@@ -417,7 +417,7 @@ def process(line, data, ts=None, talk=False):
                       "(date separate dalla virgola), `!sicisono +2`.")
         elif talk and CONFARG_PAT.match(text):
             say(chan, f"Dopo `!sicisono` ci va quanta gente porti, da 0 a "
-                      f"{MAX_EXTRA}: `!sicisono +2`. Da solo vali 1. "
+                      f"{MAX_EXTRA}: `!sicisono +2`. Senza +N vali 1. "
                       f"`!nonvengo` e `!confermati` non prendono argomenti.")
         return False
 
