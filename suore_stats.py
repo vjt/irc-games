@@ -96,7 +96,7 @@ def _ultima(events, state, scope):
     return None
 
 
-def _scope_stats(events, scores):
+def _scope_stats(events, scores, taglines=None):
     """Statistiche di uno scope. `events` gia' filtrati, `scores` dallo stato."""
     per_day = collections.defaultdict(lambda: {"bang": 0, "bef": 0})
     per_hour = [0] * 24
@@ -137,6 +137,9 @@ def _scope_stats(events, scores):
             # Di quelle, quante convertite: la pagina mette la stella sulla
             # classifica giusta invece di darle tutte ai killer.
             "golden_friends": row.get("golden_friends", 0),
+            # L'ultima figuraccia (fucile inceppato, suora che tira dritto),
+            # chiave canonica come `scores`.
+            "tagline": (taglines or {}).get(canon),
             # Media E mediana: la suora resta li' finche' qualcuno non la vede,
             # quindi un colpo dato dopo venti minuti trascina la media in cielo
             # (misurato: medie da 1255 s con reazioni tipiche da 20). La mediana
@@ -174,7 +177,9 @@ def build(events, state, generated):
     per_scope = {}
     for scope in scopes:
         suoi = [e for e in events if e["scope"] == scope]
-        per_scope[scope] = _scope_stats(suoi, scores.get(scope, {}))
+        per_scope[scope] = _scope_stats(
+            suoi, scores.get(scope, {}),
+            (state.get("taglines") or {}).get(scope))
         per_scope[scope]["ultima"] = _ultima(suoi, state, scope)
         per_scope[scope]["prossima"] = _prossima(state, scope)
 

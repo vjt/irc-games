@@ -666,6 +666,24 @@ def on_penalty(data, scope, nick, now):
     return now < until
 
 
+def tagline(riga):
+    """La figuraccia senza il nick davanti e senza il "Riprova fra" in coda:
+    e' la parte che resta vera anche fuori dal momento."""
+    return riga.split(": ", 1)[-1].split(" Riprova fra ")[0]
+
+
+def flop(data, scope, nick, riga, net, chan):
+    """Fucile inceppato o suora che tira dritto: la riga va in canale, e la
+    sua parte buona resta al nick come tagline sulla pagina (puppy, #sbiffo
+    13/10). Sta fuori da `scores` apposta: chi ha solo figuracce non e' in
+    classifica. Il JSON si rifa' qui perche' altrimenti la pagina la
+    vedrebbe solo alla prossima suora presa."""
+    say(net, chan, riga.format(nick=nick, p=PENALTY))
+    data.setdefault("taglines", {}).setdefault(scope, {})[canon(nick)] = \
+        tagline(riga)
+    suore_stats.write(STATS, suore_events.read(EVENTS), data, time.time())
+
+
 def punish(data, scope, nick, now):
     # Per scope: la penalità è una conseguenza dentro una partita, e su un'altra
     # rete quel nick può anche essere un'altra persona.
@@ -819,11 +837,11 @@ def handle(data, scope, nick, cmd, now):
 
     if cmd == "bang" and random.random() < P_JAM:
         punish(data, scope, nick, now)
-        say(net, chan, random.choice(JAMS).format(nick=nick, p=PENALTY))
+        flop(data, scope, nick, random.choice(JAMS), net, chan)
         return True
     if cmd == "bef" and random.random() < P_NOPE:
         punish(data, scope, nick, now)
-        say(net, chan, random.choice(NOPES).format(nick=nick, p=PENALTY))
+        flop(data, scope, nick, random.choice(NOPES), net, chan)
         return True
 
     # La dorata incassa: il colpo va a segno ma non la porta via, e chi l'ha
