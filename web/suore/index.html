@@ -528,7 +528,10 @@ function renderTop(scope, d) {
 }
 
 function render(d) {
-  const scopes = Object.keys(d.scopes).sort();
+  // Canali dal piu' sanguinoso, per suore stese (puppy, #sbiffo 13/10);
+  // a pari stese decide il nome, cosi' l'ordine non balla fra un refresh e l'altro.
+  const scopes = Object.keys(d.scopes).sort((a, b) =>
+    d.scopes[b].totali.kills - d.scopes[a].totali.kills || a.localeCompare(b));
   let kills = 0, friends = 0, golden = 0, best = null;
   scopes.forEach(k => {
     const s = d.scopes[k];
