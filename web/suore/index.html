@@ -146,6 +146,10 @@
   .heat .c:hover { outline: 1px solid var(--gold); }
   .heat .lbl { align-self: center; }
   .heat .h { text-align: center; }
+  .heat .chips { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; }
+  .heat .chips button { font: inherit; font-size: .65rem; color: var(--dim); background: none; border: 1px solid var(--line); border-radius: 99px; padding: .1rem .5rem; cursor: pointer; }
+  .heat .chips button:hover { color: inherit; }
+  .heat .chips button.on { color: var(--gold); border-color: var(--gold); }
   .lato { font-size: .8rem; display: grid; gap: 1rem; }
   .lato ol { margin: 0; padding-left: 1.3rem; }
   .lato li::marker { color: var(--dim); }
@@ -607,21 +611,47 @@ function renderScope(scope, s, G) {
     const grid = el("div", "grid");
     grid.appendChild(el("span"));
     for (let h = 0; h < 24; h++) grid.appendChild(el("span", "h", h % 6 ? "" : String(h)));
+    const celle = [];
     s.heatmap.forEach((r, g) => {
       grid.appendChild(el("span", "lbl", GG[g]));
       r.forEach((v, h) => {
         const c = el("span", "c");
         const chi = ((s.heatmap_chi || [])[g] || [])[h] || [];
-        if (v) {
-          c.style.background = "rgba(196, 88, 63, " + (0.18 + 0.82 * v / hmax) + ")";
-          if (chi.length) c.textContent = chi[0][0].replace(/^[^A-Za-z0-9]+/, "").charAt(0).toUpperCase();
-        }
         c.title = GG[g] + " " + h + ":00–" + (h + 1) + ":00: " + v + (v === 1 ? " suora" : " suore")
-          + (chi.length ? "\n" + chi.map(x => x[0] + " " + x[1]).join(", ") : "");
+          + (chi.length ? "\n" + chi.slice(0, 3).map(x => x[0] + " " + x[1]).join(", ") : "");
+        celle.push({ c, v, chi });
         grid.appendChild(c);
       });
     });
+    // Filtro per nick (puppy, 13/10): tocchi un nick e restano accese solo le
+    // sue celle, scalate sul suo massimo; ritocchi e torna la mappa di tutti.
+    function pinta(chi) {
+      const conta = x => chi ? ((x.chi.find(y => y[0] === chi) || [])[1] || 0) : x.v;
+      const max = Math.max(1, ...celle.map(conta));
+      celle.forEach(x => {
+        const n = conta(x);
+        x.c.style.background = n ? "rgba(196, 88, 63, " + (0.18 + 0.82 * n / max) + ")" : "";
+        x.c.textContent = !n ? "" : chi ? String(n)
+          : x.chi.length ? x.chi[0][0].replace(/^[^A-Za-z0-9]+/, "").charAt(0).toUpperCase() : "";
+      });
+    }
+    pinta(null);
     heat.appendChild(grid);
+    const tot = {};
+    celle.forEach(x => x.chi.forEach(y => { tot[y[0]] = (tot[y[0]] || 0) + y[1]; }));
+    const chips = el("div", "chips");
+    let scelto = null;
+    Object.keys(tot).sort((a, b) => tot[b] - tot[a]).slice(0, 10).forEach(n => {
+      const b = el("button", null, n);
+      b.type = "button";
+      b.onclick = () => {
+        scelto = scelto === n ? null : n;
+        chips.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.textContent === scelto));
+        pinta(scelto);
+      };
+      chips.appendChild(b);
+    });
+    heat.appendChild(chips);
     duo.appendChild(heat);
   }
 

@@ -202,8 +202,9 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
         "per_giorno": {d: per_day[d] for d in sorted(per_day)},
         "per_ora": per_hour,
         "heatmap": per_dow_hour,
-        # I primi tre per cella, per il tooltip e per l'iniziale nella cella.
-        "heatmap_chi": [[[[_bello(scores, n), k] for n, k in c.most_common(3)]
+        # Tutti i tiratori per cella, in ordine: i primi tre fanno tooltip e
+        # iniziale, il resto serve al filtro per nick della pagina.
+        "heatmap_chi": [[[[_bello(scores, n), k] for n, k in c.most_common()]
                          for c in riga] for riga in chi_dow_hour],
         # Chi spara fra mezzanotte e le sei, i primi tre.
         "nottambuli": [[_bello(scores, n), k] for n, k in notte.most_common(3)],
