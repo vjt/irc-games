@@ -298,6 +298,22 @@ def norm_answer(s):
     return " ".join(s.split())
 
 
+CONTORNO = 2   # parole in piu' tollerate intorno alla risposta giusta
+
+
+def contoured(guess, accepted):
+    """La risposta giusta, intera e di fila, con al massimo CONTORNO parole
+    intorno: `lo strato rete` e' `rete`. Di piu' e' un tema, non una risposta."""
+    gw = guess.split()
+    for a in accepted:
+        aw = a.split()
+        if len(gw) - len(aw) > CONTORNO:
+            continue
+        if any(gw[i:i + len(aw)] == aw for i in range(len(gw) - len(aw) + 1)):
+            return True
+    return False
+
+
 def is_hidden(ch):
     """Solo gli alfanumerici si nascondono. Spazi, apostrofi e trattini
     restano visibili: sono la struttura della risposta, non il contenuto."""
@@ -854,8 +870,14 @@ class Impiccato:
                 self.after_reveal(chan, nick, now=now)
             return True
 
-        # Lettera nuda: un solo carattere alfanumerico.
-        if len(text) == 1 and is_hidden(text):
+        guess = norm_answer(text)
+        accepted = {norm_answer(g["a"])}
+        accepted |= {norm_answer(x) for x in g.get("alt", [])}
+        accepted.discard("")
+
+        # Lettera nuda: un solo carattere alfanumerico. Salvo che sia proprio
+        # una risposta buona (`3` per lo strato OSI): quella vince.
+        if len(text) == 1 and is_hidden(text) and guess not in accepted:
             g["last"] = now
             if self.reveal(chan, {text}):
                 self.after_reveal(chan, nick, now=now)
@@ -863,13 +885,9 @@ class Impiccato:
             return True
 
         # Tentativo intero.
-        guess = norm_answer(text)
         if not guess:
             return False
-        accepted = {norm_answer(g["a"])}
-        accepted |= {norm_answer(x) for x in g.get("alt", [])}
-        accepted.discard("")
-        if guess in accepted:
+        if guess in accepted or contoured(guess, accepted):
             g["last"] = now
             # Vinta con un sinonimo: si scopre comunque tutto, cosi' la riga
             # finale mostra la risposta canonica e non la maschera monca.
@@ -973,6 +991,25 @@ def selftest():
         g6.handle("c", "#t", "fifo")
         assert "✅ Brava/o c, la risposta era: Coda!!!" in g6.sent[0][1], g6.sent[0]
         assert g6.state["scores"]["c"]["points"] == 1
+
+        # Un sinonimo di UN carattere vince, non finisce nel ramo lettera:
+        # puppy ha scritto `3` alla domanda sullo strato OSI e ha trovato il
+        # silenzio, con `3` in `alt` (#sbiffo, 2026-10-13 11:11).
+        osi = [{"q": "q", "a": "rete", "alt": ["3", "network"], "cat": "t"}]
+        g7 = Impiccato("test", "/dev/null", "", st, {"#t"}, osi, talk=False)
+        g7.handle("a", "#t", "!trivial t")
+        g7.sent.clear()
+        g7.handle("d", "#t", "3")
+        assert "✅ Brava/o d, la risposta era: rete!!!" in g7.sent[0][1], g7.sent
+
+        # La risposta giusta con due parole di contorno vince lo stesso:
+        # `lo strato rete` e' `rete`. Tre parole in piu' no, e' un tema.
+        g8 = Impiccato("test", "/dev/null", "", st, {"#t"}, osi, talk=False)
+        g8.handle("a", "#t", "!trivial t")
+        g8.sent.clear()
+        assert not g8.handle("e", "#t", "secondo me non e' la rete")
+        g8.handle("e", "#t", "lo strato rete")
+        assert "✅ Brava/o e, la risposta era: rete!!!" in g8.sent[-1][1], g8.sent
 
         # L'accorpamento taglia SOLO fra le parti, mai dentro una: una domanda
         # lunga resta intera anche a costo di una riga sua.

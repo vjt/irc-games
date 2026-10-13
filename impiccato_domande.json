@@ -5248,6 +5248,226 @@
    "alt": [
     "bhagavad gita"
    ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo di IPsec cifra il contenuto dei pacchetti?",
+   "a": "ESP",
+   "alt": [
+    "encapsulating security payload"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo di IPsec autentica i pacchetti senza cifrarli?",
+   "a": "AH",
+   "alt": [
+    "authentication header"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale protocollo negozia le chiavi di IPsec?",
+   "a": "IKE",
+   "alt": [
+    "ikev2",
+    "ikev1",
+    "isakmp"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Su quale porta UDP gira IKE?",
+   "a": "500"
+  },
+  {
+   "cat": "rete",
+   "q": "Su quale porta UDP viaggia IPsec quando deve attraversare un NAT?",
+   "a": "4500"
+  },
+  {
+   "cat": "rete",
+   "q": "Quanto vale l'MTU classica di Ethernet?",
+   "a": "1500"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale MTU minima pretende IPv6 da ogni collegamento?",
+   "a": "1280"
+  },
+  {
+   "cat": "rete",
+   "q": "Quanto vale di solito l'MTU su PPPoE?",
+   "a": "1492"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale bit dell'header IPv4 vieta di frammentare il pacchetto?",
+   "a": "DF",
+   "alt": [
+    "don't fragment",
+    "dont fragment"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale messaggio ICMPv6 avvisa che il pacchetto non passa per l'MTU?",
+   "a": "Packet Too Big",
+   "alt": [
+    "ptb"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama il trucco del router che riscrive l'MSS dei SYN per evitare i buchi neri di MTU?",
+   "a": "MSS clamping",
+   "alt": [
+    "clamping",
+    "clamp mss"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNSSEC contiene la firma di un insieme di record?",
+   "a": "RRSIG"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNSSEC pubblica la chiave pubblica della zona?",
+   "a": "DNSKEY"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record nella zona padre aggancia la catena DNSSEC della zona figlia?",
+   "a": "DS",
+   "alt": [
+    "delegation signer"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale estensione del DNS permette risposte UDP oltre i 512 byte?",
+   "a": "EDNS0",
+   "alt": [
+    "edns"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale flag DNS dice che la risposta e' troncata e va richiesta su TCP?",
+   "a": "TC",
+   "alt": [
+    "truncated"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS indica host e porta di un servizio?",
+   "a": "SRV"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale record DNS dice quali CA possono emettere certificati per un dominio?",
+   "a": "CAA"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiamano i record con l'IP di un nameserver che sta dentro la zona che serve?",
+   "a": "glue",
+   "alt": [
+    "glue record",
+    "glue records"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale attacco riempie la cache di un resolver DNS di risposte false?",
+   "a": "cache poisoning",
+   "alt": [
+    "dns poisoning",
+    "dns cache poisoning",
+    "kaminsky"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale comando Junos applica la configurazione candidata?",
+   "a": "commit"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale comando Junos applica la configurazione e la ritira da solo se non la confermi?",
+   "a": "commit confirmed"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale comando Junos torna a una configurazione precedente?",
+   "a": "rollback"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama in Junos la configurazione in modifica non ancora applicata?",
+   "a": "candidate",
+   "alt": [
+    "candidata",
+    "candidate configuration",
+    "configurazione candidata"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale pipe Junos mostra le differenze dalla configurazione attiva?",
+   "a": "compare",
+   "alt": [
+    "show compare",
+    "show | compare"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale pipe Junos stampa la configurazione come comandi set?",
+   "a": "display set",
+   "alt": [
+    "show display set",
+    "show | display set"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Su quale sistema operativo e' nato Junos?",
+   "a": "FreeBSD"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama la tabella di routing IPv4 principale in Junos?",
+   "a": "inet.0"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama la tabella di routing IPv6 principale in Junos?",
+   "a": "inet6.0"
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama in Junos il blocco che filtra e modifica le rotte?",
+   "a": "policy-statement",
+   "alt": [
+    "policy statement",
+    "policy"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama la scheda che fa girare Junos e i protocolli di routing?",
+   "a": "Routing Engine",
+   "alt": [
+    "re"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Con quale prefisso si chiamano le porte gigabit in Junos?",
+   "a": "ge"
   }
  ]
 }
