@@ -888,13 +888,18 @@ function renderDorate(scopes, d) {
   if (!righe.length) return;
   const box = document.getElementById("dorate");
   const wall = el("div", "stelle");
-  // Colonne = divisore del totale piu' vicino a 6, cosi' le righe vengono piene
-  // (puppy, #sbiffo 13/10); un primo non ha divisori in 4..8 e resta a 6.
+  // Colonne = il divisore piu' grande del totale fra 3 e 12 che ci sta in
+  // larghezza, cosi' le righe vengono piene (puppy, #sbiffo 13/10). Senza
+  // divisori utili: tante colonne quante ne entrano. Ricalcolo al resize.
   const n = righe.length;
-  let cols = 6;
-  for (let c = 4; c <= 8; c++)
-    if (n % c === 0 && Math.abs(c - 6) < Math.abs(cols - 6) + (n % cols ? 99 : 0)) cols = c;
-  wall.style.gridTemplateColumns = `repeat(${cols}, 2.2rem)`;
+  const colonne = () => {
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const entrano = Math.max(3, Math.min(12, Math.floor((wall.clientWidth + .9 * rem) / (3.1 * rem))));
+    for (let c = entrano; c >= 3; c--) if (n % c === 0) return c;
+    return entrano;
+  };
+  const layout = () => { wall.style.gridTemplateColumns = `repeat(${colonne()}, 2.2rem)`; };
+  window.addEventListener("resize", layout);
   const storia = el("p", "storia");
   righe.forEach(r => {
     const st = el("span", r.verbo === "bef" ? "amica" : "kill", "★");
@@ -910,6 +915,7 @@ function renderDorate(scopes, d) {
   box.appendChild(wall);
   box.appendChild(storia);
   box.hidden = false;
+  layout();
 }
 
 function render(d) {
