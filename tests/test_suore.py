@@ -615,12 +615,6 @@ dh = suore.empty()
 dh["nuns"][sg] = {"chan": "#sbiffo", "at": 30300.0, "golden": True, "hp": 1}
 assert suore.handle(dh, sg, "vjt", "bang", 30301.0)
 assert "dorate_rubate" not in dh and "ultime_vite" not in dh, dh
-dg["scores"][sg]["vjt"]["nick"] = "VJT"
-st = suore_stats.build([], dg, 0)["scopes"][sg]
-assert st["dorate_rubate"] == [{"chi": "Malekith", "vittima": "VJT", "n": 2},
-                               {"chi": "Malekith", "vittima": "puppy", "n": 1}], st["dorate_rubate"]
-assert st["ultime_vite"] == [["Malekith", 2]], st["ultime_vite"]
-assert suore_stats.build([], dh, 0)["scopes"][sg]["dorate_rubate"] == []
 print("ok: rivalita' dorata")
 
 # backfill: le righe del canale rifanno lo stesso conto
@@ -650,5 +644,76 @@ open(logf + "2", "w", encoding="utf-8").write(open(logf, encoding="utf-8").read(
 _, conti = bf.rebuild([("azzurra", logf), ("azzurra", logf + "2")], "Convento")
 assert conti["doppioni"] == 6 and conti["dorate"] == 2, conti
 print("ok: backfill delle dorate")
+
+# storia di ogni dorata dal log del bot (puppy, 13/10): colpi, vite, cilecche
+import datetime as _dt
+Z = suore_stats._LOCALE
+def _ts(h, m, sec):
+    return _dt.datetime(2026, 10, 13, h, m, sec, tzinfo=Z).timestamp()
+B = "\x02"; O = "\x0f"
+righe = [
+    "09:00:00 > [suore] PRIVMSG #sbiffo :\u25e6\u25e6\\_\u2020< AVE MARIA!",
+    "09:00:05 > [suore] PRIVMSG #sbiffo :vjt hai fatto secca una suora in 5 secondi! Ne hai stese 3 in #sbiffo.",
+    f"10:00:00 > [suore] PRIVMSG #sbiffo :{B}\u25e6\u200b\u25e6\\_\u2629< ALL\u200bELUIA!{O}",
+    f"10:00:10 > [suore] PRIVMSG #sbiffo :{B}vjt: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le restano 3 vite.{O}",
+    "10:00:11 < :vjt!~v@x PRIVMSG #sbiffo :puppy: Ha quasi ceduto, ma la suora dorata regge ancora: le restano 9 vite.",
+    "10:00:12 > [suore] PRIVMSG #sbiffo :" + suore.JAMS[1].format(nick="Malekith", p=7),
+    "10:00:12 > [suore] PRIVMSG #sniffo :" + suore.JAMS[0].format(nick="altrove", p=7),
+    "10:00:13 > [suore] PRIVMSG #sbiffo :" + suore.NOPES[2].format(nick="puppy", p=7),
+    f"10:00:14 > [suore] PRIVMSG #sbiffo :{B}puppy: Ha quasi ceduto, ma la suora dorata regge ancora: le resta 2 vite.{O}",
+    f"10:00:15 > [suore] PRIVMSG #sbiffo :{B}vjt: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le resta 1 vita.{O}",
+    f"10:00:20 > [suore] PRIVMSG #sbiffo :{B}Malekith ha steso la SUORA DORATA in 20 secondi!{O} Ne ha stese 4 in #sbiffo, di cui 1 dorata.",
+    # dorata chiusa col razzo, la riga di chiusura non ancora nel log
+    f"11:00:00 > [suore] PRIVMSG #sbiffo :{B}\u25e6\\_\u2720< GLORIA IN EXCELSIS!{O}",
+    f"11:00:02 > [suore] PRIVMSG #sbiffo :{B}vjt: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le restano 4 vite.{O}",
+    "11:00:03 > [suore] PRIVMSG #sbiffo :" + suore.RPG_BOOM.format(nick="alk", p=7),
+]
+ircnet = [
+    f"12:00:00 > [suore] PRIVMSG #cybernet :{B}\\_\u271f< ALLELUIA!{O}",
+    f"12:00:04 > [suore] PRIVMSG #cybernet :{B}peluche si e' fatto amico la SUORA DORATA in 4 secondi!{O} Ne ha convertite 2 in #cybernet, di cui 1 dorata. Con l'RPG.",
+]
+la, li = os.path.join(tmp, "storia_a.log"), os.path.join(tmp, "storia_i.log")
+open(la, "w", encoding="utf-8").write("\n".join(righe) + "\n")
+open(li, "w", encoding="utf-8").write("\n".join(ircnet) + "\n")
+src = suore_stats.fonti(f"azzurra|{la}|x|#sbiffo:1-2;ircnet|{li}|y|#cybernet:1-2")
+assert src == [("azzurra", la), ("ircnet", li)], src
+gg = suore_stats.giri(src)
+assert len(gg) == 3, gg
+assert gg[0]["storia"] == [["vjt", "bang", 3], ["Malekith", "jam", None], ["puppy", "nope", None],
+                           ["puppy", "bef", 2], ["vjt", "bang", 1]], gg[0]
+assert gg[0]["chi"] == "Malekith" and gg[0]["comparsa"] == 36000, gg[0]
+ev_d = [
+    {"ts": _ts(10, 0, 20), "scope": sg, "nick": "malekith", "verb": "bang", "golden": True, "reaction": 20.0},
+    # chiusa col razzo, la riga di chiusura non c'e' ancora: basta la comparsa
+    {"ts": _ts(11, 0, 9), "scope": sg, "nick": "alk", "verb": "bang", "golden": True, "reaction": 9.0},
+    # niente reazione (backfill vecchio): basta la chiusura
+    {"ts": _ts(12, 0, 4), "scope": "ircnet/#cybernet", "nick": "peluche", "verb": "bef", "golden": True},
+    # fuori dal log: si ricorda come null
+    {"ts": _ts(8, 0, 0), "scope": sg, "nick": "vjt", "verb": "bang", "golden": True, "reaction": 60.0},
+    {"ts": _ts(9, 0, 5), "scope": sg, "nick": "vjt", "verb": "bang", "golden": False, "reaction": 5.0},
+]
+outp = os.path.join(tmp, "storia", "stats.json")
+os.makedirs(os.path.dirname(outp))
+cache = suore_stats.storie(outp, ev_d, src)
+assert len(cache) == 4, cache
+d_out = suore_stats.build(ev_d, {}, 0, cache)["dorate"]
+assert len(d_out) == 4
+assert d_out[0]["storia"][0] == ["vjt", "bang", 3] and "rpg" not in d_out[0], d_out[0]
+assert d_out[1]["storia"] == [["vjt", "bang", 4], ["alk", "boom", None]] and d_out[1]["rpg"], d_out[1]
+assert d_out[2]["storia"] == [] and d_out[2]["rpg"], d_out[2]
+assert "storia" not in d_out[3], d_out[3]
+# un altro nick nella chiusura del log: non e' quella dorata
+assert suore_stats.abbina(dict(ev_d[0], nick="vjt", reaction=None), gg) is None
+# la cache basta: senza log si ritrova tutto, e il log non si rilegge
+assert suore_stats.storie(outp, ev_d, []) == cache
+# write() passa di li', con le fonti da SUORE_NETS
+os.environ["SUORE_NETS_BAK"] = os.environ["SUORE_NETS"]
+os.environ["SUORE_NETS"] = f"azzurra|{la}|x|#sbiffo:1-2"
+outw = os.path.join(tmp, "storia2", "stats.json")
+os.makedirs(os.path.dirname(outw))
+suore_stats.write(outw, ev_d[:1], {}, 0)
+os.environ["SUORE_NETS"] = os.environ.pop("SUORE_NETS_BAK")
+assert json.load(open(outw))["dorate"][0]["storia"][-1] == ["vjt", "bang", 1]
+print("ok: storia delle dorate")
 
 print("\nTUTTO VERDE, porco dio")

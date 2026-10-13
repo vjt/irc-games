@@ -24,6 +24,7 @@ import collections
 import datetime
 import json
 import os
+import re
 import sys
 
 # La pagina e' per gente italiana su un canale italiano: le giornate si tagliano
@@ -120,27 +121,7 @@ def _rivalita(soffiate, scores, n=5):
     return coppie[:n]
 
 
-def _dorate_rubate(rubate, scores, n=5):
-    """Le coppie chi-ha-chiuso-la-dorata-sui-colpi-di-chi (puppy, #sbiffo
-    13/10), stessa forma di `_rivalita()` senza i secondi."""
-    coppie = [{"chi": _bello(scores, chi), "vittima": _bello(scores, vitt), "n": k}
-              for chi, vittime in (rubate or {}).items()
-              for vitt, k in vittime.items()
-              if isinstance(k, int) and k > 0]
-    coppie.sort(key=lambda r: (-r["n"], r["chi"].lower(), r["vittima"].lower()))
-    return coppie[:n]
-
-
-def _ultime_vite(ultime, scores, n=3):
-    """Chi toglie piu' spesso l'ultima vita a una dorata gia' colpita da altri."""
-    righe = sorted(((_bello(scores, c), k) for c, k in (ultime or {}).items()
-                    if isinstance(k, int) and k > 0),
-                   key=lambda r: (-r[1], r[0].lower()))
-    return [list(r) for r in righe[:n]]
-
-
-def _scope_stats(events, scores, flops=None, soffiate=None, rubate=None,
-                 ultime=None):
+def _scope_stats(events, scores, flops=None, soffiate=None):
     """Statistiche di uno scope. `events` gia' filtrati, `scores` dallo stato."""
     per_day = collections.defaultdict(lambda: {"bang": 0, "bef": 0})
     per_hour = [0] * 24
@@ -233,15 +214,202 @@ def _scope_stats(events, scores, flops=None, soffiate=None, rubate=None,
         # Chi spara fra mezzanotte e le sei, i primi tre.
         "nottambuli": [[_bello(scores, n), k] for n, k in notte.most_common(3)],
         "rivalita": _rivalita(soffiate, scores),
-        "dorate_rubate": _dorate_rubate(rubate, scores),
-        "ultime_vite": _ultime_vite(ultime, scores),
         # Non e' un errore da correggere: il log e lo stato hanno storie
         # diverse (azzeramenti a mano, annunci mai archiviati). Dichiararlo.
         "discrepanza": bang_log - kills_stato,
     }
 
 
-def build(events, state, generated):
+# --- storia delle dorate, dal log del bot ------------------------------------
+#
+# Ogni stella della bacheca racconta la sua dorata (puppy, #sbiffo 13/10): chi
+# l'ha colpita, quante vite le restavano dopo ogni colpo, chi ha fatto cilecca
+# e chi l'ha chiusa. Il log eventi tiene solo la chiusura; il resto sta nelle
+# righe che il gioco ha detto in canale, nel `bot.log` di ogni rete. Le regex
+# sono la fotografia dei messaggi di suore.py (tests/test_suore.py le prova
+# contro le formule vere: se cambia una riga del gioco, il test diventa rosso).
+
+_RIGA = re.compile(r"^(?P<hms>\d\d:\d\d:\d\d)\s+>\s+\[suore\]\s+PRIVMSG\s+"
+                   r"(?P<chan>#\S+)\s+:(?P<body>.*)$")
+_CTRL = re.compile(r"\x03\d{1,2}(?:,\d{1,2})?|[\x02\x03\x0f\x16\x1d\x1f]")
+_COMPARSA = re.compile(r"\\_(?P<testa>\S)< ")
+_TESTE_DORATE = "☩✠✟"
+_COLPO = re.compile(r"^(?P<nick>[^:\s]+): (?P<come>Il colpo l'ha presa in pieno|Ha quasi "
+                    r"ceduto), ma la suora dorata regge ancora: le rest(?:a|ano) "
+                    r"(?P<vite>\d+) vit[ae]")
+_FLOP = (
+    ("jam", re.compile(r"^(?P<nick>[^:\s]+): (?:Il fucile si e' inceppato|"
+                       r"Ti si e' inceppato il fucile)")),
+    ("nope", re.compile(r"^(?P<nick>[^:\s]+): (?:Chi l'avrebbe detto che le suore|"
+                        r"La suora ha detto no|La suora ti ha lanciato un'occhiataccia)")),
+    ("boom", re.compile(r"^(?P<nick>[^:\s]+): l'RPG ti e' esploso in faccia")),
+)
+# «si e' fatto amico» e' la riga del .bef dorato prima del 13/10.
+_PRESA_DORATA = re.compile(r"^(?P<nick>\S+) (?:ha steso|si e' fatto amico|ha fatto "
+                           r"amicizia con) la SUORA DORATA in ")
+_PRESA = re.compile(r"^\S+ hai fatto (?:secca|amicizia con) una suora in ")
+# Lo scarto ammesso fra l'ora del log e quella dell'evento: la riga parte
+# verso la FIFO un attimo dopo il colpo, e i tempi del backfill sono arrotondati.
+_TOLLERANZA = 3
+
+try:
+    from zoneinfo import ZoneInfo
+    _LOCALE = ZoneInfo("Europe/Rome")   # il log del jail e' in ora locale, CET o CEST
+except Exception:                       # pragma: no cover — tzdata mancante
+    _LOCALE = ROME
+
+
+def _sec(ts):
+    t = datetime.datetime.fromtimestamp(ts, _LOCALE)
+    return t.hour * 3600 + t.minute * 60 + t.second
+
+
+def _vicino(a, b):
+    d = abs(a - b) % 86400
+    return min(d, 86400 - d) <= _TOLLERANZA
+
+
+def fonti(nets=None):
+    """[(rete, log)] da `SUORE_NETS`, lo stesso formato che legge suore.py."""
+    nets = os.environ.get("SUORE_NETS", "") if nets is None else nets
+    out = []
+    for rec in nets.split(";"):
+        parti = rec.strip().split("|")
+        if len(parti) >= 2 and parti[0] and parti[1]:
+            out.append((parti[0].strip(), parti[1].strip()))
+    return out
+
+
+def giri(sources):
+    """Dai log alle dorate, una per comparsa: scope, ora della comparsa (in
+    secondi del giorno: il log non ha la data), la `storia` come lista di
+    [nick, esito, vite rimaste] e, se il log l'ha vista, chi l'ha chiusa e
+    quando. `esito` e' `bang`/`bef` per un colpo a segno, `jam`/`nope`/`boom`
+    per una cilecca (vite null). Una comparsa normale o una presa normale nello
+    stesso canale chiudono la dorata rimasta appesa senza chiusura."""
+    out = []
+    for net, path in sources:
+        aperte = {}
+        try:
+            fh = open(path, encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        with fh:
+            for line in fh:
+                if "[suore]" not in line:
+                    continue
+                m = _RIGA.match(line)
+                if not m:
+                    continue
+                scope = f"{net}/{m['chan'].lower()}"
+                body = _CTRL.sub("", m["body"]).replace("\u200b", "").strip()
+                h, mi, se = (int(x) for x in m["hms"].split(":"))
+                sec = h * 3600 + mi * 60 + se
+                c = _COMPARSA.search(body)
+                if c:
+                    aperte.pop(scope, None)
+                    if c["testa"] in _TESTE_DORATE:
+                        aperte[scope] = {"scope": scope, "comparsa": sec, "storia": []}
+                        out.append(aperte[scope])
+                    continue
+                g = aperte.get(scope)
+                if g is None:
+                    continue
+                if x := _COLPO.match(body):
+                    g["storia"].append([x["nick"], "bang" if x["come"].startswith("Il")
+                                        else "bef", int(x["vite"])])
+                elif x := _PRESA_DORATA.match(body):
+                    g.update(chi=x["nick"], chiusa=sec, rpg="Con l'RPG." in body)
+                    del aperte[scope]
+                elif _PRESA.match(body):
+                    del aperte[scope]
+                else:
+                    for kind, rx in _FLOP:
+                        if x := rx.match(body):
+                            g["storia"].append([x["nick"], kind, None])
+                            break
+    return out
+
+
+def abbina(ev, candidati):
+    """La dorata del log che corrisponde a un evento dorato, o None.
+
+    Il log ha solo l'ora, quindi si confrontano due orari: la comparsa (`ts`
+    meno la reazione) e la chiusura (con lo stesso nick). Basta uno dei due —
+    la riga di chiusura arriva nel log DOPO che il gioco ha riscritto il JSON
+    — ma se il log dice un altro nick per la chiusura non e' quella."""
+    comparsa = _sec(ev["ts"] - ev["reaction"]) if ev.get("reaction") is not None else None
+    chiusa = _sec(ev["ts"])
+    scelta = None
+    for g in candidati:
+        if g["scope"] != ev["scope"]:
+            continue
+        stesso = g.get("chi") is None or g["chi"].lower() == ev["nick"].lower()
+        if not stesso:
+            continue
+        ok_c = comparsa is not None and _vicino(g["comparsa"], comparsa)
+        ok_f = g.get("chiusa") is not None and _vicino(g["chiusa"], chiusa)
+        if ok_c and ok_f:
+            return g
+        if (ok_c or ok_f) and scelta is None:
+            scelta = g
+    return scelta
+
+
+def _chiave(ev):
+    return f"{ev['scope']}|{ev['ts']}"
+
+
+def storia(g):
+    """Dal giro del log a quello che finisce nel JSON. `rpg` se la riga lo
+    dice, o se l'ultimo colpo le lasciava piu' di una vita (o nessun colpo:
+    una dorata parte da tre): solo il razzo chiude in un colpo solo."""
+    colpi = [r for r in g["storia"] if r[1] in ("bang", "bef")]
+    out = {"storia": g["storia"]}
+    if g.get("rpg") or not colpi or colpi[-1][2] > 1:
+        out["rpg"] = True
+    return out
+
+
+def storie(path, events, sources=None):
+    """Le storie delle dorate, con la cache accanto al JSON (`suore_storia.json`).
+
+    Il log si rilegge solo quando c'e' una dorata mai vista: costa qualche mega
+    di testo, e una dorata esce una volta ogni tanto. La cache e' anche la
+    memoria: se il `bot.log` viene ruotato, le storie gia' lette restano. Una
+    dorata che il log non copre (prima del 6 settembre, dal backfill) si
+    ricorda come null, cosi' non si rilegge tutto a ogni colpo."""
+    cache_path = os.path.join(os.path.dirname(path) or ".", "suore_storia.json") if path else None
+    cache = {}
+    if cache_path and os.path.exists(cache_path):
+        try:
+            with open(cache_path, encoding="utf-8") as fh:
+                cache = json.load(fh)
+        except (OSError, ValueError):
+            cache = {}
+    mancano = [e for e in events if e.get("golden") and _chiave(e) not in cache]
+    if not mancano:
+        return cache
+    sources = fonti() if sources is None else sources
+    letti = [s for s in sources if os.path.exists(s[1])]
+    if not letti:
+        return cache
+    tutti = giri(letti)
+    for ev in mancano:
+        g = abbina(ev, tutti)
+        cache[_chiave(ev)] = storia(g) if g else None
+    if cache_path:
+        _atomic(cache_path, json.dumps(cache, ensure_ascii=False, separators=(",", ":")))
+    return cache
+
+
+def _dorata(e, storie_):
+    out = {"ts": e["ts"], "scope": e["scope"], "nick": e["nick"], "verbo": e["verb"]}
+    out.update((storie_ or {}).get(_chiave(e)) or {})
+    return out
+
+
+def build(events, state, generated, storie_=None):
     scores = state.get("scores", {})
     scopes = sorted(set(scores) | {e["scope"] for e in events})
     per_scope = {}
@@ -250,9 +418,7 @@ def build(events, state, generated):
         per_scope[scope] = _scope_stats(
             suoi, scores.get(scope, {}),
             (state.get("flops") or {}).get(scope),
-            (state.get("soffiate") or {}).get(scope),
-            (state.get("dorate_rubate") or {}).get(scope),
-            (state.get("ultime_vite") or {}).get(scope))
+            (state.get("soffiate") or {}).get(scope))
         per_scope[scope]["ultima"] = _ultima(suoi, state, scope)
         per_scope[scope]["prossima"] = _prossima(state, scope)
 
@@ -265,8 +431,8 @@ def build(events, state, generated):
         "eventi_totali": len(events),
         "scopes": per_scope,
         # Una riga per dorata, per la bacheca (puppy, 13/10): chi, dove, quando.
-        "dorate": [{"ts": e["ts"], "scope": e["scope"], "nick": e["nick"],
-                    "verbo": e["verb"]} for e in events if e.get("golden")],
+        # Con la `storia` quando il log la copre: vedi `storie()`.
+        "dorate": [_dorata(e, storie_) for e in events if e.get("golden")],
     }
 
 
@@ -326,7 +492,7 @@ def write(path, events, state, generated):
     if not path:
         return
     try:
-        out = build(events, state, generated)
+        out = build(events, state, generated, storie(path, events))
         _atomic(path, json.dumps(out, ensure_ascii=False, indent=1,
                                  sort_keys=True) + "\n")
         _atomic(os.path.join(os.path.dirname(path), "suore_metrics.prom"),
@@ -346,15 +512,16 @@ def main():
     with open(sys.argv[2], encoding="utf-8") as fh:
         state = json.load(fh)
     import time
-    out = build(events, state, time.time())
-    blob = json.dumps(out, ensure_ascii=False, indent=1, sort_keys=True)
     if len(sys.argv) > 3:
-        with open(sys.argv[3], "w", encoding="utf-8") as fh:
-            fh.write(blob + "\n")
+        # Stessa strada del gioco: storie dai log di `SUORE_NETS`, scrittura
+        # atomica, metriche accanto.
+        write(sys.argv[3], events, state, time.time())
+        out = json.load(open(sys.argv[3], encoding="utf-8"))
         print(f"scritto {sys.argv[3]}: {out['eventi_totali']} eventi, "
               f"{len(out['scopes'])} scope", file=sys.stderr)
     else:
-        print(blob)
+        print(json.dumps(build(events, state, time.time()), ensure_ascii=False,
+                         indent=1, sort_keys=True))
 
 
 if __name__ == "__main__":

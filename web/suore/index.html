@@ -129,9 +129,15 @@
      stese e rosa le convertite. Niente box ne' etichette, solo stelle (puppy:
      «per non dimenticare»); chi/dove/quando nel title di ognuna. */
   .dorate { margin: 2.4rem 0 1.5rem; text-align: center; }
-  .stelle { display: flex; flex-wrap: wrap; justify-content: center; gap: .15rem .35rem; font-size: 1.5rem; line-height: 1; }
-  .stelle span { cursor: default; transition: transform .12s, text-shadow .12s; }
-  .stelle span:hover { transform: scale(1.35); text-shadow: 0 0 .4rem currentColor; }
+  /* Una griglia fissa, sei per riga come le file di un sacrario (puppy,
+     13/10: «piu' memorial»). Sei a 2.2rem coi buchi fanno ~19rem: ci stanno
+     anche su un telefono da 360px coi margini da 16. */
+  .stelle { display: grid; grid-template-columns: repeat(6, 2.2rem); justify-content: center; gap: .55rem .9rem; font-size: 1.8rem; line-height: 1; }
+  .stelle span { cursor: pointer; text-align: center; transition: transform .12s, text-shadow .12s; }
+  .stelle span:hover, .stelle span.on { transform: scale(1.3); text-shadow: 0 0 .4rem currentColor; }
+  /* La storia della stella toccata: il title non esiste sui telefoni. */
+  .dorate .storia { margin: 1.1rem auto 0; max-width: 22rem; text-align: left; font-size: .8rem; line-height: 1.45; color: var(--dim); white-space: pre-line; }
+  .dorate .storia:empty { display: none; }
   .stelle .kill { color: #c4583f; }
   .stelle .amica { color: #e87ba4; }
   /* Heatmap settimana x ora (puppy, #sbiffo 13/10): una tinta sola, piu'
@@ -156,8 +162,6 @@
   .lato li { margin-bottom: .1rem; max-width: 16rem; }
   .lato li .n { float: right; color: var(--gold); font-weight: 700; }
   .lato b { font-weight: 600; }
-  .lato .inl { margin: 0 0 .2rem; max-width: 16rem; line-height: 1.35; }
-  .lato .inl .n { color: var(--gold); font-weight: 700; }
   .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
   .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
   .howto li { margin-bottom: .35rem; }
@@ -645,20 +649,24 @@ function renderScope(scope, s, G) {
     });
     // Filtro per nick (puppy, 13/10): tocchi un nick e restano accese solo le
     // sue celle, scalate sul suo massimo; ritocchi e torna la mappa di tutti.
-    const MAGMA = [[45, 17, 96], [114, 31, 129], [183, 55, 121], [241, 96, 93], [254, 176, 120], [252, 253, 191]];
-    function magma(t) {
-      const f = t * (MAGMA.length - 1), i = Math.min(MAGMA.length - 2, Math.floor(f)), u = f - i;
-      return "rgb(" + MAGMA[i].map((v, k) => Math.round(v + (MAGMA[i + 1][k] - v) * u)).join(",") + ")";
-    }
     function pinta(chi) {
       const conta = x => chi ? ((x.chi.find(y => y[0] === chi) || [])[1] || 0) : x.v;
       const max = Math.max(1, ...celle.map(conta));
       celle.forEach(x => {
         const n = conta(x);
-        // Rampa magma, radice quadrata: piu' contrasto e piu' colore (puppy, 13/10).
+        // Una tinta sola (puppy, 13/10: la rampa a piu' colori «pare
+        // arlecchino», non si capisce quale vale di piu'). Radice quadrata e
+        // pavimento basso: le celle con poco si staccano dal fondo, quelle
+        // piene arrivano al rosso pieno. Testo bianco dappertutto: misurato,
+        // sul rosso pieno il bianco fa 4.4:1 e il nero 4.0, e sui toni bassi
+        // il nero sparisce: non c'e' cella dove lo scuro legga meglio.
         const t = n ? Math.sqrt(n / max) : 0;
-        x.c.style.background = n ? magma(t) : "";
-        x.c.style.color = n ? (t > 0.6 ? "#1a1a1a" : "#f2f2f2") : "";
+        // Opaca, dal grigio delle celle vuote al rosso: in trasparenza sul
+        // pannello le celle da 1 venivano piu' scure di quelle vuote.
+        const u = 0.15 + 0.85 * t;
+        x.c.style.background = n ? "rgb(" + [[38, 196], [39, 88], [45, 63]]
+          .map(([a, b]) => Math.round(a + (b - a) * u)).join(",") + ")" : "";
+        x.c.style.color = n ? "#fff" : "";
         x.c.textContent = n ? String(n) : "";
       });
     }
@@ -709,29 +717,6 @@ function renderScope(scope, s, G) {
         sp.appendChild(el("span", "nowt", " Ø " + r.secs.toFixed(1) + "s"));
       return [sp, r.n];
     }));
-  // Rivalita' dorata (puppy, 13/10): chi ha chiuso la dorata su cui un altro
-  // aveva gia' sparato, e chi toglie l'ultima vita sul lavoro altrui. Un
-  // blocco solo, righe in linea e non liste: occupavano troppo (puppy).
-  const dorate = [];
-  if (s.dorate_rubate && s.dorate_rubate.length)
-    dorate.push(["soffiate", s.dorate_rubate.slice(0, 5).map(r => [r.chi + " → " + r.vittima, r.n])]);
-  if (s.ultime_vite && s.ultime_vite.length)
-    dorate.push(["ultima vita", s.ultime_vite.slice(0, 5).map(x => [x[0], x[1]])]);
-  if (dorate.length) {
-    const blk = el("div", "blk");
-    blk.appendChild(el("h2", null, "✨ Dorate"));
-    dorate.forEach(([etichetta, voci]) => {
-      const p = el("p", "inl");
-      p.appendChild(el("span", "nowt", etichetta + ": "));
-      voci.forEach(([chi, n], k) => {
-        if (k) p.appendChild(el("span", "nowt", " · "));
-        p.appendChild(el("b", null, chi));
-        p.appendChild(el("span", "n", " " + n));
-      });
-      blk.appendChild(p);
-    });
-    lato.appendChild(blk);
-  }
   if (lato.children.length) duo.appendChild(lato);
   if (duo.children.length) box.appendChild(duo);
 
@@ -869,23 +854,54 @@ function renderTotale(scopes, d, G) {
 }
 
 // Una stella per ogni dorata, di tutti i canali (puppy, 13/10): rossa se
-// stesa, rosa se fatta amica; sull'hover chi, dove e quando, a memoria.
+// stesa, rosa se fatta amica. Ognuna racconta la sua (puppy, 13/10): dove e
+// quando, ogni colpo con le vite che le restavano, le cilecche, chi le ha
+// tolto l'ultima vita e se l'ha soffiata a chi ci aveva gia' sparato. Sul
+// title per il mouse, e al tocco sotto la griglia per i telefoni.
+const ESITI = {
+  bang: v => "🔫 → " + v + (v === 1 ? " vita" : " vite"),
+  bef: v => "🤝 → " + v + (v === 1 ? " vita" : " vite"),
+  jam: () => "✗ fucile inceppato",
+  nope: () => "✗ la suora ha tirato dritto",
+  boom: () => "💥 RPG esploso in faccia",
+};
+function racconto(r) {
+  const amica = r.verbo === "bef";
+  const righe = [r.scope.split("/")[1] + " · " + new Date(r.ts * 1000).toLocaleString("it-IT",
+    {timeZone: "Europe/Rome", dateStyle: "medium", timeStyle: "short"})];
+  if (r.storia) r.storia.forEach(([n, e, v]) => righe.push(n + " " + (ESITI[e] ? ESITI[e](v) : e)));
+  righe.push(r.nick + " ★ ultima vita: " + (amica ? "convertita" : "stesa")
+    + (r.rpg ? " con l'RPG" : ""));
+  if (r.storia) {
+    const io = r.nick.toLowerCase();
+    const altri = [...new Set(r.storia.filter(x => x[1] === "bang" || x[1] === "bef")
+      .map(x => x[0]).filter(n => n.toLowerCase() !== io))];
+    if (altri.length) righe.push("soffiata a " + altri.join(", "));
+  } else {
+    righe.push("(i colpi di prima non sono nel log)");
+  }
+  return righe.join("\n");
+}
 function renderDorate(scopes, d) {
   const righe = (d.dorate || []).filter(r => scopes.includes(r.scope))
     .sort((x, y) => x.ts - y.ts);
   if (!righe.length) return;
   const box = document.getElementById("dorate");
   const wall = el("div", "stelle");
+  const storia = el("p", "storia");
   righe.forEach(r => {
-    const amica = r.verbo === "bef";
-    const st = el("span", amica ? "amica" : "kill", "★");
-    st.title = r.nick + (amica ? " se l'è fatta amica" : " l'ha stesa")
-      + " in " + r.scope.split("/")[1] + ", "
-      + new Date(r.ts * 1000).toLocaleString("it-IT",
-          {timeZone: "Europe/Rome", dateStyle: "medium", timeStyle: "short"});
+    const st = el("span", r.verbo === "bef" ? "amica" : "kill", "★");
+    st.title = racconto(r);
+    st.onclick = () => {
+      const era = st.classList.contains("on");
+      wall.querySelectorAll(".on").forEach(x => x.classList.remove("on"));
+      st.classList.toggle("on", !era);
+      storia.textContent = era ? "" : st.title;
+    };
     wall.appendChild(st);
   });
   box.appendChild(wall);
+  box.appendChild(storia);
   box.hidden = false;
 }
 
