@@ -283,6 +283,15 @@ assert s_json["prossima"] == {"stato": "attesa", "da": 7200.0, "a": 9000.0}, s_j
 assert suore_stats.BUCKET == suore.BUCKET
 print("ok: il json porta ultima+prossima con la stessa grana del canale")
 
+# /suore/metrics: lo stesso JSON in testo Prometheus, rete e canale separati.
+prom = suore_stats.metrics(suore_stats.build(
+    eventi, {"scores": {"x/#y": punteggi}}, 0.0))
+assert "# TYPE suore_kills_total counter" in prom, prom
+assert 'suore_kills_total{network="x",channel="#y",nick="caio"}' in prom, prom
+assert f"suore_events_total {len(eventi)}\n" in prom, prom
+assert suore_stats._lbl('a"b\\c') == 'a\\"b\\\\c'
+print("ok: metrics in formato Prometheus")
+
 # --- la previsione in coda anche al !bang e al !bef --------------------------
 # Ordine di vjt (#sniffo 2026-09-10 20:40): «facciamo che la previsione della
 # prossima suora appare anche nella risposta al !bang e al !bef. stessa

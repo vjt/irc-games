@@ -246,17 +246,67 @@ def build(events, state, generated):
     }
 
 
+# Per tiratore, dalla classifica: nome metrica, chiave, HELP. I tempi in secondi.
+_PER_NICK = [
+    ("suore_kills_total", "kills", "counter", "Suore stese."),
+    ("suore_golden_total", "golden", "counter", "Suore dorate stese."),
+    ("suore_friends_total", "friends", "counter", "Suore fatte amiche (.bef)."),
+    ("suore_cilecca_ratio", "cilecca_pct", "gauge", "Colpi a vuoto o inceppati, 0-1."),
+    ("suore_mediana_seconds", "mediana", "gauge", "Mediana dei tempi di reazione."),
+    ("suore_media_seconds", "media", "gauge", "Media dei tempi di reazione."),
+    ("suore_record_seconds", "record", "gauge", "Tempo di reazione migliore."),
+]
+
+
+def _lbl(v):
+    return str(v).replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+
+
+def metrics(out):
+    """Il JSON di `build()` in formato testo Prometheus, per /suore/metrics
+    (vjt e puppy, #sbiffo 13/10). Un file statico servito da nginx: niente
+    porta nuova, si aggiorna quando si aggiorna il JSON."""
+    righe = []
+    for nome, chiave, tipo, aiuto in _PER_NICK:
+        righe += [f"# HELP {nome} {aiuto}", f"# TYPE {nome} {tipo}"]
+        for scope, s in sorted(out["scopes"].items()):
+            rete, _, canale = scope.partition("/")
+            for r in s["classifica"]:
+                v = r.get(chiave)
+                if v is None:
+                    continue
+                if chiave == "cilecca_pct":
+                    v = v / 100
+                righe.append(f'{nome}{{network="{_lbl(rete)}",channel="{_lbl(canale)}",'
+                             f'nick="{_lbl(r["nick"])}"}} {v}')
+    righe += ["# HELP suore_events_total Eventi nel registro.",
+              "# TYPE suore_events_total counter",
+              f"suore_events_total {out['eventi_totali']}"]
+    if out.get("ultimo_evento") is not None:
+        righe += ["# HELP suore_last_event_timestamp_seconds Ultimo evento, epoch.",
+                  "# TYPE suore_last_event_timestamp_seconds gauge",
+                  f"suore_last_event_timestamp_seconds {out['ultimo_evento']}"]
+    return "\n".join(righe) + "\n"
+
+
+def _atomic(path, text):
+    tmp = f"{path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(text)
+    os.replace(tmp, path)
+
+
 def write(path, events, state, generated):
-    """Scrive il JSON in modo atomico. Non solleva: e' un accessorio."""
+    """Scrive il JSON, e accanto `suore_metrics.prom`, in modo atomico.
+    Non solleva: e' un accessorio."""
     if not path:
         return
     try:
-        blob = json.dumps(build(events, state, generated),
-                          ensure_ascii=False, indent=1, sort_keys=True)
-        tmp = f"{path}.tmp"
-        with open(tmp, "w", encoding="utf-8") as fh:
-            fh.write(blob + "\n")
-        os.replace(tmp, path)
+        out = build(events, state, generated)
+        _atomic(path, json.dumps(out, ensure_ascii=False, indent=1,
+                                 sort_keys=True) + "\n")
+        _atomic(os.path.join(os.path.dirname(path), "suore_metrics.prom"),
+                metrics(out))
     except (OSError, ValueError):
         pass
 
