@@ -5468,6 +5468,76 @@
    "cat": "rete",
    "q": "Con quale prefisso si chiamano le porte gigabit in Junos?",
    "a": "ge"
+  },
+  {
+   "cat": "rete",
+   "q": "In quale citta' ha sede il RIPE NCC?",
+   "a": "Amsterdam"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale oggetto del database RIPE descrive un blocco di indirizzi IPv4?",
+   "a": "inetnum"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale oggetto del database RIPE descrive un blocco di indirizzi IPv6?",
+   "a": "inet6num"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale oggetto del database RIPE descrive un sistema autonomo?",
+   "a": "aut-num",
+   "alt": [
+    "autnum"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale oggetto del database RIPE dichiara quale AS annuncia un prefisso IPv4?",
+   "a": "route"
+  },
+  {
+   "cat": "rete",
+   "q": "Quale oggetto del database RIPE custodisce le credenziali per modificare gli altri?",
+   "a": "mntner",
+   "alt": [
+    "maintainer"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama il membro del RIPE NCC che riceve risorse e le gira ai clienti?",
+   "a": "LIR",
+   "alt": [
+    "local internet registry"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Come si chiama la rete di sonde hardware del RIPE NCC che misura internet?",
+   "a": "RIPE Atlas",
+   "alt": [
+    "atlas"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale servizio del RIPE NCC raccoglie le tabelle BGP dai punti di interscambio?",
+   "a": "RIS",
+   "alt": [
+    "routing information service",
+    "ripe ris"
+   ]
+  },
+  {
+   "cat": "rete",
+   "q": "Quale oggetto RPKI autorizza un AS ad annunciare un prefisso?",
+   "a": "ROA",
+   "alt": [
+    "route origin authorization",
+    "route origin authorisation"
+   ]
   }
  ]
 }
