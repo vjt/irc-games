@@ -372,11 +372,10 @@ function cumulata(s, G) {
   let acc = 0;
   const punti = giorni.map(d => (acc += (s.per_giorno[d] || {bang: 0}).bang));
   const W = 1000, H = 100, n = Math.max(giorni.length - 1, 1);
-  // Scala log (puppy, 13/10): in lineare i canali piccoli sono una riga
-  // piatta in fondo; in log si vede quando hanno preso il ritmo.
-  const x = i => i / n * W,
-    // Il canale piu' giocato arriva all'80% del box, gli altri in proporzione.
-    y = v => H - .8 * Math.log1p(v) / Math.log1p(G.max) * H;
+  // Lineare: in log (provata, puppy 13/10) una cumulata schizza su il primo
+  // giorno e poi e' una riga piatta in cima, tutti i canali uguali. Il canale
+  // piu' giocato arriva all'80% del box, gli altri in proporzione.
+  const x = i => i / n * W, y = v => H - .8 * v / G.max * H;
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
