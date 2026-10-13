@@ -888,6 +888,13 @@ function renderDorate(scopes, d) {
   if (!righe.length) return;
   const box = document.getElementById("dorate");
   const wall = el("div", "stelle");
+  // Colonne = divisore del totale piu' vicino a 6, cosi' le righe vengono piene
+  // (puppy, #sbiffo 13/10); un primo non ha divisori in 4..8 e resta a 6.
+  const n = righe.length;
+  let cols = 6;
+  for (let c = 4; c <= 8; c++)
+    if (n % c === 0 && Math.abs(c - 6) < Math.abs(cols - 6) + (n % cols ? 99 : 0)) cols = c;
+  wall.style.gridTemplateColumns = `repeat(${cols}, 2.2rem)`;
   const storia = el("p", "storia");
   righe.forEach(r => {
     const st = el("span", r.verbo === "bef" ? "amica" : "kill", "★");
