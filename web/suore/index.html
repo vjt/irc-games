@@ -82,6 +82,9 @@
   table { border-collapse: collapse; width: 100%; font-size: .87rem; min-width: 30rem; }
   th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
   th { color: var(--dim); font-weight: 600; font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; }
+  th.sort { cursor: pointer; user-select: none; }
+  th.sort:hover, th.on { color: var(--ink); }
+  th.on::after { content: " ▾"; }
   td.nick, th.nick { text-align: left; width: 40%; }
   tr:last-child td { border-bottom: 0; }
   .medal { width: 1.3em; display: inline-block; }
@@ -352,14 +355,47 @@ function renderScope(scope, s) {
 
   const scroll = el("div", "scroll");
   const t = el("table");
-  t.innerHTML = "<thead><tr><th class='nick'>chi</th><th>stese</th>"
-    + "<th>convertite</th><th>dorate</th><th>mediana</th><th>media</th>"
-    + "<th>record</th></tr></thead>";
+  // Le colonne si ordinano col clic (puppy, #sbiffo 13/10): l'ordine del
+  // JSON e' quello dei killer, e chi gioca solo a .bef finiva in fondo dietro
+  // a chi ne ha stese due. I conteggi vanno dal piu' alto, i tempi dal piu'
+  // basso, e chi un tempo non ce l'ha sta sempre in coda. Medaglie a chi e'
+  // sul podio della colonna scelta, e solo se ci e' arrivato con un numero.
+  const COLS = [["nick", "chi"], ["kills", "stese"], ["friends", "convertite"],
+    ["golden", "dorate"], ["mediana", "mediana"], ["media", "media"],
+    ["record", "record"]];
+  const ASC = {mediana: 1, media: 1, record: 1};
+  const thead = el("thead"), hr = el("tr");
   const tb = el("tbody");
-  s.classifica.forEach((r, i) => {
+  COLS.forEach(([k, label]) => {
+    if (k === "nick") { hr.appendChild(el("th", "nick", label)); return; }
+    const th = el("th", "sort", label);
+    th.title = "ordina per " + label;
+    th.onclick = () => fill(k);
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr);
+  t.appendChild(thead);
+  const val = (r, k) => (r[k] === undefined ? null : r[k]);
+  function fill(key) {
+    hr.querySelectorAll("th").forEach((th, j) =>
+      th.classList.toggle("on", COLS[j][0] === key));
+    const rows = s.classifica.slice().sort((a, b) => {
+      const x = val(a, key), y = val(b, key);
+      if (x !== y) {
+        if (x === null) return 1;
+        if (y === null) return -1;
+        return ASC[key] ? x - y : y - x;
+      }
+      return b.kills - a.kills || b.friends - a.friends
+        || a.nick.toLowerCase().localeCompare(b.nick.toLowerCase());
+    });
+    tb.textContent = "";
+    rows.forEach((r, i) => row(r, i, key));
+  }
+  function row(r, i, key) {
     const tr = el("tr");
     const nick = el("td", "nick");
-    nick.appendChild(el("span", "medal", i < 3 && r.kills ? MEDALS[i] : ""));
+    nick.appendChild(el("span", "medal", i < 3 && val(r, key) ? MEDALS[i] : ""));
     nick.appendChild(document.createTextNode(r.nick));
     tr.appendChild(nick);
     tr.appendChild(el("td", null, r.kills || "—"));
@@ -379,7 +415,8 @@ function renderScope(scope, s) {
     tr.appendChild(el("td", mio === null ? "nowt" : (top ? "best" : null),
       secs(mio)));
     tb.appendChild(tr);
-  });
+  }
+  fill("kills");
   t.appendChild(tb);
   scroll.appendChild(t);
   box.appendChild(scroll);
@@ -448,9 +485,8 @@ function board(cls, ico, titolo, unita, righe) {
     tr.appendChild(el("td", "rk", (i + 1) + "."));
     const nk = el("td", "nk");
     nk.appendChild(document.createTextNode(r.nick));
-    // Il badge dorato sta solo sui killer. Il gioco lascia fare amica anche
-    // una dorata, ma nello storico non e' mai successo: il campo si legge
-    // lo stesso invece di darlo per zero.
+    // Ogni classifica ha le sue dorate: `golden_friends` sono le convertite,
+    // il resto di `golden` le stese (puppy, #sbiffo 13/10).
     if (r.gold) nk.appendChild(el("span", "star", " ⭐" + r.gold));
     tr.appendChild(nk);
     tr.appendChild(el("td", "vl", r.v));
@@ -466,9 +502,10 @@ function board(cls, ico, titolo, unita, righe) {
 function renderTop(scope, d) {
   const s = d.scopes[scope], cl = s.classifica || [];
   const bang = cl.filter(r => r.kills > 0).sort((a, b) => b.kills - a.kills)
-    .slice(0, TOP_N).map(r => ({nick: r.nick, v: r.kills, gold: r.golden || 0}));
+    .slice(0, TOP_N).map(r => ({nick: r.nick, v: r.kills,
+      gold: (r.golden || 0) - (r.golden_friends || 0)}));
   const bef = cl.filter(r => r.friends > 0).sort((a, b) => b.friends - a.friends)
-    .slice(0, TOP_N).map(r => ({nick: r.nick, v: r.friends, gold: 0}));
+    .slice(0, TOP_N).map(r => ({nick: r.nick, v: r.friends, gold: r.golden_friends || 0}));
 
   const box = document.getElementById("topboards");
   box.textContent = "";

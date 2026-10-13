@@ -134,6 +134,9 @@ def _scope_stats(events, scores):
             "kills": row.get("kills", 0),
             "friends": row.get("friends", 0),
             "golden": row.get("golden", 0),
+            # Di quelle, quante convertite: la pagina mette la stella sulla
+            # classifica giusta invece di darle tutte ai killer.
+            "golden_friends": row.get("golden_friends", 0),
             # Media E mediana: la suora resta li' finche' qualcuno non la vede,
             # quindi un colpo dato dopo venti minuti trascina la media in cielo
             # (misurato: medie da 1255 s con reazioni tipiche da 20). La mediana

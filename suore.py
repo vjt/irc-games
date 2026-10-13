@@ -411,6 +411,13 @@ def score_for(data, scope, nick):
 MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
 
 
+def dorate(s, field):
+    """Le dorate di UNA delle due partite. Lo stato tiene `golden` come totale
+    e `golden_friends` a parte: le stese dorate sono la differenza."""
+    amiche = s.get("golden_friends", 0)
+    return amiche if field == "friends" else s.get("golden", 0) - amiche
+
+
 def board(data, scope, field="kills"):
     """Una delle due classifiche, ordinata come la riga che la stampa: killer
     su `kills`, marpioni su `friends`, e l'altro campo come spareggio. Chi ha
@@ -845,6 +852,11 @@ def handle(data, scope, nick, cmd, now):
     s["nick"] = nick          # il casing buono e' l'ultimo visto
     if golden:
         s["golden"] = s.get("golden", 0) + 1
+        # `golden` resta il totale (lo legge `.suore`), le amiche dorate si
+        # contano anche a parte: senza, la riga dei marpioni e quella dei
+        # killer si spartivano lo stesso numero (puppy, #sbiffo 13/10).
+        if cmd == "bef":
+            s["golden_friends"] = s.get("golden_friends", 0) + 1
     # Il prima e il dopo si misurano attorno all'incremento: `s` è già dentro
     # `data`, quindi la seconda chiamata vede il punto appena fatto. La
     # classifica non si ricalcola a mano da nessuna parte.
@@ -871,8 +883,8 @@ def handle(data, scope, nick, cmd, now):
         if golden:
             say(net, chan, f"\x02{nick} ha steso la SUORA DORATA in {took}!\x0F "
                            f"Ne ha stese {s['kills']} in {chan}, di cui "
-                           f"{s['golden']} "
-                           f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}{prossima}")
+                           f"{dorate(s, 'kills')} "
+                           f"{plural(dorate(s, 'kills'), 'dorata', 'dorate')}.{tail}{prossima}")
         else:
             say(net, chan, f"{nick} hai fatto secca una suora in {took}! "
                            f"Ne hai stese {s['kills']} in {chan}.{tail}{prossima}")
@@ -880,8 +892,8 @@ def handle(data, scope, nick, cmd, now):
         if golden:
             say(net, chan, f"\x02{nick} ha fatto amicizia con la SUORA DORATA in "
                            f"{took}!\x0F Ne ha convertite {s['friends']} in "
-                           f"{chan}, di cui {s['golden']} "
-                           f"{plural(s['golden'], 'dorata', 'dorate')}.{tail}{prossima}")
+                           f"{chan}, di cui {dorate(s, 'friends')} "
+                           f"{plural(dorate(s, 'friends'), 'dorata', 'dorate')}.{tail}{prossima}")
         else:
             say(net, chan, f"{nick} hai fatto amicizia con una suora in {took}! "
                            f"Ora hai {s['friends']} "
@@ -914,10 +926,10 @@ def leaderboard(data, scope, limit=7, maxlen=380):
     # Medaglie ai primi tre e puntino agli altri, come la hall of fame
     # dell'impiccato: le due classifiche escono di fila sullo stesso
     # `!classifica` e devono somigliarsi (vjt, #sbiffo 20:28).
-    has_gold = any(s.get("golden", 0) for s in rank)
+    has_gold = any(dorate(s, "kills") for s in rank)
     head = ("🔫 [Sparasuore] Classifica (⭐ = dorate): " if has_gold
             else "🔫 [Sparasuore] Classifica: ")
-    return _rank_line(head, rank, "kills", maxlen, gold=True, rest=resto)
+    return _rank_line(head, rank, "kills", maxlen, rest=resto)
 
 
 def marpioni(data, scope, limit=7, maxlen=380):
@@ -938,11 +950,13 @@ def marpioni(data, scope, limit=7, maxlen=380):
     rank, resto = tutti[:limit], tutti[limit:]
     if not rank:
         return None
-    return _rank_line("😏 [Sparasuore] Marpioni: ", rank, "friends", maxlen,
-                      rest=resto)
+    head = ("😏 [Sparasuore] Marpioni (⭐ = dorate): "
+            if any(dorate(s, "friends") for s in rank)
+            else "😏 [Sparasuore] Marpioni: ")
+    return _rank_line(head, rank, "friends", maxlen, rest=resto)
 
 
-def _rank_line(head, rank, field, maxlen, gold=False, rest=()):
+def _rank_line(head, rank, field, maxlen, rest=()):
     """Il corpo comune alle due righe: medaglia, nick in grassetto, numero.
 
     Il tetto e' in byte utili e non in voci, quindi si tronca con '…' appena
@@ -975,10 +989,10 @@ def _rank_line(head, rank, field, maxlen, gold=False, rest=()):
         # ` · `, e un '·' anche come medaglia dava `· · alk 3` (vjt, #sbiffo
         # 13/9 19:02: «perche' ci sono 2 pallini?»).
         medaglia = f"{MEDAGLIE[i]} " if i < len(MEDAGLIE) else ""
-        dorate = s.get("golden", 0) if gold else 0
+        oro = dorate(s, field)
         nick = sprinkle(s['nick'], n=3)
         piece = (f"{medaglia}\x02{nick}\x02 {s[field]}"
-                 + (f", di cui {dorate} ⭐" if dorate else ""))
+                 + (f", di cui {oro} ⭐" if oro else ""))
         if len(out) + len(piece) + 3 > budget:
             parts.append("…")
             break

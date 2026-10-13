@@ -450,4 +450,18 @@ riga = sent[-1][2]
 assert "stesa" not in riga and "mancata" not in riga, riga
 print("ok: chi ha steso la suora non se la sente dire 'mancata'")
 
+
+# le dorate si spartiscono per partita: le convertite vanno ai marpioni, le
+# stese ai killer, e una non compare nella riga dell'altra (puppy, 13/10)
+d3 = {"scores": {"t/#x": {
+    "a": {"nick": "a", "kills": 4, "friends": 0, "golden": 2},
+    "b": {"nick": "b", "kills": 1, "friends": 5, "golden": 3, "golden_friends": 2},
+}}}
+assert suore.dorate(d3["scores"]["t/#x"]["b"], "kills") == 1
+assert suore.dorate(d3["scores"]["t/#x"]["b"], "friends") == 2
+killers, marp = suore.leaderboard(d3, "t/#x"), suore.marpioni(d3, "t/#x")
+assert "di cui 2 ⭐" in killers and "di cui 1 ⭐" in killers, killers
+assert "(⭐ = dorate)" in marp and "di cui 2 ⭐" in marp, marp
+print("ok: dorate divise fra killer e marpioni")
+
 print("\nTUTTO VERDE, porco dio")
