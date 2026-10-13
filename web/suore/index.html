@@ -415,7 +415,10 @@ function renderScope(scope, s, G) {
   head.appendChild(h3);
   head.appendChild(el("span", "net", net));
   const tot = el("div", "tot");
-  tot.innerHTML = "<b>" + s.totali.kills + "</b> stese · <b>"
+  // Il totale in testa (puppy, 13/10): stese + convertite. Le dorate sono
+  // gia' dentro l'una o l'altra, sommarle le conterebbe due volte.
+  tot.innerHTML = "<b>" + (s.totali.kills + s.totali.friends) + "</b> suore: <b>"
+    + s.totali.kills + "</b> stese · <b>"
     + s.totali.friends + "</b> convertite"
     + (s.totali.golden ? " · <b class='star'>" + s.totali.golden + "</b> dorate" : "");
   // La cumulata sta subito a sinistra dei totali (puppy, 13/10).
