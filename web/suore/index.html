@@ -360,8 +360,10 @@ function renderScope(scope, s) {
   // a chi ne ha stese due. I conteggi vanno dal piu' alto, i tempi dal piu'
   // basso, e chi un tempo non ce l'ha sta sempre in coda. Medaglie a chi e'
   // sul podio della colonna scelta, e solo se ci e' arrivato con un numero.
-  const COLS = [["nick", "chi"], ["kills", "stese"], ["friends", "convertite"],
-    ["golden", "dorate"], ["mediana", "mediana"], ["media", "media"],
+  // Di default si ordina sul totale, stese piu' convertite (puppy, 13/10):
+  // le due partite contano uguale finche' non si clicca una colonna.
+  const COLS = [["nick", "chi"], ["tot", "totale"], ["kills", "stese"],
+    ["friends", "convertite"], ["golden", "dorate"], ["mediana", "mediana"], ["media", "media"],
     ["record", "record"]];
   const ASC = {mediana: 1, media: 1, record: 1};
   const thead = el("thead"), hr = el("tr");
@@ -375,7 +377,8 @@ function renderScope(scope, s) {
   });
   thead.appendChild(hr);
   t.appendChild(thead);
-  const val = (r, k) => (r[k] === undefined ? null : r[k]);
+  const val = (r, k) => (k === "tot" ? r.kills + r.friends
+    : r[k] === undefined ? null : r[k]);
   function fill(key) {
     hr.querySelectorAll("th").forEach((th, j) =>
       th.classList.toggle("on", COLS[j][0] === key));
@@ -398,6 +401,7 @@ function renderScope(scope, s) {
     nick.appendChild(el("span", "medal", i < 3 && val(r, key) ? MEDALS[i] : ""));
     nick.appendChild(document.createTextNode(r.nick));
     tr.appendChild(nick);
+    tr.appendChild(el("td", null, val(r, "tot") || "—"));
     tr.appendChild(el("td", null, r.kills || "—"));
     tr.appendChild(el("td", null, r.friends || "—"));
     const g = el("td", r.golden ? "star" : "nowt", r.golden || "—");
@@ -416,7 +420,7 @@ function renderScope(scope, s) {
       secs(mio)));
     tb.appendChild(tr);
   }
-  fill("kills");
+  fill("tot");
   t.appendChild(tb);
   scroll.appendChild(t);
   box.appendChild(scroll);
