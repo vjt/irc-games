@@ -126,12 +126,12 @@
   .legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px; margin-right: .25rem; vertical-align: baseline; font-style: normal; }
   .warn { color: var(--gold); font-size: .78rem; margin-top: .8rem; }
   /* Bacheca delle dorate (puppy, 13/10): una stella per dorata, rosse le
-     stese e rosa le convertite. Le due file hanno ognuna la sua etichetta,
-     cosi' il rosso e il rosa non devono distinguersi da soli. */
-  .stelle { font-size: 1.1rem; line-height: 1.3; letter-spacing: .08em; word-break: break-all; margin: .2rem 0 .9rem; }
+     stese e rosa le convertite. Niente box ne' etichette, solo stelle grandi
+     (puppy: «per non dimenticare»); il conto sta nel title. */
+  .dorate { margin: 2rem 0 1.5rem; }
+  .stelle { font-size: 2.2rem; line-height: 1.2; letter-spacing: .06em; word-break: break-all; margin: 0 0 .6rem; }
   .stelle.kill { color: #c4583f; }
   .stelle.amica { color: #e87ba4; }
-  .stelle-k { color: var(--dim); font-size: .78rem; }
   .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
   .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
   .howto li { margin-bottom: .35rem; }
@@ -268,7 +268,7 @@
   <h2>Per canale</h2>
   <div id="scopes"></div>
 
-  <section class="scope" id="dorate" hidden><h2>Bacheca delle dorate</h2></section>
+  <section class="dorate" id="dorate" hidden></section>
 
   <footer id="foot"></footer>
 </div>
@@ -722,8 +722,10 @@ function renderDorate(scopes, d) {
   const box = document.getElementById("dorate");
   [["kill", stese, "dorate stese"], ["amica", amiche, "dorate fatte amiche"]]
     .forEach(([cls, n, label]) => {
-      box.appendChild(el("div", "stelle-k", n + " " + label));
-      box.appendChild(el("div", "stelle " + cls, "★".repeat(n) || "—"));
+      if (!n) return;
+      const row = el("div", "stelle " + cls, "★".repeat(n));
+      row.title = n + " " + label;
+      box.appendChild(row);
     });
   box.hidden = false;
 }
