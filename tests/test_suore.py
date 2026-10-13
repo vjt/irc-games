@@ -224,7 +224,7 @@ punteggi = {"tizio": {"nick": "Tizio", "kills": 2, "friends": 1},
 righe = {r["nick"]: r for r in
          suore_stats._scope_stats(eventi, punteggi)["classifica"]}
 assert righe["Tizio"]["record"] == 4.5, righe["Tizio"]
-assert righe["caio"]["record"] is None, righe["caio"]
+assert righe["caio"]["record"] == 1.0, righe["caio"]   # solo .bef: ripiega sui tempi d amicizia
 assert righe["Tizio"]["eventi"] == 3, righe["Tizio"]
 print("ok: il record personale e' il minimo sui colpi, e ignora il casing")
 
@@ -539,3 +539,4 @@ dv["last_taken"] = {sv: {"nick": "altro", "at": 20100.0, "cmd": "bang"}}
 assert not suore.handle(dv, sv, "Tardi", "bang", 20110.0)
 assert "tardi" not in dv["flops"][sv], dv["flops"]
 print("ok: colpo a vuoto contato, mancata di poco no")
+

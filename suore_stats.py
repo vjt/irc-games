@@ -153,7 +153,10 @@ def _scope_stats(events, scores, flops=None):
             # dice come si gioca davvero, la media dice quanto si e' distratti.
             "media": round(sum(tempi) / len(tempi), 2) if tempi else None,
             "mediana": round(_mediana(tempi), 2) if tempi else None,
-            "record": round(min(colpi), 2) if colpi else None,
+            # Chi fa solo `.bef` (puppy, 52 amiche e zero stese) restava con la
+            # colonna vuota: il record si ripiega sui suoi tempi d'amicizia
+            # (puppy, #sbiffo 13/10). Chi ha almeno una stesa resta sui colpi.
+            "record": round(min(colpi or tempi), 2) if tempi else None,
             "eventi": len(tempi),
         })
     tabella.sort(key=lambda r: (-r["kills"], -r["friends"], r["nick"].lower()))
