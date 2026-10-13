@@ -20,6 +20,9 @@ suore.say = lambda net, chan, text: sent.append((net.name, chan, text))
 # su 5 fallivano). Le comparse dorate si provano dove servono, montando la suora
 # a mano; qui il fucile spara e basta.
 suore.P_GOLDEN = 0.0
+# Idem l'RPG: al 3% di default una riga «per terra c'e' un RPG» in coda
+# rompeva a caso gli assert su sent[-1] (2 run su 20). Si prova dove serve.
+suore.P_RPG = 0.0
 
 data = suore.empty()
 now = time.time()
@@ -536,8 +539,6 @@ assert dr["rpg"][sc].get("puppy"), "il .bef ha consumato l'RPG"
 assert list(dr["rpg"][sc]) == ["puppy"], dr["rpg"]
 print("ok: col .bef niente RPG")
 
-print("\nTUTTO VERDE, porco dio")
-
 # colpo a vuoto per sondare il timer = cilecca (Malekith, #sbiffo 13/10);
 # chi l'ha mancata di poco invece no
 dv = suore.empty()
@@ -579,3 +580,75 @@ hm = st["scopes"][sv]["heatmap"]
 assert len(hm) == 7 and all(len(r) == 24 for r in hm) and sum(map(sum, hm)) == 1
 assert hm[0][14] == 1, hm   # lunedi' 13/10/2025 12:00 UTC = 14 a Roma (+2)
 print("ok: rivalita' e heatmap")
+
+
+# rivalita' dorata (puppy, #sbiffo 13/10): chi chiude la dorata sui colpi
+# altrui ruba una volta a ciascuno, non una per colpo; sui colpi propri niente
+dg = suore.empty()
+sg = "azzurra/#sbiffo"
+suore.P_JAM = suore.P_NOPE = suore.P_RPG = 0.0
+dg["nuns"][sg] = {"chan": "#sbiffo", "at": 30000.0, "golden": True, "hp": 4}
+suore.handle(dg, sg, "vjt", "bang", 30001.0)
+suore.handle(dg, sg, "VJT", "bang", 30002.0)
+suore.handle(dg, sg, "puppy", "bef", 30003.0)
+assert dg["nuns"][sg]["hits"] == [{"nick": "vjt", "cmd": "bang"}, {"nick": "vjt", "cmd": "bang"},
+                                  {"nick": "puppy", "cmd": "bef"}], dg["nuns"][sg]
+assert "dorate_rubate" not in dg, "contato prima della chiusura"
+suore.handle(dg, sg, "Malekith", "bang", 30004.0)
+assert dg["nuns"][sg] is None
+assert dg["dorate_rubate"][sg] == {"malekith": {"puppy": 1, "vjt": 1}}, dg["dorate_rubate"]
+assert dg["ultime_vite"][sg] == {"malekith": 1}, dg["ultime_vite"]
+# chiusa da chi l'aveva gia' colpita, con un altro in mezzo: ruba solo all'altro
+dg["nuns"][sg] = {"chan": "#sbiffo", "at": 30100.0, "golden": True, "hp": 3}
+suore.handle(dg, sg, "malekith", "bang", 30101.0)
+suore.handle(dg, sg, "vjt", "bang", 30102.0)
+suore.handle(dg, sg, "Malekith", "bang", 30103.0)
+assert dg["dorate_rubate"][sg]["malekith"] == {"puppy": 1, "vjt": 2}, dg["dorate_rubate"]
+assert dg["ultime_vite"][sg] == {"malekith": 2}, dg["ultime_vite"]
+# tutta da solo: niente furto, niente ultima vita
+dg["nuns"][sg] = {"chan": "#sbiffo", "at": 30200.0, "golden": True, "hp": 2}
+suore.handle(dg, sg, "vjt", "bang", 30201.0)
+suore.handle(dg, sg, "vjt", "bang", 30202.0)
+assert "vjt" not in dg["dorate_rubate"][sg] and "vjt" not in dg["ultime_vite"][sg], dg
+# dorata in giro da prima di `hits`, e stato senza le chiavi: non si rompe
+dh = suore.empty()
+dh["nuns"][sg] = {"chan": "#sbiffo", "at": 30300.0, "golden": True, "hp": 1}
+assert suore.handle(dh, sg, "vjt", "bang", 30301.0)
+assert "dorate_rubate" not in dh and "ultime_vite" not in dh, dh
+dg["scores"][sg]["vjt"]["nick"] = "VJT"
+st = suore_stats.build([], dg, 0)["scopes"][sg]
+assert st["dorate_rubate"] == [{"chi": "Malekith", "vittima": "VJT", "n": 2},
+                               {"chi": "Malekith", "vittima": "puppy", "n": 1}], st["dorate_rubate"]
+assert st["ultime_vite"] == [["Malekith", 2]], st["ultime_vite"]
+assert suore_stats.build([], dh, 0)["scopes"][sg]["dorate_rubate"] == []
+print("ok: rivalita' dorata")
+
+# backfill: le righe del canale rifanno lo stesso conto
+import importlib.util
+spec = importlib.util.spec_from_file_location(
+    "backfill_dorate", os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    "..", "tools", "backfill_dorate.py"))
+bf = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(bf)
+righe = [
+    "10:00:00 > [suore] PRIVMSG #sbiffo :\x02vjt: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le restano 2 vite.\x0f",
+    "10:00:01 < :vjt!~v@x PRIVMSG #sbiffo :puppy: Ha quasi ceduto, ma la suora dorata regge ancora",
+    "10:00:02 > [suore] PRIVMSG #sbiffo :puppy: Ha quasi ceduto, ma la suora dorata regge ancora: le restano 1 vita.",
+    "10:00:03 > [suore] PRIVMSG #sbiffo :\x02Malekith ha steso la SUORA DORATA in 3 secondi!\x0f Ne ha stese 1",
+    "11:00:00 > [suore] PRIVMSG #sbiffo :sarahbean: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le restano 4 vite.",
+    "12:00:00 > [suore] PRIVMSG #sbiffo :\x02\u25e6\u25e6\\_\u2629< ALLELUIA!\x0f",
+    "12:00:05 > [suore] PRIVMSG #sbiffo :vjt si e' fatto amico la SUORA DORATA in 5 secondi! Ne ha convertite 1",
+]
+logf = os.path.join(tmp, "bf.log")
+open(logf, "w", encoding="utf-8").write("\n".join(righe) + "\n")
+ricostruito, conti = bf.rebuild([("azzurra", logf)], "Convento")
+assert ricostruito["dorate_rubate"] == {sg: {"malekith": {"puppy": 1, "vjt": 1}}}, ricostruito
+assert ricostruito["ultime_vite"] == {sg: {"malekith": 1}}, ricostruito
+assert conti["dorate"] == 2 and conti["orfani"] == 1 and conti["colpi"] == 3, conti
+# lo stesso log due volte: i doppioni si scartano
+open(logf + "2", "w", encoding="utf-8").write(open(logf, encoding="utf-8").read())
+_, conti = bf.rebuild([("azzurra", logf), ("azzurra", logf + "2")], "Convento")
+assert conti["doppioni"] == 6 and conti["dorate"] == 2, conti
+print("ok: backfill delle dorate")
+
+print("\nTUTTO VERDE, porco dio")

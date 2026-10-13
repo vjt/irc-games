@@ -120,7 +120,27 @@ def _rivalita(soffiate, scores, n=5):
     return coppie[:n]
 
 
-def _scope_stats(events, scores, flops=None, soffiate=None):
+def _dorate_rubate(rubate, scores, n=5):
+    """Le coppie chi-ha-chiuso-la-dorata-sui-colpi-di-chi (puppy, #sbiffo
+    13/10), stessa forma di `_rivalita()` senza i secondi."""
+    coppie = [{"chi": _bello(scores, chi), "vittima": _bello(scores, vitt), "n": k}
+              for chi, vittime in (rubate or {}).items()
+              for vitt, k in vittime.items()
+              if isinstance(k, int) and k > 0]
+    coppie.sort(key=lambda r: (-r["n"], r["chi"].lower(), r["vittima"].lower()))
+    return coppie[:n]
+
+
+def _ultime_vite(ultime, scores, n=3):
+    """Chi toglie piu' spesso l'ultima vita a una dorata gia' colpita da altri."""
+    righe = sorted(((_bello(scores, c), k) for c, k in (ultime or {}).items()
+                    if isinstance(k, int) and k > 0),
+                   key=lambda r: (-r[1], r[0].lower()))
+    return [list(r) for r in righe[:n]]
+
+
+def _scope_stats(events, scores, flops=None, soffiate=None, rubate=None,
+                 ultime=None):
     """Statistiche di uno scope. `events` gia' filtrati, `scores` dallo stato."""
     per_day = collections.defaultdict(lambda: {"bang": 0, "bef": 0})
     per_hour = [0] * 24
@@ -213,6 +233,8 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
         # Chi spara fra mezzanotte e le sei, i primi tre.
         "nottambuli": [[_bello(scores, n), k] for n, k in notte.most_common(3)],
         "rivalita": _rivalita(soffiate, scores),
+        "dorate_rubate": _dorate_rubate(rubate, scores),
+        "ultime_vite": _ultime_vite(ultime, scores),
         # Non e' un errore da correggere: il log e lo stato hanno storie
         # diverse (azzeramenti a mano, annunci mai archiviati). Dichiararlo.
         "discrepanza": bang_log - kills_stato,
@@ -228,7 +250,9 @@ def build(events, state, generated):
         per_scope[scope] = _scope_stats(
             suoi, scores.get(scope, {}),
             (state.get("flops") or {}).get(scope),
-            (state.get("soffiate") or {}).get(scope))
+            (state.get("soffiate") or {}).get(scope),
+            (state.get("dorate_rubate") or {}).get(scope),
+            (state.get("ultime_vite") or {}).get(scope))
         per_scope[scope]["ultima"] = _ultima(suoi, state, scope)
         per_scope[scope]["prossima"] = _prossima(state, scope)
 

@@ -721,6 +721,31 @@ def conta_soffiata(data, scope, nick, gap):
     suore_stats.write(STATS, suore_events.read(EVENTS), data, time.time())
 
 
+def conta_dorata(data, scope, nick, hits):
+    """Rivalita' dorata (puppy, #sbiffo 13/10): chi ti ha soffiato la dorata
+    dopo che ci avevi gia' messo le mani. `hits` sono i colpi andati a segno
+    senza chiuderla (`nun["hits"]`); chi la chiude sui colpi degli altri ruba
+    una volta a ciascuno, non una per colpo: tre botte di vjt sono UNA dorata
+    portata via a vjt. Se la chiude sui soli colpi propri non ha rubato niente.
+
+    Forma: dorate_rubate[scope][chi_l_ha_chiusa][chi_ci_aveva_sparato] = n e
+    ultime_vite[scope][chi] = n, l'ultima vita tolta sul lavoro altrui. Una
+    dorata in giro da prima che `hits` esistesse arriva con la lista vuota e
+    non conta: meglio un furto perso che uno inventato. Il pregresso lo
+    ricostruisce tools/backfill_dorate.py. Il JSON lo riscrive chi chiama."""
+    chi = canon(nick)
+    nicks = (h.get("nick") if isinstance(h, dict) else h for h in hits or ())
+    vittime = sorted({canon(n) for n in nicks if isinstance(n, str)} - {chi})
+    if not vittime:
+        return
+    rubate = data.setdefault("dorate_rubate", {}).setdefault(scope, {}) \
+        .setdefault(chi, {})
+    for v in vittime:
+        rubate[v] = rubate.get(v, 0) + 1
+    ultime = data.setdefault("ultime_vite", {}).setdefault(scope, {})
+    ultime[chi] = ultime.get(chi, 0) + 1
+
+
 def punish(data, scope, nick, now):
     # Per scope: la penalità è una conseguenza dentro una partita, e su un'altra
     # rete quel nick può anche essere un'altra persona.
@@ -966,6 +991,9 @@ def handle(data, scope, nick, cmd, now):
     # canale finire il lavoro.
     if nun.get("hp", 1) > 1:
         nun["hp"] -= 1
+        # Chi ci ha messo le mani, per la rivalita' dorata: lo legge
+        # conta_dorata() quando qualcuno la chiude.
+        nun.setdefault("hits", []).append({"nick": canon(nick), "cmd": cmd})
         verbo = "Il colpo l'ha presa in pieno" if cmd == "bang" else "Ha quasi ceduto"
         say(net, chan, f"\x02{nick}: {verbo}, ma la suora dorata regge ancora: "
                        f"le {plural(nun['hp'], 'resta', 'restano')} {nun['hp']} "
@@ -994,6 +1022,7 @@ def handle(data, scope, nick, cmd, now):
         # killer si spartivano lo stesso numero (puppy, #sbiffo 13/10).
         if cmd == "bef":
             s["golden_friends"] = s.get("golden_friends", 0) + 1
+        conta_dorata(data, scope, nick, nun.get("hits"))
     # Il prima e il dopo si misurano attorno all'incremento: `s` è già dentro
     # `data`, quindi la seconda chiamata vede il punto appena fatto. La
     # classifica non si ricalcola a mano da nessuna parte.

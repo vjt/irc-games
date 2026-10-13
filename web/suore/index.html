@@ -619,7 +619,7 @@ function renderScope(scope, s, G) {
   }
 
   // Due colonne (puppy, 13/10): a sinistra quando si spara, a destra
-  // nottambuli e soffiate. Sotto i 40rem si impilano.
+  // nottambuli, soffiate e dorate. Sotto i 40rem si impilano.
   const duo = el("div", "duo");
   if (s.heatmap && s.heatmap.some(r => r.some(v => v))) {
     const GG = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"];
@@ -699,6 +699,17 @@ function renderScope(scope, s, G) {
         sp.appendChild(el("span", "nowt", " Ø " + r.secs.toFixed(1) + "s"));
       return [sp, r.n];
     }));
+  // Rivalita' dorata (puppy, 13/10): chi ha chiuso la dorata su cui un altro
+  // aveva gia' sparato, e chi toglie l'ultima vita sul lavoro altrui.
+  if (s.dorate_rubate && s.dorate_rubate.length)
+    lista("✨ Dorate soffiate", s.dorate_rubate.map(r => {
+      const sp = el("span");
+      sp.appendChild(el("b", null, r.chi));
+      sp.appendChild(document.createTextNode(" → " + r.vittima));
+      return [sp, r.n];
+    }));
+  if (s.ultime_vite && s.ultime_vite.length)
+    lista("🎯 Ultima vita", s.ultime_vite.map(x => [el("b", null, x[0]), x[1]]));
   if (lato.children.length) duo.appendChild(lato);
   if (duo.children.length) box.appendChild(duo);
 
