@@ -142,13 +142,11 @@ def _scope_stats(events, scores, flops=None):
             # Di quelle, quante convertite: la pagina mette la stella sulla
             # classifica giusta invece di darle tutte ai killer.
             "golden_friends": row.get("golden_friends", 0),
-            # Figuracce in percentuale (puppy, #sbiffo 13/10): fucile
-            # inceppato sui colpi tentati, suora che tira dritto sui .bef
-            # tentati. Tentati = andati a segno + andati a vuoto.
-            "jam_pct": _pct(((flops or {}).get(canon) or {}).get("jam", 0),
-                            row.get("kills", 0)),
-            "nope_pct": _pct(((flops or {}).get(canon) or {}).get("nope", 0),
-                             row.get("friends", 0)),
+            # Cilecca in percentuale (puppy, #sbiffo 13/10): fucile inceppato
+            # e suora che tira dritto, sui tentativi = a segno + a vuoto.
+            "cilecca_pct": _pct(
+                sum(((flops or {}).get(canon) or {}).values()),
+                row.get("kills", 0) + row.get("friends", 0)),
             # Media E mediana: la suora resta li' finche' qualcuno non la vede,
             # quindi un colpo dato dopo venti minuti trascina la media in cielo
             # (misurato: medie da 1255 s con reazioni tipiche da 20). La mediana

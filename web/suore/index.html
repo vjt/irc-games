@@ -97,14 +97,23 @@
      le convertite. Il verde di --friend accanto al rosso non si distingue
      per chi non vede i colori, il blu si'. I giorni a zero ci sono come
      buchi veri, cosi' l'asse e' il tempo e non l'elenco dei giorni giocati. */
-  .chart { position: relative; margin-top: 1.2rem; padding-left: 1.6rem; }
-  .chart .ymax { position: absolute; left: 0; top: -.35rem; color: var(--dim); font-size: .66rem; }
+  .chart { position: relative; margin-top: 1.2rem; }
   .bars { display: flex; align-items: flex-end; gap: 2px; height: 5rem; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .bars .col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column-reverse; }
   .bars .col:hover { background: rgba(255, 255, 255, .05); }
   .bars .bang { background: #c4583f; }
   .bars .bef { background: #3a8fc0; }
-  .bars .col > :last-child { border-radius: 2px 2px 0 0; }
+  .bars .col > .seg:last-of-type { border-radius: 2px 2px 0 0; }
+  .bars .col { position: relative; }
+  /* Il lunedi' apre la settimana con una riga verticale (puppy, 13/10). */
+  .bars .col.lun { box-shadow: -1px 0 0 0 var(--line); }
+  .bars .n { position: absolute; left: 50%; transform: translateX(-50%); color: var(--dim); font-size: .58rem; line-height: 1; padding-bottom: 1px; white-space: nowrap; }
+  .bars { margin-top: .9rem; }
+  /* Cumulata delle stese sopra la tabella: alta poco, larga quanto la
+     tabella, stessa scala per tutti i canali cosi' si confrontano a occhio. */
+  .cum { position: relative; height: 2rem; margin: 0 0 .6rem; }
+  .cum svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .cum .tip { position: absolute; top: -1.2rem; transform: translateX(-50%); font-size: .68rem; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 0 .3rem; white-space: nowrap; pointer-events: none; display: none; }
   .axis { display: flex; gap: 2px; margin-top: .3rem; color: var(--dim); font-size: .66rem; }
   .axis span { flex: 1; min-width: 0; white-space: nowrap; overflow: visible; }
   .legend { color: var(--dim); font-size: .75rem; margin-top: .8rem; }
@@ -342,7 +351,55 @@ function joinUrl(net, chan) {
     + encodeURIComponent(net) + "/" + encodeURIComponent(seg);
 }
 
-function renderScope(scope, s) {
+function giorniFra(primo, ultimo) {
+  const out = [];
+  const fine = new Date(ultimo + "T00:00:00Z");
+  for (let t = new Date(primo + "T00:00:00Z"); t <= fine;
+       t.setUTCDate(t.getUTCDate() + 1)) {
+    out.push(t.toISOString().slice(0, 10));
+  }
+  return out;
+}
+
+function cumulata(s, G) {
+  const giorni = giorniFra(G.primo, G.ultimo);
+  let acc = 0;
+  const punti = giorni.map(d => (acc += (s.per_giorno[d] || {bang: 0}).bang));
+  const W = 1000, H = 100, n = Math.max(giorni.length - 1, 1);
+  const x = i => i / n * W, y = v => H - v / G.max * H;
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.setAttribute("preserveAspectRatio", "none");
+  const area = document.createElementNS(NS, "path");
+  const linea = punti.map((v, i) => (i ? "L" : "M") + x(i) + " " + y(v)).join(" ");
+  area.setAttribute("d", linea + " L" + W + " " + H + " L0 " + H + " Z");
+  area.setAttribute("fill", "rgba(196, 88, 63, .15)");
+  const line = document.createElementNS(NS, "path");
+  line.setAttribute("d", linea);
+  line.setAttribute("fill", "none");
+  line.setAttribute("stroke", "#c4583f");
+  line.setAttribute("stroke-width", "1.5");
+  line.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(area);
+  svg.appendChild(line);
+  const wrap = el("div", "cum");
+  wrap.title = "suore stese in totale, stessa scala per tutti i canali";
+  wrap.appendChild(svg);
+  const tip = el("span", "tip");
+  wrap.appendChild(tip);
+  wrap.onmousemove = e => {
+    const r = wrap.getBoundingClientRect();
+    const i = Math.round(Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1) * n);
+    tip.textContent = day(giorni[i]) + ": " + punti[i] + " stese";
+    tip.style.left = (i / n * 100) + "%";
+    tip.style.display = "block";
+  };
+  wrap.onmouseleave = () => { tip.style.display = "none"; };
+  return wrap;
+}
+
+function renderScope(scope, s, G) {
   const [net, chan] = scope.split("/");
   const box = el("section", "scope");
 
@@ -362,6 +419,8 @@ function renderScope(scope, s) {
   box.appendChild(head);
   box.appendChild(el("p", "quando", quandoLine(s)));
 
+  if (G.primo) box.appendChild(cumulata(s, G));
+
   const scroll = el("div", "scroll");
   const t = el("table");
   // Le colonne si ordinano col clic (puppy, #sbiffo 13/10): l'ordine del
@@ -373,7 +432,7 @@ function renderScope(scope, s) {
   // le due partite contano uguale finche' non si clicca una colonna.
   const COLS = [["nick", "chi"], ["tot", "totale"], ["kills", "stese"],
     ["friends", "convertite"], ["golden", "dorate"], ["mediana", "mediana"], ["media", "media"],
-    ["record", "record"], ["jam_pct", "% inceppato"], ["nope_pct", "% rifiutato"]];
+    ["record", "record"], ["cilecca_pct", "cilecca %"]];
   const ASC = {mediana: 1, media: 1, record: 1};
   const thead = el("thead"), hr = el("tr");
   const tb = el("tbody");
@@ -429,13 +488,11 @@ function renderScope(scope, s) {
       && Math.round(mio * 100) === Math.round(s.record.secs * 100);
     tr.appendChild(el("td", mio === null ? "nowt" : (top ? "best" : null),
       secs(mio)));
-    // Figuracce in percentuale sui tentativi (puppy, 13/10): fucile
-    // inceppato sui .bang, suora che tira dritto sui .bef.
-    ["jam_pct", "nope_pct"].forEach(k => {
-      const v = r[k] === undefined ? null : r[k];
-      tr.appendChild(el("td", v === null ? "nowt" : null,
-        v === null ? "—" : v + "%"));
-    });
+    // Cilecca sui tentativi (puppy, 13/10): fucile inceppato e suora che
+    // tira dritto insieme.
+    const cil = r.cilecca_pct === undefined ? null : r.cilecca_pct;
+    tr.appendChild(el("td", cil === null ? "nowt" : null,
+      cil === null ? "—" : cil + "%"));
     tb.appendChild(tr);
   }
   fill("tot");
@@ -453,31 +510,31 @@ function renderScope(scope, s) {
   const giorni = Object.keys(s.per_giorno);
   if (giorni.length) {
     // Tutti i giorni dal primo all'ultimo, anche quelli senza suore.
-    const tutti = [];
-    const fine = new Date(giorni[giorni.length - 1] + "T00:00:00Z");
-    for (let t = new Date(giorni[0] + "T00:00:00Z"); t <= fine;
-         t.setUTCDate(t.getUTCDate() + 1)) {
-      tutti.push(t.toISOString().slice(0, 10));
-    }
+    const tutti = giorniFra(giorni[0], giorni[giorni.length - 1]);
     const conta = d => s.per_giorno[d] || {bang: 0, bef: 0};
     const max = Math.max(...tutti.map(d => conta(d).bang + conta(d).bef), 1);
     const chart = el("div", "chart");
-    chart.appendChild(el("span", "ymax", max));
     const bars = el("div", "bars");
     const axis = el("div", "axis");
     tutti.forEach(d => {
       const c = conta(d);
-      const col = el("div", "col");
+      const lun = new Date(d + "T00:00:00Z").getUTCDay() === 1;
+      const col = el("div", lun ? "col lun" : "col");
       col.title = day(d) + ": " + c.bang + " stese, " + c.bef + " convertite";
       [["bang", c.bang], ["bef", c.bef]].forEach(([k, v]) => {
         if (!v) return;
-        const seg = el("div", k);
+        const seg = el("div", "seg " + k);
         seg.style.height = (v / max * 100) + "%";
         col.appendChild(seg);
       });
+      // Il totale del giorno sopra la barra (puppy, 13/10).
+      if (c.bang + c.bef) {
+        const num = el("span", "n", c.bang + c.bef);
+        num.style.bottom = ((c.bang + c.bef) / max * 100) + "%";
+        col.appendChild(num);
+      }
       bars.appendChild(col);
       // Un'etichetta a settimana, il lunedi': una al giorno non si legge.
-      const lun = new Date(d + "T00:00:00Z").getUTCDay() === 1;
       axis.appendChild(el("span", null, lun ? day(d) : ""));
     });
     chart.appendChild(bars);
@@ -585,7 +642,13 @@ function render(d) {
   cards.appendChild(card(d.giorni_coperti, "giorni di guerra"));
 
   const box = document.getElementById("scopes");
-  scopes.forEach(k => box.appendChild(renderScope(k, d.scopes[k])));
+  // Stessa finestra e stessa scala per la cumulata di tutti i canali
+  // (puppy, 13/10): il confronto e' il punto.
+  const tuttiG = [].concat(...scopes.map(k => Object.keys(d.scopes[k].per_giorno))).sort();
+  const G = {primo: tuttiG[0], ultimo: tuttiG[tuttiG.length - 1],
+    max: Math.max(1, ...scopes.map(k => Object.values(d.scopes[k].per_giorno)
+      .reduce((a, g) => a + g.bang, 0)))};
+  scopes.forEach(k => box.appendChild(renderScope(k, d.scopes[k], G)));
 
   // Il canale di partenza e' quello piu' giocato, non uno scritto qui dentro:
   // i canali vanno e vengono, e una preferenza fissa invecchia male.

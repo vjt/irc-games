@@ -465,11 +465,11 @@ assert "(⭐ = dorate)" in marp and "di cui 2 ⭐" in marp, marp
 print("ok: dorate divise fra killer e marpioni")
 
 
-# le figuracce diventano percentuali sui tentativi: 1 jam su 1+3 colpi = 25%
+# le figuracce diventano una percentuale sui tentativi: 1 jam su 1+3 colpi = 25%
 st = suore_stats.build([], {"scores": {"t/#x": {"pippo": {"nick": "Pippo", "kills": 3, "friends": 0}}},
                             "flops": {"t/#x": {"pippo": {"jam": 1, "nope": 0}}}}, 0)
 r = st["scopes"]["t/#x"]["classifica"][0]
-assert r["jam_pct"] == 25 and r["nope_pct"] is None, r
+assert r["cilecca_pct"] == 25, r
 print("ok: percentuali delle figuracce")
 
 print("\nTUTTO VERDE, porco dio")
