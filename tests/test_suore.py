@@ -472,4 +472,57 @@ r = st["scopes"]["t/#x"]["classifica"][0]
 assert r["cilecca_pct"] == 25, r
 print("ok: percentuali delle figuracce")
 
+# gradi: due scale, stesse soglie, la promozione si annuncia sul colpo che la fa
+assert suore.grado(0, "kills") == "chierichetto"
+assert suore.grado(4, "kills") == "chierichetto"
+assert suore.grado(5, "kills") == "sagrestano"
+assert suore.grado(20, "kills") == "diacono"
+assert suore.grado(9999, "kills") == "antipapa"
+assert suore.grado(15, "friends") == "cascamortə"
+assert suore.promosso(4, 5, "kills") == " Promossə a sagrestano!"
+assert suore.promosso(5, 6, "kills") == ""
+print("ok: gradi e promozioni")
+
+# RPG: trovato col dado, un colpo, one-shot sulla dorata, a vuoto sprecato
+sc = "azzurra/#sbiffo"
+dr = suore.empty()
+suore.P_JAM = 0.0
+suore.P_RPG, suore.P_RPG_BOOM = 1.0, 0.0
+suore.spawn(dr, sc, 5000.0)
+sent.clear()
+assert suore.handle(dr, sc, "Malekith", "bang", 5001.0)
+assert "RPG" in sent[-1][2] and dr["rpg"][sc]["malekith"], sent
+suore.P_RPG = 0.0
+dr["nuns"][sc] = {"chan": "#sbiffo", "at": 5100.0, "golden": True, "hp": 6}
+sent.clear()
+assert suore.handle(dr, sc, "Malekith", "bang", 5102.0)
+assert dr["nuns"][sc] is None, "la dorata ha retto un RPG"
+assert "Con l'RPG." in sent[0][2] and suore_events.parse(sent[0][2]), sent
+assert "malekith" not in dr["rpg"][sc], "RPG non consumato"
+print("ok: RPG trovato e sparato, dorata stesa in un colpo")
+
+dr["rpg"][sc]["malekith"] = True
+sent.clear()
+assert suore.handle(dr, sc, "Malekith", "bang", 9000.0)   # nessuna suora
+assert "Sprecato" in sent[-1][2] and "malekith" not in dr["rpg"][sc], sent
+print("ok: RPG a vuoto sprecato")
+
+suore.P_RPG_BOOM = 1.0
+dr["rpg"][sc]["malekith"] = True
+suore.spawn(dr, sc, 9100.0)
+sent.clear()
+assert suore.handle(dr, sc, "Malekith", "bang", 9101.0)
+assert dr["nuns"][sc] is not None, "l'esplosione ha consumato la suora"
+assert "esploso" in sent[-1][2] and dr["flops"][sc]["malekith"]["jam"] == 1, sent
+assert suore.on_penalty(dr, sc, "Malekith", 9102.0)
+print("ok: RPG esploso = penalita' + cilecca, suora ancora li'")
+
+# il .bef non trova e non usa l'RPG
+suore.P_RPG, suore.P_NOPE = 1.0, 0.0
+dr["rpg"][sc]["puppy"] = True
+assert suore.handle(dr, sc, "puppy", "bef", 9200.0)
+assert dr["rpg"][sc].get("puppy"), "il .bef ha consumato l'RPG"
+assert list(dr["rpg"][sc]) == ["puppy"], dr["rpg"]
+print("ok: col .bef niente RPG")
+
 print("\nTUTTO VERDE, porco dio")
