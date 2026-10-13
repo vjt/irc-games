@@ -408,6 +408,18 @@ def hidden_letters(answer, revealed):
     return sorted({fold(c) for c in answer if is_hidden(c) and fold(c) not in revealed})
 
 
+def half_shown(answer, revealed):
+    """True se almeno meta' delle lettere della risposta e' gia' scoperta.
+
+    Il tetto agli aiuti (RFE di morph, #sbiffo): oltre meta' risposta niente
+    piu' lettere nude, `.h` o `.v`, solo la risposta intera. Un numero fisso
+    di aiuti non regge con le risposte corte, la meta' si'. Si contano le
+    posizioni, non le lettere distinte: e' meta' di quello che si vede.
+    """
+    hidden = [fold(c) for c in answer if is_hidden(c)]
+    return 2 * sum(1 for c in hidden if c in revealed) >= len(hidden)
+
+
 MEDAGLIE = ("🥇", "🥈", "🥉")
 ZWSP = "​"
 
@@ -652,6 +664,7 @@ class Impiccato:
             return
         g["q"], g["a"] = d["q"], d["a"]
         g["alt"], g["revealed"] = d.get("alt", []), []
+        g.pop("capped", None)
         g["asked"] = list(g.get("asked", [])) + [d["q"]]
         g["count"] = int(g.get("count", 0)) + 1
         g["last"] = int(now if now is not None else time.time())
@@ -739,6 +752,19 @@ class Impiccato:
             self.win(chan, nick, now=now)
         else:
             self.say(chan, mask_of(g["a"], set(g["revealed"])))
+
+    def capped(self, chan):
+        """True se gli aiuti di questa domanda sono finiti. Lo dice una volta
+        sola per domanda: chi continua a sparare lettere dopo prende silenzio,
+        non una riga ciascuna — e' proprio il flood che il tetto toglie."""
+        g = self.state["games"][chan]
+        if not half_shown(g["a"], set(g["revealed"])):
+            return False
+        if not g.get("capped"):
+            g["capped"] = True
+            self.say(chan, "✋ Meta' risposta e' scoperta: basta lettere e aiuti, "
+                           "ora solo la risposta intera.")
+        return True
 
     def classifica(self, chan):
         rows = sorted(self.state["scores"].values(),
@@ -858,12 +884,16 @@ class Impiccato:
 
         if VOWEL_PAT.match(text):
             g["last"] = now
+            if self.capped(chan):
+                return True
             if self.reveal(chan, VOCALI):
                 self.after_reveal(chan, nick, now=now)
             return True
 
         if HINT_PAT.match(text):
             g["last"] = now
+            if self.capped(chan):
+                return True
             left = hidden_letters(g["a"], set(g["revealed"]))
             if left:
                 self.reveal(chan, {random.choice(left)})
@@ -879,6 +909,8 @@ class Impiccato:
         # una risposta buona (`3` per lo strato OSI): quella vince.
         if len(text) == 1 and is_hidden(text) and guess not in accepted:
             g["last"] = now
+            if self.capped(chan):
+                return True
             if self.reveal(chan, {text}):
                 self.after_reveal(chan, nick, now=now)
             # Lettera assente: silenzio, come ShBot.
@@ -1264,6 +1296,26 @@ def selftest():
                                             "revealed": [], "alt": [], "last": 1}}),
                        encoding="utf-8")
         assert load_state(old)["games"]["#x"]["a"] == "Coda"
+
+        # tetto agli aiuti: oltre meta' risposta lettere, `.h` e `.v` tacciono,
+        # l'avviso esce una volta sola, la risposta intera vince ancora.
+        gc = Impiccato("test", "/dev/null", "", st, {"#t"},
+                       [{"q": "q", "a": "Abcdef", "cat": "t"},
+                        {"q": "q2", "a": "Ghijkl", "cat": "t"}], talk=False)
+        gc.handle("a", "#t", "!trivial t")
+        first = gc.game("#t")["a"]
+        for c in first[:3]:
+            gc.handle("a", "#t", c)
+        gc.sent.clear()
+        gc.handle("a", "#t", first[3])
+        gc.handle("a", "#t", ".h")
+        gc.handle("a", "#t", ".v")
+        assert len(gc.sent) == 1 and gc.sent[0][1].startswith("✋"), gc.sent
+        assert len(gc.game("#t")["revealed"]) == 3, gc.game("#t")["revealed"]
+        gc.handle("a", "#t", first)
+        assert gc.game("#t")["count"] == 2 and not gc.game("#t").get("capped")
+        gc.handle("a", "#t", ".h")
+        assert len(gc.game("#t")["revealed"]) == 1, gc.game("#t")["revealed"]
 
     print("selftest ok")
 
