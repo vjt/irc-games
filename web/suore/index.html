@@ -106,7 +106,7 @@
   .bars .col > .seg:last-of-type { border-radius: 2px 2px 0 0; }
   .bars .col { position: relative; }
   /* Il lunedi' apre la settimana con una riga verticale (puppy, 13/10). */
-  .bars .col.lun { box-shadow: -1px 0 0 0 var(--line); }
+  .bars .col.lun::before { content: ""; position: absolute; left: -2px; top: -.9rem; bottom: -1.3rem; width: 1px; background: #55565c; }
   .bars .n { position: absolute; left: 50%; transform: translateX(-50%); color: var(--dim); font-size: .58rem; line-height: 1; padding-bottom: 1px; white-space: nowrap; }
   .bars { margin-top: .9rem; position: relative; }
   /* Giorno record in oro, oggi sbiadito perche' ancora a meta' (puppy, 13/10). */
