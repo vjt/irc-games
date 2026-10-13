@@ -146,9 +146,9 @@
   .heat .gufi b { color: var(--ink); }
   .heat .lbl { align-self: center; }
   .heat .h { text-align: center; }
-  .rival { margin-top: 1.2rem; font-size: .85rem; }
-  .rival ol { margin: .3rem 0 0; padding-left: 1.4rem; }
-  .rival li { margin-bottom: .15rem; }
+  /* Rivalita' su una riga sola (puppy, 13/10: «occupa molto spazio»). */
+  .rival { margin-top: .6rem; font-size: .8rem; color: var(--dim); }
+  .rival b { color: var(--ink); font-weight: 600; }
   .rival .n { color: var(--gold); font-weight: 700; }
   .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
   .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
@@ -630,15 +630,14 @@ function renderScope(scope, s, G) {
   // Rivalita': chi ha soffiato piu' suore a chi, arrivato prima per un soffio.
   if (s.rivalita && s.rivalita.length) {
     const riv = el("div", "rival");
-    riv.appendChild(el("h2", null, "Rivalità: chi l'ha soffiata a chi"));
-    const ol = el("ol");
-    s.rivalita.forEach(r => {
-      const li = el("li");
-      li.appendChild(document.createTextNode(r.chi + " l'ha soffiata a " + r.vittima + " "));
-      li.appendChild(el("span", "n", r.n + (r.n === 1 ? " volta" : " volte")));
-      ol.appendChild(li);
+    riv.title = "chi l'ha soffiata a chi, arrivando prima per un soffio";
+    riv.appendChild(document.createTextNode("⚔️ Soffiate: "));
+    s.rivalita.forEach((r, i) => {
+      if (i) riv.appendChild(document.createTextNode(" · "));
+      riv.appendChild(el("b", null, r.chi));
+      riv.appendChild(document.createTextNode(" → " + r.vittima + " "));
+      riv.appendChild(el("span", "n", String(r.n)));
     });
-    riv.appendChild(ol);
     box.appendChild(riv);
   }
 
