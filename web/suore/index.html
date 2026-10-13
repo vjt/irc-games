@@ -146,6 +146,8 @@
   .heat .c:hover { outline: 1px solid var(--gold); }
   .heat .lbl { align-self: center; }
   .heat .h { text-align: center; }
+  .heat .leg { display: flex; flex-wrap: wrap; gap: .2rem .7rem; margin-top: .4rem; font-size: .65rem; color: var(--dim); }
+  .heat .leg i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: .25rem; vertical-align: -1px; }
   .lato { font-size: .8rem; display: grid; gap: 1rem; }
   .lato ol { margin: 0; padding-left: 1.3rem; }
   .lato li::marker { color: var(--dim); }
@@ -602,6 +604,15 @@ function renderScope(scope, s, G) {
   if (s.heatmap && s.heatmap.some(r => r.some(v => v))) {
     const GG = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"];
     const hmax = Math.max(1, ...s.heatmap.map(r => Math.max(...r)));
+    // Un colore per persona (puppy, 13/10): la cella prende il colore di chi
+    // ci spara di piu', l'intensita' resta il conteggio. Palette fissa per i
+    // primi otto nick dello scope, il resto grigio.
+    const PAL = ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"];
+    const tot = {};
+    (s.heatmap_chi || []).forEach(r => r.forEach(cs => (cs || []).forEach(x => { tot[x[0]] = (tot[x[0]] || 0) + x[1]; })));
+    const col = {};
+    Object.keys(tot).sort((a, b) => tot[b] - tot[a]).slice(0, PAL.length).forEach((n, i) => { col[n] = PAL[i]; });
+    const rgba = (hex, a) => "rgba(" + [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)).join(", ") + ", " + a + ")";
     const heat = el("div", "heat");
     heat.appendChild(el("h2", null, "Quando si spara"));
     const grid = el("div", "grid");
@@ -613,7 +624,7 @@ function renderScope(scope, s, G) {
         const c = el("span", "c");
         const chi = ((s.heatmap_chi || [])[g] || [])[h] || [];
         if (v) {
-          c.style.background = "rgba(196, 88, 63, " + (0.18 + 0.82 * v / hmax) + ")";
+          c.style.background = rgba(chi.length && col[chi[0][0]] || "#8a8a8a", 0.25 + 0.75 * v / hmax);
           if (chi.length) c.textContent = chi[0][0].replace(/^[^A-Za-z0-9]+/, "").charAt(0).toUpperCase();
         }
         c.title = GG[g] + " " + h + ":00–" + (h + 1) + ":00: " + v + (v === 1 ? " suora" : " suore")
@@ -622,6 +633,16 @@ function renderScope(scope, s, G) {
       });
     });
     heat.appendChild(grid);
+    const leg = el("div", "leg");
+    Object.keys(col).forEach(n => {
+      const it = el("span");
+      const sw = el("i");
+      sw.style.background = col[n];
+      it.appendChild(sw);
+      it.appendChild(document.createTextNode(n));
+      leg.appendChild(it);
+    });
+    heat.appendChild(leg);
     duo.appendChild(heat);
   }
 
