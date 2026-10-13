@@ -174,6 +174,7 @@
 </style>
 </head>
 <body>
+<!--# include virtual="/_ring.html" -->
 <div class="wrap">
   <h1><span class="cross">&#8224;</span> Sparasuore</h1>
   <p class="sub" id="sub">caricamento&hellip;</p>
@@ -542,6 +543,174 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
     document.getElementById("sub").textContent =
       "I dati non si caricano (" + e.message + "). Riprova fra poco.";
   });
+</script>
+<!-- Audio far west (vjt): tutto sintetizzato in WebAudio, niente file e niente
+     media-src da aprire nella CSP. Fischio in La minore + chitarra pizzicata +
+     zoccoli in loop, ogni tanto uno sparo con l'eco del canyon, e uno sparo a
+     ogni click/tocco. Il browser non suona senza un gesto: il primo click fa
+     partire tutto. Tasto in basso a destra per zittire. -->
+<button id="saloon" type="button" aria-pressed="false" title="Musica e spari">&#129312;</button>
+<style>
+  #saloon {
+    position: fixed; right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 50; width: 2.9rem; height: 2.9rem; border-radius: 50%;
+    font-size: 1.45rem; line-height: 1; cursor: pointer;
+    background: var(--panel); color: var(--ink); border: 1px solid var(--gold);
+    box-shadow: 0 2px 10px rgba(0,0,0,.5);
+  }
+  #saloon[aria-pressed="false"] { border-color: var(--line); filter: grayscale(1); opacity: .75; }
+</style>
+<script>
+(function () {
+  "use strict";
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var btn = document.getElementById("saloon");
+  if (!AC) { btn.hidden = true; return; }
+  var ac = null, master, musica, spari, rumore, eco, on = false, avviato = false,
+      prossimoBeat = 0, beat = 0, timer = null, tSparo = null;
+  var BPM = 96, B = 60 / BPM;
+
+  // fischio: [midi, battiti] (0 = pausa). 8 battute in 4/4 = 32 battiti
+  var FISCHIO = [
+    [69,1],[76,1],[81,1.5],[79,.5],   [76,3],[0,1],
+    [74,1],[76,.5],[74,.5],[72,1],[71,1], [69,3],[0,1],
+    [69,1],[72,1],[76,1],[81,1],      [79,1.5],[77,.5],[76,2],
+    [74,1],[77,1],[76,1],[74,.5],[72,.5], [69,3],[0,1]
+  ];
+  var BASSI = [45, 45, 43, 45, 45, 48, 50, 40];       // una fondamentale per battuta
+  var melodia = [], t0 = 0;                           // FISCHIO -> [battito, midi, durata]
+  FISCHIO.forEach(function (n) { if (n[0]) melodia.push([t0, n[0], n[1]]); t0 += n[1]; });
+  function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+
+  function init() {
+    ac = new AC();
+    try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
+    master = ac.createGain(); master.gain.value = 0.9; master.connect(ac.destination);
+    musica = ac.createGain(); musica.gain.value = 0.22; musica.connect(master);
+    spari = ac.createGain(); spari.gain.value = 0.55; spari.connect(master);
+    // eco del canyon: ritardo con retroazione e passa-basso, solo sugli spari
+    eco = ac.createDelay(1); eco.delayTime.value = 0.38;
+    var fb = ac.createGain(); fb.gain.value = 0.38;
+    var lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1400;
+    eco.connect(lp); lp.connect(fb); fb.connect(eco); lp.connect(master);
+    rumore = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+    var d = rumore.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+
+  function fischia(t, m, dur) {
+    var o = ac.createOscillator(), g = ac.createGain(), lfo = ac.createOscillator(), lg = ac.createGain();
+    o.type = "sine"; o.frequency.value = hz(m) * 2;     // il fischio sta un'ottava sopra
+    lfo.frequency.value = 5.5; lg.gain.value = hz(m) * 0.012;
+    lfo.connect(lg); lg.connect(o.frequency);
+    var fine = t + dur * B * 0.95;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.5, t + 0.05);
+    g.gain.setValueAtTime(0.5, Math.max(t + 0.05, fine - 0.08));
+    g.gain.linearRampToValueAtTime(0, fine);
+    o.connect(g); g.connect(musica);
+    o.start(t); lfo.start(t); o.stop(fine + 0.05); lfo.stop(fine + 0.05);
+  }
+  function pizzica(t, m, vol) {
+    var f = ac.createBiquadFilter(); f.type = "lowpass"; f.frequency.setValueAtTime(2600, t);
+    f.frequency.exponentialRampToValueAtTime(500, t + 0.5);
+    var g = ac.createGain();
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+    f.connect(g); g.connect(musica);
+    ["triangle", "sawtooth"].forEach(function (ty, k) {
+      var o = ac.createOscillator(); o.type = ty; o.frequency.value = hz(m);
+      var og = ac.createGain(); og.gain.value = k ? 0.25 : 0.7;
+      o.connect(og); og.connect(f); o.start(t); o.stop(t + 1);
+    });
+  }
+  function zoccolo(t, vol) {
+    var s = ac.createBufferSource(); s.buffer = rumore;
+    var f = ac.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 900 + Math.random() * 300; f.Q.value = 6;
+    var g = ac.createGain();
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+    s.connect(f); f.connect(g); g.connect(musica); s.start(t, Math.random() * 0.5, 0.1);
+  }
+
+  // un battito alla volta, programmato in anticipo sul clock audio (non setTimeout)
+  function suonaBattito(t, b) {
+    var bar = Math.floor(b / 4) % 8, inBar = b % 4, ciclo = b % 32;
+    var r = BASSI[bar];
+    if (inBar === 0) pizzica(t, r, 0.55);
+    if (inBar === 1) { pizzica(t, r + 7, 0.3); pizzica(t + B / 2, r + 12, 0.25); }
+    if (inBar === 2) pizzica(t, r + 7, 0.4);
+    if (inBar === 3) { pizzica(t, r + 12, 0.3); pizzica(t + B / 2, r + 7, 0.25); }
+    zoccolo(t, 0.35); zoccolo(t + B * 0.66, 0.2);        // clip... clop
+    melodia.forEach(function (n) {
+      if (n[0] >= ciclo && n[0] < ciclo + 1) fischia(t + (n[0] - ciclo) * B, n[1], n[2]);
+    });
+  }
+  function programma() {
+    while (prossimoBeat < ac.currentTime + 0.3) {
+      suonaBattito(prossimoBeat, beat++);
+      prossimoBeat += B;
+    }
+  }
+
+  function sparo(vol) {
+    if (!ac || !on) return;
+    var t = ac.currentTime + 0.01;
+    var s = ac.createBufferSource(); s.buffer = rumore;
+    var f = ac.createBiquadFilter(); f.type = "lowpass";
+    f.frequency.setValueAtTime(7000, t); f.frequency.exponentialRampToValueAtTime(250, t + 0.35);
+    var g = ac.createGain();
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    s.connect(f); f.connect(g); g.connect(spari); g.connect(eco);
+    s.start(t, Math.random() * 0.4, 0.55);
+    var o = ac.createOscillator(), og = ac.createGain();      // il botto nel petto
+    o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.18);
+    og.gain.setValueAtTime(vol, t); og.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    o.connect(og); og.connect(spari); o.start(t); o.stop(t + 0.25);
+    if (Math.random() < 0.4) {                                 // pyiiuuu
+      var r = ac.createOscillator(), rg = ac.createGain(), tr = t + 0.06;
+      r.frequency.setValueAtTime(2800, tr); r.frequency.exponentialRampToValueAtTime(700, tr + 0.55);
+      rg.gain.setValueAtTime(0, tr); rg.gain.linearRampToValueAtTime(vol * 0.18, tr + 0.03);
+      rg.gain.exponentialRampToValueAtTime(0.001, tr + 0.6);
+      r.connect(rg); rg.connect(spari); rg.connect(eco); r.start(tr); r.stop(tr + 0.65);
+    }
+  }
+  function sparoACaso() {
+    clearTimeout(tSparo);
+    tSparo = setTimeout(function () {
+      if (on && !document.hidden) sparo(0.7 + Math.random() * 0.3);
+      sparoACaso();
+    }, 6000 + Math.random() * 14000);
+  }
+
+  function accendi() {
+    if (!ac) init();
+    if (ac.state !== "running") ac.resume();
+    on = true; btn.setAttribute("aria-pressed", "true");
+    master.gain.setTargetAtTime(0.9, ac.currentTime, 0.05);
+    if (!timer) { prossimoBeat = ac.currentTime + 0.1; timer = setInterval(programma, 100); }
+    sparoACaso();
+  }
+  function spegni() {
+    on = false; btn.setAttribute("aria-pressed", "false");
+    clearInterval(timer); timer = null; clearTimeout(tSparo);
+    if (ac) master.gain.setTargetAtTime(0, ac.currentTime, 0.05);
+  }
+
+  btn.addEventListener("click", function (e) {
+    if (on) spegni(); else { avviato = true; accendi(); }
+  });
+  // primo gesto ovunque = parte tutto; ogni click/tocco dopo = uno sparo.
+  // click e non touchstart: su iOS solo click/touchend valgono come gesto
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#saloon")) return;   // il tasto fa da se'
+    if (!avviato) { avviato = true; accendi(); }
+    sparo(0.9);
+  }, true);
+  document.addEventListener("visibilitychange", function () {
+    if (!ac || !on) return;
+    if (document.hidden) ac.suspend();
+    else { ac.resume(); prossimoBeat = Math.max(prossimoBeat, ac.currentTime + 0.1); }
+  });
+})();
 </script>
 </body>
 </html>
