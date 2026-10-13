@@ -198,6 +198,9 @@ def build(events, state, generated):
         "giorni_coperti": len(giorni),
         "eventi_totali": len(events),
         "scopes": per_scope,
+        # Una riga per dorata, per la bacheca (puppy, 13/10): chi, dove, quando.
+        "dorate": [{"ts": e["ts"], "scope": e["scope"], "nick": e["nick"],
+                    "verbo": e["verb"]} for e in events if e.get("golden")],
     }
 
 

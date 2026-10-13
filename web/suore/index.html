@@ -126,12 +126,14 @@
   .legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px; margin-right: .25rem; vertical-align: baseline; font-style: normal; }
   .warn { color: var(--gold); font-size: .78rem; margin-top: .8rem; }
   /* Bacheca delle dorate (puppy, 13/10): una stella per dorata, rosse le
-     stese e rosa le convertite. Niente box ne' etichette, solo stelle grandi
-     (puppy: «per non dimenticare»); il conto sta nel title. */
-  .dorate { margin: 2rem 0 1.5rem; }
-  .stelle { font-size: 2.2rem; line-height: 1.2; letter-spacing: .06em; word-break: break-all; margin: 0 0 .6rem; }
-  .stelle.kill { color: #c4583f; }
-  .stelle.amica { color: #e87ba4; }
+     stese e rosa le convertite. Niente box ne' etichette, solo stelle (puppy:
+     «per non dimenticare»); chi/dove/quando nel title di ognuna. */
+  .dorate { margin: 2.4rem 0 1.5rem; text-align: center; }
+  .stelle { display: flex; flex-wrap: wrap; justify-content: center; gap: .15rem .35rem; font-size: 1.5rem; line-height: 1; }
+  .stelle span { cursor: default; transition: transform .12s, text-shadow .12s; }
+  .stelle span:hover { transform: scale(1.35); text-shadow: 0 0 .4rem currentColor; }
+  .stelle .kill { color: #c4583f; }
+  .stelle .amica { color: #e87ba4; }
   .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
   .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
   .howto li { margin-bottom: .35rem; }
@@ -709,24 +711,24 @@ function renderTotale(scopes, d, G) {
   box.hidden = false;
 }
 
-// Una stella per ogni dorata, di tutti i canali (puppy, 13/10).
+// Una stella per ogni dorata, di tutti i canali (puppy, 13/10): rossa se
+// stesa, rosa se fatta amica; sull'hover chi, dove e quando, a memoria.
 function renderDorate(scopes, d) {
-  let stese = 0, amiche = 0;
-  scopes.forEach(k => {
-    const s = d.scopes[k];
-    const gf = (s.classifica || []).reduce((a, r) => a + (r.golden_friends || 0), 0);
-    amiche += gf;
-    stese += (s.totali.golden || 0) - gf;
-  });
-  if (!stese && !amiche) return;
+  const righe = (d.dorate || []).filter(r => scopes.includes(r.scope))
+    .sort((x, y) => x.ts - y.ts);
+  if (!righe.length) return;
   const box = document.getElementById("dorate");
-  [["kill", stese, "dorate stese"], ["amica", amiche, "dorate fatte amiche"]]
-    .forEach(([cls, n, label]) => {
-      if (!n) return;
-      const row = el("div", "stelle " + cls, "★".repeat(n));
-      row.title = n + " " + label;
-      box.appendChild(row);
-    });
+  const wall = el("div", "stelle");
+  righe.forEach(r => {
+    const amica = r.verbo === "bef";
+    const st = el("span", amica ? "amica" : "kill", "★");
+    st.title = r.nick + (amica ? " se l'è fatta amica" : " l'ha stesa")
+      + " in " + r.scope.split("/")[1] + ", "
+      + new Date(r.ts * 1000).toLocaleString("it-IT",
+          {timeZone: "Europe/Rome", dateStyle: "medium", timeStyle: "short"});
+    wall.appendChild(st);
+  });
+  box.appendChild(wall);
   box.hidden = false;
 }
 
