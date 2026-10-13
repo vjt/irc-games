@@ -136,9 +136,14 @@
   .stelle .amica { color: #e87ba4; }
   /* Heatmap settimana x ora (puppy, #sbiffo 13/10): una tinta sola, piu'
      carica dove si spara di piu'; le celle vuote restano il fondo. */
-  .heat { margin-top: 1.4rem; }
-  .heat .grid { display: grid; grid-template-columns: 2.2rem repeat(24, minmax(0, 1fr)); gap: 2px; font-size: .62rem; color: var(--dim); }
-  .heat .c { aspect-ratio: 1; border-radius: 2px; background: var(--line); }
+  .heat { margin-top: 1.4rem; max-width: 30rem; }
+  .heat .grid { display: grid; grid-template-columns: 1.8rem repeat(24, minmax(0, 1fr)); gap: 1px; font-size: .58rem; color: var(--dim); }
+  /* Nella cella l'iniziale di chi ci spara di piu' (puppy, 13/10): i primi
+     tre per intero nel title. */
+  .heat .c { aspect-ratio: 1; border-radius: 2px; background: var(--line); display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, .85); font-size: .5rem; line-height: 1; overflow: hidden; cursor: default; }
+  .heat .c:hover { outline: 1px solid var(--gold); }
+  .heat .gufi { margin-top: .5rem; font-size: .8rem; color: var(--dim); }
+  .heat .gufi b { color: var(--ink); }
   .heat .lbl { align-self: center; }
   .heat .h { text-align: center; }
   .rival { margin-top: 1.2rem; font-size: .85rem; }
@@ -602,12 +607,23 @@ function renderScope(scope, s, G) {
       grid.appendChild(el("span", "lbl", GG[g]));
       r.forEach((v, h) => {
         const c = el("span", "c");
-        if (v) c.style.background = "rgba(196, 88, 63, " + (0.18 + 0.82 * v / hmax) + ")";
-        c.title = GG[g] + " " + h + ":00–" + (h + 1) + ":00: " + v + (v === 1 ? " suora" : " suore");
+        const chi = ((s.heatmap_chi || [])[g] || [])[h] || [];
+        if (v) {
+          c.style.background = "rgba(196, 88, 63, " + (0.18 + 0.82 * v / hmax) + ")";
+          if (chi.length) c.textContent = chi[0][0].replace(/^[^A-Za-z0-9]+/, "").charAt(0).toUpperCase();
+        }
+        c.title = GG[g] + " " + h + ":00–" + (h + 1) + ":00: " + v + (v === 1 ? " suora" : " suore")
+          + (chi.length ? "\n" + chi.map(x => x[0] + " " + x[1]).join(", ") : "");
         grid.appendChild(c);
       });
     });
     heat.appendChild(grid);
+    if (s.nottambuli && s.nottambuli.length) {
+      const gufi = el("div", "gufi");
+      gufi.innerHTML = "🦉 Nottambulə (0–6): " + s.nottambuli.map(x =>
+        "<b>" + x[0].replace(/[<>&]/g, "") + "</b> " + x[1]).join(", ");
+      heat.appendChild(gufi);
+    }
     box.appendChild(heat);
   }
 

@@ -101,13 +101,15 @@ def _pct(flop, fatte):
     return round(100 * flop / tentate) if tentate else None
 
 
+def _bello(scores, c):
+    """Dal nick canonico al casing buono, ripescato dalla classifica."""
+    row = scores.get(c)
+    return row.get("nick", c) if isinstance(row, dict) else c
+
+
 def _rivalita(soffiate, scores, n=5):
-    """Le coppie chi-ha-soffiato-a-chi piu' frequenti (puppy, #sbiffo 13/10).
-    Le chiavi sono canoniche: il casing buono si ripesca dalla classifica."""
-    def bello(c):
-        row = scores.get(c)
-        return row.get("nick", c) if isinstance(row, dict) else c
-    coppie = [{"chi": bello(chi), "vittima": bello(vitt), "n": k}
+    """Le coppie chi-ha-soffiato-a-chi piu' frequenti (puppy, #sbiffo 13/10)."""
+    coppie = [{"chi": _bello(scores, chi), "vittima": _bello(scores, vitt), "n": k}
               for chi, vittime in (soffiate or {}).items()
               for vitt, k in vittime.items() if k]
     coppie.sort(key=lambda r: (-r["n"], r["chi"].lower(), r["vittima"].lower()))
@@ -121,6 +123,9 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
     # Heatmap giorno della settimana x ora (puppy, #sbiffo 13/10): righe
     # lunedi'..domenica, ora di Roma.
     per_dow_hour = [[0] * 24 for _ in range(7)]
+    # ...e chi c'era (puppy, 13/10: «cosi' si capisce chi e' nottambul*»).
+    chi_dow_hour = [[collections.Counter() for _ in range(24)] for _ in range(7)]
+    notte = collections.Counter()
     per_nick_time = collections.defaultdict(list)
     # Il record personale si misura sui soli colpi, come quello di scope: il
     # `.bef` e' un'altra partita e ci finirebbe dentro con tempi non comparabili.
@@ -132,6 +137,9 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
         per_hour[_hour(ev["ts"])] += 1
         quando = datetime.datetime.fromtimestamp(ev["ts"], ROME)
         per_dow_hour[quando.weekday()][quando.hour] += 1
+        chi_dow_hour[quando.weekday()][quando.hour][ev["nick"].lower()] += 1
+        if quando.hour < 6:
+            notte[ev["nick"].lower()] += 1
         r = ev.get("reaction")
         if r is None:
             continue
@@ -194,6 +202,11 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
         "per_giorno": {d: per_day[d] for d in sorted(per_day)},
         "per_ora": per_hour,
         "heatmap": per_dow_hour,
+        # I primi tre per cella, per il tooltip e per l'iniziale nella cella.
+        "heatmap_chi": [[[[_bello(scores, n), k] for n, k in c.most_common(3)]
+                         for c in riga] for riga in chi_dow_hour],
+        # Chi spara fra mezzanotte e le sei, i primi tre.
+        "nottambuli": [[_bello(scores, n), k] for n, k in notte.most_common(3)],
         "rivalita": _rivalita(soffiate, scores),
         # Non e' un errore da correggere: il log e lo stato hanno storie
         # diverse (azzeramenti a mano, annunci mai archiviati). Dichiararlo.
