@@ -540,3 +540,18 @@ assert not suore.handle(dv, sv, "Tardi", "bang", 20110.0)
 assert "tardi" not in dv["flops"][sv], dv["flops"]
 print("ok: colpo a vuoto contato, mancata di poco no")
 
+
+# rivalita': chi te l'ha soffiata sotto il naso (puppy, #sbiffo 13/10);
+# chi spara sulla propria non conta
+assert dv["soffiate"][sv] == {"altro": {"tardi": 1}}, dv.get("soffiate")
+dv["last_taken"][sv] = {"nick": "Tardi", "at": 20200.0, "cmd": "bang"}
+suore.handle(dv, sv, "tardi", "bang", 20210.0)
+assert "tardi" not in dv["soffiate"][sv], dv["soffiate"]
+dv["scores"][sv] = {"altro": {"nick": "Altro", "kills": 1, "friends": 0}}
+st = suore_stats.build([{"ts": 1760356800.0, "scope": sv, "nick": "Altro",
+                         "verb": "bang", "golden": False, "reaction": 3.0}], dv, 0)
+assert st["scopes"][sv]["rivalita"] == [{"chi": "Altro", "vittima": "tardi", "n": 1}]
+hm = st["scopes"][sv]["heatmap"]
+assert len(hm) == 7 and all(len(r) == 24 for r in hm) and sum(map(sum, hm)) == 1
+assert hm[0][14] == 1, hm   # lunedi' 13/10/2025 12:00 UTC = 14 a Roma (+2)
+print("ok: rivalita' e heatmap")

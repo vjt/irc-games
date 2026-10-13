@@ -134,6 +134,17 @@
   .stelle span:hover { transform: scale(1.35); text-shadow: 0 0 .4rem currentColor; }
   .stelle .kill { color: #c4583f; }
   .stelle .amica { color: #e87ba4; }
+  /* Heatmap settimana x ora (puppy, #sbiffo 13/10): una tinta sola, piu'
+     carica dove si spara di piu'; le celle vuote restano il fondo. */
+  .heat { margin-top: 1.4rem; }
+  .heat .grid { display: grid; grid-template-columns: 2.2rem repeat(24, minmax(0, 1fr)); gap: 2px; font-size: .62rem; color: var(--dim); }
+  .heat .c { aspect-ratio: 1; border-radius: 2px; background: var(--line); }
+  .heat .lbl { align-self: center; }
+  .heat .h { text-align: center; }
+  .rival { margin-top: 1.2rem; font-size: .85rem; }
+  .rival ol { margin: .3rem 0 0; padding-left: 1.4rem; }
+  .rival li { margin-bottom: .15rem; }
+  .rival .n { color: var(--gold); font-weight: 700; }
   .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.1rem; margin-bottom: 2.4rem; }
   .howto ul { margin: 0 0 1.1rem; padding-left: 1.1rem; font-size: .87rem; }
   .howto li { margin-bottom: .35rem; }
@@ -576,6 +587,43 @@ function renderScope(scope, s, G) {
       + '<i style="background:#3a8fc0"></i>convertite &nbsp; '
       + '<span style="color:var(--gold)">■</span> giorno record';
     box.appendChild(leg);
+  }
+
+  // Heatmap: quando si spara, per giorno della settimana e ora (puppy, 13/10).
+  if (s.heatmap && s.heatmap.some(r => r.some(v => v))) {
+    const GG = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"];
+    const hmax = Math.max(1, ...s.heatmap.map(r => Math.max(...r)));
+    const heat = el("div", "heat");
+    heat.appendChild(el("h2", null, "Quando si spara"));
+    const grid = el("div", "grid");
+    grid.appendChild(el("span"));
+    for (let h = 0; h < 24; h++) grid.appendChild(el("span", "h", h % 6 ? "" : String(h)));
+    s.heatmap.forEach((r, g) => {
+      grid.appendChild(el("span", "lbl", GG[g]));
+      r.forEach((v, h) => {
+        const c = el("span", "c");
+        if (v) c.style.background = "rgba(196, 88, 63, " + (0.18 + 0.82 * v / hmax) + ")";
+        c.title = GG[g] + " " + h + ":00–" + (h + 1) + ":00: " + v + (v === 1 ? " suora" : " suore");
+        grid.appendChild(c);
+      });
+    });
+    heat.appendChild(grid);
+    box.appendChild(heat);
+  }
+
+  // Rivalita': chi ha soffiato piu' suore a chi, arrivato prima per un soffio.
+  if (s.rivalita && s.rivalita.length) {
+    const riv = el("div", "rival");
+    riv.appendChild(el("h2", null, "Rivalità: chi l'ha soffiata a chi"));
+    const ol = el("ol");
+    s.rivalita.forEach(r => {
+      const li = el("li");
+      li.appendChild(document.createTextNode(r.chi + " l'ha soffiata a " + r.vittima + " "));
+      li.appendChild(el("span", "n", r.n + (r.n === 1 ? " volta" : " volte")));
+      ol.appendChild(li);
+    });
+    riv.appendChild(ol);
+    box.appendChild(riv);
   }
 
   if (s.discrepanza) {

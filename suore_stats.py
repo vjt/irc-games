@@ -101,10 +101,26 @@ def _pct(flop, fatte):
     return round(100 * flop / tentate) if tentate else None
 
 
-def _scope_stats(events, scores, flops=None):
+def _rivalita(soffiate, scores, n=5):
+    """Le coppie chi-ha-soffiato-a-chi piu' frequenti (puppy, #sbiffo 13/10).
+    Le chiavi sono canoniche: il casing buono si ripesca dalla classifica."""
+    def bello(c):
+        row = scores.get(c)
+        return row.get("nick", c) if isinstance(row, dict) else c
+    coppie = [{"chi": bello(chi), "vittima": bello(vitt), "n": k}
+              for chi, vittime in (soffiate or {}).items()
+              for vitt, k in vittime.items() if k]
+    coppie.sort(key=lambda r: (-r["n"], r["chi"].lower(), r["vittima"].lower()))
+    return coppie[:n]
+
+
+def _scope_stats(events, scores, flops=None, soffiate=None):
     """Statistiche di uno scope. `events` gia' filtrati, `scores` dallo stato."""
     per_day = collections.defaultdict(lambda: {"bang": 0, "bef": 0})
     per_hour = [0] * 24
+    # Heatmap giorno della settimana x ora (puppy, #sbiffo 13/10): righe
+    # lunedi'..domenica, ora di Roma.
+    per_dow_hour = [[0] * 24 for _ in range(7)]
     per_nick_time = collections.defaultdict(list)
     # Il record personale si misura sui soli colpi, come quello di scope: il
     # `.bef` e' un'altra partita e ci finirebbe dentro con tempi non comparabili.
@@ -114,6 +130,8 @@ def _scope_stats(events, scores, flops=None):
     for ev in sorted(events, key=lambda e: e["ts"]):
         per_day[_day(ev["ts"])][ev["verb"]] += 1
         per_hour[_hour(ev["ts"])] += 1
+        quando = datetime.datetime.fromtimestamp(ev["ts"], ROME)
+        per_dow_hour[quando.weekday()][quando.hour] += 1
         r = ev.get("reaction")
         if r is None:
             continue
@@ -175,6 +193,8 @@ def _scope_stats(events, scores, flops=None):
         "record": best,
         "per_giorno": {d: per_day[d] for d in sorted(per_day)},
         "per_ora": per_hour,
+        "heatmap": per_dow_hour,
+        "rivalita": _rivalita(soffiate, scores),
         # Non e' un errore da correggere: il log e lo stato hanno storie
         # diverse (azzeramenti a mano, annunci mai archiviati). Dichiararlo.
         "discrepanza": bang_log - kills_stato,
@@ -189,7 +209,8 @@ def build(events, state, generated):
         suoi = [e for e in events if e["scope"] == scope]
         per_scope[scope] = _scope_stats(
             suoi, scores.get(scope, {}),
-            (state.get("flops") or {}).get(scope))
+            (state.get("flops") or {}).get(scope),
+            (state.get("soffiate") or {}).get(scope))
         per_scope[scope]["ultima"] = _ultima(suoi, state, scope)
         per_scope[scope]["prossima"] = _prossima(state, scope)
 

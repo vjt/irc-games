@@ -687,6 +687,20 @@ def conta_flop(data, scope, nick, kind):
     suore_stats.write(STATS, suore_events.read(EVENTS), data, time.time())
 
 
+def conta_soffiata(data, scope, nick):
+    """Rivalita' (puppy, #sbiffo 13/10): chi ti ha soffiato la suora sotto il
+    naso, contata quando `late_by()` dice «l'hai mancata». Chi spara sulla
+    propria non e' una rivalita' e non si conta.
+    Forma: soffiate[scope][chi_l_ha_presa][chi_l_ha_mancata] = n."""
+    chi = (data.get("last_taken", {}).get(scope) or {}).get("nick")
+    if not chi or canon(chi) == canon(nick):
+        return
+    rivali = data.setdefault("soffiate", {}).setdefault(scope, {}) \
+        .setdefault(canon(chi), {})
+    rivali[canon(nick)] = rivali.get(canon(nick), 0) + 1
+    suore_stats.write(STATS, suore_events.read(EVENTS), data, time.time())
+
+
 def punish(data, scope, nick, now):
     # Per scope: la penalità è una conseguenza dentro una partita, e su un'altra
     # rete quel nick può anche essere un'altra persona.
@@ -895,6 +909,8 @@ def handle(data, scope, nick, cmd, now):
         # Chi l'ha mancata di poco stava giocando, non sondando: niente conto.
         if not mancata:
             conta_flop(data, scope, nick, "vuoto")
+        else:
+            conta_soffiata(data, scope, nick)
         if rpg:
             say(net, chan, f"{nick}: hai sparato l'RPG contro il nulla. Sprecato."
                            f"{mancata}{prossima}")
