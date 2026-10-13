@@ -128,62 +128,89 @@
   .legend { color: var(--dim); font-size: .75rem; margin-top: .8rem; }
   .legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px; margin-right: .25rem; vertical-align: baseline; font-style: normal; }
   .warn { color: var(--gold); font-size: .78rem; margin-top: .8rem; }
-  /* Bacheca delle dorate (puppy, 13/10): una stella per dorata, rosse le
-     stese e rosa le convertite. Niente box ne' etichette, solo stelle (puppy:
-     «per non dimenticare»); chi/dove/quando nel title di ognuna. */
+  /* Bacheca delle dorate (puppy, 13/10): una stella per dorata, chi/dove/
+     quando nel title di ognuna. Dal 14/10 (puppy: «le stelle bloccano la
+     demo») non sono piu' una griglia ma la cornice del palco: in fila sul
+     bordo, in senso orario dall'angolo in alto a sinistra, in ordine di
+     data. Le mette in posto `renderDorate`, che le ridistribuisce a ogni
+     cambio di misura del palco. */
   .dorate { margin: 2.4rem 0 1.5rem; text-align: center; }
-  /* Una griglia fissa, sei per riga come le file di un sacrario (puppy,
-     13/10: «piu' memorial»). Sei a 2.2rem coi buchi fanno ~19rem: ci stanno
-     anche su un telefono da 360px coi margini da 16. */
-  .stelle { display: grid; grid-template-columns: repeat(6, 2.2rem); justify-content: center; gap: .55rem .9rem; font-size: 1.8rem; line-height: 1; }
-  .stelle span { cursor: pointer; text-align: center; transition: transform .12s, text-shadow .12s; }
-  .stelle span:hover, .stelle span.on { transform: scale(1.3); text-shadow: 0 0 .4rem currentColor; }
-  /* La storia della stella toccata: il title non esiste sui telefoni. */
-  .dorate .storia { margin: 1.1rem auto 0; max-width: 22rem; text-align: left; font-size: .8rem; line-height: 1.45; color: var(--dim); white-space: pre-line; }
-  .dorate .storia:empty { display: none; }
-  /* Dorate per davvero (puppy, 14/10): ripiene di giallo, e il bordo dice
-     com'e' finita — rosso stesa, rosa convertita, grigio se il dato manca.
-     `paint-order` mette il tratto sotto il riempimento, se no il bordo si
-     mangia mezza stella. */
-  .stelle span { color: #f5cf3d; -webkit-text-stroke: .16em #8d8b86; paint-order: stroke fill; }
+  /* La cornice (puppy, 14/10: «una bella cornice alla demo»): bordo d'oro
+     a rilievo, filetti scuri e chiari a fare la modanatura, dentro il
+     bagliore di un tubo catodico. Le stelle vere ci camminano sopra: il
+     loro contenitore sporge di mezzo bordo, cosi' stanno sulla mezzeria. */
+  .palco {
+    --b: 14px; position: relative; height: clamp(22rem, min(72vh, 125vw), 40rem); margin: 1.6rem 1.1rem 0;
+    background: #08090b; border-radius: 10px; isolation: isolate;
+    border: var(--b) ridge #c9972f;
+    /* sul telefono non piu' alto di 1.25 volte la larghezza: la scena e'
+       tonda, e un palco lungo e stretto resta vuoto sopra e sotto */
+    box-shadow: 0 0 0 2px #3a1400, 0 0 0 5px #f0c75a, 0 0 0 7px #7a4a10, 0 0 0 9px #3a1400,
+      0 0 26px 6px rgba(217, 164, 65, .35), inset 0 0 0 2px #3a1400, inset 0 0 40px 8px rgba(0, 0, 0, .95);
+  }
+  .palco canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; border-radius: 4px; }
+  /* il velo del CRT sopra la demo: righe di scansione, e niente mouse */
+  .palco::after {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: 4px;
+    background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, .18) 0 1px, transparent 1px 3px);
+    box-shadow: inset 0 0 50px 10px rgba(0, 0, 0, .85);
+  }
+  .stelle { position: absolute; inset: calc(var(--b) / -2); z-index: 2; pointer-events: none; --s: 24px; }
+  .stelle span {
+    position: absolute; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+    font-size: var(--s); line-height: 1; text-align: center; cursor: pointer; pointer-events: auto;
+    transition: transform .12s, text-shadow .12s;
+    /* ripiene di giallo, e il bordo dice com'e' finita (puppy, 14/10):
+       rosso stesa, rosa convertita, grigio se il dato manca. `paint-order`
+       mette il tratto sotto il riempimento, se no si mangia mezza stella. */
+    color: #f5cf3d; -webkit-text-stroke: .16em #8d8b86; paint-order: stroke fill;
+    text-shadow: 0 0 3px #000, 0 0 6px #000;
+  }
   .stelle .kill { -webkit-text-stroke-color: #c4583f; }
   .stelle .amica { -webkit-text-stroke-color: #e87ba4; }
-  /* I titoli di coda (puppy, 14/10): una riga per ogni giocatore per ogni
-     dorata che ha toccato, e salgono come alla fine di una demo. Solo
-     transform, che lo fa il compositor. Con reduced-motion stanno fermi e
-     si scorrono a mano. */
+  .stelle span:hover, .stelle span.on { transform: scale(1.35); text-shadow: 0 0 3px #000, 0 0 .5rem currentColor; }
+  /* la dorata che la demo sta rigiocando in quel momento */
+  .stelle span.batte { transform: scale(1.6); text-shadow: 0 0 .4rem #fff3c4, 0 0 1rem #f5cf3d; }
+  /* La storia della stella toccata: il title non esiste sui telefoni. */
+  .dorate .storia { margin: 1.4rem auto 0; max-width: 22rem; text-align: left; font-size: .8rem; line-height: 1.45; color: var(--dim); white-space: pre-line; background: rgba(15, 16, 18, .85); border: 1px solid var(--line); border-radius: 4px; padding: .5rem .7rem; }
+  .dorate .storia:empty { display: none; }
+  /* WordArt (puppy, 14/10: «più wordart»): riempimento a gradiente, bordo
+     grosso, estrusione fatta di drop-shadow in fila. Tutto statico: il
+     filtro si calcola una volta e poi il compositor sposta il livello. */
+  .wordart {
+    display: inline-block; font: 900 2.3rem/1 Impact, Haettenschweiler, "Arial Black", sans-serif; text-transform: uppercase;
+    background: linear-gradient(180deg, #fff6b0 0%, #f5cf3d 38%, #e07a1f 68%, #c4583f 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    -webkit-text-stroke: 1.5px #3a1400;
+    filter: drop-shadow(1px 1px 0 #8a3a00) drop-shadow(1px 1px 0 #7a3000) drop-shadow(1px 1px 0 #5a2000) drop-shadow(2px 3px 2px rgba(0, 0, 0, .7));
+  }
+  .insegna { white-space: nowrap; }
+  /* I titoli di coda (puppy, 14/10): un marquee verticale vecchia scuola,
+     una riga per giocatore, chi ha preso piu' dorate in testa. Solo
+     transform, che lo fa il compositor; si ferma con la demo fuori schermo. */
   .titoli {
-    --h: 15rem; position: relative; height: var(--h); overflow: hidden; margin: 1.6rem auto 0; max-width: 36rem;
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+    --h: 16rem; position: relative; height: var(--h); overflow: hidden; margin: 1.6rem auto 0; max-width: 34rem;
+    border: 3px ridge #b8862e; background: #0b0c0e; border-radius: 2px;
   }
-  .titoli .rullo { animation: titoli var(--dur, 120s) linear infinite; will-change: transform; }
+  .titoli .rullo {
+    padding: 0 .8rem; animation: titoli var(--dur, 120s) linear infinite; will-change: transform;
+    filter: drop-shadow(1px 1px 0 #5a2000) drop-shadow(1px 1px 0 #3a1400);
+  }
   @keyframes titoli { from { transform: translateY(var(--h)); } to { transform: translateY(-100%); } }
-  .titoli p { margin: 0 0 .35rem; font-size: .82rem; line-height: 1.35; color: var(--gold); text-shadow: 0 0 6px rgba(217, 164, 65, .55), 0 0 2px #000; }
-  .titoli p:nth-child(3n+1) { color: #f5cf3d; }
-  .titoli p:nth-child(5n+2) { color: #e87ba4; text-shadow: 0 0 6px rgba(232, 123, 164, .5), 0 0 2px #000; }
-  .titoli p.capo { font-size: 1.15rem; font-weight: 700; letter-spacing: .14em; margin: 1.4rem 0 .7rem; color: #fff3c4; text-shadow: 0 0 4px #d9a441, 0 0 12px #c4583f; }
-  .titoli p.capo:first-child { margin-top: 0; }
+  .dorate.quieto .titoli .rullo { animation-play-state: paused; }
+  .titoli p {
+    margin: 0 0 .6rem; font: 900 1.02rem/1.25 Impact, Haettenschweiler, "Arial Black", sans-serif; letter-spacing: .02em;
+    background: linear-gradient(180deg, #fff6b0, #f5cf3d 45%, #e07a1f);
+    -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-stroke: .6px #2a0d00;
+    transform: skewX(-8deg);
+  }
+  .titoli p:nth-child(3n+1) { background-image: linear-gradient(180deg, #ffe0ef, #e87ba4 50%, #a3305e); transform: skewX(8deg); }
+  .titoli p:nth-child(3n+2) { background-image: linear-gradient(90deg, #c4583f, #f5cf3d, #8fe36b, #3a8fc0, #e87ba4); }
+  .titoli p.capo { font-size: 1.6rem; margin: 1.6rem 0 .9rem; transform: perspective(12rem) rotateX(18deg); background-image: linear-gradient(180deg, #fff6b0 0%, #f5cf3d 38%, #e07a1f 68%, #c4583f 100%); }
+  .titoli p.capo:first-child { margin-top: .8rem; }
   @media (prefers-reduced-motion: reduce) {
-    .titoli { overflow-y: auto; }
-    .titoli .rullo { animation: none; }
+    .titoli .rullo { animation-duration: calc(var(--dur, 120s) * 2); }
   }
-  /* La pacchianata (puppy, 13/10: «a mo di demo/keygen»): dietro le stelle
-     un canvas three.js (lo script sta in fondo alla pagina). Il canvas sta
-     SOTTO (z-index 0) e non prende il mouse, cosi' le stelle vere restano
-     cliccabili e col loro title. La classe `demo` la mette lo script solo
-     se WebGL parte: senza, la sezione resta com'era, padding compreso. */
-  .dorate.demo { position: relative; isolation: isolate; padding: 3rem 0 4.2rem; }
-  .dorate.demo canvas {
-    position: absolute; top: 0; bottom: 0; left: -1.1rem; right: -1.1rem;
-    width: calc(100% + 2.2rem); height: 100%; z-index: 0; pointer-events: none;
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 94%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 94%, transparent);
-  }
-  .dorate.demo .stelle, .dorate.demo .storia, .dorate.demo .titoli { position: relative; z-index: 1; }
-  .dorate.demo .stelle span { text-shadow: 0 0 3px #000, 0 0 6px #000; }
-  .dorate.demo .stelle span:hover, .dorate.demo .stelle span.on { text-shadow: 0 0 3px #000, 0 0 .5rem currentColor; }
-  .dorate.demo .storia { background: rgba(15, 16, 18, .85); border: 1px solid var(--line); border-radius: 4px; padding: .5rem .7rem; }
   /* Heatmap settimana x ora (puppy, #sbiffo 13/10): una tinta sola, piu'
      carica dove si spara di piu'; le celle vuote restano il fondo. Accanto,
      nottambuli e soffiate (puppy: «2 column»). */
@@ -911,11 +938,11 @@ function renderTotale(scopes, d, G) {
   box.hidden = false;
 }
 
-// Una stella per ogni dorata, di tutti i canali (puppy, 13/10): rossa se
-// stesa, rosa se fatta amica. Ognuna racconta la sua (puppy, 13/10): dove e
-// quando, ogni colpo con le vite che le restavano, le cilecche, chi le ha
-// tolto l'ultima vita e se l'ha soffiata a chi ci aveva gia' sparato. Sul
-// title per il mouse, e al tocco sotto la griglia per i telefoni.
+// Una stella per ogni dorata, di tutti i canali (puppy, 13/10). Ognuna
+// racconta la sua (puppy, 13/10): dove e quando, ogni colpo con le vite che
+// le restavano, le cilecche, chi le ha tolto l'ultima vita e se l'ha
+// soffiata a chi ci aveva gia' sparato. Sul title per il mouse, e al tocco
+// sotto il palco per i telefoni.
 const ESITI = {
   bang: v => "🔫 → " + v + (v === 1 ? " vita" : " vite"),
   bef: v => "🤝 → " + v + (v === 1 ? " vita" : " vite"),
@@ -940,26 +967,25 @@ function racconto(r) {
   }
   return righe.join("\n");
 }
+// Una parola in WordArt ad arco: ogni lettera e' un pezzo a se', ruotato e
+// alzato sulla sua parabola (il gradiente sul genitore non segue i figli
+// trasformati, quindi la classe va su ogni lettera).
+function wordart(testo, cls) {
+  const w = el("div", cls), n = testo.length;
+  [...testo].forEach((c, i) => {
+    const s = el("span", "wordart", c === " " ? " " : c), x = (i - (n - 1) / 2) / n;
+    s.style.transform = `translateY(${(x * x * 2.2).toFixed(2)}em) rotate(${(x * 38).toFixed(1)}deg)`;
+    w.appendChild(s);
+  });
+  return w;
+}
 function renderDorate(scopes, d) {
   const righe = (d.dorate || []).filter(r => scopes.includes(r.scope))
     .sort((x, y) => x.ts - y.ts);
   if (!righe.length) return;
   const box = document.getElementById("dorate");
-  const wall = el("div", "stelle");
-  // Colonne = il divisore piu' grande del totale fra 3 e 12 che ci sta in
-  // larghezza, cosi' le righe vengono piene (puppy, #sbiffo 13/10). Senza
-  // divisori utili: tante colonne quante ne entrano. Ricalcolo al resize.
-  const n = righe.length;
-  const colonne = () => {
-    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    const entrano = Math.max(3, Math.min(12, Math.floor((wall.clientWidth + .9 * rem) / (3.1 * rem))));
-    for (let c = entrano; c >= 3; c--) if (n % c === 0) return c;
-    return entrano;
-  };
-  const layout = () => { wall.style.gridTemplateColumns = `repeat(${colonne()}, 2.2rem)`; };
-  window.addEventListener("resize", layout);
-  const storia = el("p", "storia");
-  righe.forEach(r => {
+  const palco = el("div", "palco"), wall = el("div", "stelle"), storia = el("p", "storia");
+  const stelle = righe.map(r => {
     const st = el("span", r.verbo === "bef" ? "amica" : r.verbo === "bang" ? "kill" : null, "★");
     st.title = racconto(r);
     st.onclick = () => {
@@ -969,80 +995,98 @@ function renderDorate(scopes, d) {
       storia.textContent = era ? "" : st.title;
     };
     wall.appendChild(st);
+    return st;
   });
-  box.appendChild(wall);
+  // La cornice: perimetro diviso in parti uguali, la stella a meta' di
+  // ognuna. La misura della stella segue il passo, fra 12 e 29 px: con molte
+  // piu' dorate di oggi si stringono, e sotto i 12 si accavallano — allora
+  // servira' un secondo giro.
+  const cornice = () => {
+    const W = wall.clientWidth, H = wall.clientHeight, n = stelle.length;
+    if (!W || !H) return;
+    const passo = 2 * (W + H) / n;
+    wall.style.setProperty("--s", Math.max(12, Math.min(29, passo * .82)).toFixed(1) + "px");
+    stelle.forEach((st, i) => {
+      let q = (i + .5) * passo, x, y;
+      if (q < W) { x = q; y = 0; }
+      else if ((q -= W) < H) { x = W; y = q; }
+      else if ((q -= H) < W) { x = W - q; y = H; }
+      else { x = 0; y = H - (q - W); }
+      st.style.left = x.toFixed(1) + "px";
+      st.style.top = y.toFixed(1) + "px";
+    });
+  };
+  palco.appendChild(wall);
+  box.appendChild(wordart("Le dorate", "insegna"));
+  box.appendChild(palco);
   box.appendChild(storia);
-  box.appendChild(titoli(righe));
+  box.appendChild(titoli(righe, d));
+  box.righe = righe;              // la demo le rigioca come battute
   box.hidden = false;
-  layout();
+  new ResizeObserver(cornice).observe(wall);
 }
 
-// I titoli di coda (puppy, 14/10): «un bacione a …» per ogni giocatore, una
-// riga per ogni dorata che ha toccato, ognuna diversa. Il ruolo in quella
-// dorata decide il tipo di riga (chi l'ha finita, chi le ha sparato e se
-// l'e' vista soffiare, chi ci ha provato con le buone, chi s'e' inceppato,
-// chi e' stato snobbato), e un contatore per nick e ruolo gira le varianti,
-// cosi' tre dorate dello stesso tizio non dicono mai la stessa cosa. La
-// data e il canale in ogni riga fanno il resto.
-const BACI = {
-  rpg: [(n, q) => `un bacione a ${n}, che ${q} ha tirato giù una dorata con l'RPG`,
-        (n, q) => `greetz a ${n} e al suo lanciarazzi: ${q}, dorata polverizzata`],
-  ultima: [(n, q) => `un bacione a ${n}, che ${q} ha steso una dorata`,
-           (n, q) => `un abbraccio a ${n}: ultima vita tolta ${q}`,
-           (n, q) => `greetz a ${n} per il colpo di grazia ${q}`,
-           (n, q) => `saluti a ${n}, boia della dorata ${q}`,
-           (n, q) => `baci sulla canna del fucile a ${n}, ${q}`],
-  soffiata: [(n, q, a) => `un bacione a ${n}, che ${q} ha soffiato la dorata a ${a}`,
-             (n, q, a) => `un bacio ladro a ${n}: ${q} ha lasciato lavorare ${a} e poi se l'è presa`,
-             (n, q, a) => `greetz a ${n}, avvoltoio ${q}: ringrazia ${a}`],
-  amica: [(n, q) => `un bacione a ${n}, che ${q} si è fatta amica una dorata`,
-          (n, q) => `baci e abbracci a ${n}, catechista della dorata ${q}`,
-          (n, q) => `un saluto a ${n}, che ${q} ha convertito una dorata invece di spararle`,
-          (n, q) => `greetz a ${n}: ${q}, una dorata in più nel coro`],
-  colpi: [(n, q, f, k) => `un bacione a ${n}, che ${q} le ha messo ${k} a segno e poi l'ha presa ${f}`,
-          (n, q, f, k) => `un bacio consolatorio a ${n}: ${k} sulla dorata ${q}, e se l'è portata via ${f}`,
-          (n, q, f, k) => `greetz a ${n}, che ${q} ha fatto il lavoro sporco (${k}) per ${f}`],
-  buone: [(n, q, f) => `un bacione a ${n}, che ${q} ci ha provato con le buone, ma ha vinto ${f}`,
-          (n, q, f) => `un abbraccio a ${n}, missionario sfortunato ${q}: la dorata è andata a ${f}`],
-  boom: [(n, q) => `un bacione a ${n}, che ${q} si è fatto esplodere l'RPG in faccia`],
-  jam: [(n, q) => `un bacione a ${n} e al suo fucile inceppato ${q}`,
-        (n, q) => `greetz a ${n}, che ${q} ha scoperto che l'armeria non fa manutenzione`],
-  nope: [(n, q) => `un bacione a ${n}, snobbato dalla dorata ${q}`,
-         (n, q) => `un saluto a ${n}: ${q} la dorata gli ha girato le spalle`],
+// I titoli di coda (puppy, 14/10): un marquee, UNA riga per giocatore, in
+// testa chi di dorate ne ha prese di piu'. «un bacione a …» e poi una riga
+// che e' solo sua.
+// TODO(puppy): le righe sono scritte a mano qui sotto. Il piano e' ricavarle
+// dai messaggi di ognuno attorno alle suore (cosa scrive prima e dopo uno
+// sparo): quando ci saranno, arriveranno in `data.json` come
+// `personalita: {nick: riga}` e `rigaDi` le prendera' da li' prima di
+// guardare questa mappa. Le chiavi sono il nick in minuscolo.
+const PERSONALITA = {
+  "vjt": "che ha scritto il gioco e poi si è messo a vincerlo: conflitto d'interessi con la canna lucida",
+  "peluche": "cecchino di mestiere, che una dorata in piedi non la lascia neanche a pagarlo",
+  "katia": "che spara con grazia e converte senza pietà",
+  "bicz": "che arriva, spara e se ne va senza salutare",
+  "puppy": "che ha ordinato tutta questa pacchianata, e la pacchianata ringrazia",
+  "nextime": "che le suore le prende con la calma di chi ne ha già viste passare troppe",
+  "sonne": "che spara col sole in faccia e la prende lo stesso",
+  "suora^dorata": "che si chiama come la preda, e nessuno ha avuto il coraggio di chiedere perché",
+  "sarahbean": "che ha la mira di chi giura di non farlo apposta",
+  "malekith": "signore oscuro del grilletto, che non avvisa mai prima",
+  "bitflesh": "carne, bit, ma soprattutto piombo",
+  "deadbeef_": "0xDEADBEEF: l'indirizzo dove vanno a finire le dorate",
+  "sh|m0d4": "con la pipe nel nick e il piombo nel caricatore",
+  "fairy": "che al posto della bacchetta magica ha preferito il fucile",
+  "that_droid": "il droide che cercavate, e che le suore speravano di non trovare",
+  "sythos": "che spara poco, ma quando spara si sente",
+  "alk": "che ne ha presa una e se la ricorderà finché campa",
+  "morph": "che cambia forma ma non la mira",
+  "lucy": "passata di lì, ha visto una dorata e l'ha sistemata",
+  "mezmerize": "che la suora prima la ipnotizza, e poi tira",
+  "pillo": "piccolo di nome, letale di fatto",
+  "nano": "che alla suora arriva al ginocchio e la butta giù lo stesso",
+  "tom": "Tom senza Jerry, ma con una dorata in bacheca",
+  "cyber": "di passaggio da #cybernet, col colpo in canna",
 };
-function titoli(righe) {
-  const quando = r => "il " + new Date(r.ts * 1000).toLocaleString("it-IT", {timeZone: "Europe/Rome",
-    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"}).replace(",", " alle")
-    + " su " + r.scope.split("/")[1];
-  const colpi = k => k === 1 ? "un colpo" : k + " colpi";
-  const giro = {}, perNick = new Map();
-  const variante = (nick, ruolo) => {
-    const k = nick.toLowerCase() + "/" + ruolo;
-    giro[k] = (giro[k] || 0) + 1;
-    return BACI[ruolo][(giro[k] - 1) % BACI[ruolo].length];
+function rigaDi(nick, s, dati) {
+  const k = nick.toLowerCase();
+  const da = dati && dati.personalita && (dati.personalita[nick] || dati.personalita[k]);
+  if (da) return da;
+  if (PERSONALITA[k]) return PERSONALITA[k];
+  // chi non e' nella mappa prende una riga dai suoi numeri
+  if (s.convertite > s.stese) return "anima pia, che le dorate le porta in chiesa invece che al cimitero";
+  if (s.inceppi > s.colpi) return "che ha passato più tempo a sbloccare il fucile che a sparare";
+  if (!s.prese) return "che ci ha messo il piombo e ha lasciato la gloria agli altri";
+  return "che è passato, ha sparato e si è preso la sua parte di gloria";
+}
+function titoli(righe, dati) {
+  const S = new Map();
+  const di = n => {
+    const k = n.toLowerCase();
+    if (!S.has(k)) S.set(k, {nick: n, prese: 0, stese: 0, convertite: 0, colpi: 0, inceppi: 0, toccate: 0});
+    return S.get(k);
   };
   righe.forEach(r => {
-    const q = quando(r), fin = r.nick, st = r.storia || [], chi = new Map();
-    // chi c'era: chi l'ha finita piu' chiunque compaia nella storia
-    chi.set(fin.toLowerCase(), fin);
-    st.forEach(([n]) => { if (!chi.has(n.toLowerCase())) chi.set(n.toLowerCase(), n); });
-    chi.forEach((n, io) => {
-      const conta = e => st.filter(x => x[0].toLowerCase() === io && x[1] === e).length;
-      let riga;
-      if (io === fin.toLowerCase()) {
-        const altri = [...new Set(st.filter(x => (x[1] === "bang" || x[1] === "bef")
-          && x[0].toLowerCase() !== io).map(x => x[0]))];
-        if (r.rpg) riga = variante(n, "rpg")(n, q);
-        else if (r.verbo === "bef") riga = variante(n, "amica")(n, q);
-        else if (altri.length) riga = variante(n, "soffiata")(n, q, altri.join(", "));
-        else riga = variante(n, "ultima")(n, q);
-      } else if (conta("boom")) riga = variante(n, "boom")(n, q);
-      else if (conta("bang")) riga = variante(n, "colpi")(n, q, fin, colpi(conta("bang")));
-      else if (conta("bef")) riga = variante(n, "buone")(n, q, fin);
-      else if (conta("jam")) riga = variante(n, "jam")(n, q);
-      else riga = variante(n, "nope")(n, q);
-      if (!perNick.has(io)) perNick.set(io, []);
-      perNick.get(io).push(riga);
+    const f = di(r.nick), visti = new Set([r.nick.toLowerCase()]);
+    f.prese++; f.toccate++;
+    if (r.verbo === "bef") f.convertite++; else f.stese++;
+    (r.storia || []).forEach(([n, e]) => {
+      const s = di(n);
+      if (!visti.has(n.toLowerCase())) { visti.add(n.toLowerCase()); s.toccate++; }
+      if (e === "bang" || e === "bef") s.colpi++;
+      if (e === "jam") s.inceppi++;
     });
   });
   const canali = {};
@@ -1050,24 +1094,21 @@ function titoli(righe) {
 
   const rullo = el("div", "rullo");
   const p = (t, c) => rullo.appendChild(el("p", c || null, t));
-  p("*** SPARASUORE ***", "capo");
-  p("i titoli di coda");
+  p("Titoli di coda", "capo");
   p("codice: il Convento · musica: un fischio in La minore · grafica: tre punti e un seno");
-  p("*** I CANALI ***", "capo");
+  p("I canali", "capo");
   Object.keys(canali).sort((a, b) => canali[b] - canali[a]).forEach(k =>
     p(`un bacione a ${k.split("/")[1]} (${k.split("/")[0]}), ${canali[k]} ${canali[k] === 1 ? "dorata" : "dorate"}`));
-  p("*** I GIOCATORI ***", "capo");
-  // chi ne ha toccate di piu' per primo, a pari merito in ordine di nick
-  [...perNick.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
-    .forEach(([, l]) => l.forEach(t => p(t)));
-  p("*** LE SUORE ***", "capo");
+  p("I giocatori", "capo");
+  [...S.values()].sort((a, b) => b.prese - a.prese || b.toccate - a.toccate || a.nick.localeCompare(b.nick))
+    .forEach(s => p(`un bacione a ${s.nick}, ${rigaDi(s.nick, s, dati)} (${s.prese} ${s.prese === 1 ? "dorata" : "dorate"})`));
+  p("Le suore", "capo");
   p(`e un bacione a tutte le ${righe.length} suore dorate, che ci hanno messo il petto`);
   p("e a quelle normali, che non le ricorda nessuno");
-  p("per non dimenticare", "capo");
-  p("*** FINE ***", "capo");
+  p("Per non dimenticare", "capo");
   const box = el("div", "titoli");
   box.setAttribute("aria-label", "titoli di coda");
-  rullo.style.setProperty("--dur", Math.max(40, rullo.children.length * 1.7) + "s");
+  rullo.style.setProperty("--dur", Math.max(30, rullo.children.length * 2.6) + "s");
   box.appendChild(rullo);
   return box;
 }
@@ -1133,40 +1174,70 @@ function render(d) {
     + "quando una suora compare in canale.";
 }
 
+// Le suore prese finora, stese e convertite: il riferimento per accorgersi
+// di quelle nuove.
+function conta(d) {
+  let k = 0, f = 0;
+  Object.values(d.scopes).forEach(s => { k += s.totali.kills; f += s.totali.friends; });
+  return [k, f];
+}
+let viste = null;
 fetch("data.json?_=" + Date.now(), { cache: "no-store" })
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then(render)
+  .then(d => { viste = conta(d); render(d); })
   .catch(e => {
     document.getElementById("sub").textContent =
       "I dati non si caricano (" + e.message + "). Riprova fra poco.";
   });
+// Ogni minuto, a scheda visibile, si riguarda il data.json (puppy, 14/10:
+// la demo reagisce agli spari veri). Il bot lo riscrive a ogni suora presa:
+// quelle nuove diventano un evento che la demo sente. La pagina non si
+// ridisegna: tabelle e bacheca restano quelle del caricamento.
+setInterval(() => {
+  if (document.hidden || !viste) return;
+  fetch("data.json?_=" + Date.now(), { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d) return;
+      const [k, f] = conta(d), bang = k - viste[0], bef = f - viste[1];
+      viste = [k, f];
+      if (bang > 0 || bef > 0)
+        document.dispatchEvent(new CustomEvent("suore:spari", {detail: {bang: Math.max(0, bang), bef: Math.max(0, bef)}}));
+    })
+    .catch(() => {});
+}, 60000);
 </script>
-<!-- La pacchianata dietro le dorate (puppy, 13/10): intro da keygen anni '90,
-     in three.js (puppy: «fai le cose per bene con threejs, o vendorizzalo»).
-     three 0.160.0, la build ES module minificata del pacchetto npm, servita da
-     qui accanto (`three.module.min.js`, 670 KB, ~165 KB gzip) e caricata con un
-     `import()` solo quando la sezione si avvicina: da cdnjs la CSP non la
-     farebbe passare, dallo stesso origin si'.
-     In scena: le stelline (un solo THREE.Points, 900 punti) che passano da
-     una forma all'altra — sfera, toro, stella, elica, croce — esplodendo nel
-     mezzo; dietro un tunnel di stelline che ti vengono addosso (altri Points);
-     intorno un anello di dodici stelle d'oro estruse (un InstancedMesh) che
-     girano su se stesse; in fondo le copper bar e lo scroller a onda. Il moto
-     dei punti lo fa tutto il vertex shader dal tempo: il JS a ogni fotogramma
-     scrive qualche uniform e dodici matrici in oggetti gia' fatti, niente
-     allocazioni. Un renderer, cinque draw call.
-     Il loop si ferma fuori schermo e a scheda nascosta. Con
-     prefers-reduced-motion (puppy, 14/10: «non si muove un cazzo» — era
-     quello, il sistema che chiede meno animazioni) si disegna un fotogramma
-     fermo e compare un tasto per accenderla lo stesso. Senza WebGL niente. -->
-<style>
-  .dorate .demo-go {
-    position: absolute; top: .4rem; right: 0; z-index: 2;
-    font: inherit; font-size: .72rem; color: var(--gold); cursor: pointer;
-    background: rgba(15, 16, 18, .85); border: 1px solid var(--gold); border-radius: 99px;
-    padding: .15rem .6rem;
-  }
-</style>
+<!-- La pacchianata dentro la cornice delle dorate (puppy, 13-14/10): intro da
+     keygen anni '90 in three.js. three 0.160.0, la build ES module minificata
+     del pacchetto npm, servita da qui accanto (`three.module.min.js`, 670 KB,
+     ~165 KB gzip) e caricata con un `import()` solo quando la sezione si
+     avvicina: la CSP la lascia passare perche' e' dello stesso origin.
+     In scena, un renderer e nove draw call:
+     - lo sciame: 900 stelline (un Points) che passano da una forma all'altra
+       — sfera, croce, toro, suora, stella, cuore, elica, galassia, cubo —
+       esplodendo nel mezzo. Il moto lo fa il vertex shader; al cambio di
+       forma il JS ricopia due buffer gia' allocati;
+     - il tunnel di stelline che ti vengono addosso (un altro Points);
+     - le dorate: una stella d'oro estrusa per ognuna (un InstancedMesh),
+       gialla se stesa e rosa se convertita, su un guscio che gira, ognuna
+       col nick di chi l'ha presa sopra (un'altra istanza sola: le etichette
+       sono rettangoli che guardano la camera e pescano da un atlante di nick
+       disegnato una volta). Si leggono quelle sul davanti, le altre sfumano;
+       «tieniti fine» (puppy);
+     - cinque croci low-poly con una suora in cima che attraversano l'universo
+       (un InstancedMesh, colori per vertice);
+     - copper bar, lo scroller in WordArt.
+     In tandem con gli spari (puppy, 14/10): la demo rigioca le dorate vere,
+     colpo per colpo, dalla storia di ognuna — lo sparo e' un lampo e una
+     botta alla camera, l'amicizia una vampata rosa, il colpo di grazia
+     un'esplosione — e intanto la stella nella cornice e la sua gemella 3D
+     si accendono. Gli spari veri di adesso arrivano da due parti: dal saloon
+     qui sotto (ogni sparo, anche il click) e dal `data.json` che la pagina
+     riguarda ogni minuto.
+     Nel ciclo nessuna allocazione: uniform, matrici in oggetti gia' fatti,
+     due buffer riscritti. Il loop si ferma fuori schermo e a scheda nascosta.
+     Parte da sola sempre (puppy, 14/10): con prefers-reduced-motion va piu'
+     piano, lampi piu' tenui e la camera non sobbalza. Senza WebGL niente. -->
 <script>
 (function () {
   "use strict";
@@ -1175,44 +1246,72 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
 
   const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
   const mq = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : null;
-  let fermo = !!(mq && mq.matches);
+  let piano = !!(mq && mq.matches);
 
-  const N = 900;            // stelline che fanno le forme
+  const N = 900;            // stelline dello sciame
   const NW = 500;           // stelline del tunnel
-  const NI = 12;            // stelle estruse nell'anello
-  const FORME = 5;
+  const NC = 5;             // croci con la suora
+  const MAXD = 200;         // dorate in scena, al massimo
+  const RS = 3.0;           // raggio del guscio delle dorate
   const PERIODO = 7;        // secondi per forma: 4.5 ferma, 2.5 di cambio
   const FOV = 50;
+  const LH = .19;           // altezza di un'etichetta, in unita' di scena
 
-  // ---- le forme, calcolate una volta: N punti xyz ciascuna, raggio ~1.8 ----
+  // ---- le forme dello sciame: N punti xyz ciascuna, raggio ~1.9 ----
   function forme() {
-    const f = [];
-    for (let k = 0; k < FORME; k++) f.push(new Float32Array(N * 3));
-    const R = Math.random, set = (a, i, x, y, z) => { a[i * 3] = x; a[i * 3 + 1] = y; a[i * 3 + 2] = z; };
-    for (let i = 0; i < N; i++) {
-      // sfera di Fibonacci
-      const y = 1 - 2 * (i + .5) / N, r = Math.sqrt(1 - y * y), g = i * 2.39996;
-      set(f[0], i, Math.cos(g) * r * 1.7, y * 1.7, Math.sin(g) * r * 1.7);
-      // toro
-      const u = R() * 6.2832, v = R() * 6.2832;
-      set(f[1], i, (1.25 + .45 * Math.cos(v)) * Math.cos(u), .45 * Math.sin(v), (1.25 + .45 * Math.cos(v)) * Math.sin(u));
-      // stella a cinque punte, il contorno con un po' di spessore
-      const s = R() * 10, lato = Math.floor(s), t = s - lato;
-      const a0 = lato * Math.PI / 5 + Math.PI / 2, a1 = a0 + Math.PI / 5;
-      const r0 = lato % 2 ? .75 : 1.9, r1 = lato % 2 ? 1.9 : .75;
-      set(f[2], i, Math.cos(a0) * r0 * (1 - t) + Math.cos(a1) * r1 * t,
-        Math.sin(a0) * r0 * (1 - t) + Math.sin(a1) * r1 * t, (R() - .5) * .3);
-      // doppia elica
-      const h = (i % (N / 2)) / (N / 2), fi = h * 6.2832 * 3 + (i < N / 2 ? 0 : Math.PI);
-      set(f[3], i, Math.cos(fi) * .85, h * 3.8 - 1.9, Math.sin(fi) * .85);
-      // croce: il gambo e il braccio, pieni
-      if (R() < .62) set(f[4], i, (R() - .5) * .5, R() * 3.9 - 2.1, (R() - .5) * .5);
-      else set(f[4], i, (R() - .5) * 2.3, .55 + R() * .5, (R() - .5) * .5);
-    }
-    return f;
+    const R = Math.random, F = [];
+    const nuova = () => { const a = new Float32Array(N * 3); F.push(a); return a; };
+    const riempi = (a, fn) => { for (let i = 0; i < N; i++) { const p = fn(i); a[i * 3] = p[0]; a[i * 3 + 1] = p[1]; a[i * 3 + 2] = p[2]; } };
+    const dentro = (poli, x, y) => {      // punto nel poligono, a raggi
+      let s = false;
+      for (let i = 0, j = poli.length - 2; i < poli.length; j = i, i += 2) {
+        const xi = poli[i], yi = poli[i + 1], xj = poli[j], yj = poli[j + 1];
+        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) s = !s;
+      }
+      return s;
+    };
+    const croce = () => R() < .62 ? [(R() - .5) * .5, R() * 3.9 - 2.1, (R() - .5) * .5]
+      : [(R() - .5) * 2.3, .55 + R() * .5, (R() - .5) * .5];
+    // la suora di profilo frontale: velo, soggolo, spalle, tonaca a campana
+    const SUORA = [0, 1.95, .5, 1.85, .75, 1.5, .8, 1.0, 1.0, .55, 1.15, .25, 1.4, -1.95,
+      -1.4, -1.95, -1.15, .25, -1.0, .55, -.8, 1.0, -.75, 1.5, -.5, 1.85];
+    const suora = () => {
+      for (;;) {
+        const x = (R() - .5) * 2.8, y = R() * 3.9 - 1.95;
+        if (!dentro(SUORA, x, y)) continue;
+        const fx = x / .36, fy = (y - 1.12) / .44;
+        if (fx * fx + fy * fy < 1) continue;                       // il viso, vuoto
+        if ((Math.abs(x) < .07 && y > -.55 && y < .3) || (Math.abs(x) < .24 && y > .02 && y < .14)) continue; // la croce sul petto
+        return [x, y, (R() - .5) * .35];
+      }
+    };
+    const cuore = () => {
+      for (;;) {
+        const x = (R() - .5) * 2.6, y = R() * 2.5 - 1.15, a = x * x + y * y - 1;
+        if (a * a * a - x * x * y * y * y <= 0) return [x * 1.45, y * 1.45 + .1, (R() - .5) * .45];
+      }
+    };
+    riempi(nuova(), i => { const y = 1 - 2 * (i + .5) / N, r = Math.sqrt(1 - y * y), g = i * 2.39996;
+      return [Math.cos(g) * r * 1.75, y * 1.75, Math.sin(g) * r * 1.75]; });
+    riempi(nuova(), croce);
+    riempi(nuova(), () => { const u = R() * 6.2832, v = R() * 6.2832;
+      return [(1.25 + .45 * Math.cos(v)) * Math.cos(u), .45 * Math.sin(v), (1.25 + .45 * Math.cos(v)) * Math.sin(u)]; });
+    riempi(nuova(), suora);
+    riempi(nuova(), () => { const s = R() * 10, l = Math.floor(s), t = s - l;
+      const a0 = l * Math.PI / 5 + Math.PI / 2, a1 = a0 + Math.PI / 5, r0 = l % 2 ? .75 : 1.95, r1 = l % 2 ? 1.95 : .75;
+      return [Math.cos(a0) * r0 * (1 - t) + Math.cos(a1) * r1 * t, Math.sin(a0) * r0 * (1 - t) + Math.sin(a1) * r1 * t, (R() - .5) * .3]; });
+    riempi(nuova(), cuore);
+    riempi(nuova(), i => { const h = (i % (N / 2)) / (N / 2), f = h * 6.2832 * 3 + (i < N / 2 ? 0 : Math.PI);
+      return [Math.cos(f) * .85, h * 3.8 - 1.9, Math.sin(f) * .85]; });
+    riempi(nuova(), i => { const r = Math.sqrt(R()) * 2.2, f = r * 2.3 + (i % 2) * Math.PI + (R() - .5) * .5;
+      return [Math.cos(f) * r, (R() - .5) * .25 * (2.3 - r), Math.sin(f) * r]; });
+    riempi(nuova(), () => { const a = (R() - .5) * 2.4, b = (R() - .5) * 2.4, s = R() < .5 ? -1.2 : 1.2, f = Math.floor(R() * 3);
+      return f === 0 ? [s, a, b] : f === 1 ? [a, s, b] : [a, b, s]; });
+    return F;
   }
 
   const FS_STELLINA = `
+    uniform float uRosa;
     varying float vB, vRot, vK;
     void main() {
       vec2 p = gl_PointCoord * 2.0 - 1.0;
@@ -1223,33 +1322,28 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
       float e = mix(0.32, 0.92, k);
       float st = 1.0 - smoothstep(e - 0.14, e, r);
       float glow = 0.3 * (1.0 - r) * (1.0 - r);
-      // quasi tutte d'oro, ogni tanto una rossa: sono le stese
+      // quasi tutte d'oro, ogni tanto una rossa; rosa quando si fa amicizia
       vec3 col = vK > 0.93 ? vec3(0.77, 0.35, 0.25) : vec3(0.85, 0.64, 0.26);
+      col = mix(col, vec3(0.91, 0.48, 0.64), min(uRosa, 1.0) * 0.85);
       col = mix(col, vec3(1.0, 0.95, 0.8), st * (1.0 - r));
       gl_FragColor = vec4(col, (st + glow) * vB);
     }`;
-  const VS_FORME = `
-    attribute vec3 aF1, aF2, aF3, aF4;
+  const VS_SCIAME = `
+    attribute vec3 aA;                 // la forma d'arrivo; position e' quella di partenza
     attribute float aFase;
-    uniform float uT, uDa, uA, uK, uPx, uMax;
+    uniform float uT, uK, uPx, uMax, uBoom, uFlash;
     varying float vB, vRot, vK;
-    vec3 forma(float i) {
-      if (i < 0.5) return position;
-      if (i < 1.5) return aF1;
-      if (i < 2.5) return aF2;
-      if (i < 3.5) return aF3;
-      return aF4;
-    }
     void main() {
       float k = smoothstep(0.0, 1.0, clamp(uK * 1.5 - aFase * 0.5, 0.0, 1.0));
-      vec3 p = mix(forma(uDa), forma(uA), k);
-      // a meta' cambio esplodono, e poi si ricompongono
-      p += normalize(p + vec3(0.001)) * sin(k * 3.14159) * (0.7 + aFase * 1.4);
+      vec3 p = mix(position, aA, k);
+      vec3 dir = normalize(p + vec3(0.001, 0.002, 0.003));
+      // a meta' cambio esplodono, e a ogni sparo pure
+      p += dir * (sin(k * 3.14159) * (0.7 + aFase * 1.4) + uBoom * (0.4 + aFase * 1.6));
       p *= 1.0 + 0.05 * sin(uT * 3.0 + aFase * 6.2832);
       vec4 mv = modelViewMatrix * vec4(p, 1.0);
       gl_Position = projectionMatrix * mv;
       gl_PointSize = min(uPx / -mv.z, uMax);
-      vB = 0.38 + 0.17 * sin(uT * 5.0 + aFase * 40.0);   // piano: le stelle vere ci stanno sopra
+      vB = (0.38 + 0.17 * sin(uT * 5.0 + aFase * 40.0)) * (1.0 + min(uFlash, 1.5) * 1.6);
       vRot = aFase * 6.2832 + uT * (0.8 + aFase * 1.6);
       vK = aFase;
     }`;
@@ -1269,13 +1363,44 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
       vRot = aFase * 6.2832 + uT * 1.5;
       vK = aFase;
     }`;
+  // Le etichette: un rettangolo per dorata che guarda sempre la camera,
+  // sopra la sua stella; il pezzo d'atlante col nick lo dice aReg.
+  const VS_NOMI = `
+    attribute vec3 aCentro;
+    attribute vec4 aReg;
+    attribute float aLarg, aIdx;
+    uniform float uHi, uLH, uRS;
+    varying vec2 vUv;
+    varying float vA;
+    void main() {
+      vec4 c0 = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+      vec4 mv = modelViewMatrix * vec4(aCentro, 1.0);
+      float hi = abs(aIdx - uHi) < 0.5 ? 1.0 : 0.0;
+      float sc = 1.0 + hi * 0.9;
+      mv.y += uLH * 1.5 * sc;
+      mv.xy += position.xy * vec2(aLarg, uLH) * sc;
+      gl_Position = projectionMatrix * mv;
+      vUv = aReg.xy + (position.xy + 0.5) * aReg.zw;
+      // si leggono quelle sul davanti del guscio, le altre spariscono
+      vA = max(hi, 0.7 * smoothstep(0.0, uRS * 0.75, mv.z - c0.z));
+    }`;
+  const FS_NOMI = `
+    uniform sampler2D uAtlas;
+    varying vec2 vUv;
+    varying float vA;
+    void main() {
+      vec4 t = texture2D(uAtlas, vUv);
+      if (t.a * vA < 0.02) discard;
+      gl_FragColor = vec4(t.rgb, t.a * vA);
+    }`;
   // Copper bar e scroller sono quadrati a tutto schermo in clip space.
   const VS_PIENO = `
     uniform float uZ;
     void main() { gl_Position = vec4(position.xy, uZ, 1.0); }`;
   const FS_COPPER = `
     uniform vec2 uR;
-    uniform float uT, uD;
+    uniform float uT, uD, uFlash;
+    uniform vec3 uFlashCol;
     void main() {
       float y = gl_FragCoord.y;
       vec3 col = vec3(0.0);
@@ -1285,10 +1410,14 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
         float cy = uR.y * (0.55 + 0.38 * sin(uT * 1.15 + fi * 0.75));
         float b = max(0.0, 1.0 - abs(y - cy) / (22.0 * uD));
         vec3 rame = mix(vec3(0.45, 0.2, 0.05), vec3(1.0, 0.86, 0.5), b * b);
-        float a = b * 0.3;
+        float a = b * 0.26;
         col += rame * a * (1.0 - al);
         al += a * (1.0 - al);
       }
+      // il lampo dello sparo, dietro a tutto
+      float fa = min(uFlash, 1.2) * 0.3;
+      col += uFlashCol * fa * (1.0 - al);
+      al += fa * (1.0 - al);
       gl_FragColor = vec4(col / max(al, 0.0001), al);
     }`;
   const FS_SCROLLER = `
@@ -1298,37 +1427,69 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
     uniform sampler2D uTex;
     void main() {
       vec2 f = gl_FragCoord.xy;
-      float y0 = 14.0 * uD + sin(f.x / (48.0 * uD) + uT * 2.6) * 6.0 * uD;
+      float y0 = 10.0 * uD + sin(f.x / (48.0 * uD) + uT * 2.6) * 6.0 * uD;
       float v = (f.y - y0) / uTx.z;
       if (v <= 0.0 || v >= 1.0) discard;
       float u = mod(f.x * uTx.y / uTx.z + uOff, uTx.x) / uTx.x;
-      float ta = texture2D(uTex, vec2(u, v)).a;   // CanvasTexture e' gia' capovolta (flipY)
-      gl_FragColor = vec4(mix(vec3(0.6, 0.3, 0.06), vec3(1.0, 0.93, 0.62), v), ta);
+      vec4 t = texture2D(uTex, vec2(u, v));   // CanvasTexture e' gia' capovolta (flipY)
+      if (t.a < 0.02) discard;
+      gl_FragColor = t;
     }`;
 
-  let THREE, renderer, scena, cam, cv, anello, puntini, tunnel, dummy, U, scrollW = 1, scrollH = 1;
+  let THREE, renderer, scena, cam, cv, palco, U, sciame, aDa, aA, F, forma = -1;
+  let dorate, nomi, centri, base, croci, dummy, crPos, ND = 0, scrollW = 1, scrollH = 1, camZ = 8;
   let inVista = false, gira = false, raf = 0, t = 7.3, ultimo = 0;
+  let evK, evD, evP, ev = 0, prossimo = 0, liveBang = 0, liveBef = 0, prossimoLive = 0;
+  let flash = 0, rosa = 0, boom = 0, kick = 0, kx = 0, ky = 0, hi = -1, stelleDom = [];
 
-  // Il testo dello scroller, disegnato una volta in un canvas 2D. Il conto
-  // delle dorate lo prende dalla bacheca.
+  // WordArt su canvas 2D: estrusione scura in diagonale, bordo, gradiente.
+  function wordartCanvas(x, testo, px, cx, cy) {
+    x.font = `900 ${px}px Impact, Haettenschweiler, "Arial Black", sans-serif`;
+    x.textBaseline = "middle";
+    x.lineJoin = "round";
+    for (let k = 5; k >= 1; k--) { x.fillStyle = k > 2 ? "#3a1400" : "#7a3000"; x.fillText(testo, cx + k, cy + k); }
+    x.lineWidth = Math.max(2, px / 9); x.strokeStyle = "#2a0d00"; x.strokeText(testo, cx, cy);
+    const g = x.createLinearGradient(0, cy - px / 2, 0, cy + px / 2);
+    g.addColorStop(0, "#fff6b0"); g.addColorStop(.4, "#f5cf3d"); g.addColorStop(.7, "#e07a1f"); g.addColorStop(1, "#c4583f");
+    x.fillStyle = g; x.fillText(testo, cx, cy);
+  }
+
   function scritta() {
-    const n = box.querySelectorAll(".stelle span").length;
-    const testo = "      *** SPARASUORE KEYGEN v6.66 *** CRACKED BY IL CONVENTO "
-      + "*** " + n + " DORATE IN BACHECA, PER NON DIMENTICARE *** .BANG PER STENDERLE, "
-      + ".BEF PER CONVERTIRLE *** GREETZ TO #SNIFFO #SBIFFO E A TUTTE LE SUORE "
-      + "CADUTE *** NO SCRIPT, NO COPIA-INCOLLA, SOLO FUCILE *** CIAO MAMMA ***";
-    const c = document.createElement("canvas"), x = c.getContext("2d");
-    const font = "bold 40px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-    x.font = font;
-    scrollH = 48;
-    scrollW = Math.min(renderer.capabilities.maxTextureSize, Math.ceil(x.measureText(testo).width) + 8);
+    const testo = "      *** SPARASUORE KEYGEN v6.66 *** CRACKED BY IL CONVENTO *** "
+      + ND + " DORATE IN BACHECA, PER NON DIMENTICARE *** .BANG PER STENDERLE, .BEF PER "
+      + "CONVERTIRLE *** GREETZ TO #SNIFFO #SBIFFO #CYBERNET E A TUTTE LE SUORE CADUTE *** CIAO MAMMA ***";
+    const c = document.createElement("canvas"), x = c.getContext("2d"), px = 40;
+    x.font = `900 ${px}px Impact, Haettenschweiler, "Arial Black", sans-serif`;
+    scrollH = 60;
+    scrollW = Math.min(renderer.capabilities.maxTextureSize, Math.ceil(x.measureText(testo).width) + 16);
     c.width = scrollW; c.height = scrollH;
-    x.font = font; x.textBaseline = "middle"; x.fillStyle = "#fff";
-    x.fillText(testo, 0, scrollH / 2 + 2);
+    wordartCanvas(x, testo, px, 2, scrollH / 2 - 2);
     const tex = new THREE.CanvasTexture(c);
     tex.minFilter = THREE.LinearFilter;
     tex.generateMipmaps = false;
     return tex;
+  }
+
+  // L'atlante dei nick: una riga per nick diverso, disegnata una volta.
+  function atlante(righe) {
+    const nick = [...new Set(righe.map(r => r.nick))], RIGA = 40, LARGO = 512;
+    let alto = 1;
+    while (alto < nick.length * RIGA) alto *= 2;
+    const c = document.createElement("canvas"), x = c.getContext("2d");
+    c.width = LARGO; c.height = Math.min(alto, renderer.capabilities.maxTextureSize);
+    const reg = {};
+    nick.forEach((n, i) => {
+      const y0 = i * RIGA;
+      if (y0 + RIGA > c.height) return;
+      x.font = '900 28px Impact, Haettenschweiler, "Arial Black", sans-serif';
+      const w = Math.min(LARGO - 4, Math.ceil(x.measureText(n).width) + 14);
+      wordartCanvas(x, n, 28, 4, y0 + RIGA / 2 - 2);
+      reg[n] = [0, 1 - (y0 + RIGA) / c.height, w / LARGO, RIGA / c.height, w / RIGA];
+    });
+    const tex = new THREE.CanvasTexture(c);
+    tex.minFilter = THREE.LinearFilter;
+    tex.generateMipmaps = false;
+    return [tex, reg];
   }
 
   function stellaEstrusa() {
@@ -1343,6 +1504,37 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
     return g;
   }
 
+  // Croce con la suora in cima, low-poly: pezzi semplici fusi in una
+  // geometria sola, il colore sta nei vertici.
+  function croceConSuora() {
+    const ORO = [.85, .64, .26], NERO = [.07, .07, .09], BIANCO = [.95, .92, .88];
+    const parti = [
+      [new THREE.BoxGeometry(.16, 1.3, .16), 0, -.1, 0, ORO],
+      [new THREE.BoxGeometry(.75, .16, .16), 0, .25, 0, ORO],
+      [new THREE.ConeGeometry(.2, .46, 7), 0, .78, 0, NERO],         // la tonaca
+      [new THREE.BoxGeometry(.28, .05, .18), 0, .99, 0, BIANCO],     // il soggolo
+      [new THREE.SphereGeometry(.125, 7, 5), 0, 1.11, -.04, NERO],   // il velo
+      [new THREE.SphereGeometry(.1, 7, 5), 0, 1.08, .03, BIANCO],    // la faccia
+    ];
+    let n = 0;
+    const pezzi = parti.map(([g, x, y, z]) => { const h = g.toNonIndexed(); h.translate(x, y, z); g.dispose(); n += h.attributes.position.count; return h; });
+    const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), col = new Float32Array(n * 3);
+    let o = 0;
+    pezzi.forEach((h, i) => {
+      const k = h.attributes.position.count;
+      pos.set(h.attributes.position.array, o * 3);
+      nor.set(h.attributes.normal.array, o * 3);
+      for (let j = 0; j < k; j++) col.set(parti[i][4], (o + j) * 3);
+      o += k;
+      h.dispose();
+    });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setAttribute("normal", new THREE.BufferAttribute(nor, 3));
+    g.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    return g;
+  }
+
   function pieno(fs, uniforms, z, ordine, depthTest) {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
       vertexShader: VS_PIENO, fragmentShader: fs, uniforms: Object.assign({uZ: {value: z}}, uniforms),
@@ -1352,7 +1544,46 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
     return m;
   }
 
+  // Le battute: ogni colpo della storia di ogni dorata, in ordine, poi il
+  // colpo di grazia e una pausa. 0 bang, 1 bef, 2 inceppato, 3 snobbato,
+  // 4 RPG in faccia, 5 stesa, 6 stesa con l'RPG, 7 convertita.
+  function battute(righe) {
+    const K = [], Dd = [], P = [], COD = {bang: 0, bef: 1, jam: 2, nope: 3, boom: 4};
+    righe.forEach((r, i) => {
+      (r.storia || []).forEach(x => { K.push(COD[x[1]] === undefined ? 3 : COD[x[1]]); Dd.push(i); P.push(.42); });
+      K.push(r.verbo === "bef" ? 7 : r.rpg ? 6 : 5); Dd.push(i); P.push(2.2);
+    });
+    evK = Uint8Array.from(K); evD = Uint16Array.from(Dd); evP = Float32Array.from(P);
+  }
+
+  function colpo(k, d) {
+    const m = piano ? .35 : 1, fc = U.uFlashCol.value;
+    switch (k) {
+      case 0: flash += .55 * m; boom += .4 * m; kick = .3; fc.setRGB(1, .9, .6); break;
+      case 1: rosa += .8; flash += .25 * m; boom += .12 * m; fc.setRGB(.95, .5, .7); break;
+      case 2: flash += .12 * m; kick = .12; fc.setRGB(.6, .6, .6); break;
+      case 3: rosa += .25; break;
+      case 4: flash += .9 * m; boom += .7 * m; kick = .8; fc.setRGB(1, .55, .2); break;
+      case 5: flash += 1 * m; boom += 1.3 * m; kick = 1; fc.setRGB(1, .97, .85); break;
+      case 6: flash += 1.2 * m; boom += 1.7 * m; kick = 1.2; fc.setRGB(1, .55, .2); break;
+      case 7: rosa += 1.2; flash += .6 * m; boom += .5 * m; fc.setRGB(.95, .5, .7); break;
+    }
+    flash = Math.min(flash, 1.5); boom = Math.min(boom, 2); rosa = Math.min(rosa, 1.4);
+    if (piano) kick = 0;
+    kx = Math.random() - .5; ky = Math.random() - .5;
+    if (d >= 0 && d !== hi) {
+      if (stelleDom[hi]) stelleDom[hi].classList.remove("batte");
+      hi = d;
+      if (stelleDom[hi]) stelleDom[hi].classList.add("batte");
+      nomi.material.uniforms.uHi.value = hi;
+    }
+  }
+
   function avvia() {
+    palco = box.querySelector(".palco");
+    const righe = box.righe || [];
+    if (!palco) return false;
+    ND = Math.min(righe.length, MAXD);
     cv = document.createElement("canvas");
     cv.setAttribute("aria-hidden", "true");
     try {
@@ -1363,21 +1594,25 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
     renderer.setClearColor(0x000000, 0);
 
     U = {uT: {value: t}, uR: {value: new THREE.Vector2(1, 1)}, uD: {value: DPR},
-      uPx: {value: 1}, uMax: {value: 44 * DPR}};
+      uPx: {value: 1}, uMax: {value: 44 * DPR}, uFlash: {value: 0}, uRosa: {value: 0},
+      uBoom: {value: 0}, uFlashCol: {value: new THREE.Color(1, .9, .6)}, uOff: {value: 0}};
     scena = new THREE.Scene();
     cam = new THREE.PerspectiveCamera(FOV, 1, .1, 60);
 
-    // le forme
-    const f = forme(), g = new THREE.BufferGeometry(), fase = new Float32Array(N);
+    // lo sciame: due buffer, partenza e arrivo, riscritti al cambio forma
+    F = forme();
+    const g = new THREE.BufferGeometry(), fase = new Float32Array(N);
     for (let i = 0; i < N; i++) fase[i] = Math.random();
-    g.setAttribute("position", new THREE.BufferAttribute(f[0], 3));
-    for (let k = 1; k < FORME; k++) g.setAttribute("aF" + k, new THREE.BufferAttribute(f[k], 3));
+    aDa = new THREE.BufferAttribute(new Float32Array(N * 3), 3);
+    aA = new THREE.BufferAttribute(new Float32Array(N * 3), 3);
+    g.setAttribute("position", aDa);
+    g.setAttribute("aA", aA);
     g.setAttribute("aFase", new THREE.BufferAttribute(fase, 1));
-    puntini = new THREE.Points(g, new THREE.ShaderMaterial({vertexShader: VS_FORME, fragmentShader: FS_STELLINA,
-      uniforms: {uT: U.uT, uPx: U.uPx, uMax: U.uMax, uDa: {value: 0}, uA: {value: 1}, uK: {value: 0}},
+    sciame = new THREE.Points(g, new THREE.ShaderMaterial({vertexShader: VS_SCIAME, fragmentShader: FS_STELLINA,
+      uniforms: {uT: U.uT, uPx: U.uPx, uMax: U.uMax, uBoom: U.uBoom, uFlash: U.uFlash, uRosa: U.uRosa, uK: {value: 0}},
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending}));
-    puntini.frustumCulled = false;
-    scena.add(puntini);
+    sciame.frustumCulled = false;
+    scena.add(sciame);
 
     // il tunnel: xy su un anello largo, z e' solo la fase di partenza
     const tw = new Float32Array(NW * 3), tf = new Float32Array(NW);
@@ -1389,59 +1624,95 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
     const gt = new THREE.BufferGeometry();
     gt.setAttribute("position", new THREE.BufferAttribute(tw, 3));
     gt.setAttribute("aFase", new THREE.BufferAttribute(tf, 1));
-    tunnel = new THREE.Points(gt, new THREE.ShaderMaterial({vertexShader: VS_TUNNEL, fragmentShader: FS_STELLINA,
-      uniforms: {uT: U.uT, uPx: U.uPx, uMax: U.uMax},
+    const tunnel = new THREE.Points(gt, new THREE.ShaderMaterial({vertexShader: VS_TUNNEL, fragmentShader: FS_STELLINA,
+      uniforms: {uT: U.uT, uPx: U.uPx, uMax: U.uMax, uRosa: U.uRosa},
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending}));
     tunnel.frustumCulled = false;
     tunnel.renderOrder = -5;
     scena.add(tunnel);
 
-    // l'anello di stelle d'oro estruse
-    anello = new THREE.InstancedMesh(stellaEstrusa(), new THREE.MeshPhongMaterial({color: 0xffffff,
-      specular: 0xfff2c0, shininess: 70, flatShading: true, emissive: 0x2a1600}), NI);
-    const oro = new THREE.Color(0xd9a441), rosso = new THREE.Color(0xc4583f), rosa = new THREE.Color(0xe87ba4);
-    for (let i = 0; i < NI; i++) anello.setColorAt(i, i % 6 === 2 ? rosso : i % 6 === 5 ? rosa : oro);
-    anello.rotation.x = .38;
-    anello.frustumCulled = false;
-    scena.add(anello);
+    // le dorate: posti fissi su un guscio di Fibonacci, il giro lo fa il JS
     dummy = new THREE.Object3D();
+    base = new Float32Array(Math.max(1, ND) * 3);
+    centri = new Float32Array(Math.max(1, ND) * 3);
+    for (let i = 0; i < ND; i++) {
+      const y = 1 - 2 * (i + .5) / ND, r = Math.sqrt(1 - y * y), a = i * 2.39996;
+      base[i * 3] = Math.cos(a) * r * RS; base[i * 3 + 1] = y * RS * .8; base[i * 3 + 2] = Math.sin(a) * r * RS;
+    }
+    dorate = new THREE.InstancedMesh(stellaEstrusa(), new THREE.MeshPhongMaterial({color: 0xffffff,
+      specular: 0xfff2c0, shininess: 70, flatShading: true, emissive: 0x2a1600}), Math.max(1, ND));
+    dorate.count = ND;
+    dorate.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    const giallo = new THREE.Color(0xf5cf3d), rosaC = new THREE.Color(0xe87ba4);
+    for (let i = 0; i < ND; i++) dorate.setColorAt(i, righe[i].verbo === "bef" ? rosaC : giallo);
+    dorate.frustumCulled = false;
+    scena.add(dorate);
+
+    // i nick sopra le dorate
+    const [atl, reg] = atlante(righe.slice(0, ND));
+    const pg = new THREE.PlaneGeometry(1, 1), ig = new THREE.InstancedBufferGeometry();
+    ig.index = pg.index;
+    ig.setAttribute("position", pg.getAttribute("position"));
+    const aReg = new Float32Array(Math.max(1, ND) * 4), aLarg = new Float32Array(Math.max(1, ND)), aIdx = new Float32Array(Math.max(1, ND));
+    for (let i = 0; i < ND; i++) {
+      const q = reg[righe[i].nick] || [0, 0, 0, 0, 0];
+      aReg.set(q.slice(0, 4), i * 4); aLarg[i] = q[4] * LH; aIdx[i] = i;
+    }
+    const aC = new THREE.InstancedBufferAttribute(centri, 3);
+    aC.setUsage(THREE.DynamicDrawUsage);
+    ig.setAttribute("aCentro", aC);
+    ig.setAttribute("aReg", new THREE.InstancedBufferAttribute(aReg, 4));
+    ig.setAttribute("aLarg", new THREE.InstancedBufferAttribute(aLarg, 1));
+    ig.setAttribute("aIdx", new THREE.InstancedBufferAttribute(aIdx, 1));
+    ig.instanceCount = ND;
+    nomi = new THREE.Mesh(ig, new THREE.ShaderMaterial({vertexShader: VS_NOMI, fragmentShader: FS_NOMI,
+      uniforms: {uAtlas: {value: atl}, uHi: {value: -1}, uLH: {value: LH}, uRS: {value: RS}},
+      transparent: true, depthWrite: false, depthTest: false}));
+    nomi.frustumCulled = false;
+    nomi.renderOrder = 8;
+    scena.add(nomi);
+
+    // le croci con la suora, poche e lontane: «tieniti fine»
+    croci = new THREE.InstancedMesh(croceConSuora(), new THREE.MeshPhongMaterial({vertexColors: true,
+      flatShading: true, shininess: 80, specular: 0x777766}), NC);
+    croci.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    croci.frustumCulled = false;
+    crPos = new Float32Array(NC * 3);
+    for (let i = 0; i < NC; i++) {
+      const a = i / NC * 6.2832 + Math.random() * .6, r = 2.2 + Math.random() * 1.6;
+      crPos[i * 3] = Math.cos(a) * r; crPos[i * 3 + 1] = Math.sin(a) * r * .7; crPos[i * 3 + 2] = i / NC;
+    }
+    scena.add(croci);
+
     const luce = new THREE.DirectionalLight(0xffffff, 2.6);
     luce.position.set(3, 4, 5);
-    scena.add(luce, new THREE.AmbientLight(0xffffff, .7));
+    scena.add(luce, new THREE.AmbientLight(0xffffff, .8));
 
-    // copper bar dietro tutto (z quasi al fondo, col depth test le stelle
-    // estruse ci passano davanti), scroller sopra tutto
-    scena.add(pieno(FS_COPPER, {uR: U.uR, uT: U.uT, uD: U.uD}, .9999, -10, true));
+    // copper bar dietro tutto (z quasi al fondo, col depth test le cose
+    // solide ci passano davanti), scroller sopra tutto
+    scena.add(pieno(FS_COPPER, {uR: U.uR, uT: U.uT, uD: U.uD, uFlash: U.uFlash, uFlashCol: U.uFlashCol}, .9999, -10, true));
     const tex = scritta();
-    U.uOff = {value: 0};
     scena.add(pieno(FS_SCROLLER, {uR: U.uR, uT: U.uT, uD: U.uD, uOff: U.uOff,
-      uTx: {value: new THREE.Vector3(scrollW, scrollH, 26 * DPR)}, uTex: {value: tex}}, 0, 10, false));
+      uTx: {value: new THREE.Vector3(scrollW, scrollH, 34 * DPR)}, uTex: {value: tex}}, 0, 10, false));
+
+    battute(righe.slice(0, ND));
+    stelleDom = [...box.querySelectorAll(".stelle span")];
+    document.addEventListener("suore:sparo", () => { liveBang = Math.min(liveBang + 1, 12); });
+    document.addEventListener("suore:spari", e => {
+      liveBang = Math.min(liveBang + (e.detail.bang | 0), 20);
+      liveBef = Math.min(liveBef + (e.detail.bef | 0), 20);
+    });
 
     cv.addEventListener("webglcontextlost", e => { e.preventDefault(); ferma(); renderer = null; });
     box.classList.add("demo");
-    box.insertBefore(cv, box.firstChild);
+    palco.insertBefore(cv, palco.firstChild);
     new ResizeObserver(misura).observe(cv);
-    new IntersectionObserver(v => { inVista = v[v.length - 1].isIntersecting; decidi(); }).observe(box);
+    new IntersectionObserver(v => { inVista = v[v.length - 1].isIntersecting; decidi(); }).observe(palco);
     document.addEventListener("visibilitychange", decidi);
-    if (mq && mq.addEventListener) mq.addEventListener("change", () => { fermo = mq.matches; tasto(); decidi(); });
-    tasto();
+    if (mq && mq.addEventListener) mq.addEventListener("change", () => { piano = mq.matches; });
     misura();
     decidi();
     return true;
-  }
-
-  // Con reduced-motion la demo sta ferma, ma chi la vuole la accende.
-  let go = null;
-  function tasto() {
-    if (fermo && !go) {
-      go = document.createElement("button");
-      go.type = "button";
-      go.className = "demo-go";
-      go.textContent = "▶ demo";
-      go.title = "Il sistema chiede meno animazioni: per questo e' ferma.";
-      go.onclick = () => { fermo = false; tasto(); decidi(); };
-      box.appendChild(go);
-    } else if (!fermo && go) { go.remove(); go = null; }
   }
 
   function misura() {
@@ -1450,53 +1721,91 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
     renderer.setSize(w, h, false);
     renderer.getDrawingBufferSize(U.uR.value);
     cam.aspect = w / h;
-    // le forme stanno in un raggio di ~2.6 (anello compreso): la camera si
-    // allontana quanto basta perche' ci stiano sul lato corto
+    // il guscio delle dorate sta in un raggio di ~3.4: la camera si
+    // allontana quanto basta perche' ci stia sul lato corto
     const tg = Math.tan(FOV * Math.PI / 360);
-    cam.position.z = 3.1 / (tg * Math.min(1, cam.aspect));
+    camZ = 3.5 / (tg * Math.min(1, cam.aspect));
     cam.updateProjectionMatrix();
     // dimensione in pixel di una stellina da 0.11 unita' a distanza 1
     U.uPx.value = .11 * U.uR.value.y / (2 * tg);
-    if (!gira) disegna();
+    if (!gira) disegna(0);
   }
 
-  function disegna() {
-    U.uT.value = t;
-    const fase = t / PERIODO, da = Math.floor(fase) % FORME;
-    const m = puntini.material.uniforms;
-    m.uDa.value = da;
-    m.uA.value = (da + 1) % FORME;
-    m.uK.value = Math.min(1, Math.max(0, ((fase % 1) * PERIODO - 4.5) / 2.5));
-    puntini.rotation.set(Math.sin(t * .3) * .5, t * .4, 0);
-    U.uOff.value = (t * 95 * DPR * scrollH / (26 * DPR)) % scrollW;
-    for (let i = 0; i < NI; i++) {
-      const a = i / NI * 6.2832 + t * .5;
-      dummy.position.set(Math.cos(a) * 2.6, Math.sin(a * 2 + t * 1.3) * .5, Math.sin(a) * 2.6);
-      dummy.rotation.set(t * 1.1 + i, t * 1.9 + i * .5, 0);
-      dummy.scale.setScalar(.3);
-      dummy.updateMatrix();
-      anello.setMatrixAt(i, dummy.matrix);
+  function disegna(dt) {
+    // le battute, solo a demo accesa
+    if (dt > 0 && evK && evK.length) {
+      if (t >= prossimo) {
+        colpo(evK[ev], evD[ev]);
+        prossimo = t + evP[ev];
+        ev = (ev + 1) % evK.length;
+      }
+      if ((liveBang || liveBef) && t >= prossimoLive) {
+        if (liveBef) { liveBef--; colpo(1, -1); } else { liveBang--; colpo(0, -1); }
+        prossimoLive = t + .22;
+      }
     }
-    anello.instanceMatrix.needsUpdate = true;
-    const z = cam.position.z;
-    cam.position.set(Math.sin(t * .25) * z * .18, Math.cos(t * .2) * z * .1, z);
+    const cala = Math.exp(-dt * 4.5);
+    flash *= cala; boom *= Math.exp(-dt * 3); rosa *= Math.exp(-dt * 2); kick *= Math.exp(-dt * 9);
+    U.uFlash.value = flash; U.uBoom.value = boom; U.uRosa.value = rosa;
+    U.uT.value = t;
+
+    // lo sciame: al cambio di forma si ricopiano partenza e arrivo
+    const fase = t / PERIODO, n = Math.floor(fase);
+    if (n !== forma) {
+      forma = n;
+      aDa.array.set(F[n % F.length]); aDa.needsUpdate = true;
+      aA.array.set(F[(n + 1) % F.length]); aA.needsUpdate = true;
+    }
+    sciame.material.uniforms.uK.value = Math.min(1, Math.max(0, ((fase % 1) * PERIODO - 4.5) / 2.5));
+    sciame.rotation.set(Math.sin(t * .3) * .45, t * .4, 0);
+    U.uOff.value = (t * 95 * scrollH / 34) % scrollW;
+
+    // le dorate sul guscio che gira, e i loro nick dietro
+    const gy = t * .12, cy = Math.cos(gy), sy = Math.sin(gy), ct = Math.cos(.3), st = Math.sin(.3);
+    for (let i = 0; i < ND; i++) {
+      const bx = base[i * 3], by = base[i * 3 + 1], bz = base[i * 3 + 2];
+      const x = bx * cy + bz * sy, z0 = -bx * sy + bz * cy;
+      const y = by * ct - z0 * st, z = by * st + z0 * ct;
+      centri[i * 3] = x; centri[i * 3 + 1] = y; centri[i * 3 + 2] = z;
+      dummy.position.set(x, y, z);
+      dummy.rotation.set(t * .9 + i, t * 1.4 + i * .5, 0);
+      dummy.scale.setScalar(i === hi ? .3 + .05 * Math.sin(t * 12) : .16);
+      dummy.updateMatrix();
+      dorate.setMatrixAt(i, dummy.matrix);
+    }
+    dorate.instanceMatrix.needsUpdate = true;
+    nomi.geometry.attributes.aCentro.needsUpdate = true;
+
+    // le croci: dal fondo verso di te, e passano di lato
+    for (let i = 0; i < NC; i++) {
+      const z = (crPos[i * 3 + 2] + t * .03) % 1;
+      dummy.position.set(crPos[i * 3], crPos[i * 3 + 1], -30 + z * 33);
+      dummy.rotation.set(Math.sin(t * .4 + i) * .5, t * .6 + i * 2, Math.sin(t * .3 + i) * .3);
+      dummy.scale.setScalar(.6);
+      dummy.updateMatrix();
+      croci.setMatrixAt(i, dummy.matrix);
+    }
+    croci.instanceMatrix.needsUpdate = true;
+
+    const k = kick * .25;
+    cam.position.set(Math.sin(t * .25) * camZ * .16 + kx * k, Math.cos(t * .2) * camZ * .09 + ky * k, camZ * (1 - kick * .03));
     cam.lookAt(0, 0, 0);
     renderer.render(scena, cam);
-    cam.position.z = z;
   }
 
   function giro(ms) {
     if (!gira) return;
     // il tempo avanza solo mentre si vede: niente salti al ritorno
-    t += Math.min(.05, Math.max(0, (ms - ultimo) / 1000));
+    const dt = Math.min(.05, Math.max(0, (ms - ultimo) / 1000));
     ultimo = ms;
-    disegna();
+    t += dt * (piano ? .45 : 1);
+    disegna(dt);
     raf = requestAnimationFrame(giro);
   }
   function ferma() { gira = false; cancelAnimationFrame(raf); }
   function decidi() {
-    if (!renderer) return;
-    const deve = inVista && !document.hidden && !fermo;
+    const deve = !!renderer && inVista && !document.hidden;
+    box.classList.toggle("quieto", !deve);
     if (deve && !gira) { gira = true; ultimo = performance.now(); raf = requestAnimationFrame(giro); }
     else if (!deve && gira) ferma();
   }
@@ -1623,6 +1932,8 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
   }
 
   function sparo(vol) {
+    // la demo delle dorate spara in tandem (puppy, 14/10), anche a musica spenta
+    document.dispatchEvent(new CustomEvent("suore:sparo"));
     if (!ac || !on) return;
     var t = ac.currentTime + 0.01;
     var s = ac.createBufferSource(); s.buffer = rumore;
