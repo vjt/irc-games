@@ -498,6 +498,22 @@ function renderScope(scope, s, G) {
   t.appendChild(thead);
   const val = (r, k) => (k === "tot" ? r.kills + r.friends
     : r[k] === undefined ? null : r[k]);
+  // Medaglie fisse sulle colonne dei tempi e della cilecca (puppy, #sbiffo
+  // 13/10): il podio di OGNI colonna, a prescindere da quella ordinata, nella
+  // stessa direzione in cui la colonna si ordina. Parimerito = stessa
+  // medaglia, e chi ne ha davanti due va a bronzo, come le classifiche in
+  // canale. Chi un valore non ce l'ha, medaglia niente.
+  const PODIO = ["mediana", "media", "record", "cilecca_pct"];
+  const tutti = {};
+  PODIO.forEach(k => {
+    tutti[k] = s.classifica.map(r => val(r, k)).filter(v => v !== null);
+  });
+  const med = (r, k) => {
+    const v = val(r, k);
+    if (v === null) return "";
+    const i = tutti[k].filter(x => ASC[k] ? x < v : x > v).length;
+    return i < 3 ? MEDALS[i] + " " : "";
+  };
   function fill(key) {
     hr.querySelectorAll("th").forEach((th, j) =>
       th.classList.toggle("on", COLS[j][0] === key));
@@ -525,8 +541,10 @@ function renderScope(scope, s, G) {
     tr.appendChild(el("td", null, r.friends || "—"));
     const g = el("td", r.golden ? "star" : "nowt", r.golden || "—");
     tr.appendChild(g);
-    tr.appendChild(el("td", r.mediana === null ? "nowt" : null, secs(r.mediana)));
-    tr.appendChild(el("td", r.media === null ? "nowt" : null, secs(r.media)));
+    tr.appendChild(el("td", r.mediana === null ? "nowt" : null,
+      med(r, "mediana") + secs(r.mediana)));
+    tr.appendChild(el("td", r.media === null ? "nowt" : null,
+      med(r, "media") + secs(r.media)));
     // Ogni riga porta il proprio record. In giallo solo il piu' rapido dello
     // scope, confrontato sul tempo e non sul nick: un pari merito resta
     // evidenziato in tutte e due le righe invece che in una sola.
@@ -536,12 +554,12 @@ function renderScope(scope, s, G) {
     const top = mio !== null && s.record
       && Math.round(mio * 100) === Math.round(s.record.secs * 100);
     tr.appendChild(el("td", mio === null ? "nowt" : (top ? "best" : null),
-      secs(mio)));
+      med(r, "record") + secs(mio)));
     // Cilecca sui tentativi (puppy, 13/10): fucile inceppato e suora che
     // tira dritto insieme.
     const cil = r.cilecca_pct === undefined ? null : r.cilecca_pct;
     tr.appendChild(el("td", cil === null ? "nowt" : null,
-      cil === null ? "—" : cil + "%"));
+      cil === null ? "—" : med(r, "cilecca_pct") + cil + "%"));
     tb.appendChild(tr);
   }
   fill("tot");
@@ -670,12 +688,15 @@ function renderScope(scope, s, G) {
   }
   if (s.nottambuli && s.nottambuli.length)
     lista("🦉 Nottambulə 0–6", s.nottambuli.map(x => [el("b", null, x[0]), x[1]]));
-  // Chi l'ha soffiata a chi, arrivando prima per un soffio.
+  // Chi l'ha soffiata a chi, arrivando prima per un soffio: entro 3 secondi.
   if (s.rivalita && s.rivalita.length)
     lista("⚔️ Soffiate", s.rivalita.map(r => {
       const sp = el("span");
       sp.appendChild(el("b", null, r.chi));
       sp.appendChild(document.createTextNode(" → " + r.vittima));
+      // lo scarto medio, in decimi come lo dice il gioco (puppy, 13/10)
+      if (r.secs !== undefined)
+        sp.appendChild(el("span", "nowt", " Ø " + r.secs.toFixed(1) + "s"));
       return [sp, r.n];
     }));
   if (lato.children.length) duo.appendChild(lato);

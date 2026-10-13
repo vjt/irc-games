@@ -542,15 +542,28 @@ print("ok: colpo a vuoto contato, mancata di poco no")
 
 
 # rivalita': chi te l'ha soffiata sotto il naso (puppy, #sbiffo 13/10);
-# chi spara sulla propria non conta
-assert dv["soffiate"][sv] == {"altro": {"tardi": 1}}, dv.get("soffiate")
+# chi spara sulla propria non conta, e oltre i 3 secondi non e' soffiata
+assert "soffiate" not in dv, dv.get("soffiate")       # mancata di 10s: no
+dv["last_taken"][sv] = {"nick": "altro", "at": 20150.0, "cmd": "bang"}
+suore.handle(dv, sv, "Tardi", "bang", 20152.5)
+assert dv["soffiate"][sv] == {"altro": {"tardi": {"n": 1, "s": 2.5}}}, dv["soffiate"]
+suore.handle(dv, sv, "tardi", "bang", 20153.0)           # 3.0 esatti: conta
+assert dv["soffiate"][sv]["altro"]["tardi"] == {"n": 2, "s": 5.5}, dv["soffiate"]
+suore.handle(dv, sv, "tardi", "bang", 20153.1)           # 3.1: no
+assert dv["soffiate"][sv]["altro"]["tardi"]["n"] == 2, dv["soffiate"]
 dv["last_taken"][sv] = {"nick": "Tardi", "at": 20200.0, "cmd": "bang"}
-suore.handle(dv, sv, "tardi", "bang", 20210.0)
+suore.handle(dv, sv, "tardi", "bang", 20201.0)
 assert "tardi" not in dv["soffiate"][sv], dv["soffiate"]
+# int del formato vecchio: ignorato dalle stats, sovrascritto al primo colpo
+dv["soffiate"][sv]["vecchio"] = {"tardi": 7}
 dv["scores"][sv] = {"altro": {"nick": "Altro", "kills": 1, "friends": 0}}
 st = suore_stats.build([{"ts": 1760356800.0, "scope": sv, "nick": "Altro",
                          "verb": "bang", "golden": False, "reaction": 3.0}], dv, 0)
-assert st["scopes"][sv]["rivalita"] == [{"chi": "Altro", "vittima": "tardi", "n": 1}]
+assert st["scopes"][sv]["rivalita"] == [
+    {"chi": "Altro", "vittima": "tardi", "n": 2, "secs": 2.8}], st["scopes"][sv]["rivalita"]
+dv["last_taken"][sv] = {"nick": "vecchio", "at": 20300.0, "cmd": "bang"}
+suore.handle(dv, sv, "tardi", "bang", 20301.0)
+assert dv["soffiate"][sv]["vecchio"]["tardi"] == {"n": 1, "s": 1.0}, dv["soffiate"]
 hm = st["scopes"][sv]["heatmap"]
 assert len(hm) == 7 and all(len(r) == 24 for r in hm) and sum(map(sum, hm)) == 1
 assert hm[0][14] == 1, hm   # lunedi' 13/10/2025 12:00 UTC = 14 a Roma (+2)

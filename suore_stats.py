@@ -108,10 +108,14 @@ def _bello(scores, c):
 
 
 def _rivalita(soffiate, scores, n=5):
-    """Le coppie chi-ha-soffiato-a-chi piu' frequenti (puppy, #sbiffo 13/10)."""
-    coppie = [{"chi": _bello(scores, chi), "vittima": _bello(scores, vitt), "n": k}
+    """Le coppie chi-ha-soffiato-a-chi piu' frequenti (puppy, #sbiffo 13/10),
+    con la media dei secondi di scarto. Gli int del formato vecchio (contati
+    senza soglia e senza tempi) non si sa cosa contino: si saltano."""
+    coppie = [{"chi": _bello(scores, chi), "vittima": _bello(scores, vitt),
+               "n": k["n"], "secs": round(k["s"] / k["n"], 1)}
               for chi, vittime in (soffiate or {}).items()
-              for vitt, k in vittime.items() if k]
+              for vitt, k in vittime.items()
+              if isinstance(k, dict) and k.get("n")]
     coppie.sort(key=lambda r: (-r["n"], r["chi"].lower(), r["vittima"].lower()))
     return coppie[:n]
 

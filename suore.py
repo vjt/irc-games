@@ -687,17 +687,31 @@ def conta_flop(data, scope, nick, kind):
     suore_stats.write(STATS, suore_events.read(EVENTS), data, time.time())
 
 
-def conta_soffiata(data, scope, nick):
+SOFFIATA_WINDOW = 3.0
+
+
+def conta_soffiata(data, scope, nick, gap):
     """Rivalita' (puppy, #sbiffo 13/10): chi ti ha soffiato la suora sotto il
     naso, contata quando `late_by()` dice «l'hai mancata». Chi spara sulla
     propria non e' una rivalita' e non si conta.
-    Forma: soffiate[scope][chi_l_ha_presa][chi_l_ha_mancata] = n."""
+
+    Solo entro SOFFIATA_WINDOW secondi (puppy, #sbiffo 13/10): oltre non te
+    l'ha soffiata nessuno, eri solo in ritardo. Il `gap` lo calcola chi
+    chiama, una volta sola, e si somma per dare la media sulla pagina.
+    Forma: soffiate[scope][chi_l_ha_presa][chi_l_ha_mancata] = {"n", "s"},
+    `s` la somma dei gap. Un int e' il formato vecchio, contato senza soglia
+    e senza tempi: non si sa quante di quelle valgano, quindi si riparte da
+    zero (il pregresso lo ricostruisce tools/backfill_soffiate.py)."""
     chi = (data.get("last_taken", {}).get(scope) or {}).get("nick")
-    if not chi or canon(chi) == canon(nick):
+    if not chi or canon(chi) == canon(nick) or not 0 <= gap <= SOFFIATA_WINDOW:
         return
     rivali = data.setdefault("soffiate", {}).setdefault(scope, {}) \
         .setdefault(canon(chi), {})
-    rivali[canon(nick)] = rivali.get(canon(nick), 0) + 1
+    c = rivali.get(canon(nick))
+    if not isinstance(c, dict):
+        c = rivali[canon(nick)] = {"n": 0, "s": 0.0}
+    c["n"] += 1
+    c["s"] = round(c["s"] + gap, 3)
     suore_stats.write(STATS, suore_events.read(EVENTS), data, time.time())
 
 
@@ -910,7 +924,8 @@ def handle(data, scope, nick, cmd, now):
         if not mancata:
             conta_flop(data, scope, nick, "vuoto")
         else:
-            conta_soffiata(data, scope, nick)
+            conta_soffiata(data, scope, nick,
+                           now - data["last_taken"][scope].get("at", 0))
         if rpg:
             say(net, chan, f"{nick}: hai sparato l'RPG contro il nulla. Sprecato."
                            f"{mancata}{prossima}")
