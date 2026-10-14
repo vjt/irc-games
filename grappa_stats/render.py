@@ -119,6 +119,7 @@ details{margin-top:8px} summary{cursor:pointer; color:var(--muted); font-size:12
   padding:4px 10px;cursor:pointer;font:inherit;font-size:12px;margin-top:10px}
 a{color:var(--accent)}
 @media (max-width:560px){.hero .num{font-size:40px}}
+__THEME_CSS__
 </style>
 <style>
 __UPLOT_CSS__
@@ -759,10 +760,24 @@ document.getElementById("themebtn").onclick=()=>setTheme(root.getAttribute("data
 """
 
 
-def _hide_blasphemy():
+# Palette of www.azzurra.chat (azzurra.github.io themes/azzurra/static/css/style.css),
+# for the channels listed in classes.json "azzurra_theme" (Malekith, 2026-10-14).
+# Series colours (human/ai/classic) stay: they encode data, not branding.
+AZZURRA_THEME_CSS = """</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1724; --bg-alt:#1c2a3d; --panel:#16202f; --fg:#d5dfeb; --accent:#6bb4f7;
+  --muted:#a3b3c6; --border:#2a3b52}
+:root[data-theme="light"]{--bg:#f4f8fd; --bg-alt:#eef5fc; --panel:#ffffff; --fg:#1a2530;
+  --accent:#1a72d4; --muted:#4a5d72; --border:#d0e2f4}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif}
+.mono,.u-legend{font-family:'JetBrains Mono','Fira Code',monospace}"""
+
+
+def _channel_cfg(key):
     try:
         cfg = json.loads((HERE / "classes.json").read_text())
-        return {c.lower() for c in cfg.get("hide_blasphemy", [])}
+        return {c.lower() for c in cfg.get(key, [])}
     except Exception:
         return set()
 
@@ -777,7 +792,8 @@ def render_channel(metric):
             .replace("__CHAN__", html.escape(chan))
             .replace("__NET__", html.escape(net))
             .replace("__SLUG__", metric["slug"])
-            .replace("__NOBEST__", "true" if chan.lower() in _hide_blasphemy() else "false")
+            .replace("__NOBEST__", "true" if chan.lower() in _channel_cfg("hide_blasphemy") else "false")
+            .replace("__THEME_CSS__", AZZURRA_THEME_CSS if chan.lower() in _channel_cfg("azzurra_theme") else "")
             .replace("__UPLOT_CSS__", _UPLOT_CSS)
             .replace("__UPLOT_JS__", _UPLOT_JS))
 
