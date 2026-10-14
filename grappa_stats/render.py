@@ -143,7 +143,7 @@ __UPLOT_CSS__
   <h1>__CHAN__ <span class="net">· __NET__</span></h1>
   <button class="themebtn" id="themebtn">tema</button>
 </header>
-<div class="dedica">a dante lo scettico</div>
+<div class="dedica">__TAGLINE__</div>
 <div class="span" id="span"></div>
 
 <!-- ===== DINAMICI — reagiscono allo zoom dello storico ===== -->
@@ -782,6 +782,19 @@ def _channel_cfg(key):
         return set()
 
 
+DEFAULT_TAGLINE = "a dante lo scettico"
+
+
+def _tagline(chan):
+    """Per-channel tagline from classes.json "taglines" (vjt, 2026-10-14)."""
+    try:
+        cfg = json.loads((HERE / "classes.json").read_text())
+        tags = {k.lower(): v for k, v in cfg.get("taglines", {}).items()}
+        return tags.get(chan.lower(), DEFAULT_TAGLINE)
+    except Exception:
+        return DEFAULT_TAGLINE
+
+
 def render_channel(metric):
     net = metric["network"].capitalize()
     chan = metric["channel"]
@@ -791,6 +804,7 @@ def render_channel(metric):
             .replace("__TITLE__", html.escape(f"{chan} {net}"))
             .replace("__CHAN__", html.escape(chan))
             .replace("__NET__", html.escape(net))
+            .replace("__TAGLINE__", html.escape(_tagline(chan)))
             .replace("__SLUG__", metric["slug"])
             .replace("__NOBEST__", "true" if chan.lower() in _channel_cfg("hide_blasphemy") else "false")
             .replace("__THEME_CSS__", AZZURRA_THEME_CSS if chan.lower() in _channel_cfg("azzurra_theme") else "")
