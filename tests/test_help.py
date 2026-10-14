@@ -90,6 +90,7 @@ COMANDI = {
     "!trivial babbani 5": I.CMD_PAT, "!trivia babbani": I.CMD_PAT,
     "!allegria babbani": I.CMD_PAT, "!trivial": I.CMD_PAT,
     ".h": I.HINT_PAT, ".v": I.VOWEL_PAT, "!stop": I.STOP_PAT,
+    "!skip": I.SKIP_PAT,
     "!classifica": I.CLASSIFICA_PAT, "!classifica trivial": I.CLASSIFICA_PAT,
     "!classifica sillabah": S.CLASSIFICA_PAT,
     "!sillabah": S.CMD_PAT, "!sillabah 5": S.CMD_PAT,

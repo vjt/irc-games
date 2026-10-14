@@ -165,6 +165,16 @@ DEFAULT_LIMIT = 10
 # conta dentro i 512 della riga IRC.
 MAX_LINE = 380
 
+# Le righe che spostano gli @ di un canale. Il gioco non chiede mai a nessuno
+# chi e' op: lo ricostruisce dal log, come farebbe un client — NAMES (353/366)
+# per la fotografia, MODE/NICK/PART/KICK/QUIT per i movimenti. All'avvio
+# chiede un NAMES per canale, sennò fino al prossimo join non saprebbe niente.
+EVENT_PAT = re.compile(
+    r'< :(?P<src>[^!\s]+)(?:!\S+)?\s+(?P<cmd>\S+)\s*(?P<rest>.*?)\s*$')
+# I modi di canale che si mangiano un argomento sia col + sia col - (bahamut).
+# `l` lo prende solo col +, e va trattato a parte.
+MODE_ARGS = set("ovhbeIkqa")
+
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!(?P<ident>[^@\s]+)@(?P<host>\S+)\s+'
     r'PRIVMSG\s+(?P<chan>#\S+)\s+:(?P<text>.*?)$'
@@ -261,7 +271,8 @@ HELP_LINES = (
     "partita da n domande (alias \x02\x0310!trivia\x03\x02, \x02\x0310!allegria\x03\x02), "
     "\x02\x0310!trivial\x03\x02 da solo elenca i set. In gioco: una lettera o la "
     "risposta intera, \x02\x0310.h\x03\x02 scopre una lettera, \x02\x0310.v\x03\x02 le "
-    "vocali, \x02\x0310!stop\x03\x02 chiude.",
+    "vocali, \x02\x0310!skip\x03\x02 (solo op) salta la domanda, "
+    "\x02\x0310!stop\x03\x02 chiude.",
     "\x02Sillabah\x02: \x02\x0310!sillabah\x03\x02 [n] apre n manche, "
     "\x02\x0310!sillabah stop\x03\x02 chiude. Le parole si mandano \x02in query\x02 o \x02/notice\x02 "
     "al bot, \x02\x0310-delete\x03\x02 ritira la tua. \x02\x0310!sillaba\x03\x02 la manche in "
@@ -271,6 +282,11 @@ HELP_LINES = (
 # Secondi fra due help allo stesso nick: chi martella `!help` non fa floodare
 # il canale (le righe di help escono dalla stessa coda di quelle di gioco).
 HELP_COOLDOWN = 30
+# `!skip` salta la domanda in corso, e lo puo' fare solo chi ha @ in QUEL
+# canale. Richiesta di Malekith (staff 2026-10-14, «bindato @»), via
+# libera di vjt («si solo op»). Aperto a tutti sarebbe il modo di bruciare la
+# partita agli altri: una domanda difficile la salta chi non la sa.
+SKIP_PAT = re.compile(r'^!\s*skip\s*$', re.IGNORECASE)
 HINT_PAT = re.compile(r'^\.\s*h\s*$', re.IGNORECASE)
 VOWEL_PAT = re.compile(r'^\.\s*v\s*$', re.IGNORECASE)
 
@@ -490,6 +506,8 @@ class Impiccato:
         self.state = load_state(state_path)
         self.sent = []          # solo per il selftest
         self.help_seen = {}     # canale casefold -> ultimo help mandato
+        self.ops = {}           # canale casefold -> nick casefold con @
+        self._names = set()     # canali con un NAMES a meta' (fra 353 e 366)
 
     # --- uscita ---------------------------------------------------------
 
@@ -790,6 +808,77 @@ class Impiccato:
         for line in HELP_LINES:
             self.say(chan, line)
 
+    # --- chi e' op -------------------------------------------------------
+
+    def is_op(self, nick, chan):
+        return nick.casefold() in self.ops.get(chan.casefold(), set())
+
+    def track(self, line):
+        """Aggiorna gli @ dei canali da una riga del log. Mai stato su disco:
+        un riavvio lo ricostruisce col NAMES che run() chiede all'avvio."""
+        m = EVENT_PAT.search(line)
+        if not m:
+            return
+        src, cmd, rest = m.group("src").casefold(), m.group("cmd").upper(), m.group("rest")
+        if cmd == "353":
+            # `<me> = #chan :@a +b c` — la fotografia arriva a pezzi, e il
+            # primo pezzo dopo un 366 la ricomincia da capo.
+            mm = re.match(r'\S+\s+[=*@]\s+(\S+)\s+:(.*)$', rest)
+            if not mm:
+                return
+            key = mm.group(1).casefold()
+            if key not in self._names:
+                self._names.add(key)
+                self.ops[key] = set()
+            for n in mm.group(2).split():
+                if n.startswith("@"):
+                    self.ops[key].add(n.lstrip("@%+").casefold())
+        elif cmd == "366":
+            parts = rest.split()
+            if len(parts) >= 2:
+                self._names.discard(parts[1].casefold())
+        elif cmd == "MODE":
+            parts = rest.split()
+            if len(parts) < 2 or not parts[0].startswith("#"):
+                return
+            key, modes, args = parts[0].casefold(), parts[1], parts[2:]
+            sign = "+"
+            for c in modes:
+                if c in "+-":
+                    sign = c
+                    continue
+                if c in MODE_ARGS or (c == "l" and sign == "+"):
+                    arg = args.pop(0) if args else ""
+                    if c == "o" and arg:
+                        got = self.ops.setdefault(key, set())
+                        (got.add if sign == "+" else got.discard)(arg.casefold())
+        elif cmd == "NICK":
+            new = rest.lstrip(":").split()[0].casefold() if rest.strip(": ") else ""
+            for got in self.ops.values():
+                if src in got:
+                    got.discard(src)
+                    if new:
+                        got.add(new)
+        elif cmd == "PART":
+            parts = rest.split()
+            if parts:
+                self.ops.get(parts[0].casefold(), set()).discard(src)
+        elif cmd == "KICK":
+            parts = rest.split()
+            if len(parts) >= 2:
+                self.ops.get(parts[0].casefold(), set()).discard(parts[1].casefold())
+        elif cmd == "QUIT":
+            for got in self.ops.values():
+                got.discard(src)
+
+    def skip(self, chan, nick, now=None):
+        """Butta la domanda in corso e passa alla prossima. Conta fra le
+        domande della partita: e' uscita, l'hanno vista tutti."""
+        g = self.state["games"][chan]
+        self.next_question(
+            chan, now=now,
+            lead=[f"⏭️ Saltata da {canon_nick(nick)}, la risposta era: {g['a']}."])
+
     # --- ingresso --------------------------------------------------------
 
     def handle(self, nick, chan, text, now=None):
@@ -882,6 +971,14 @@ class Impiccato:
         if not g:
             return False
 
+        if SKIP_PAT.match(text):
+            # Chi non e' op prende silenzio: una riga di rifiuto a testa e'
+            # flood, e l'help dice gia' che il comando e' degli op.
+            if not self.is_op(nick, chan):
+                return False
+            self.skip(chan, nick, now=now)
+            return True
+
         if VOWEL_PAT.match(text):
             g["last"] = now
             if self.capped(chan):
@@ -953,6 +1050,11 @@ class Impiccato:
     def run(self):
         p = subprocess.Popen(["tail", "-F", "-n", "0", self.log],
                              stdout=subprocess.PIPE, text=True, errors="replace")
+        # Il tail parte PRIMA del NAMES, sennò la risposta puo' arrivare nel
+        # log prima che qualcuno la stia leggendo.
+        time.sleep(1)
+        for chan in sorted(self.chans):
+            self._fifo("RAW", "NAMES", chan)
         try:
             while True:
                 r, _, _ = select.select([p.stdout], [], [], TICK)
@@ -960,6 +1062,7 @@ class Impiccato:
                     line = p.stdout.readline()
                     if not line:
                         break
+                    self.track(line)
                     m = PRIVMSG_PAT.search(line)
                     if m and self.handle(m.group("nick"), m.group("chan"),
                                          m.group("text")):
@@ -1316,6 +1419,34 @@ def selftest():
         assert gc.game("#t")["count"] == 2 and not gc.game("#t").get("capped")
         gc.handle("a", "#t", ".h")
         assert len(gc.game("#t")["revealed"]) == 1, gc.game("#t")["revealed"]
+
+        # `!skip`: solo chi ha @ nel canale, ricostruito dal log.
+        gs = Impiccato("test", "/dev/null", "", st, {"#t"},
+                       [{"q": "q", "a": "Abcdef", "cat": "t"},
+                        {"q": "q2", "a": "Ghijkl", "cat": "t"}], talk=False)
+        gs.handle("op", "#t", "!trivial t")
+        first = gs.game("#t")["a"]
+        assert gs.handle("op", "#t", "!skip") is False, "senza NAMES nessuno e' op"
+        gs.track("12:00:00 < :srv 353 Mike = #T :Mike @Op +voce altro")
+        gs.track("12:00:00 < :srv 366 Mike #T :End of /NAMES list.")
+        assert gs.is_op("OP", "#t") and not gs.is_op("voce", "#t")
+        gs.sent.clear()
+        assert gs.handle("voce", "#t", "!skip") is False and gs.sent == []
+        assert gs.handle("op", "#t", "!skip") is True
+        line = gs.sent[-1][1]
+        assert f"Saltata da op, la risposta era: {first}." in line, line
+        assert gs.game("#t")["count"] == 2 and gs.game("#t")["a"] != first
+        # MODE a piu' argomenti, NICK, PART: gli @ si spostano con la gente.
+        gs.track("12:00:01 < :X!x@h MODE #t +bo-o *!*@h voce Op")
+        assert gs.is_op("voce", "#t") and not gs.is_op("op", "#t")
+        gs.track("12:00:02 < :voce!v@h NICK :voce2")
+        assert gs.is_op("voce2", "#t") and not gs.is_op("voce", "#t")
+        gs.track("12:00:03 < :voce2!v@h PART #t :ciao")
+        assert not gs.is_op("voce2", "#t")
+        # un NAMES nuovo rifa' la fotografia, non si somma alla vecchia
+        gs.track("12:00:04 < :srv 353 Mike = #t :@altro")
+        gs.track("12:00:04 < :srv 366 Mike #t :End")
+        assert gs.ops["#t"] == {"altro"}, gs.ops
 
     print("selftest ok")
 
