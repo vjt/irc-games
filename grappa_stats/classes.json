@@ -71,6 +71,8 @@
     "list": "classic",
     "stats": "classic"
   },
+  "_comment_hide_blasphemy": "canali senza bestemmiometro/top bestemmiatori in pagina (Malekith, staff 2026-10-14). Il conteggio resta nel db.",
+  "hide_blasphemy": ["#italia"],
   "exclude_channels": [
     "#security"
   ],

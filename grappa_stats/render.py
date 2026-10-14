@@ -185,7 +185,7 @@ __UPLOT_CSS__
   <div id="transport"></div>
 </section>
 
-<section>
+<section class="best-only">
   <h2>Bestemmiometro</h2>
   <p style="margin:0 0 4px">Intensità: <span class="tier-badge" id="tier"></span>
      <span class="mono" id="best-ratio" style="color:var(--muted)"></span></p>
@@ -201,7 +201,7 @@ __UPLOT_CSS__
   <div id="talkers"></div>
 </section>
 
-<section>
+<section class="best-only">
   <h2>Top bestemmiatori <span class="allperiod" id="ap-best"></span></h2>
   <div id="best"></div>
 </section>
@@ -224,6 +224,9 @@ __UPLOT_CSS__
 <script>__UPLOT_JS__</script>
 <script>
 const SLUG = "__SLUG__";
+// Malekith 14/10: some channels want the blasphemy panels gone (classes.json hide_blasphemy)
+const NOBEST = __NOBEST__;
+if(NOBEST)document.querySelectorAll(".best-only").forEach(e=>e.remove());
 let DATA = null;
 // ---- range aggregation: dynamic panels re-sum the per-day history buckets ----
 let AGG = null;    // aggregate over the active range — dynamic panels read this, not DATA.totals
@@ -365,7 +368,7 @@ function drawTiles(){
     // l'hero ora e' tutti-bot:umani, qui resta la quota della sola IA
     ["ratio IA : umani", (AGG.ai_vs_human||0).toFixed(2), ""],
     ["bestemmie", NF.format(AGG.bestemmie), `${AGG.per100}/100 msg`],
-  ];
+  ].filter(t=>!NOBEST||t[0]!=="bestemmie");
   const box=document.getElementById("tiles");box.innerHTML="";
   for(const [k,v,s] of tiles){
     const d=document.createElement("div");d.className="tile";
@@ -398,7 +401,7 @@ function drawHourly(){
 // ---- daily history: uPlot time-series (drag-zoom + deep-linkable range) ----
 // Bestemmie ride a SECOND y scale ("best", right axis): counts run ~1:45 against
 // messages, so on the shared scale the series is a flat line on the floor.
-const histSeries=["messages","human","ai","bestemmie"];
+const histSeries=["messages","human","ai","bestemmie"].filter(k=>!NOBEST||k!=="bestemmie");
 const histLabel={messages:"messaggi",human:"umani",ai:"IA",bestemmie:"bestemmie"};
 const histCol={messages:"muted",human:"human",ai:"ai",bestemmie:"classic"};
 const histScale={bestemmie:"best"};          // default "y" for everything else
@@ -406,7 +409,7 @@ let uHist=null;
 function drawHistLegend(){
   const lg=document.getElementById("hist-legend");
   lg.className="";
-  lg.innerHTML='<p class="hist-hint">trascina in orizzontale (o pizzica col dito) per zoomare — i pannelli qui sopra si aggiornano · «⟲ tutto il periodo» (o doppio-click) per azzerare · clic sulla legenda per isolare una serie · le bestemmie stanno sull\'asse destro · la URL segue lo zoom (condivisibile)</p>';
+  lg.innerHTML='<p class="hist-hint">trascina in orizzontale (o pizzica col dito) per zoomare — i pannelli qui sopra si aggiornano · «⟲ tutto il periodo» (o doppio-click) per azzerare · clic sulla legenda per isolare una serie'+(NOBEST?'':' · le bestemmie stanno sull\'asse destro')+' · la URL segue lo zoom (condivisibile)</p>';
 }
 function ymd(ts){const d=new Date(ts*1000);
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
@@ -511,7 +514,7 @@ function drawHistory(){
       {scale:"best",side:1,stroke:col(histCol.bestemmie),
        grid:{show:false},ticks:{stroke:col(histCol.bestemmie),width:1},
        font:axFont,size:40,values:(u,sp)=>sp.map(v=>NF.format(v))},
-    ],
+    ].slice(0,NOBEST?2:3),
     series:[
       {value:(u,ts)=>ts==null?"":dfmt.format(new Date(ts*1000))},
       ...histSeries.map(k=>({label:histLabel[k],scale:histScale[k]||"y",
@@ -684,7 +687,7 @@ function drawTable(){
     ["attivi distinti nel periodo",NF.format(AGG.dau_union)],
     ["ratio IA:umani",(AGG.ai_vs_human||0).toFixed(4)],["ratio tutti-bot:umani",(AGG.allbots_vs_human||0).toFixed(4)],
     ["msg IRC (umani)",NF.format(AGG.irc||0)],["msg Telegram (umani)",NF.format(AGG.telegram||0)],
-    ["bestemmie totali",NF.format(AGG.bestemmie)],["bestemmie/100 msg",AGG.per100],["tier",AGG.tier]];
+    ["bestemmie totali",NF.format(AGG.bestemmie)],["bestemmie/100 msg",AGG.per100],["tier",AGG.tier]].filter(r=>!NOBEST||!/bestemmie|tier/.test(r[0]));
   for(const [k,v] of rows)h+=`<tr><td>${k}</td><td class="n mono">${v}</td></tr>`;
   h+=`</table>`;
   document.getElementById("table").innerHTML=h;
@@ -694,11 +697,11 @@ function drawTable(){
 function renderDynamic(){
   computeAgg();
   drawSpan();drawRatio();drawComposition();drawLegend();drawTiles();
-  drawHourly();drawTransport();drawBestGauge();drawTable();
+  drawHourly();drawTransport();if(!NOBEST)drawBestGauge();drawTable();
   updateRangeUI();
 }
 // static panels: all-time, per-nick — redrawn only on full render (load / theme), not on zoom
-function renderStatic(){drawTalkers();drawBestUsers();drawDistinct();}
+function renderStatic(){drawTalkers();if(!NOBEST)drawBestUsers();drawDistinct();}
 function renderAll(){
   if(!DATA) return;
   RANGE=rangeFromURL();
@@ -756,6 +759,14 @@ document.getElementById("themebtn").onclick=()=>setTheme(root.getAttribute("data
 """
 
 
+def _hide_blasphemy():
+    try:
+        cfg = json.loads((HERE / "classes.json").read_text())
+        return {c.lower() for c in cfg.get("hide_blasphemy", [])}
+    except Exception:
+        return set()
+
+
 def render_channel(metric):
     net = metric["network"].capitalize()
     chan = metric["channel"]
@@ -766,6 +777,7 @@ def render_channel(metric):
             .replace("__CHAN__", html.escape(chan))
             .replace("__NET__", html.escape(net))
             .replace("__SLUG__", metric["slug"])
+            .replace("__NOBEST__", "true" if chan.lower() in _hide_blasphemy() else "false")
             .replace("__UPLOT_CSS__", _UPLOT_CSS)
             .replace("__UPLOT_JS__", _UPLOT_JS))
 
