@@ -72,11 +72,11 @@
     "stats": "classic"
   },
   "_comment_hide_blasphemy": "canali senza bestemmiometro/top bestemmiatori in pagina (Malekith, staff 2026-10-14). Il conteggio resta nel db.",
-  "hide_blasphemy": ["#italia"],
+  "hide_blasphemy": ["#italia", "#linux"],
   "_comment_azzurra_theme": "canali con i colori di www.azzurra.chat (Malekith, staff 2026-10-14).",
   "azzurra_theme": ["#italia"],
   "_comment_taglines": "tagline sotto il titolo, per canale (vjt, staff 2026-10-14); chi manca prende quella di default in render.py.",
-  "taglines": {"#italia": "la piazza di Azzurra"},
+  "taglines": {"#italia": "la piazza di Azzurra", "#linux": "il pinguino di Azzurra"},
   "exclude_channels": [
     "#security"
   ],
