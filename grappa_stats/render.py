@@ -762,15 +762,23 @@ document.getElementById("themebtn").onclick=()=>setTheme(root.getAttribute("data
 
 # Palette of www.azzurra.chat (azzurra.github.io themes/azzurra/static/css/style.css),
 # for the channels listed in classes.json "azzurra_theme" (Malekith, 2026-10-14).
-# Series colours (human/ai/classic) stay: they encode data, not branding.
+# Series colours come from the same palette too (primary, faint, warning amber): Malekith
+# rejected the mix of azzurra chrome with the sniffo greens/pinks as a hybrid.
 AZZURRA_THEME_CSS = """</style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f1724; --bg-alt:#1c2a3d; --panel:#16202f; --fg:#d5dfeb; --accent:#6bb4f7;
-  --muted:#a3b3c6; --border:#2a3b52}
+  --muted:#a3b3c6; --border:#2a3b52;
+  --human:#3b8ee8; --ai:#6f8299; --classic:#f0c33c; --service:#2a3b52}
 :root[data-theme="light"]{--bg:#f4f8fd; --bg-alt:#eef5fc; --panel:#ffffff; --fg:#1a2530;
-  --accent:#1a72d4; --muted:#4a5d72; --border:#d0e2f4}
+  --accent:#1a72d4; --muted:#4a5d72; --border:#d0e2f4;
+  --human:#1a72d4; --ai:#8a9db0; --classic:#b8901c; --service:#d0e2f4}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif}
+#bg{display:none}
+section{border-radius:12px; box-shadow:0 3px 14px rgba(26,72,140,0.11)}
+:root:not([data-theme="light"]) section{box-shadow:0 3px 14px rgba(0,0,0,0.38)}
+h1,h2{color:var(--fg)}
+h1 .net{color:var(--accent)}
 .mono,.u-legend{font-family:'JetBrains Mono','Fira Code',monospace}"""
 
 
