@@ -29,7 +29,7 @@ con le righe di log sta in docs/impiccato_spec.md:
     riempie di "hai sbagliato".
   * Parola intera giusta: scopre quella parola (ShBot lo fa — `crittografia`
     alle 18:16:34 UTC ha portato la maschera a `Crittografia -----------`).
-  * Risposta intera giusta: `Brava/o <nick>, la risposta era: <X>!!!` e la
+  * Risposta intera giusta: `Esatto <nick>, la risposta era: <X>!!!` e la
     domanda dopo parte subito.
   * `.v` scopre tutte le vocali, `.h` scopre UNA lettera a caso fra quelle
     ancora coperte.
@@ -730,7 +730,7 @@ class Impiccato:
         # nel tema scelto all'inizio, che vive dentro `g`.
         self.next_question(
             chan, now=now,
-            lead=[f"✅ Brava/o {canon_nick(nick)}, la risposta era: {answer}!!!"])
+            lead=[f"✅ Esatto {canon_nick(nick)}, la risposta era: {answer}!!!"])
 
     def reveal(self, chan, letters):
         """Scopre un insieme di lettere. True se almeno una era coperta."""
@@ -1011,7 +1011,7 @@ def selftest():
         # Esito + fine partita + punteggio: tutto su UNA riga, e l'esito NON si
         # perde per strada solo perche' la partita e' finita li'.
         assert len(g.sent) == 1, g.sent
-        assert "✅ Brava/o b, la risposta era: Token JWT!!!" in g.sent[0][1], g.sent[0]
+        assert "✅ Esatto b, la risposta era: Token JWT!!!" in g.sent[0][1], g.sent[0]
         assert "Finite le domande" in g.sent[0][1], g.sent[0]
         assert "🏆 Punteggio partita" in g.sent[0][1], g.sent[0]
 
@@ -1021,7 +1021,7 @@ def selftest():
         g6.handle("a", "#t", "!trivial t")
         g6.sent.clear()
         g6.handle("c", "#t", "fifo")
-        assert "✅ Brava/o c, la risposta era: Coda!!!" in g6.sent[0][1], g6.sent[0]
+        assert "✅ Esatto c, la risposta era: Coda!!!" in g6.sent[0][1], g6.sent[0]
         assert g6.state["scores"]["c"]["points"] == 1
 
         # Un sinonimo di UN carattere vince, non finisce nel ramo lettera:
@@ -1032,7 +1032,7 @@ def selftest():
         g7.handle("a", "#t", "!trivial t")
         g7.sent.clear()
         g7.handle("d", "#t", "3")
-        assert "✅ Brava/o d, la risposta era: rete!!!" in g7.sent[0][1], g7.sent
+        assert "✅ Esatto d, la risposta era: rete!!!" in g7.sent[0][1], g7.sent
 
         # La risposta giusta con due parole di contorno vince lo stesso:
         # `lo strato rete` e' `rete`. Tre parole in piu' no, e' un tema.
@@ -1041,7 +1041,7 @@ def selftest():
         g8.sent.clear()
         assert not g8.handle("e", "#t", "secondo me non e' la rete")
         g8.handle("e", "#t", "lo strato rete")
-        assert "✅ Brava/o e, la risposta era: rete!!!" in g8.sent[-1][1], g8.sent
+        assert "✅ Esatto e, la risposta era: rete!!!" in g8.sent[-1][1], g8.sent
 
         # L'accorpamento taglia SOLO fra le parti, mai dentro una: una domanda
         # lunga resta intera anche a costo di una riga sua.
