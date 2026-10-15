@@ -36,6 +36,12 @@ riempire; quanti buchi, tante carte si giocano (almeno una).
 Pack per canale: `#chan:ita+cah42` in CAH_NETS; senza `:`, CAH_PACKS
 (default DEFAULT_PACKS). Fonti e licenze dei pack in docs/cah_spec.md.
 
+Dopo i pack, opzioni per canale separate da `:` (docs/cah_spec.md):
+  vm18=22-9   le carte "vm18" solo dalle 22 alle 9, ora di Roma; fuori, escluse
+  ops         apre e chiude il tavolo solo un chanop (+o), un vhost *.azzurra.chat
+              o una coppia di IRCGAME_TRUST (ircgame.can_control); giocare, tutti
+  #italia:ita+cah42:vm18=22-9:ops
+
 CLI:
   cah.py --net azzurra           il daemon
   cah.py carte                   conta le carte, per pack
@@ -43,6 +49,7 @@ CLI:
 Env (formato di SILLABAH_NETS, piu' i pack per canale):
   CAH_HOME  CAH_CARTE  CAH_PACKS=ita,cah42
   CAH_NETS=nome|log|fifo|#chan1:ita+cah42,#chan2
+  IRCGAME_TRUST='vjt *.openssl.it, vjt due.dita.di.grappa.chat'
 """
 import json
 import os
@@ -53,7 +60,9 @@ import subprocess
 import sys
 import time
 from collections import deque
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import ircgame
 from ircgame import PRIVMSG_PAT, Outbox, Tracker, is_chan, joined_lines
@@ -78,6 +87,7 @@ TICK = 5
 BLANK = "___"
 LEGACY_PACK = "vjt-claude"      # le carte stringa del formato vecchio
 DEFAULT_PACKS = ("ita", "cah42")
+ROME = ZoneInfo("Europe/Rome")
 HELP = ("!cah [start N] · entra · esci · stop · punti · top · carte · stato"
         " — in gioco: !play N, lo czar !vince N")
 
@@ -87,19 +97,37 @@ def default_packs():
     return tuple(p for p in re.split(r"[\s,+]+", raw) if p) or DEFAULT_PACKS
 
 
+def parse_opts(chan, raw):
+    """Le opzioni dopo i pack: `vm18=22-9` (ore intere, ora di Roma, anche a
+    cavallo della mezzanotte) e `ops`. Una sconosciuta ferma il sidecar."""
+    opts = {}
+    for o in filter(None, raw):
+        name, _, val = o.partition("=")
+        m = re.fullmatch(r"(\d{1,2})-(\d{1,2})", val)
+        if name == "vm18" and m and all(0 <= int(h) <= 23 for h in m.groups()):
+            opts["vm18"] = (int(m.group(1)), int(m.group(2)))
+        elif name == "ops" and not val:
+            opts["ops"] = True
+        else:
+            raise SystemExit(f"cah: opzione sconosciuta per {chan}: {o!r}")
+    return opts
+
+
 def load_nets():
     """Come ircgame.load_nets, ma `chans` diventa {canale: (pack, ...)}: il
-    canale puo' portare `:pack1+pack2`, se no valgono i pack di default."""
+    canale puo' portare `:pack1+pack2`, se no valgono i pack di default. Le
+    opzioni dopo (`:vm18=22-9:ops`) vanno in `opts`, {canale: {...}}."""
     nets = ircgame.load_nets(
         "CAH_NETS", {"azzurra": {"log": REPO / "bot.log", "fifo": REPO / "bot.send",
                                  "chans": {"#sbiffo"}, "state": REPO / "cah_state.json"}},
         "cah_state", REPO)
     for cfg in nets.values():
-        chans = {}
+        chans, opts = {}, {}
         for spec in cfg["chans"]:
-            chan, _, packs = spec.partition(":")
+            chan, packs, *rest = spec.split(":") + [""]
             chans[chan] = tuple(p for p in packs.split("+") if p) or default_packs()
-        cfg["chans"] = chans
+            opts[chan] = parse_opts(chan, rest)
+        cfg["chans"], cfg["opts"] = chans, opts
     return nets
 
 
@@ -112,10 +140,15 @@ def card(c, kind):
     return text, c.get("pack") or LEGACY_PACK, pick
 
 
+def is_vm18(c):
+    return isinstance(c, dict) and bool(c.get("vm18"))
+
+
 def load_carte(path=None):
-    """(nere, bianche), liste di dict {"testo", "pack", "pick"}."""
+    """(nere, bianche), liste di dict {"testo", "pack", "pick", "vm18"}."""
     d = json.loads(Path(path or CARTE).read_text(encoding="utf-8"))
-    return tuple([dict(zip(("testo", "pack", "pick"), card(c, k))) for c in d[key]]
+    return tuple([dict(zip(("testo", "pack", "pick"), card(c, k)), vm18=is_vm18(c))
+                  for c in d[key]]
                  for k, key in (("n", "nere"), ("b", "bianche")))
 
 
@@ -168,7 +201,8 @@ SUB = {"start": "start", "inizia": "start", "join": "join", "entra": "join",
 
 
 class Cah:
-    def __init__(self, net, log, fifo, state_path, chans, carte, rng=None):
+    def __init__(self, net, log, fifo, state_path, chans, carte, rng=None,
+                 opts=None, clock=None, trust=None):
         self.net = net
         self.log = str(log)
         self.state_path = Path(state_path)
@@ -185,7 +219,18 @@ class Cah:
             raise SystemExit(f"cah: pack sconosciuti {sorted(unknown)}, ci sono {sorted(known)}")
         self.picks = {t: p for t, _, p in (card(c, "n") for c in nere)}
         self.decks = {c: (pool(nere, p), pool(bianche, p)) for c, p in self.packs.items()}
+        # Il testo e' la carta (in mano sono stringhe): basta un pack che la
+        # dica vm18 perche' lo sia.
+        self.vm18 = {card(c, "b")[0] for c in list(nere) + list(bianche) if is_vm18(c)}
+        self.opts = {c.lower(): dict(o) for c, o in (opts or {}).items()}
+        # nick + host-glob che comandano i canali `ops` (IRCGAME_TRUST)
+        self.trust = ircgame.load_trust() if trust is None else list(trust)
+        # clock(now) -> ora locale (0-23) di Roma; le prove la iniettano.
+        self.clock = clock or (lambda now: datetime.fromtimestamp(now, ROME).hour)
         empty = [c for c, (n, b) in self.decks.items() if not n or not b]
+        empty += [c for c, (n, b) in self.decks.items() if self.opts.get(c, {}).get("vm18")
+                  and not ([x for x in n if x not in self.vm18]
+                           and [x for x in b if x not in self.vm18])]
         if empty:
             raise SystemExit(f"cah: nessuna carta per {', '.join(sorted(empty))}: "
                              f"pack {[self.packs[c] for c in sorted(empty)]}")
@@ -228,20 +273,35 @@ class Cah:
 
     # --- carte -------------------------------------------------------------
 
-    def draw(self, g, kind):
+    def safe(self, chan, now):
+        """True se adesso, su `chan`, le carte vm18 sono escluse: il canale ha
+        la finestra `vm18=da-a` e l'ora di Roma ci sta fuori."""
+        win = self.opts.get(chan, {}).get("vm18")
+        if not win:
+            return False
+        h, (a, b) = self.clock(now), win
+        return not (a <= h < b if a <= b else h >= a or h < b)
+
+    def draw(self, g, kind, now=0.0):
         """Una carta dal mazzo; a mazzo finito si rimescolano gli scarti, cioe'
         tutto quello che non e' in mano a qualcuno o sul tavolo. I mazzi sono
-        quelli dei pack del canale."""
+        quelli dei pack del canale. Fuori dalla finestra vm18 le carte vm18 si
+        saltano: restano nel mazzo per quando la finestra si riapre."""
         deck = g["bdeck"] if kind == "b" else g["wdeck"]
-        if not deck:
+        safe = self.safe(g["chan"], now)
+        for _ in range(2):
+            for i in range(len(deck) - 1, -1, -1):
+                if not safe or deck[i] not in self.vm18:
+                    return deck.pop(i)
             busy = {c for h in g["hands"].values() for c in h}
             busy |= {c for s in g["subs"].values() for c in s}
             busy.add(g.get("black"))
             nere, bianche = self.decks[g["chan"]]
-            deck.extend(c for c in (nere if kind == "b" else bianche)
-                        if c not in busy)
+            # Si rifa' da capo, non si accoda: nel mazzo possono esserci
+            # ancora le vm18 saltate, e sarebbero doppie.
+            deck[:] = [c for c in (nere if kind == "b" else bianche) if c not in busy]
             self.rng.shuffle(deck)
-        return deck.pop()
+        raise RuntimeError(f"cah: mazzo {kind} vuoto su {g['chan']}")
 
     def send_hand(self, chan, g, key):
         n = g["picks"]
@@ -359,13 +419,18 @@ class Cah:
         g["round"] += 1
         g["phase"] = "play"
         g["subs"], g["order"], g["absent"] = {}, [], []
-        g["black"] = self.draw(g, "b")
+        g["black"] = self.draw(g, "b", now)
         g["picks"] = self.picks.get(g["black"]) or picks(g["black"])
         g["deadline"] = now + PLAY_S
+        safe = self.safe(chan, now)
         for key in g["players"]:
             hand = g["hands"].setdefault(key, [])
+            if safe:
+                # Finestra chiusa: le vm18 rimaste in mano dalla notte si
+                # cambiano a inizio mano (tornano nel mazzo al rimescolo).
+                hand[:] = [c for c in hand if c not in self.vm18]
             while len(hand) < HAND:
-                hand.append(self.draw(g, "w"))
+                hand.append(self.draw(g, "w", now))
         czar = self.czar(g)
         n = g["picks"]
         self.emit(chan, lead + [
@@ -488,7 +553,7 @@ class Cah:
 
     # --- ingresso ----------------------------------------------------------
 
-    def handle(self, nick, target, text, now=None):
+    def handle(self, nick, target, text, now=None, host=""):
         now = float(now if now is not None else time.time())
         text = text.strip()
         key = nick.casefold()
@@ -515,6 +580,8 @@ class Cah:
             self.say(chan, HELP)
         elif sub == "top" or (sub == "points" and not g):
             self.say(chan, f"🏆 [CaH] Mani vinte ({self.net}): {self.top() or 'nessuna'}")
+        elif sub == "start" and not g and self.op_gate(chan, nick, host, "apre"):
+            pass
         elif sub == "start" and not g:
             if self.player_game(key)[0]:
                 self.say(chan, f"{nick}: stai gia' giocando altrove.")
@@ -528,7 +595,10 @@ class Cah:
         elif sub == "quit":
             self.leave(chan, g, key, now)
         elif sub == "stop":
-            if key == g["starter"] or self.tracker.is_op(nick, chan):
+            if self.op_gate(chan, nick, host, "chiude"):
+                pass
+            elif (self.opts.get(chan, {}).get("ops") or key == g["starter"]
+                  or self.tracker.is_op(nick, chan)):
                 self.end_game(chan, [f"🛑 {nick} chiude il tavolo."])
             else:
                 self.say(chan, f"{nick}: chiude chi l'ha aperta, o un op.")
@@ -539,6 +609,17 @@ class Cah:
                 self.send_hand(chan, g, key)
         else:
             self.status(chan, g, now)
+
+    def op_gate(self, chan, nick, host, verb):
+        """Sui canali `ops` il tavolo lo apre e lo chiude solo un chanop o lo
+        staff (ircgame.can_control): True (con la risposta gia' in coda) se
+        `nick` va fermato. Garbata e pulita, sono canali grandi e pubblici."""
+        if (not self.opts.get(chan, {}).get("ops")
+                or ircgame.can_control(self.tracker, chan, nick, host, self.trust)):
+            return False
+        self.say(chan, f"{nick}: qui il tavolo lo {verb} solo un op o lo staff. Per giocare: "
+                       f"!cah entra quando c'e' una partita aperta.")
+        return True
 
     def numbers(self, chan, g, key, m, now):
         nums = [int(x) for x in re.split(r"[\s,]+", m.group("nums").strip()) if x]
@@ -685,7 +766,8 @@ class Cah:
                     m = PRIVMSG_PAT.search(line)
                     if (m and m.group("verb") == "PRIVMSG"
                             and not m.group("text").startswith("\x01")):
-                        self.handle(m.group("nick"), m.group("target"), m.group("text"), now)
+                        self.handle(m.group("nick"), m.group("target"), m.group("text"),
+                                    now, host=m.group("host"))
                 self.tick(now)
                 if self.dirty:
                     self.save()
@@ -715,10 +797,14 @@ def main():
     if cmd == "scopes":
         for name, cfg in load_nets().items():
             for chan, packs in sorted(cfg["chans"].items()):
-                print(f"{name}/{chan}: {'+'.join(packs)}")
+                o = cfg["opts"].get(chan, {})
+                extra = (f" vm18 {o['vm18'][0]}-{o['vm18'][1]}" if "vm18" in o else "") \
+                    + (" ops" if o.get("ops") else "")
+                print(f"{name}/{chan}: {'+'.join(packs)}{extra}")
         return
     cfg = load_nets()[net]
-    Cah(net, cfg["log"], cfg["fifo"], cfg["state"], cfg["chans"], load_carte()).run()
+    Cah(net, cfg["log"], cfg["fifo"], cfg["state"], cfg["chans"], load_carte(),
+        opts=cfg.get("opts")).run()
 
 
 if __name__ == "__main__":

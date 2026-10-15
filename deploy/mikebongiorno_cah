@@ -11,6 +11,10 @@
 # SINGOLI: rc.subr fa eval di command_args, e senza apici la '|' diventa una
 # pipe e la '#' apre un commento.
 #
+# #italia (Malekith 2026-10-15): carte vm18 solo 22-9, e il tavolo lo aprono e
+# chiudono solo op, vhost *.azzurra.chat o le coppie di IRCGAME_TRUST
+# (docs/cah_spec.md, «Opzioni per canale»).
+#
 # #it-opers e' in lista ma Mike oggi non ci sta: il canale e' +k e Mike non ha
 # NickServ, quindi il ChanServ INVITE gli torna «Access denied». Quando ci entra,
 # il gioco c'e' gia'.
@@ -28,7 +32,8 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   /usr/bin/env CAH_HOME=/var/db/convento \
   CAH_CARTE=/opt/irc-games/cah_carte.json \
   CAH_NICK=MikeBongiorno \
-  'CAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo:ita+cah42,#it-opers:ita+cah42' \
+  'CAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo:ita+cah42,#it-opers:ita+cah42,#italia:ita+cah42:vm18=22-9:ops' \
+  'IRCGAME_TRUST=vjt *.openssl.it, vjt 2a03:4000:2:33c::42, vjt due.dita.di.grappa.chat' \
   /usr/local/bin/python3.11 -u /opt/irc-games/cah.py --net azzurra daemon"
 # daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
 # stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:

@@ -12,9 +12,12 @@ Cosa c'e':
   strip_codes()    via i codici mIRC (grassetto, colori, reverse, ...)
   Tracker          dal bot.log: chi e' op, i modi di canale (+c), e gli
                    eventi di presenza (JOIN/PART/KICK/QUIT/NICK, netsplit)
+  can_control()    chi apre/chiude i giochi sui canali guardati: op, vhost
+                   *.azzurra.chat, o la lista di fiducia (IRCGAME_TRUST)
   Outbox           la coda verso la FIFO: freno anti-flood, e sui canali +c
                    le righe escono senza codici (anche a posteriori, sul 404)
 """
+import fnmatch
 import json
 import os
 import re
@@ -123,6 +126,49 @@ def fifo_write(fifo, line):
         pass
     finally:
         os.close(fd)
+
+
+# Chi comanda i giochi sui canali "guardati da ops" (#italia, Malekith
+# 2026-10-15): un chanop del canale, un vhost *.azzurra.chat (staff., helper.,
+# sonic., localop., void., devel. — non `azzurra.chat` nudo, che e' dei
+# servizi), o una coppia nick + host-glob della lista di fiducia.
+CONTROL_SUFFIX = ".azzurra.chat"
+
+
+def staff_host(host):
+    """Il vhost finisce in `.azzurra.chat`, senza distinguere maiuscole:
+    `azzurra.chat` nudo ed `evilazzurra.chat` no."""
+    return (host or "").casefold().rstrip(".").endswith(CONTROL_SUFFIX)
+
+
+def parse_trust(raw):
+    """`nick host-glob, nick host-glob, ...` -> [(nick, glob)]. Una coppia
+    monca ferma il sidecar: una fiducia scritta male non si indovina."""
+    out = []
+    for item in filter(None, (i.strip() for i in (raw or "").split(","))):
+        parts = item.split()
+        if len(parts) != 2:
+            raise SystemExit(f"IRCGAME_TRUST: coppia malformata {item!r} — serve 'nick host-glob'")
+        out.append((parts[0], parts[1]))
+    return out
+
+
+def load_trust(env="IRCGAME_TRUST"):
+    return parse_trust(os.environ.get(env, ""))
+
+
+def trusted(nick, host, trust):
+    """Nick (senza maiuscole) E host (fnmatch, senza maiuscole) di una coppia.
+    Niente 307/NickServ: il Tracker non fa WHOIS, basta la coppia."""
+    n, h = nick.casefold(), (host or "").casefold()
+    return any(n == tn.casefold() and fnmatch.fnmatchcase(h, tg.casefold())
+               for tn, tg in trust)
+
+
+def can_control(tracker, chan, nick, host, trust=()):
+    """Apre/chiude un gioco su un canale guardato: chanop (+o) li', vhost
+    *.azzurra.chat, o nick+host in `trust` (l'host dal prefisso del PRIVMSG)."""
+    return tracker.is_op(nick, chan) or staff_host(host) or trusted(nick, host, trust)
 
 
 class Tracker:

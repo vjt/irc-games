@@ -70,7 +70,8 @@ def test_carte_formato_vecchio(tmp_path):
     p.write_text(json.dumps({"nere": ["Due ___ e ___."],
                              "bianche": ["x", {"testo": "y", "pack": "z"}]}))
     nere, bianche = C.load_carte(p)
-    assert nere == [{"testo": "Due ___ e ___.", "pack": C.LEGACY_PACK, "pick": 2}]
+    assert nere == [{"testo": "Due ___ e ___.", "pack": C.LEGACY_PACK, "pick": 2,
+                     "vm18": False}]
     assert [c["pack"] for c in bianche] == [C.LEGACY_PACK, "z"]
 
 
@@ -483,3 +484,165 @@ def test_help_and_status(tmp_path, text):
     g = nuovo(tmp_path)
     g.handle("a", "#t", text, now=0)
     assert chan_lines(g)
+
+
+# --- finestra vm18 e canali guardati (#italia, Malekith 2026-10-15) ------------
+
+VM_NERE = ([{"testo": f"Nera {i} ___.", "pack": "p"} for i in range(3)]
+           + [{"testo": f"Nera vm18 {i} ___.", "pack": "p", "vm18": True} for i in range(3)])
+VM_BIANCHE = ([{"testo": f"ok {i}", "pack": "p"} for i in range(40)]
+              + [{"testo": f"vm {i}", "pack": "p", "vm18": True} for i in range(40)])
+
+
+def guardato(tmp_path, hour, opts=None):
+    """Un canale #i con la finestra vm18 22-9; `hour` e' una lista di un
+    elemento, l'orologio iniettato la legge a ogni chiamata."""
+    opts = {"#i": {"vm18": (22, 9)}} if opts is None else opts
+    return C.Cah("test", "/dev/null", "", tmp_path / "s.json", {"#i": None},
+                 (VM_NERE, VM_BIANCHE), rng=random.Random(3), opts=opts,
+                 clock=lambda now: hour[0], trust=TRUST)
+
+
+def apri(g, chan="#i", nicks=("a", "b", "c", "d"), now=0):
+    g.handle(nicks[0], chan, "!cah", now=now)
+    for n in nicks[1:]:
+        g.handle(n, chan, "!cah entra", now=now + 1)
+    g.tick(now=now + C.LOBBY_S)
+    return g.games[chan]
+
+
+def tutte_le_carte(st):
+    return [c for h in st["hands"].values() for c in h] + [st["black"]]
+
+
+def test_vm18_carte_vere_marcate():
+    nere, bianche = C.load_carte()
+    assert sum(c["vm18"] for c in nere + bianche) == 154
+
+
+@pytest.mark.parametrize("h,safe", [(8, False), (9, True), (12, True), (21, True),
+                                    (22, False), (23, False), (0, False)])
+def test_vm18_finestra_ore(tmp_path, h, safe):
+    g = guardato(tmp_path, [h])
+    assert g.safe("#i", 0) is safe
+
+
+def test_vm18_di_giorno_mai(tmp_path):
+    for seed in range(20):
+        g = guardato(tmp_path, [15])
+        g.rng = random.Random(seed)
+        st = apri(g)
+        for r in range(6):            # piu' mani, mazzo che si rimescola
+            assert not set(tutte_le_carte(st)) & g.vm18
+            g.new_round("#i", 100 + r)
+
+
+def test_vm18_di_notte_tutto(tmp_path):
+    seen = set()
+    for seed in range(10):
+        g = guardato(tmp_path, [23])
+        g.rng = random.Random(seed)
+        seen |= set(tutte_le_carte(apri(g)))
+    assert seen & g.vm18 and seen - g.vm18
+
+
+def test_vm18_cambio_finestra_alla_mano_dopo(tmp_path):
+    hour = [23]
+    g = guardato(tmp_path, hour)
+    for seed in range(50):
+        g.rng = random.Random(seed)
+        g.games.clear()
+        st = apri(g)
+        if set(c for h in st["hands"].values() for c in h) & g.vm18:
+            break
+    else:
+        pytest.fail("nessuna vm18 servita di notte")
+    hour[0] = 9                     # scatta la finestra a meta' partita
+    g.new_round("#i", 200)
+    assert not set(tutte_le_carte(st)) & g.vm18
+    assert all(len(h) == C.HAND for h in st["hands"].values())
+
+
+def test_vm18_canale_senza_finestra_invariato(tmp_path):
+    g = guardato(tmp_path, [12], opts={})
+    assert g.safe("#i", 0) is False
+
+
+def test_vm18_pool_sicuro_vuoto_ferma(tmp_path):
+    with pytest.raises(SystemExit):
+        C.Cah("test", "/dev/null", "", tmp_path / "s.json", {"#i": None},
+              (VM_NERE[3:], VM_BIANCHE), opts={"#i": {"vm18": (22, 9)}})
+
+
+def test_parse_opts():
+    assert C.parse_opts("#i", ["vm18=22-9", "ops"]) == {"vm18": (22, 9), "ops": True}
+    for bad in (["vm18=25-9"], ["vm18"], ["boh"], ["ops=1"]):
+        with pytest.raises(SystemExit):
+            C.parse_opts("#i", bad)
+
+
+def test_load_nets_opzioni(monkeypatch):
+    monkeypatch.setenv("CAH_NETS", "azzurra|/l|/f|#italia:ita+cah42:vm18=22-9:ops,#sbiffo:ita")
+    cfg = C.load_nets()["azzurra"]
+    assert cfg["chans"] == {"#italia": ("ita", "cah42"), "#sbiffo": ("ita",)}
+    assert cfg["opts"] == {"#italia": {"vm18": (22, 9), "ops": True}, "#sbiffo": {}}
+
+
+TRUST = (("vjt", "*.openssl.it"), ("vjt", "2a03:4000:2:33c::42"),
+         ("vjt", "due.dita.di.grappa.chat"))
+
+
+def ops_chan(tmp_path):
+    return guardato(tmp_path, [23], opts={"#i": {"ops": True}})
+
+
+def test_ops_non_op_non_apre(tmp_path):
+    g = ops_chan(tmp_path)
+    g.handle("a", "#i", "!cah", now=0, host="x.example")
+    assert "#i" not in g.games
+    line = chan_lines(g, "#i")[-1]
+    assert line.startswith("a: ") and "op" in line
+
+
+def test_ops_op_apre_tutti_giocano_solo_op_chiude(tmp_path):
+    g = ops_chan(tmp_path)
+    g.track(L(":srv 353 Mike = #i :@a b c d"))
+    g.track(L(":srv 366 Mike #i :End"))
+    st = apri(g)
+    assert st["phase"] == "play" and len(st["players"]) == 4
+    g.track(L(":a!x@h MODE #i -o a"))       # lo starter senza @ non chiude piu'
+    g.handle("a", "#i", "!cah stop", now=70)
+    assert "#i" in g.games
+    g.track(L(":z!x@h MODE #i +o b"))
+    g.handle("b", "#i", "!cah stop", now=71)  # un op che non l'ha aperta, si'
+    assert "#i" not in g.games
+
+
+def test_ops_host_azzurra_chat(tmp_path):
+    g = ops_chan(tmp_path)
+    g.handle("morph", "#i", "!cah", now=0, host="staff.azzurra.chat")
+    assert "#i" in g.games
+    g.handle("h", "#i", "!cah stop", now=1, host="Foo.HELPER.Azzurra.Chat")
+    assert "#i" not in g.games
+    for i, host in enumerate(("azzurra.chat", "evilazzurra.chat",
+                              "staff.azzurra.chat.evil.org")):
+        g.handle("e", "#i", "!cah", now=2 + i, host=host)
+        assert "#i" not in g.games, host
+
+
+def test_ops_trusted_nick_e_host(tmp_path):
+    g = ops_chan(tmp_path)
+    g.handle("vjt", "#i", "!cah", now=0, host="nowhere.OpenSSL.it")
+    assert "#i" in g.games
+    g.handle("VJT", "#i", "!cah stop", now=1, host="due.dita.di.grappa.chat")
+    assert "#i" not in g.games
+    g.handle("vjt", "#i", "!cah", now=2, host="evil.example")      # host sbagliato
+    g.handle("mallory", "#i", "!cah", now=3, host="x.openssl.it")  # nick sbagliato
+    assert "#i" not in g.games
+
+
+def test_ops_righe_pulite():
+    """#italia e' pubblico: nessuna bestemmia nelle righe del gioco."""
+    import re as _re
+    src = open(C.__file__, encoding="utf-8").read()
+    assert not _re.search(r"(?i)\b(dio|madonna|cristo|porco|porca|cazz|stronz)", src)

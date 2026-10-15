@@ -116,6 +116,9 @@ repo non ha un file LICENSE). Il gioco originale e' di Cards Against Humanity
 LLC (cardsagainsthumanity.com), CC BY-NC-SA. Si rifanno con
 `tools/cah_tex2json.py`. Default dei canali: `ita+cah42`. `!cah` apre il tavolo, `!cah entra`, le mani
 arrivano in privato, si gioca con `!play N`, lo czar sceglie con `!vince N`.
+Su `#italia` (Malekith 2026-10-15) le carte vm18 escono solo fra le 22 e le 9, e
+il tavolo lo aprono e chiudono solo op, vhost `*.azzurra.chat` e le coppie di
+`IRCGAME_TRUST`: regola per tutti i giochi del canale, in `ircgame.can_control()`.
 
 E' il primo gioco sopra `ircgame.py`, l'idraulica comune (nets, FIFO con freno
 anti-flood, tracker di op/modi/presenza, +c). Gli altri giochi non sono ancora

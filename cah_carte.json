@@ -140,7 +140,8 @@
   {
    "testo": "Mentre ero sotto gli effetti di acidi, ___ si trasformò in ___",
    "pack": "ita",
-   "pick": 2
+   "pick": 2,
+   "vm18": true
   },
   {
    "testo": "Nel carcere di Los Angeles le voci dicono che puoi scambiare 200 sigarette per ___",
@@ -180,7 +181,8 @@
   {
    "testo": "Ai neri piace ___",
    "pack": "ita",
-   "pick": 1
+   "pick": 1,
+   "vm18": true
   },
   {
    "testo": "___ è una tendenza pericolosa che porta a ___",
@@ -295,7 +297,8 @@
   {
    "testo": "Durante il sesso mi piace pensare a ___",
    "pack": "ita",
-   "pick": 1
+   "pick": 1,
+   "vm18": true
   },
   {
    "testo": "Cosa fece finire la mia passata relazione?",
@@ -600,7 +603,8 @@
   {
    "testo": "Rocco Siffredi nel tempo libero colleziona ___",
    "pack": "cah42",
-   "pick": 1
+   "pick": 1,
+   "vm18": true
   },
   {
    "testo": "\"Mamma/papà come nascono i bambini?\" Come gli rispondi? ___",
@@ -615,7 +619,8 @@
   {
    "testo": "Stai facendo sesso selvaggio e succede che ___",
    "pack": "cah42",
-   "pick": 1
+   "pick": 1,
+   "vm18": true
   },
   {
    "testo": "Il 1930 è spesso indicato come l'età d'oro del ___",
@@ -720,7 +725,8 @@
   {
    "testo": "Quando ho visto tua madre nuda, mi ha ricordato ___",
    "pack": "cah42",
-   "pick": 1
+   "pick": 1,
+   "vm18": true
   },
   {
    "testo": "Hanno appena trovato un ___ nei rifiuti dell'ospedale di Napoli.",
@@ -770,7 +776,8 @@
   {
    "testo": "Mi prodigherei in un ricco pompino soltanto per ___",
    "pack": "cah42",
-   "pick": 1
+   "pick": 1,
+   "vm18": true
   },
   {
    "testo": "Baci il rospo ma, invece di trasformarsi in un principe, diventa ___",
@@ -1260,7 +1267,8 @@
   },
   {
    "testo": "Serpenti volanti che fanno sesso.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Non fregarsene un cazzo del Terzo Mondo.",
@@ -1268,7 +1276,8 @@
   },
   {
    "testo": "Sexting.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Benny Benassi.",
@@ -1276,11 +1285,13 @@
   },
   {
    "testo": "Pornostar.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Stupro e Saccheggio.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "72 vergini.",
@@ -1328,7 +1339,8 @@
   },
   {
    "testo": "Nudità completa.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Iniezioni ormonali.",
@@ -1340,7 +1352,8 @@
   },
   {
    "testo": "Spogliarsi e mettersi a guardare l'Albero Azzurro.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Far finta di interessarsi.",
@@ -1352,7 +1365,8 @@
   },
   {
    "testo": "Scambiarsi le siringhe.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Caccole.",
@@ -1372,7 +1386,8 @@
   },
   {
    "testo": "Tirarlo fuori.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "I privilegi dei bianchi.",
@@ -1408,7 +1423,8 @@
   },
   {
    "testo": "Un robusto mongoloide.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Selezione naturale.",
@@ -1416,7 +1432,8 @@
   },
   {
    "testo": "Aborti fatti con l'appendiabiti.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Mangiarsi tutti i dolci prima dell'inizio della cena di beneficenza per i malati di AIDS.",
@@ -1448,7 +1465,8 @@
   },
   {
    "testo": "Una dimostrazione di un accoppiamento.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Torsione del testicolo.",
@@ -1480,7 +1498,8 @@
   },
   {
    "testo": "Smegma.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Alcolismo.",
@@ -1512,7 +1531,8 @@
   },
   {
    "testo": "Preliminari meschini.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "La sacra Bibbia.",
@@ -1520,7 +1540,8 @@
   },
   {
    "testo": "Porno in un sotterraneo tedesco.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Essere in fiamme.",
@@ -1548,15 +1569,18 @@
   },
   {
    "testo": "Un'erezione che dura più di quattro ore.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "I miei genitali.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Rimorchiare ragazze all'ospedale dopo un aborto.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Scienza.",
@@ -1564,7 +1588,8 @@
   },
   {
    "testo": "Sesso orale non ricambiato.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Uccelli incapaci di volare.",
@@ -1572,7 +1597,8 @@
   },
   {
    "testo": "Una buona sniffata.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Tortura cinese.",
@@ -1620,7 +1646,8 @@
   },
   {
    "testo": "Polluzione notturna.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Gli ebrei.",
@@ -1628,7 +1655,8 @@
   },
   {
    "testo": "Le mie tette.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Cosce poderose.",
@@ -1688,7 +1716,8 @@
   },
   {
    "testo": "Toccare una tetta senza dare nell'occhio.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Piloti Kamikaze.",
@@ -1720,7 +1749,8 @@
   },
   {
    "testo": "Diventare così arrabbiati da farsi venire un'erezione.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Campioni gratuiti.",
@@ -1776,7 +1806,8 @@
   },
   {
    "testo": "Una spagnola non simmetrica.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Mani vigorose da jazzista.",
@@ -1784,11 +1815,13 @@
   },
   {
    "testo": "Ditalini.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Bruno Vespa che si impiglia con lo scroto in un gancio per le tende.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Polaretti.",
@@ -1812,7 +1845,8 @@
   },
   {
    "testo": "Mascherare una risata quando vengono menzionati gli Hutu e i Tutsi.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Twittare.",
@@ -1824,7 +1858,8 @@
   },
   {
    "testo": "Una pugnetta triste.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Esattamente quello che ti aspetti.",
@@ -1844,15 +1879,18 @@
   },
   {
    "testo": "Un succulento seno.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Sesso tra panda.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Una lobotomia fatta con un punteruolo.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Tom Cruise.",
@@ -1872,15 +1910,18 @@
   },
   {
    "testo": "Petting duro.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Incesto.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Pac-Man che trangugia sperma.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Un mimo che ha un infarto.",
@@ -1900,7 +1941,8 @@
   },
   {
    "testo": "Doccia di piscio.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Emozioni.",
@@ -1924,7 +1966,8 @@
   },
   {
    "testo": "Scopamici.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Dipingere con le dita.",
@@ -2008,7 +2051,8 @@
   },
   {
    "testo": "Pedofili.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Lievito.",
@@ -2060,7 +2104,8 @@
   },
   {
    "testo": "Foto di tette.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Il superuomo.",
@@ -2076,7 +2121,8 @@
   },
   {
    "testo": "Sballarsi.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Scientology.",
@@ -2108,7 +2154,8 @@
   },
   {
    "testo": "Cristalli di metanfetamina.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Servi della gleba. Il pericolo degli sconosciuti.",
@@ -2132,7 +2179,8 @@
   },
   {
    "testo": "Un bukkake censurato.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Una vita di tristezza.",
@@ -2188,15 +2236,18 @@
   },
   {
    "testo": "Gloryholes.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Lame nei capezzoli.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Il cuore di un bambino.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Cuccioli!",
@@ -2208,11 +2259,13 @@
   },
   {
    "testo": "Dighe dentali.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "La vagina di Oriana Fallaci.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Il perineo.",
@@ -2260,11 +2313,13 @@
   },
   {
    "testo": "Autocannibalismo.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "La mia collezione di giocattoli erotici high-tech.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Il Papa.",
@@ -2276,11 +2331,13 @@
   },
   {
    "testo": "Porno Tentacolari.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Giuliano Ferrara che vomita convulsamente mentre una nidiata di granchi-ragno si schiude nel suo cervello e fuoriesce dai suoi condotti lacrimali.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Troppo gel per capelli.",
@@ -2288,7 +2345,8 @@
   },
   {
    "testo": "Seppuku.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Ballare su ghiaccio con persone dello stesso sesso.",
@@ -2324,7 +2382,8 @@
   },
   {
    "testo": "Bambini con il cancro al culo.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Una sorpresa salata.",
@@ -2344,7 +2403,8 @@
   },
   {
    "testo": "Stupro su appuntamento.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Essere fantastici.",
@@ -2352,7 +2412,8 @@
   },
   {
    "testo": "Necrofilia.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Super Quark.",
@@ -2376,7 +2437,8 @@
   },
   {
    "testo": "Le persone totalmente handicappate.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Orfani commoventi.",
@@ -2420,7 +2482,8 @@
   },
   {
    "testo": "Un buco del culo sbiancato.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Michael Jackson.",
@@ -2440,7 +2503,8 @@
   },
   {
    "testo": "Masturbazione.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Allusione sul ceto sociale.",
@@ -2448,15 +2512,18 @@
   },
   {
    "testo": "Flato vaginale.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Nascondere un'erezione.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Intimo commestibile.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Viagra.",
@@ -2472,7 +2539,8 @@
   },
   {
    "testo": "Sesso a sorpresa!",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Mac.",
@@ -2484,11 +2552,13 @@
   },
   {
    "testo": "Dita a forma di cazzo.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Ferite da arma da taglio multiple.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Farsela addosso.",
@@ -2496,11 +2566,13 @@
   },
   {
    "testo": "Abusi infantili.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Palline anali.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Morti civili.",
@@ -2528,7 +2600,8 @@
   },
   {
    "testo": "Peli pubici sul bordo del cesso.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Testimoni di Geova.",
@@ -2540,7 +2613,8 @@
   },
   {
    "testo": "Farlo dall'entrata posteriore.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Imboccare Platinette.",
@@ -2556,7 +2630,8 @@
   },
   {
    "testo": "Un mulino a vento pieno di cadaveri.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "La tigre dei KeIIogg's.",
@@ -2576,7 +2651,8 @@
   },
   {
    "testo": "Un frigorifero pieno di organi.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Il sogno americano.",
@@ -2596,11 +2672,13 @@
   },
   {
    "testo": "Neonati morti.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Prepuzio.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Assoli di Sassofoni.",
@@ -2616,7 +2694,8 @@
   },
   {
    "testo": "Sparare fucilate al cielo mentre stai penetrando fino alle palle un cinghiale urlante.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Giorgio Napolitano.",
@@ -2644,7 +2723,8 @@
   },
   {
    "testo": "Harry Potter erotica.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Scuole Superiori.",
@@ -2660,11 +2740,13 @@
   },
   {
    "testo": "1 kg di eroina Messicana di scarsa qualità.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Stephen Hawking che parla sporco.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Genitori morti.",
@@ -2704,7 +2786,8 @@
   },
   {
    "testo": "Sniffare colla.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Bruno Vespa molestato da uno stormo di avvoltoi.",
@@ -2716,11 +2799,13 @@
   },
   {
    "testo": "Rufis.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "La mia vagina.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Pantaloni da cowboy senza sedere.",
@@ -2760,7 +2845,8 @@
   },
   {
    "testo": "Un micropene.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "La mia anima.",
@@ -2768,7 +2854,8 @@
   },
   {
    "testo": "Un'orgia.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Vichinghi.",
@@ -2816,7 +2903,8 @@
   },
   {
    "testo": "Un profilattico difettoso.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Forum.",
@@ -2828,7 +2916,8 @@
   },
   {
    "testo": "Massacro di Utoya in Norvegia.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Barack Obama.",
@@ -2860,7 +2949,8 @@
   },
   {
    "testo": "Pompino alla guida.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Addominali spettacolari.",
@@ -2888,11 +2978,13 @@
   },
   {
    "testo": "Auschwitz.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Una tartaruga alligatore che ti sta mordendo la punta del pene.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Una detonazione termonucleare.",
@@ -2900,7 +2992,8 @@
   },
   {
    "testo": "Il clitoride.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "II Big Bang.",
@@ -2924,11 +3017,13 @@
   },
   {
    "testo": "Farsi una sega in una piscina di lacrime di bambini.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Flauto a pelle.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Il mio momento.",
@@ -2940,7 +3035,8 @@
   },
   {
    "testo": "Battute fuori luogo sull'olocausto.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Fantasie di un taglialegna.",
@@ -2956,7 +3052,8 @@
   },
   {
    "testo": "Metodo naturale di allungamento del pene.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Essere un fottuto stregone.",
@@ -2964,7 +3061,8 @@
   },
   {
    "testo": "Piercing nei genitali.",
-   "pack": "ita"
+   "pack": "ita",
+   "vm18": true
   },
   {
    "testo": "Travestiti passabili",
@@ -3072,7 +3170,8 @@
   },
   {
    "testo": "Avere peli pubici fra i denti.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Bomba Atomica.",
@@ -3100,7 +3199,8 @@
   },
   {
    "testo": "Cicciolina nuda.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Sheldon Cooper.",
@@ -3148,7 +3248,8 @@
   },
   {
    "testo": "Simulare un orgasmo gridando come una capra affamata.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Una Peroni sudata.",
@@ -3176,7 +3277,8 @@
   },
   {
    "testo": "Volere la botte piena, la moglie ubriaca e un cazzo in culo.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Un milione per gli organizzatori, dieci per la questura.",
@@ -3196,7 +3298,8 @@
   },
   {
    "testo": "Diabolico nell'amplesso, sproporzionato per quel che riguarda le dimensioni del sesso.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Il generatore di fusione che dà energia ai tempo-circuiti e al flusso canalizzatore.",
@@ -3208,11 +3311,13 @@
   },
   {
    "testo": "Ascoltare Marco Masini durante un giro alla Roulette Russa.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Travestirsi da puttanone da competizione.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Pierluca Scaccolarsi al semaforo e dire al venditore che non voglio i fazzoletti.",
@@ -3248,7 +3353,8 @@
   },
   {
    "testo": "Vendere la verginità su ebay.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Truccarsi come Moira Orfei.",
@@ -3256,7 +3362,8 @@
   },
   {
    "testo": "Guidare a fari spenti nella notte per vedere, se poi è tanto difficile morire.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Perché tutto attaccato si scrive staccato mentre staccato si scrive tutto attaccato?",
@@ -3264,7 +3371,8 @@
   },
   {
    "testo": "Essere inculato con veemenza, senza vasellina e con la sabbia da un nero mastodontico.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "William Wallace in una spiaggia di nudisti",
@@ -3272,7 +3380,8 @@
   },
   {
    "testo": "Obi Wan Kenobi che simula una pugnetta con la spada laser",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "La mamma di Stifler",
@@ -3284,7 +3393,8 @@
   },
   {
    "testo": "Video porno di Belen",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Mutande piene di sabbia [della lettiera del gatto]",
@@ -3292,11 +3402,13 @@
   },
   {
    "testo": "Peli pubici di sconosciuti",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Saponette fatte con grasso umano",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Pianta di ficus, simbolo del potere",
@@ -3336,7 +3448,8 @@
   },
   {
    "testo": "Toccarsi i genitali senza farsi vedere.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Sculacciata.",
@@ -3344,7 +3457,8 @@
   },
   {
    "testo": "Uomini nudi che fanno l'elicottero.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Marshmallows avvelenati.",
@@ -3352,11 +3466,13 @@
   },
   {
    "testo": "Il 69.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "La versione porno dei Simpsons.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Squali volanti.",
@@ -3376,7 +3492,8 @@
   },
   {
    "testo": "Sbagliare DVD e far partire un porno.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Vecchietti che guardano lavori in corso con le braccia dietro la schiena.",
@@ -3384,7 +3501,8 @@
   },
   {
    "testo": "Una collezione di porno con protagonisti nani ben dotati.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Blue screen of death",
@@ -3396,7 +3514,8 @@
   },
   {
    "testo": "Un cane che lecca il gelato spalmato sulle tue palle.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Il funerale di Nietzsche.",
@@ -3420,11 +3539,13 @@
   },
   {
    "testo": "Agenti FBI che si comportano come checche isteriche.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Mettere il dito nel culo di pikachu e prendere la scossa.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Fingere un malessere per non rispondere ad una domanda",
@@ -3432,7 +3553,8 @@
   },
   {
    "testo": "Diventare invisibile e fare scherzi sconci alle ragazze negli spogliatoi delle piscine comunali, mentre il vescovo è in visita alla struttura.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Bambole voodoo.",
@@ -3448,15 +3570,18 @@
   },
   {
    "testo": "Un nuovo sistema di allungamento del pene.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Farsi un piercing ai genitali con una sparachiodi.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Porno acrobatico.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Un rutto da Coppa dei Campioni.",
@@ -3472,15 +3597,18 @@
   },
   {
    "testo": "Infilarsi un ravanello nel culo.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Mangiare teste umane.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Tingersi il pube a righe bianche e rosa.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Brucare.",
@@ -3488,7 +3616,8 @@
   },
   {
    "testo": "Autoerotismo.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Action Man.",
@@ -3648,7 +3777,8 @@
   },
   {
    "testo": "Alice nel Paese delle Pornomeraviglie.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Un tristissimo film Bielorusso.",
@@ -3656,7 +3786,8 @@
   },
   {
    "testo": "Adolescenti arrapati.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Bombardamenti indiscriminati.",
@@ -3680,7 +3811,8 @@
   },
   {
    "testo": "Milf estremamente espansive!",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Sindrome di Down",
@@ -3688,7 +3820,8 @@
   },
   {
    "testo": "PornoStar con desideri sessuali per il proprio padre",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Comprare due banane per mangiarne almeno una",
@@ -3716,11 +3849,13 @@
   },
   {
    "testo": "Usare poco lubrificante",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Un seno così floscio che le arriva alle ginocchia",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Un travestito",
@@ -3740,7 +3875,8 @@
   },
   {
    "testo": "Un aborto fallito.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Realizzare che è finita la carta igenica quando ormai è troppo tardi",
@@ -3752,7 +3888,8 @@
   },
   {
    "testo": "Macchie non identificabili sulla punta del pene.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Capelli nello scarico della doccia.",
@@ -3796,7 +3933,8 @@
   },
   {
    "testo": "Guardare un porno in pubblico sull'iPad a tutto volume.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Facebook.",
@@ -3804,7 +3942,8 @@
   },
   {
    "testo": "Una pellicola in Super-8 della prima GangBang della nonna.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "M2O",
@@ -3816,7 +3955,8 @@
   },
   {
    "testo": "GloryHole.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Kim Jong Un.",
@@ -3824,7 +3964,8 @@
   },
   {
    "testo": "Anime Hentai.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Penny!? Penny!? Penny!?",
@@ -3832,7 +3973,8 @@
   },
   {
    "testo": "Un negro di origine asiatica.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Dolore da emorroidi.",
@@ -3844,7 +3986,8 @@
   },
   {
    "testo": "Massaggiatrici cinesi molto esperte.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Traffico d'organi.",
@@ -3904,7 +4047,8 @@
   },
   {
    "testo": "Un superdotato.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "L'uomo tigre.",
@@ -3912,7 +4056,8 @@
   },
   {
    "testo": "Un palestrato con micropene.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Primo bacio con l'alito di aglio.",
@@ -3920,11 +4065,13 @@
   },
   {
    "testo": "Uno spinello.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Bicicletta senza sellino.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Pensare di stare per saltare su un bel tronco e finire in una merda di vacca.",
@@ -3932,11 +4079,13 @@
   },
   {
    "testo": "Un hippie che si è appena fatto di LSD.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Scroto.",
-   "pack": "cah42"
+   "pack": "cah42",
+   "vm18": true
   },
   {
    "testo": "Vomitare a denti stretti per sentire i pezzettoni.",
@@ -3972,7 +4121,8 @@
   },
   {
    "testo": "Un vibratore con il Bluetooth e il firmware vecchio",
-   "pack": "vjt-claude"
+   "pack": "vjt-claude",
+   "vm18": true
   },
   {
    "testo": "Una carbonara con la panna",
@@ -4092,7 +4242,8 @@
   },
   {
    "testo": "Porco dio in do minore",
-   "pack": "vjt-claude"
+   "pack": "vjt-claude",
+   "vm18": true
   },
   {
    "testo": "Una novena recitata in Perl",
@@ -4100,7 +4251,8 @@
   },
   {
    "testo": "Un'ostia senza glutine e senza Dio",
-   "pack": "vjt-claude"
+   "pack": "vjt-claude",
+   "vm18": true
   },
   {
    "testo": "La Madonna di Medjugorje in videochiamata",
@@ -5060,11 +5212,13 @@
   },
   {
    "testo": "Un film porno con i sottotitoli in tedesco",
-   "pack": "vjt-claude"
+   "pack": "vjt-claude",
+   "vm18": true
   },
   {
    "testo": "Il PornHub premium del dirigente",
-   "pack": "vjt-claude"
+   "pack": "vjt-claude",
+   "vm18": true
   },
   {
    "testo": "Una webcam accesa durante la call",

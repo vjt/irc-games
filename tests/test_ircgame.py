@@ -151,3 +151,35 @@ def test_outbox_404_resends_stripped_once():
     o.say("#t", "\x02vecchia\x02")
     o.flush(now=10, force=True)
     assert o.on_404("#t", now=10 + o.RESEND_S + 1) == 0
+
+
+def test_can_control_op_or_staff_host():
+    t = G.Tracker()
+    t.feed("12:00:00 < :srv 353 me = #italia :@op uno")
+    t.feed("12:00:00 < :srv 366 me #italia :End")
+    assert G.can_control(t, "#italia", "op", "a.b")
+    assert not G.can_control(t, "#italia", "uno", "a.b")
+    for host in ("staff.azzurra.chat", "X.Helper.Azzurra.Chat", "sonic.azzurra.chat",
+                 "localop.azzurra.chat", "void.azzurra.chat", "devel.azzurra.chat"):
+        assert G.can_control(t, "#italia", "uno", host), host
+    for host in ("azzurra.chat", "evilazzurra.chat", "staff.azzurra.chat.evil.org", ""):
+        assert not G.can_control(t, "#italia", "uno", host), host
+    trust = G.parse_trust("vjt *.openssl.it, vjt 2a03:4000:2:33c::42 ,vjt due.dita.di.grappa.chat")
+    assert trust == [("vjt", "*.openssl.it"), ("vjt", "2a03:4000:2:33c::42"),
+                     ("vjt", "due.dita.di.grappa.chat")]
+    assert G.can_control(t, "#italia", "VJT", "a.openssl.it", trust)
+    assert G.can_control(t, "#italia", "vjt", "2a03:4000:2:33c::42", trust)
+    assert not G.can_control(t, "#italia", "vjt", "2a03:4000:2:33c::43", trust)
+    assert not G.can_control(t, "#italia", "uno", "a.openssl.it", trust)
+    assert not G.can_control(t, "#italia", "vjt", "a.openssl.it")   # senza trust
+
+
+def test_load_trust_env(monkeypatch):
+    monkeypatch.delenv("IRCGAME_TRUST", raising=False)
+    assert G.load_trust() == []
+    monkeypatch.setenv("IRCGAME_TRUST", "vjt *.openssl.it")
+    assert G.load_trust() == [("vjt", "*.openssl.it")]
+    monkeypatch.setenv("IRCGAME_TRUST", "solonick")
+    import pytest
+    with pytest.raises(SystemExit):
+        G.load_trust()

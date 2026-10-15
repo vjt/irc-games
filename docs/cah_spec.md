@@ -24,6 +24,46 @@ L'originale inglese e' di Cards Against Humanity LLC, CC BY-NC-SA. Conversione:
 `tools/cah_tex2json.py` (buchi, accenti, `\-`, virgolette, carte vuote e
 doppioni via, piu' le `l` lette `I` dall'OCR).
 
+## Opzioni per canale: vm18 e canali guardati
+
+Dopo i pack, in `CAH_NETS`, opzioni separate da `:` —
+`#italia:ita+cah42:vm18=22-9:ops`. Un'opzione sconosciuta ferma il sidecar.
+
+**`vm18=DA-A`** (ore intere, ora di Roma, anche a cavallo della mezzanotte):
+le carte col campo `"vm18": true` in `cah_carte.json` si pescano solo fra
+DA:00 e A:00; fuori, nere e bianche vm18 sono escluse. Il campo viene da una
+etichettatura carta per carta (`yes` e `borderline` = vm18, `no` = niente
+campo), 154 carte su 1255. Attenzione: rigenerare il json con
+`tools/cah_tex2json.py` il campo lo perde; va rimesso. Un canale senza `vm18=` pesca tutto, sempre.
+Quando la finestra scatta a partita in corso:
+
+- la mano in corso finisce con le carte che ha (nera e giocate comprese);
+- **dalla mano dopo** vale la finestra nuova: la nera si pesca gia' filtrata e,
+  se la finestra si e' chiusa, a inizio mano le vm18 rimaste in mano ai
+  giocatori si scartano e si rimpiazzano con carte pulite. Il ritardo massimo e'
+  quindi una mano (~3 minuti);
+- le vm18 saltate restano nel mazzo, e al rimescolo il mazzo si rifa' da capo
+  (mai doppioni). Un canale con `vm18=` senza nere o bianche pulite ferma il
+  sidecar all'avvio.
+
+**`ops`** — canale guardato. **Regola generale per tutti i giochi su
+`#italia`** (Malekith 2026-10-15), in `ircgame.can_control()` perche' gli altri
+giochi la riusino: aprire e chiudere (`!cah`, `!cah start`, `!cah stop`) puo'
+solo
+
+1. un chanop (`+o`) del canale, dal NAMES (`@`) e dai `MODE +o/-o`;
+2. un vhost che finisce in `.azzurra.chat` (staff., helper., sonic., localop.,
+   void., devel.), senza maiuscole; **non** `azzurra.chat` nudo (servizi) ne'
+   `evilazzurra.chat`;
+3. una coppia nick + host-glob di `IRCGAME_TRUST` (nell'rc.d, non nel codice:
+   `'vjt *.openssl.it, vjt due.dita.di.grappa.chat'`): nick senza maiuscole E
+   host con fnmatch. Il Tracker non fa WHOIS, quindi niente controllo 307.
+
+L'host e' quello del prefisso del PRIVMSG. Sedersi, giocare, `!cah stato` &c.
+restano per tutti. Chi non puo' riceve una riga garbata in canale; lo starter
+non op su un canale guardato non chiude. Le righe del gioco sono pulite (un test
+lo controlla): sul canale grande escono solo le carte, e quelle le filtra vm18.
+
 ## Comandi
 
 Verbi di teeli/irc-cah (il bot che la crew usava su IRCnet), alias italiano
@@ -35,7 +75,7 @@ nudi li raccolgono gli altri giochi degli stessi canali.
 | `!cah` / `!cah start [N]` | apre il tavolo (60s, minimo 3); N = punti per vincere (default 5, max 15) |
 | `!cah entra` / `join` | si siede; a partita viva gioca dalla mano dopo |
 | `!cah esci` / `quit` | si alza |
-| `!cah stop` | chiude: chi l'ha aperta o un chanop |
+| `!cah stop` | chiude: chi l'ha aperta o un chanop (sui canali `ops`: vedi sopra) |
 | `!cah punti` / `points` | punti della partita; senza partita, la classifica storica |
 | `!cah top` / `classifica` | classifica storica (mani vinte, per rete) |
 | `!cah carte` / `cards` | rimanda la mano in privato |
