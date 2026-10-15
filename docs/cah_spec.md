@@ -45,6 +45,11 @@ Quando la finestra scatta a partita in corso:
 - le vm18 saltate restano nel mazzo, e al rimescolo il mazzo si rifa' da capo
   (mai doppioni). Un canale con `vm18=` senza nere o bianche pulite ferma il
   sidecar all'avvio.
+- la fascia si dice ai giocatori: all'apertura del tavolo («Fascia protetta
+  fino alle 22: niente carte vm18.» / «Dopo le 22: mazzo completo, carte vm18
+  comprese. Fascia protetta dalle 9.»), una volta in canale quando scatta a
+  tavolo aperto (lobby o partita; senza partita, niente), e in coda all'aiuto
+  di `!cah`.
 
 **`ops`** — canale guardato. **Regola generale per tutti i giochi su
 `#italia`** (Malekith 2026-10-15), in `ircgame.can_control()` perche' gli altri

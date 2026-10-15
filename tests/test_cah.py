@@ -646,3 +646,53 @@ def test_ops_righe_pulite():
     import re as _re
     src = open(C.__file__, encoding="utf-8").read()
     assert not _re.search(r"(?i)\b(dio|madonna|cristo|porco|porca|cazz|stronz)", src)
+
+
+def test_vm18_fascia_detta_all_apertura(tmp_path):
+    g = guardato(tmp_path, [15])
+    g.handle("a", "#i", "!cah", now=0)
+    assert "Fascia protetta fino alle 22: niente carte vm18." in chan_lines(g, "#i")[-1]
+    g = guardato(tmp_path, [23])
+    g.handle("a", "#i", "!cah", now=0)
+    assert ("Dopo le 22: mazzo completo, carte vm18 comprese. Fascia protetta dalle 9."
+            in chan_lines(g, "#i")[-1])
+
+
+def test_vm18_fascia_senza_finestra_zitta(tmp_path):
+    g = guardato(tmp_path, [15], opts={})
+    g.handle("a", "#i", "!cah", now=0)
+    assert not any("vm18" in t for t in chan_lines(g, "#i"))
+    g.handle("a", "#i", "!cah boh", now=1)
+    assert "vm18" not in chan_lines(g, "#i")[-1]
+
+
+def test_vm18_cambio_fascia_annunciato_una_volta(tmp_path):
+    hour = [21]
+    g = guardato(tmp_path, hour)
+    st = apri(g)
+    n = len(chan_lines(g, "#i"))
+    g.tick(now=61)
+    assert len(chan_lines(g, "#i")) == n             # niente cambio, niente riga
+    hour[0] = 22
+    g.tick(now=62)
+    g.tick(now=63)
+    new = chan_lines(g, "#i")[n:]
+    assert sum("Sono le 22" in t for t in new) == 1
+    hour[0] = 9
+    g.tick(now=64)
+    assert "Sono le 9: fascia protetta fino alle 22" in chan_lines(g, "#i")[-1]
+    assert st["safe"] is True
+
+
+def test_vm18_cambio_fascia_senza_partita_zitto(tmp_path):
+    hour = [21]
+    g = guardato(tmp_path, hour)
+    hour[0] = 22
+    g.tick(now=1)
+    assert chan_lines(g, "#i") == []
+
+
+def test_vm18_help_dice_la_fascia(tmp_path):
+    g = guardato(tmp_path, [15])
+    g.handle("a", "#i", "!cah boh", now=0)
+    assert chan_lines(g, "#i")[-1].endswith("carte vm18 solo dalle 22 alle 9")

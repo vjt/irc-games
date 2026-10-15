@@ -282,6 +282,27 @@ class Cah:
         h, (a, b) = self.clock(now), win
         return not (a <= h < b if a <= b else h >= a or h < b)
 
+    def band(self, chan, now, switch=False):
+        """La riga che dice la fascia vm18 di adesso (None senza finestra):
+        all'apertura del tavolo, o `switch` quando scatta a partita viva."""
+        win = self.opts.get(chan, {}).get("vm18")
+        if not win:
+            return None
+        a, b = win
+        if self.safe(chan, now):
+            if switch:
+                return (f"🕘 Sono le {b}: fascia protetta fino alle {a}, "
+                        f"dalla prossima mano niente carte vm18.")
+            return f"Fascia protetta fino alle {a}: niente carte vm18."
+        if switch:
+            return (f"🕙 Sono le {a}: dalla prossima mano mazzo completo, carte vm18 "
+                    f"comprese. Fascia protetta dalle {b}.")
+        return f"Dopo le {a}: mazzo completo, carte vm18 comprese. Fascia protetta dalle {b}."
+
+    def help(self, chan):
+        win = self.opts.get(chan, {}).get("vm18")
+        return HELP + (f" · carte vm18 solo dalle {win[0]} alle {win[1]}" if win else "")
+
     def draw(self, g, kind, now=0.0):
         """Una carta dal mazzo; a mazzo finito si rimescolano gli scarti, cioe'
         tutto quello che non e' in mano a qualcuno o sul tavolo. I mazzi sono
@@ -327,10 +348,11 @@ class Cah:
             "nicks": {key: nick}, "scores": {}, "hands": {}, "missed": {}, "absent": [], "split": [],
             "subs": {}, "order": [], "goal": goal, "czar": -1, "round": 0, "idle": 0,
             "black": None, "picks": 1, "wdeck": [], "bdeck": [], "deadline": now + LOBBY_S,
+            "safe": self.safe(chan, now),
         }
-        self.say(chan, f"🃏 Cards Against Humanity! {nick} apre il tavolo, si gioca a "
-                       f"{goal} punti. !cah entra per sedersi, {LOBBY_S}s, "
-                       f"servono {MIN_PLAYERS} giocatori.")
+        self.emit(chan, [f"🃏 Cards Against Humanity! {nick} apre il tavolo, si gioca a "
+                         f"{goal} punti. !cah entra per sedersi, {LOBBY_S}s, "
+                         f"servono {MIN_PLAYERS} giocatori.", self.band(chan, now)])
 
     def join(self, chan, g, nick, now):
         key = nick.casefold()
@@ -577,7 +599,7 @@ class Cah:
         sub = SUB.get((m.group("sub") or "start").lower())
         arg = m.group("arg") or ""
         if sub is None:
-            self.say(chan, HELP)
+            self.say(chan, self.help(chan))
         elif sub == "top" or (sub == "points" and not g):
             self.say(chan, f"🏆 [CaH] Mani vinte ({self.net}): {self.top() or 'nessuna'}")
         elif sub == "start" and not g and self.op_gate(chan, nick, host, "apre"):
@@ -718,6 +740,12 @@ class Cah:
     def tick(self, now=None):
         now = float(now if now is not None else time.time())
         for chan, g in list(self.games.items()):
+            safe = self.safe(chan, now)
+            if safe != g.get("safe", safe):
+                # La fascia e' scattata a tavolo aperto: lo si dice una volta.
+                g["safe"] = safe
+                if g["phase"] != "muto":
+                    self.say(chan, self.band(chan, now, switch=True))
             if now < g["deadline"]:
                 continue
             ph = g["phase"]
