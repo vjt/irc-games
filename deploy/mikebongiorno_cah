@@ -28,7 +28,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   /usr/bin/env CAH_HOME=/var/db/convento \
   CAH_CARTE=/opt/irc-games/cah_carte.json \
   CAH_NICK=MikeBongiorno \
-  'CAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sniffo,#sbiffo,#italia,#it-opers' \
+  'CAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo,#it-opers' \
   /usr/local/bin/python3.11 -u /opt/irc-games/cah.py --net azzurra daemon"
 # daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
 # stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
