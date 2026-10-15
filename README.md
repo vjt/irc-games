@@ -129,6 +129,26 @@ python3 -m pytest tests/test_cah.py tests/test_ircgame.py
 python3 cah.py carte
 ```
 
+## Una partita per canale
+
+Ordine di Malekith (2026-10-15): in un canale gira un gioco per volta, fra
+tutti i giochi, che sono processi diversi. CaH, Trivial e Sillabah, prima di
+aprire una partita, chiamano `ircgame.start_refusal()`:
+
+- un **lucchetto per rete+canale** (`ircgame.ChannelLock`): un file
+  `<rete>.<canale>` sotto `IRCGAME_LOCKS` (in jail `/var/run/convento/ircgame`,
+  dell'utente `convento`), tenuto con `flock` per tutta la partita; dentro
+  gioco, pid, inizio. Si molla a fine partita (dalla sync dopo ogni giro del
+  loop, qualunque strada abbia chiuso); un processo morto lo molla da solo, il
+  kernel scioglie il flock, quindi il pid morto non si ripulisce a mano. Le
+  partite riprese da disco dopo un riavvio (Trivial, Sillabah) lo riprendono.
+  Senza `IRCGAME_LOCKS` il lucchetto e' spento;
+- **GameBot** (bot esterno: entra su invito, esce a fine partita) nel canale,
+  dal NAMES e da JOIN/PART/QUIT, conta come partita in corso.
+
+Il rifiuto e' una riga: «C'è già una partita di Trivial in corso.». I giochi
+passivi (le suore, il love) non aprono partite e non c'entrano.
+
 ## Deployment
 
 Jail `convento` su m42, `/opt/convento`. Un vhost per bot, via AAAA + PTR:

@@ -14,9 +14,14 @@ Cosa c'e':
                    eventi di presenza (JOIN/PART/KICK/QUIT/NICK, netsplit)
   can_control()    chi apre/chiude i giochi sui canali guardati: op, vhost
                    *.azzurra.chat, o la lista di fiducia (IRCGAME_TRUST)
+  ChannelLock      una partita per canale fra TUTTI i giochi (processi diversi):
+                   un file per rete+canale sotto IRCGAME_LOCKS, con flock
+  start_refusal()  il controllo prima di aprire una partita: lock libero e
+                   nessun GameBot (bot esterno) nel canale
   Outbox           la coda verso la FIFO: freno anti-flood, e sui canali +c
                    le righe escono senza codici (anche a posteriori, sul 404)
 """
+import fcntl
 import fnmatch
 import json
 import os
@@ -294,6 +299,108 @@ class Tracker:
                 t.get(chan, set()).discard(gone_nick.casefold())
             return (cmd.lower(), chan, gone_nick)
         return None
+
+
+# --- una partita per canale, fra giochi diversi (Malekith 2026-10-15) ------------
+
+# Bot di giochi non nostri: se e' nel canale, c'e' una sua partita (GameBot
+# entra su invito e se ne va a fine partita). nick casefold -> nome da dire.
+FOREIGN_GAMEBOTS = {"gamebot": "GameBot"}
+
+
+def busy_line(name):
+    return f"C'è già una partita di {name} in corso."
+
+
+class ChannelLock:
+    """Il lucchetto per canale condiviso da tutti i giochi della jail, che sono
+    processi diversi: un file `<rete>.<canale>` sotto `root` (IRCGAME_LOCKS),
+    tenuto con flock(LOCK_EX) per tutta la partita. Dentro: gioco, pid, inizio
+    (per chi viene rifiutato e per chi guarda a mano).
+
+    flock e non O_EXCL: se il processo muore il kernel molla il lucchetto da
+    solo, e il pid morto non va riconosciuto e ripulito a mano (con le corse
+    del caso). Il file non si cancella mai: cancellare un file flockato apre la
+    corsa in cui due processi tengono due file diversi con lo stesso nome.
+
+    root vuota (IRCGAME_LOCKS non c'e') = lucchetto spento, ogni acquire
+    riesce: le prove e lo sviluppo non toccano /var/run. Una root che non si
+    puo' scrivere idem, con una riga nel log: un gioco non muore per il
+    lucchetto."""
+
+    def __init__(self, net, game, root=None):
+        self.net, self.game = net, game
+        root = os.environ.get("IRCGAME_LOCKS", "") if root is None else root
+        self.root = Path(root) if root else None
+        self.held = {}                  # canale casefold -> fd col flock
+        if self.root:
+            try:
+                self.root.mkdir(parents=True, exist_ok=True)
+            except OSError as e:
+                print(f"{game}: lucchetti spenti, {self.root}: {e}", flush=True)
+                self.root = None
+
+    def path(self, chan):
+        return self.root / f"{self.net}.{chan.casefold().replace('/', '%2f')}"
+
+    def acquire(self, chan, now=None):
+        """None se il canale e' nostro (o lo era gia'); se no il nome del gioco
+        che lo tiene."""
+        key = chan.casefold()
+        if not self.root or key in self.held:
+            return None
+        try:
+            fd = os.open(self.path(chan), os.O_RDWR | os.O_CREAT, 0o644)
+        except OSError as e:
+            print(f"{self.game}: lucchetto {chan} non apribile: {e}", flush=True)
+            return None
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            try:
+                d = json.loads(os.pread(fd, 4096, 0) or b"{}")
+            except ValueError:
+                d = {}
+            os.close(fd)
+            return d.get("game") or "un altro gioco"
+        os.ftruncate(fd, 0)
+        os.pwrite(fd, json.dumps({"game": self.game, "pid": os.getpid(),
+                                  "since": int(now if now is not None else time.time())}
+                                 ).encode(), 0)
+        self.held[key] = fd
+        return None
+
+    def release(self, chan):
+        fd = self.held.pop(chan.casefold(), None)
+        if fd is not None:
+            os.ftruncate(fd, 0)
+            os.close(fd)                # il close molla il flock
+
+    def sync(self, chans):
+        """I lucchetti seguono le partite vive: via quelli dei canali senza
+        partita (qualunque strada l'abbia chiusa), presi quelli delle partite
+        che non l'hanno (riprese da disco dopo un riavvio; se nel frattempo il
+        canale l'ha preso un altro gioco, lo si scrive nel log e basta)."""
+        live = {c.casefold() for c in chans}
+        for key in [k for k in self.held if k not in live]:
+            self.release(key)
+        for key in live - set(self.held):
+            holder = self.acquire(key)
+            if holder:
+                print(f"{self.game}: {key} ha una partita mia ma il lucchetto e' di "
+                      f"{holder}", flush=True)
+
+
+def start_refusal(lock, tracker, chan, now=None):
+    """Prima di aprire una partita in `chan`: None e il lucchetto preso, o la
+    riga di rifiuto. Un GameBot nel canale conta come partita in corso; si
+    guarda prima di prendere il lucchetto, cosi' un rifiuto non lo tiene."""
+    here = tracker.members.get(chan.casefold(), set())
+    for nick, name in FOREIGN_GAMEBOTS.items():
+        if nick in here:
+            return busy_line(name)
+    holder = lock.acquire(chan, now)
+    return busy_line(holder) if holder else None
 
 
 class Outbox:

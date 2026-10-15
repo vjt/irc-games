@@ -208,7 +208,7 @@ SUB = {"start": "start", "inizia": "start", "join": "join", "entra": "join",
 
 class Cah:
     def __init__(self, net, log, fifo, state_path, chans, carte, rng=None,
-                 opts=None, clock=None, trust=None):
+                 opts=None, clock=None, trust=None, locks=None):
         self.net = net
         self.log = str(log)
         self.state_path = Path(state_path)
@@ -245,6 +245,8 @@ class Cah:
         self.scores = self.load()       # nick casefold -> {"nick", "points"}
         self.dirty = False
         self.tracker = Tracker()
+        # una partita per canale fra tutti i giochi (IRCGAME_LOCKS)
+        self.lock = ircgame.ChannelLock(net, "Cards Against Humanity", locks)
         self.out = Outbox(fifo, "cah", self.tracker)
         self.ison = deque()             # ISON in volo: {nick casefold: canale}
 
@@ -630,6 +632,8 @@ class Cah:
         elif sub == "start" and not g:
             if self.player_game(key)[0]:
                 self.say(chan, f"{nick}: stai gia' giocando altrove.")
+            elif (no := ircgame.start_refusal(self.lock, self.tracker, chan, now)):
+                self.say(chan, no)
             else:
                 goal = min(MAX_GOAL, max(1, int(arg))) if arg.isdigit() else GOAL
                 self.open_lobby(chan, nick, goal, now)
@@ -796,6 +800,7 @@ class Cah:
                                            f"scelto: nessun punto."])
             else:
                 self.new_round(chan, now)
+        self.lock.sync(self.games)      # qualunque strada abbia chiuso, si molla
 
     def run(self):
         p = subprocess.Popen(["tail", "-F", "-n", "0", self.log],

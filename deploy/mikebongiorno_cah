@@ -30,6 +30,7 @@ command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/cah.log -t mike-cah \
   /usr/bin/env CAH_HOME=/var/db/convento \
+  IRCGAME_LOCKS=/var/run/convento/ircgame \
   CAH_CARTE=/opt/irc-games/cah_carte.json \
   CAH_NICK=MikeBongiorno \
   'CAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo:ita+cah42,#it-opers:ita+cah42,#italia:ita+cah42:vm18=22-9:ops' \

@@ -76,6 +76,8 @@ from collections import deque
 from collections.abc import Mapping
 from pathlib import Path
 
+import ircgame
+
 # Stato e dati vivono in posti diversi nella jail (vedi IMPICCATO_HOME): il
 # dizionario viaggia col codice, lo stato no.
 HERE = Path(__file__).resolve().parent
@@ -478,7 +480,7 @@ def riga_valori():
 
 class Sillabah:
     def __init__(self, net, log, fifo, state_path, chans, diz, talk=True,
-                 rng=None):
+                 rng=None, locks=None):
         self.net = net
         self.log = str(log)
         self.fifo = str(fifo) if fifo else ""
@@ -492,6 +494,10 @@ class Sillabah:
         self.notices = []               # idem, le risposte in NOTICE
         self._last_reply = {}           # nick -> istante dell'ultima risposta in query
         self._budget = deque()          # istanti delle ultime risposte in query
+        # Una partita per canale fra tutti i giochi (ircgame, IRCGAME_LOCKS);
+        # il Tracker serve solo a vedere se c'e' GameBot nel canale.
+        self.tracker = ircgame.Tracker()
+        self.lock = ircgame.ChannelLock(net, "Sillabah", locks)
 
     # --- uscita ---------------------------------------------------------
 
@@ -754,6 +760,10 @@ class Sillabah:
             self.say(chan, "`!sillabah` per giocare, `!sillabah 15` per 15 manche, "
                            "`!sillabah stop` per chiudere.")
             return False
+        no = ircgame.start_refusal(self.lock, self.tracker, chan, now)
+        if no:
+            self.say(chan, no)
+            return False
         n = min(MAX_MANCHE, max(1, int(arg))) if arg else DEFAULT_MANCHE
         self.start_game(chan, n, now)
         return True
@@ -860,6 +870,10 @@ class Sillabah:
     def run(self):
         p = subprocess.Popen(["tail", "-F", "-n", "0", self.log],
                              stdout=subprocess.PIPE, text=True, errors="replace")
+        time.sleep(1)                   # il tail prima del NAMES
+        for chan in sorted(self.chans):  # chi c'e' (GameBot?) nei canali
+            if self.talk:
+                ircgame.fifo_write(self.fifo, f"RAW:sillabah NAMES {chan}\n")
         try:
             while True:
                 r, _, _ = select.select([p.stdout], [], [], self.next_wake(time.time()))
@@ -868,6 +882,7 @@ class Sillabah:
                     line = p.stdout.readline()
                     if not line:
                         break
+                    self.tracker.feed(line)
                     m = PRIVMSG_PAT.search(line)
                     if m and is_input(m):
                         changed |= self.handle(m.group("nick"), m.group("target"),
@@ -876,6 +891,8 @@ class Sillabah:
                 changed |= self.tick()
                 if changed:
                     save_state(self.state_path, self.state)
+                # i lucchetti seguono le partite, qualunque strada le chiuda
+                self.lock.sync(self.state["games"])
         finally:
             p.terminate()
 

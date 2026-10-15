@@ -29,6 +29,7 @@ command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/sillabah.log -t mike-sillabah \
   /usr/bin/env SILLABAH_HOME=/var/db/convento \
+  IRCGAME_LOCKS=/var/run/convento/ircgame \
   SILLABAH_PAROLE=/opt/irc-games/sillabah_parole.txt \
   SILLABAH_NICK=MikeBongiorno \
   'SILLABAH_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo,#sniffo,#italia' \

@@ -27,6 +27,7 @@ command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/impiccato.log -t mike-impiccato \
   /usr/bin/env IMPICCATO_HOME=/var/db/convento \
+  IRCGAME_LOCKS=/var/run/convento/ircgame \
   IMPICCATO_DOMANDE=/opt/irc-games/impiccato_domande.json \
   'IMPICCATO_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sniffo,#sbiffo,#italia' \
   /usr/local/bin/python3.11 -u /opt/irc-games/impiccato.py --net azzurra daemon"

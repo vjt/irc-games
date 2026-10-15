@@ -71,6 +71,8 @@ import time
 import unicodedata
 from pathlib import Path
 
+import ircgame
+
 # La casa del gioco: dove stanno domande e stato. Era la directory del file, che
 # andava bene finche' il codice viveva nel checkout del bot; ora il gioco sta in
 # un repo suo e gira in una jail su m42, dove il codice e i dati non sono nello
@@ -495,7 +497,8 @@ def joined_lines(parts, limit=MAX_LINE, sep="  ·  "):
 # -------------------------------------------------------------------- gioco
 
 class Impiccato:
-    def __init__(self, net, log, fifo, state_path, chans, domande, talk=True):
+    def __init__(self, net, log, fifo, state_path, chans, domande, talk=True,
+                 locks=None):
         self.net = net
         self.log = str(log)
         self.fifo = str(fifo) if fifo else ""
@@ -508,6 +511,10 @@ class Impiccato:
         self.help_seen = {}     # canale casefold -> ultimo help mandato
         self.ops = {}           # canale casefold -> nick casefold con @
         self._names = set()     # canali con un NAMES a meta' (fra 353 e 366)
+        # Una partita per canale fra tutti i giochi (ircgame, IRCGAME_LOCKS);
+        # il Tracker serve solo a vedere se c'e' GameBot nel canale.
+        self.tracker = ircgame.Tracker()
+        self.lock = ircgame.ChannelLock(net, "Trivial", locks)
 
     # --- uscita ---------------------------------------------------------
 
@@ -816,6 +823,7 @@ class Impiccato:
     def track(self, line):
         """Aggiorna gli @ dei canali da una riga del log. Mai stato su disco:
         un riavvio lo ricostruisce col NAMES che run() chiede all'avvio."""
+        self.tracker.feed(line)
         m = EVENT_PAT.search(line)
         if not m:
             return
@@ -953,6 +961,10 @@ class Impiccato:
                 self.say(chan, f"🚫 Il set {fold(want)} qui non si gioca. "
                                f"Ci sono: {' · '.join(self.set_names(chan))}.")
                 return False
+            no = ircgame.start_refusal(self.lock, self.tracker, chan, now)
+            if no:
+                self.say(chan, no)
+                return False
             n = sum(1 for d in self.domande if d["cat"] in cats)
             limit = max(1, int(lim)) if lim else DEFAULT_LIMIT
             # Il limite annunciato e' quello vero: se il set ha meno domande
@@ -1069,6 +1081,8 @@ class Impiccato:
                         save_state(self.state_path, self.state)
                 elif self.tick():
                     save_state(self.state_path, self.state)
+                # i lucchetti seguono le partite, qualunque strada le chiuda
+                self.lock.sync(self.state["games"])
         finally:
             p.terminate()
 
