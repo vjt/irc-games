@@ -78,24 +78,35 @@ nudi li raccolgono gli altri giochi degli stessi canali.
 | comando | cosa |
 |---|---|
 | `!cah` / `!cah start [N]` | apre il tavolo (60s, minimo 3); N = punti per vincere (default 5, max 15) |
-| `!cah entra` / `join` | si siede; a partita viva gioca dalla mano dopo |
+| `jo` | si siede (parola nuda, riga intera, solo a tavolo aperto nel canale); a partita viva gioca dalla mano dopo. Alias muto: `!cah entra` / `join` |
 | `!cah esci` / `quit` | si alza |
 | `!cah stop` | chiude: chi l'ha aperta o un chanop (sui canali `ops`: vedi sopra) |
 | `!cah punti` / `points` | punti della partita; senza partita, la classifica storica |
 | `!cah top` / `classifica` | classifica storica (mani vinte, per rete) |
 | `!cah carte` / `cards` | rimanda la mano in privato |
 | `!cah stato` / `status` | a che punto siamo, chi manca |
-| `!play N [M]` / `!gioco` / `!pick` | gioca, in canale o in query (`/msg MikeBongiorno !play 3`) |
+| `pl N [M]` | gioca, in canale, in query (`/msg MikeBongiorno pl 3`, nere da due: `pl 3 5`) o in NOTICE al bot (`/notice MikeBongiorno pl 3`). Alias muti: `!play` / `!gioco` / `!pick` |
 | `!vince N` / `!winner` / `!pick` | lo czar sceglie |
 
-In query serve il `!`: un numero nudo lo raccoglie anche sillabah.
+In query serve `pl`: un numero nudo lo raccoglie anche sillabah, che sta sullo
+stesso bot; `pl N` invece sillabah lo ignora (in query e in NOTICE). `jo` e `pl`
+nudi (Malekith 2026-10-15) non sono comandi di nessun altro gioco, ma il Trivial
+(impiccato.py, stessi canali) prende ogni riga di canale come tentativo, con due
+parole di contorno tollerate: a domanda aperta, `pl 3` in canale vale come
+risposta «3». Le giocate in query o in NOTICE non hanno il problema.
+
+**Giocate in NOTICE**: valgono solo `pl N` mandate al bot da chi e' al tavolo,
+e non hanno mai risposta (RFC 1459: niente risposte automatiche alle NOTICE,
+cosi' nessun bot ci fa un loop). Una giocata sbagliata in NOTICE si perde in
+silenzio; quella buona si registra, e il resto del gioco va in canale come
+sempre.
 
 ## Casi limite
 
 1. **Czar esce** (QUIT/PART/KICK) a mano in corso: mano nulla, le carte giocate
    tornano in mano a chi le ha giocate, lo czar passa al prossimo.
 2. **Giocatore esce** a mano in corso: la sua giocata sparisce, lui pure. Sotto i
-   3 giocatori la partita va in pausa: 60s per `!cah entra`, poi chiude coi punti.
+   3 giocatori la partita va in pausa: 60s per `jo`, poi chiude coi punti.
 3. **Cambio nick**: si segue dal log; mano, punti, ruolo di czar, giocata passano
    al nick nuovo.
 4. **Timeout giocate** (90s): si rivela quello che c'e'. Meno di 2 giocate = mano

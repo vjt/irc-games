@@ -531,3 +531,12 @@ def test_status_line_during_manche(diz, tmp_path):
     g.sent.clear()
     g.tick(now=S.MANCHE_S - S.STATUS_MIN_LEFT + 1)  # a ridosso della scadenza: zitto
     assert g.sent == []
+
+
+def test_cah_play_in_query_is_not_a_word(diz, tmp_path):
+    """`pl 3` in query e' una giocata di CaH (stesso bot): sillabah tace."""
+    g = gioco(diz, tmp_path)
+    for text in ("pl 3", "PL 3 5", "pl 1,2"):
+        assert g.handle("a", BOT, text, now=1) is False
+        assert g.handle("a", BOT, text, now=1, notice=True) is False
+    assert g.sent == [] and g.notices == []

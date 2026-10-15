@@ -210,6 +210,8 @@ CLASSIFICA_PAT = re.compile(
     r'^!\s*classifica(?:\s+(?P<game>\S+))?\s*$', re.IGNORECASE)
 MY_GAME = ("sillabah", "sillaba", "sillabe")
 DELETE_PAT = re.compile(r'^-\s*delete\s*$', re.IGNORECASE)
+# Le giocate di Cards Against Humanity in query a MikeBongiorno (cah.py).
+CAH_QUERY_PAT = re.compile(r'^pl\s+[\d\s,]+$', re.IGNORECASE)
 
 
 def fold(s):
@@ -780,6 +782,10 @@ class Sillabah:
         if text.startswith("!"):
             # Un comando di canale scritto in query: silenzio, non e' una parola
             # e non merita un rifiuto a testa.
+            return False
+        if CAH_QUERY_PAT.match(text):
+            # Le giocate di CaH (`pl 3`, `pl 3 5`), stesso bot, stessa query:
+            # sono di cah.py, qui si tace.
             return False
 
         if not g:

@@ -31,7 +31,7 @@ def partita(tmp_path, nicks=("a", "b", "c", "d"), **kw):
     g = nuovo(tmp_path, **kw)
     g.handle(nicks[0], "#t", "!cah", now=0)
     for n in nicks[1:]:
-        g.handle(n, "#t", "!cah entra", now=1)
+        g.handle(n, "#t", "jo", now=1)
     g.tick(now=C.LOBBY_S)
     assert g.games["#t"]["phase"] == "play"
     return g, g.games["#t"]
@@ -42,7 +42,7 @@ def gioca_tutti(g, st, now, chan="#t"):
     for k in list(st["players"]):
         if k != czar:
             nums = " ".join(str(i) for i in range(1, st["picks"] + 1))
-            g.handle(st["nicks"][k], chan, f"!play {nums}", now=now)
+            g.handle(st["nicks"][k], chan, f"pl {nums}", now=now)
 
 
 def chan_lines(g, chan="#t"):
@@ -696,3 +696,48 @@ def test_vm18_help_dice_la_fascia(tmp_path):
     g = guardato(tmp_path, [15])
     g.handle("a", "#i", "!cah boh", now=0)
     assert chan_lines(g, "#i")[-1].endswith("carte vm18 solo dalle 22 alle 9")
+
+
+# --- jo / pl / NOTICE (Malekith 2026-10-15) --------------------------------------
+
+def test_jo_solo_a_tavolo_aperto(tmp_path):
+    g = nuovo(tmp_path)
+    g.handle("a", "#t", "jo", now=0)
+    assert "#t" not in g.games and chan_lines(g) == []      # niente tavolo: muto
+    g.handle("a", "#t", "!cah", now=1)
+    assert "jo per sedersi" in chan_lines(g)[-1]
+    g.handle("b", "#t", "JO", now=2)
+    g.handle("c", "#t", "!cah entra", now=2)                 # alias muto
+    g.handle("d", "#t", "jo jo", now=2)                      # riga intera, no
+    assert g.games["#t"]["players"] == ["a", "b", "c"]
+
+
+def test_pl_in_canale_e_in_query(tmp_path):
+    g, st = partita(tmp_path)
+    czar = g.czar(st)
+    others = [k for k in st["players"] if k != czar]
+    g.handle(others[0], "#t", "PL 1", now=61)
+    g.handle(others[1], BOT, "pl 2", now=61)
+    assert set(st["subs"]) == set(others[:2])
+    assert any("pl N" in t for t in chan_lines(g))
+    assert not any("!play" in t for (_, t) in g.sent)
+
+
+def test_pl_pick_due(tmp_path):
+    g, st = partita(tmp_path, nere=["Due ___ e ___."])
+    k = [k for k in st["players"] if k != g.czar(st)][0]
+    g.handle(k, BOT, "pl 3 5", now=61)
+    assert len(st["subs"][k]) == 2
+
+
+def test_pl_in_notice_registra_e_tace(tmp_path):
+    g, st = partita(tmp_path)
+    k = [k for k in st["players"] if k != g.czar(st)][0]
+    n = len(g.sent)
+    g.handle(k, BOT, "pl 99", now=61, notice=True)           # sbagliata: zitto
+    assert len(g.sent) == n and k not in st["subs"]
+    g.handle(k, BOT, "pl 1", now=61, notice=True)
+    assert k in st["subs"] and not [t for (to, t) in g.sent[n:] if to == k]
+    g.handle("chiunque", BOT, "pl 1", now=62, notice=True)   # non gioca: niente
+    g.handle(k, "#t", "pl 2", now=62, notice=True)           # NOTICE al canale: niente
+    assert len(st["subs"][k]) == 1

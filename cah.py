@@ -11,14 +11,16 @@ con l'alias italiano accanto. Quelli di tavolo stanno sotto `!cah`: nudi
 (`!start`, `!stop`, `!join`) li raccolgono gli altri giochi degli stessi canali.
 
   !cah [start [N]]   apre il tavolo (60s, almeno 3 giocatori); N = punti per vincere
-  !cah join|entra    si siede (a partita viva: dalla mano dopo)
+  jo                 si siede, a tavolo aperto (a partita viva: dalla mano dopo);
+                     alias muto !cah entra/join
   !cah quit|esci     si alza
   !cah stop          chiude (chi l'ha aperta, o un chanop)
   !cah points|punti  punti della partita (senza partita: la classifica storica)
   !cah top|classifica  la classifica storica, mani vinte
   !cah cards|carte   rimanda le tue carte in privato
   !cah status|stato  a che punto siamo
-  !play N [M]        gioca la carta N (e M); alias !gioco, !pick. In canale o in
+  pl N [M]           gioca la carta N (e M); alias muti !play, !gioco, !pick. In
+                     canale, in query o in NOTICE al bot (in NOTICE: mai risposte). In
                      query: il numero e' della TUA mano, non svela niente
   !winner N          lo czar sceglie; alias !vince, !pick
 
@@ -88,8 +90,8 @@ BLANK = "___"
 LEGACY_PACK = "vjt-claude"      # le carte stringa del formato vecchio
 DEFAULT_PACKS = ("ita", "cah42")
 ROME = ZoneInfo("Europe/Rome")
-HELP = ("!cah [start N] · entra · esci · stop · punti · top · carte · stato"
-        " — in gioco: !play N, lo czar !vince N")
+HELP = ("!cah [start N] · jo per sedersi · !cah esci · stop · punti · top · carte · stato"
+        " — in gioco: pl N, lo czar !vince N")
 
 
 def default_packs():
@@ -191,8 +193,12 @@ def minuscola(c):
 
 
 CAH_PAT = re.compile(r'^!\s*cah(?:\s+(?P<sub>\S+))?(?:\s+(?P<arg>\S+))?\s*$', re.I)
+# `pl N` nudo (Malekith 2026-10-15); i verbi col `!` restano come alias muti.
 PLAY_PAT = re.compile(
-    r'^!\s*(?P<verb>play|gioco|gioca|pick|winner|vince)\s+(?P<nums>[\d\s,]+)$', re.I)
+    r'^(?:!\s*(?P<verb>play|gioco|gioca|pick|winner|vince)|!?\s*(?P<pl>pl))'
+    r'\s+(?P<nums>[\d\s,]+)$', re.I)
+# `jo` nudo, riga intera: si siede, solo se c'e' un tavolo aperto nel canale.
+JO_PAT = re.compile(r'^jo$', re.I)
 
 SUB = {"start": "start", "inizia": "start", "join": "join", "entra": "join",
        "quit": "quit", "esci": "quit", "stop": "stop", "points": "points",
@@ -326,7 +332,7 @@ class Cah:
 
     def send_hand(self, chan, g, key):
         n = g["picks"]
-        head = f"🃏 {chan}: «{g['black']}» — !play " + ("N M" if n > 1 else "N") + ":"
+        head = f"🃏 {chan}: «{g['black']}» — pl " + ("N M" if n > 1 else "N") + ":"
         self.emit(g["nicks"][key],
                   [head] + [f"{i}) {c}" for i, c in enumerate(g["hands"][key], 1)])
 
@@ -351,7 +357,7 @@ class Cah:
             "safe": self.safe(chan, now),
         }
         self.emit(chan, [f"🃏 Cards Against Humanity! {nick} apre il tavolo, si gioca a "
-                         f"{goal} punti. !cah entra per sedersi, {LOBBY_S}s, "
+                         f"{goal} punti. jo per sedersi, {LOBBY_S}s, "
                          f"servono {MIN_PLAYERS} giocatori.", self.band(chan, now)])
 
     def join(self, chan, g, nick, now):
@@ -387,7 +393,7 @@ class Cah:
         g["deadline"] = now + LOBBY_S
         self.emit(chan, list(lead) + [
             f"⏸️ Siamo in {len(g['players'])}, servono {MIN_PLAYERS}: "
-            f"!cah entra entro {LOBBY_S}s o chiudo."])
+            f"jo entro {LOBBY_S}s o chiudo."])
 
     def leave(self, chan, g, key, now, why=""):
         if key in g["pending"]:
@@ -458,12 +464,12 @@ class Cah:
         self.emit(chan, lead + [
             f"🃏 Mano {g['round']}, czar {g['nicks'][czar]}: «{g['black']}»"
             + (f" [{n} carte]" if n > 1 else "")
-            + f" — !play N, le carte sono in privato. {PLAY_S}s."])
+            + f" — pl N, le carte sono in privato. {PLAY_S}s."])
         for key in g["players"]:
             if key != czar:
                 self.send_hand(chan, g, key)
 
-    def play(self, chan, g, key, nums, now):
+    def play(self, chan, g, key, nums, now, quiet=False):
         """True se la giocata e' valida. Una giocata nuova prima della
         rivelazione sostituisce la vecchia."""
         if g["phase"] != "play" or key not in g["players"] or key == self.czar(g):
@@ -473,8 +479,10 @@ class Cah:
         hand.extend(g["subs"].pop(key, []))
         if (len(nums) != g["picks"] or len(set(nums)) != len(nums)
                 or not all(1 <= n <= len(hand) for n in nums)):
+            if quiet:                   # arrivata in NOTICE: niente risposta
+                return False
             self.say(nick, f"Servono {g['picks']} numeri diversi fra 1 e {len(hand)}: "
-                           f"!play " + ("N M" if g["picks"] > 1 else "N") + ".")
+                           f"pl " + ("N M" if g["picks"] > 1 else "N") + ".")
             return False
         cards = [hand[n - 1] for n in nums]
         for c in cards:
@@ -575,11 +583,22 @@ class Cah:
 
     # --- ingresso ----------------------------------------------------------
 
-    def handle(self, nick, target, text, now=None, host=""):
+    def handle(self, nick, target, text, now=None, host="", notice=False):
+        """`notice`: la riga e' una NOTICE. Vale solo come giocata in privato
+        (`pl N` al bot), e non riceve mai risposta: niente risposte automatiche
+        alle NOTICE (RFC 1459), cosi' nessun altro bot ci fa un loop."""
         now = float(now if now is not None else time.time())
         text = text.strip()
         key = nick.casefold()
         m = PLAY_PAT.match(text)
+        if notice:
+            chan, g = self.player_game(key)
+            verb = (m.group("verb") or "play").lower() if m else ""
+            if (g and not is_chan(target) and g["phase"] == "play"
+                    and verb in ("play", "gioco", "gioca", "pick")):
+                nums = [int(x) for x in re.split(r"[\s,]+", m.group("nums").strip()) if x]
+                self.play(chan, g, key, nums, now, quiet=True)
+            return
         if not is_chan(target):
             chan, g = self.player_game(key)
             if m and g:
@@ -592,6 +611,10 @@ class Cah:
         if m:
             if g:
                 self.numbers(chan, g, key, m, now)
+            return
+        if JO_PAT.match(text):
+            if g:
+                self.join(chan, g, nick, now)
             return
         m = CAH_PAT.match(text)
         if not m:
@@ -640,12 +663,12 @@ class Cah:
                 or ircgame.can_control(self.tracker, chan, nick, host, self.trust)):
             return False
         self.say(chan, f"{nick}: qui il tavolo lo {verb} solo un op o lo staff. Per giocare: "
-                       f"!cah entra quando c'e' una partita aperta.")
+                       f"jo quando c'e' un tavolo aperto.")
         return True
 
     def numbers(self, chan, g, key, m, now):
         nums = [int(x) for x in re.split(r"[\s,]+", m.group("nums").strip()) if x]
-        verb = m.group("verb").lower()
+        verb = (m.group("verb") or "play").lower()
         if g["phase"] == "judge" and verb in ("winner", "vince", "pick") and len(nums) == 1:
             self.winner(chan, g, key, nums[0], now)
         elif g["phase"] == "play" and verb in ("play", "gioco", "gioca", "pick"):
@@ -792,10 +815,10 @@ class Cah:
                         break
                     self.track(line, now)
                     m = PRIVMSG_PAT.search(line)
-                    if (m and m.group("verb") == "PRIVMSG"
-                            and not m.group("text").startswith("\x01")):
+                    if m and not m.group("text").startswith("\x01"):
                         self.handle(m.group("nick"), m.group("target"), m.group("text"),
-                                    now, host=m.group("host"))
+                                    now, host=m.group("host"),
+                                    notice=m.group("verb") == "NOTICE")
                 self.tick(now)
                 if self.dirty:
                     self.save()
