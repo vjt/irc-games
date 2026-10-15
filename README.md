@@ -95,6 +95,23 @@ python3 -m pytest tests/test_sillabah.py
 python3 sillabah.py prova 10     # dieci manche pescate dal dizionario vero
 ```
 
+## Cards Against Humanity
+
+`cah.py`, in italiano, dietro a MikeBongiorno (richiesta di Malekith, 2026-10-15).
+Carte nostre in `cah_carte.json`; comandi, regole e casi limite in
+`docs/cah_spec.md`; rc.d in `deploy/mikebongiorno_cah`, config in `CAH_NETS`
+(formato di `IMPICCATO_NETS`). `!cah` apre il tavolo, `!cah entra`, le mani
+arrivano in privato, si gioca con `!play N`, lo czar sceglie con `!vince N`.
+
+E' il primo gioco sopra `ircgame.py`, l'idraulica comune (nets, FIFO con freno
+anti-flood, tracker di op/modi/presenza, +c). Gli altri giochi non sono ancora
+migrati.
+
+```
+python3 -m pytest tests/test_cah.py tests/test_ircgame.py
+python3 cah.py carte
+```
+
 ## Deployment
 
 Jail `convento` su m42, `/opt/convento`. Un vhost per bot, via AAAA + PTR:
