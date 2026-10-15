@@ -278,3 +278,18 @@ def test_every_pool_has_at_least_100_lines():
     # vjt, #sbiffo 2026-10-12 12:49: «almeno 100 frasi ognuno».
     for cmd, pool in love.POOLS.items():
         assert len(set(pool)) == len(pool) >= 100, (cmd, len(pool))
+
+
+def test_prot_pool_and_aliases():
+    # vjt, #sbiffo 2026-10-15: !prot, Ambrogio narra chi scorreggia su chi.
+    pool = love.POOLS["prot"]
+    assert len(pool) == len(set(pool)) == 100
+    assert not set(pool) & set(love.PERNACCHIO_PHRASES)
+    for p in pool:
+        assert "{from}" in p and "{to}" in p and not p.startswith("/me "), p
+        out = love.render(p, "katia", "vjt")
+        assert "{" not in out and "}" not in out, p
+    for alias in ("!prot vjt", "!scorreggia vjt", "!PRAAAT vjt", "!peto vjt", "!brap vjt"):
+        assert love.parse(alias) == ("prot", "vjt"), alias
+    for t in ("!prot", "!protesta vjt", "!petone vjt"):
+        assert love.parse(t) is None, t
