@@ -98,9 +98,23 @@ python3 sillabah.py prova 10     # dieci manche pescate dal dizionario vero
 ## Cards Against Humanity
 
 `cah.py`, in italiano, dietro a MikeBongiorno (richiesta di Malekith, 2026-10-15).
-Carte nostre in `cah_carte.json`; comandi, regole e casi limite in
+Carte in `cah_carte.json`, divise in pack; comandi, regole e casi limite in
 `docs/cah_spec.md`; rc.d in `deploy/mikebongiorno_cah`, config in `CAH_NETS`
-(formato di `IMPICCATO_NETS`). `!cah` apre il tavolo, `!cah entra`, le mani
+(formato di `IMPICCATO_NETS`, piu' `#canale:pack1+pack2`).
+
+| pack | nere | bianche | da dove |
+|---|---|---|---|
+| `ita` | 90 | 458 | traduzione non ufficiale di Federico, OCR e correzioni di Ilario |
+| `cah42` | 71 | 219 | espansione di [CaH42project](http://cah42project.it) |
+| `vjt-claude` | 82 | 335 | scritte da vjt-claude, spento di default |
+
+`ita` e `cah42` vengono da
+[ilario/Cards-Against-Humanity-ITA](https://github.com/ilario/Cards-Against-Humanity-ITA)
+(`cah-ita-originale-federico.tex`, `cah-ita-espansione-cah42proj.tex`), licenza
+**Creative Commons BY-NC-SA 2.0 IT** (cosi' in coda a tutti e due i .tex; il
+repo non ha un file LICENSE). Il gioco originale e' di Cards Against Humanity
+LLC (cardsagainsthumanity.com), CC BY-NC-SA. Si rifanno con
+`tools/cah_tex2json.py`. Default dei canali: `ita+cah42`. `!cah` apre il tavolo, `!cah entra`, le mani
 arrivano in privato, si gioca con `!play N`, lo czar sceglie con `!vince N`.
 
 E' il primo gioco sopra `ircgame.py`, l'idraulica comune (nets, FIFO con freno

@@ -1,423 +1,5286 @@
 {
+ "packs": {
+  "ita": {
+   "nome": "Cards Against Humanity in italiano (traduzione di Federico, OCR e correzioni di Ilario)",
+   "fonte": "https://github.com/ilario/Cards-Against-Humanity-ITA (cah-ita-originale-federico.tex)",
+   "licenza": "CC BY-NC-SA 2.0 IT"
+  },
+  "cah42": {
+   "nome": "Espansione CaH42project",
+   "fonte": "https://github.com/ilario/Cards-Against-Humanity-ITA (cah-ita-espansione-cah42proj.tex), carte di http://cah42project.it",
+   "licenza": "CC BY-NC-SA 2.0 IT"
+  },
+  "vjt-claude": {
+   "nome": "Carte scritte da vjt-claude per Azzurra (2026-10-15)",
+   "fonte": "irc-games",
+   "licenza": "stessa del repo"
+  }
+ },
  "nere": [
-  "Il vero motivo per cui Azzurra è ancora in piedi: ___.",
-  "Nel 1999 su #roxybar si parlava solo di ___.",
-  "Cosa c'è nel cassetto della scrivania del sysadmin?",
-  "Il segreto della carbonara perfetta è ___.",
-  "___: la causa principale dei netsplit.",
-  "L'ultima riga di log prima del crash diceva: ___.",
-  "Mia nonna su WhatsApp mi ha mandato ___.",
-  "Al posto del firewall abbiamo messo ___.",
-  "Il nuovo singolo di Sanremo parla di ___.",
-  "Che cosa ha portato il collega alla cena aziendale?",
-  "Alla riunione di condominio si è discusso di ___ per tre ore.",
-  "___: il motivo per cui l'oper mi ha killato.",
-  "Il prossimo gioco di MikeBongiorno sarà ___.",
-  "Allegria! Il premio di stasera è ___.",
-  "Il commit si intitolava solo: «___».",
-  "La mia ex mi ha lasciato per ___.",
-  "Prima di andare in produzione, ricordati di ___.",
-  "Cosa trovi sotto il divano di un sistemista?",
-  "In Italia non si fanno riforme perché c'è ___.",
-  "Il primo comandamento di IRC: non nominare ___ invano.",
-  "Il bambino alla recita di Natale ha impersonato ___.",
-  "Ho chiamato il supporto tecnico e mi hanno consigliato ___.",
-  "Nel nuovo DPCM è vietato ___.",
-  "La dieta mediterranea prevede ___ a colazione.",
-  "Su Telegram c'è un gruppo da 40mila persone dedicato a ___.",
-  "Il sacerdote ha benedetto ___.",
-  "La mia password è ___ con un punto esclamativo in fondo.",
-  "Il nuovo trend su TikTok: ___.",
-  "Cosa è andato storto al matrimonio di mio cugino?",
-  "Gesù è tornato, ma solo per ___.",
-  "Nel mio curriculum ho scritto «esperto in ___».",
-  "L'ultimo episodio di Un posto al sole: ___.",
-  "Cosa si dicono due bot IRC quando nessuno li guarda?",
-  "___ è la vera eredità del Novecento italiano.",
-  "Il sindaco ha inaugurato la rotonda dedicata a ___.",
-  "Su Wikipedia italiana stanno litigando da sei mesi su ___.",
-  "L'oroscopo di oggi: attenzione a ___.",
-  "Per il mio funerale voglio ___.",
-  "Il motivo del ritardo di Trenitalia: ___.",
-  "Mamma, papà, devo dirvi una cosa: ___.",
-  "Il nuovo prodotto Apple: ___, a 1999 euro.",
-  "Nel 2026 l'intelligenza artificiale ci ha portato ___.",
-  "Il bidello della mia scuola nascondeva ___.",
-  "Cosa c'è nel pacco di Amazon che non ho ordinato?",
-  "Lo slogan della nuova campagna elettorale: «Più ___ per tutti».",
-  "La parola d'ordine per entrare su #it-opers è ___.",
-  "Su /dev/null finisce tutto, tranne ___.",
-  "Il manuale di Debian sconsiglia ___.",
-  "Ho fatto un corso di mindfulness e ho imparato ___.",
-  "Durante la messa il prete si è distratto per ___.",
-  "___ e ___: la coppia del secolo.",
-  "Ho mischiato ___ e ___ e ora la cucina è inagibile.",
-  "Il nuovo reality di Canale 5: ___ contro ___.",
-  "Stasera su #sbiffo: ___ seguito da ___.",
-  "Prima ___, poi ___. Classico martedì.",
-  "Il sistemista perfetto unisce ___ e ___.",
-  "Ho trovato ___ dentro ___.",
-  "Il mio terapeuta dice che ___ è colpa di ___.",
-  "Il nuovo protocollo di rete: ___ over ___.",
-  "A Natale ho regalato ___ a mia suocera, lei mi ha regalato ___.",
-  "Nel cloud abbiamo migrato ___, purtroppo anche ___.",
-  "La ricetta segreta del tiramisù: ___ e un po' di ___.",
-  "Ho perso il lavoro per colpa di ___ e ___.",
-  "Sul diario di scuola ho scritto: «Oggi ___».",
-  "L'ultimo desiderio del condannato: ___.",
-  "Il nostro datacenter è raffreddato con ___.",
-  "Mike Bongiorno, ultima domanda: cos'è ___?",
-  "La quarta legge della termodinamica: ___ si conserva sempre.",
-  "Perché sono sveglio alle quattro di notte?",
-  "Il kernel panic è stato causato da ___.",
-  "Sul muro del bagno dell'autogrill c'era scritto ___.",
-  "Il mio primo ricordo di internet: ___.",
-  "Cosa porti su un'isola deserta?",
-  "La Madonna è apparsa e ha chiesto ___.",
-  "Il ministero ha stanziato due milioni per ___.",
-  "Il wifi dell'ospedale si chiama ___.",
-  "Il CEO ha annunciato ___ e poi si è dimesso.",
-  "Mio figlio da grande vuole fare ___.",
-  "Al pranzo della domenica, lo zio ha tirato fuori ___.",
-  "Stanotte ho sognato ___ e mi sono svegliato sudato.",
-  "Il bug non è un bug, è ___.",
-  "Il vecchio oper, in punto di morte, sussurrò: «___»."
+  {
+   "testo": "La nuova norma sulla sicurezza ora proibisce ___ sugli aerei.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "È un peccato che i ragazzini al giorno d'oggi partecipino a ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Fra 1.000 anni, quando le banconote saranno soltanto un ricordo lontano, ___ sarà il nostro denaro.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "La lega serie A ha vietato ___ poiché dà un vantaggio ingiusto ai giocatori.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Qual è il vizio segreto di Batman?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Il prossimo romanzo di J.K.Rowling. Harry Potter e la camera dei ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Si, ho ucciso ___ Ti domandi come? ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "Prof. mi dispiace ma non ho potuto finire i compiti per colpa di ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "E il premio Oscar per ___ va a ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "Per il mio prossimo numero tirerò fuori ___ da ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "___ + ___ = ___",
+   "pack": "ita",
+   "pick": 3
+  },
+  {
+   "testo": "Cosa ho portato dal Messico?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "___? C'è un app per quello.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Passo 1: ___ Passo 2: ___ Passo 3: Guadagno!",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "___ Scommetto che non ne desideri soltanto uno!",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Qual è il mio antidroga?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Mentre gli USA e la Russia gareggiavano per la conquista della Luna, il Messico ha investito milioni di pesos in ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Nel nuovo film della Disney, Hannah Montana si scontra per la prima volta contro ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Qual è il mio potere segreto?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Qual è la nuova dieta del momento?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa si mangia Vin Diesel per cena?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Quando il faraone rimase impassibile, Mosè scateno la piaga ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Come faccio a mantenere la mia attuale relazione?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Qual è la cosa più incrostata?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Mentre ero sotto gli effetti di acidi, ___ si trasformò in ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "Nel carcere di Los Angeles le voci dicono che puoi scambiare 200 sigarette per ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Dopo il terremoto Sean Penn portò ___ alle persone di Haiti.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Invece del carbone la Befana ora porta ai bambini cattivi ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "La vita degli indiani d'America cambiò per sempre quando gli uomini bianchi li introdussero a ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa usano gli insegnanti per ispirare al successo i ragazzi?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Amaro Montenegro. Sapore di ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Negli ultimi istanti di vita di Michael Jackson lui pensò a ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Ai neri piace ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "___ è una tendenza pericolosa che porta a ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "Perché ho male ovunque?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Una romantica cena a lume di candela è incompleta senza ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa posso andare a prendere dal passato per convincere la gente di essere un potente stregone?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Sono Valerio Staffelli e sono qui per parlavi di ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "La gita scolastica fu completamente rovinata da ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Qual è il miglior amico di una ragazza?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cara TopGirl, ho difficoltà con ___ e vorrei qualche consiglio.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Quando sarò il capo del governo creerò il Ministero del ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa mi stanno nascondendo i miei genitori?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa non fallisce mai nel ravvivare una festa?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "In un mondo depredato da ___ il nostro unico conforto è ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "Inventa un haiku.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Nel nuovo film di Shyamalan Bruce Willis scopre che ___ era invece ___ per tutto il tempo.",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "Cosa migliora con l'età?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "___ buono fino all'ultima goccia.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Ho un sacco di problemi ma ___ non è fra questi.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "___ è una trappola!",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Il nuovo reality show di MTV presenterà otto celebrità sull'orlo dello sfinimento che vivranno con ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cos'è che mia nonna troverebbe allarmante ma nello stesso tempo anche stranamente affascinante?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Chi è il più emo?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Non avevo veramente compreso ___ finché non incontrai ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "Durante il sesso mi piace pensare a ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa fece finire la mia passata relazione?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cos'è questo suono?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "___ Così è come voglio morire!",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Perché sono appiccicoso?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Quale sarà il prossimo giocattolo dell'Happy Meal?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa sarà disponibile a volontà in paradiso?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Non so con che armi sarà combattuta la terza guerra mondiale. Ma nella quarta si useranno ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa ti permette di portarti a letto, con assoluta certezza, una ragazza?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Voci dicono che il piatto preferito di Vladimir Putin è ___ ripieno di ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "LA7D presenta ___ la storia di ___",
+   "pack": "ita",
+   "pick": 2
+  },
+  {
+   "testo": "___: testato dai bambini, approvato dalle madri.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Perché non riesco a dormire?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cos'è questo odore?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa aiuterebbe Monti a rilassarsi?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Questo è come il mondo finirà, non con una esplosione ma con ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "In arrivo a Broadway quest'anno, ___: il musical.",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Gli antropologi hanno recentemente scoperto un'antica tribù che venera ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Ma prima che la uccida Signor Bond le voglio mostrare ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Recenti studi hanno mostrato che topi di laboratorio impiegano il 50% in meno per uscire da un labirinto se sono stati esposti a ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Quale sarà la prossima coppia di supereroi?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Prossimamente su Rai Sport 2: i mondiali di ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Quando sarò milionario erigerò una statua di 30 metri per commemorare ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Nel tentativo di attrarre nuove persone, il museo nazionale di Storia Naturale inaugurerà una mostra interattiva su ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Guerra! A cosa ci serve?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa mi crea flatulenze incontrollabili?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Di cosa odorano le persone anziane?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "A cosa rinuncio per la quaresima?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "La medicina alternativa sta ora adottando i poteri curativi di ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Quale cosa l'Italia ha paracadutato ai bambini afghani?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa piace a Silvio Berlusconi?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Durante il trascurato Periodo Marrone, Picasso ha prodotto centinai di quadri su ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa non vuoi trovare nel tuo cibo cinese?",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Bevo per dimenticare ___",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "___ Dammi un cinque fratello!",
+   "pack": "ita",
+   "pick": 1
+  },
+  {
+   "testo": "Arricchisciti rapidamente con ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "___ è la radice di tutti i mali del mondo!",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Mors tua, vita mea. ___ tua, vita ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Il video della canzone \"YMCA\" fu registrato dai VillagePepole vestiti da marinaio, pompiere, indiano e ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Era una notte buia e tempestosa. Ad un tratto la porta sbattè e ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "KEEP CALM AND ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "L'Italia è fallita! Non ci sono più soldi. Adesso non mi resta che ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Benvenuti nella terra di ___ dove potrete ammirare ___ allo stato brado!",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Salendo in soffitta ho aperto l'antico baule di mia nonna e al suo interno ho trovato ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "E' il mio primo volo in aereo, ma il passeggero seduto accanto a me ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Ciao, sono Silvio Berlusconi e quando verrò eletto restituirò ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Ogni volta che ascolto in tv la voce di ___ mi vien voglia di ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Caro Babbo Natale, quest'anno in regalo vorrei ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Amore mio, sono qui in ginocchio davanti a te per ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "A proposito di ___, per me la soluzione è ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Non so ___, ora cerco come si fa su youtube!",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Il mio primo pensiero al mattino è ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Piuttosto che andare dalla suocera, preferisco ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Oggi ti vedo strano, non ti senti bene? Non è che hai mangiato ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "L'altra sera mentre portavo a spasso il cane, ho visto ___ che con aria sospetta stava per ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Oggi ___ mi sembra davvero molto ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "A ___ quando è in bagno, piace pensare a ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Prova il nuovo philadelphia al gusto di ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Quando aprì il vaso, Pandora vi trovò un'unica cosa: ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Dlin dlon, un addetto pulizie al reparto ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Il peggior regalo di natale mai avuto da bambino è stato ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Rocco Siffredi nel tempo libero colleziona ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "\"Mamma/papà come nascono i bambini?\" Come gli rispondi? ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Walt Disney presenta ___ un nuovo cartoon che parla di ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Stai facendo sesso selvaggio e succede che ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Il 1930 è spesso indicato come l'età d'oro del ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "La verità è che alla fine dell'universo c'è soltanto ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "E' ampiamente diffusa l'idea che i nostri antenati non si sarebbero mai evoluti senza ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Un ___ al giorno leva ___ di torno!",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Ho un'idea vincente per un nuovo programma tv. ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "La ricetta del successo. ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Qual è la nuova dieta del momento? ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Un'invenzione che potrebbe salvare il mondo. ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Vieni sorpreso da un temporale, per non bagnarti ti rifugi ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Uccidi i tuoi nemici con ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Al primo appuntamento ti presenti con? ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Primo classificato: ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "La mia ultima frase sul letto di morte sarebbe: ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "___ non così che vi fate male!",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Vorrei ___ per conquistare ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "C'è crisi, si torna al baratto: ___ per ___.",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Avevo un piano perfetto, ma non avevo considerato ___.",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "___. Così è la vita!",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Il mio sogno ricorrente: ___ che ___.",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Quale sarà la nostra ultima speranza quando un nuovo Demone-Robot invaderà il mondo?",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Quando ho visto tua madre nuda, mi ha ricordato ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Hanno appena trovato un ___ nei rifiuti dell'ospedale di Napoli.",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Adoro l'odore di ___ la mattina.",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "In realtà l'11 settembre fu organizzato da ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Il Sacro Graal descritto nella Bibbia in realtà non è un calice ma è ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "La felicità è ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Che ore sono? E' l'ora di ___!",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "La nonna mi diceva sempre che ___, mi avrebbe reso cieco!",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "___ è l'ottavo peccato capitale!",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Il dottore mi ha comunicato con faccia severa che il mio era un grave caso di ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Mi prodigherei in un ricco pompino soltanto per ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Baci il rospo ma, invece di trasformarsi in un principe, diventa ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "La più grande disavventura che può capitare a una donna è ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "\"Mamma mamma perchè papà indossa le scarpe col tacco 12?\"",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Obama ha un tatuaggio nascosto che raffigura ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Cos'hai fatto l'estate scorsa?",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Sei simpatico come ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Questa bibita energetica ha un sapore di ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "L'assenza di ___ è un evidente sintomo di ___",
+   "pack": "cah42",
+   "pick": 2
+  },
+  {
+   "testo": "Rimedi naturali per combattere l'aerofagia: ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Dopo 10 anni di fidanzamento ti lascia con due semplici parole: sono omosessuale. La tua reazione è ___",
+   "pack": "cah42",
+   "pick": 1
+  },
+  {
+   "testo": "Il vero motivo per cui Azzurra è ancora in piedi: ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Nel 1999 su #roxybar si parlava solo di ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa c'è nel cassetto della scrivania del sysadmin?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il segreto della carbonara perfetta è ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "___: la causa principale dei netsplit.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "L'ultima riga di log prima del crash diceva: ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Mia nonna su WhatsApp mi ha mandato ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Al posto del firewall abbiamo messo ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il nuovo singolo di Sanremo parla di ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Che cosa ha portato il collega alla cena aziendale?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Alla riunione di condominio si è discusso di ___ per tre ore.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "___: il motivo per cui l'oper mi ha killato.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il prossimo gioco di MikeBongiorno sarà ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Allegria! Il premio di stasera è ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il commit si intitolava solo: «___».",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "La mia ex mi ha lasciato per ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Prima di andare in produzione, ricordati di ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa trovi sotto il divano di un sistemista?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "In Italia non si fanno riforme perché c'è ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il primo comandamento di IRC: non nominare ___ invano.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il bambino alla recita di Natale ha impersonato ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Ho chiamato il supporto tecnico e mi hanno consigliato ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Nel nuovo DPCM è vietato ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "La dieta mediterranea prevede ___ a colazione.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Su Telegram c'è un gruppo da 40mila persone dedicato a ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il sacerdote ha benedetto ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "La mia password è ___ con un punto esclamativo in fondo.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il nuovo trend su TikTok: ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa è andato storto al matrimonio di mio cugino?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Gesù è tornato, ma solo per ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Nel mio curriculum ho scritto «esperto in ___».",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "L'ultimo episodio di Un posto al sole: ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa si dicono due bot IRC quando nessuno li guarda?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "___ è la vera eredità del Novecento italiano.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il sindaco ha inaugurato la rotonda dedicata a ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Su Wikipedia italiana stanno litigando da sei mesi su ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "L'oroscopo di oggi: attenzione a ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Per il mio funerale voglio ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il motivo del ritardo di Trenitalia: ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Mamma, papà, devo dirvi una cosa: ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il nuovo prodotto Apple: ___, a 1999 euro.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Nel 2026 l'intelligenza artificiale ci ha portato ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il bidello della mia scuola nascondeva ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa c'è nel pacco di Amazon che non ho ordinato?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Lo slogan della nuova campagna elettorale: «Più ___ per tutti».",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "La parola d'ordine per entrare su #it-opers è ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Su /dev/null finisce tutto, tranne ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il manuale di Debian sconsiglia ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Ho fatto un corso di mindfulness e ho imparato ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Durante la messa il prete si è distratto per ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "___ e ___: la coppia del secolo.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Ho mischiato ___ e ___ e ora la cucina è inagibile.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Il nuovo reality di Canale 5: ___ contro ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Stasera su #sbiffo: ___ seguito da ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Prima ___, poi ___. Classico martedì.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Il sistemista perfetto unisce ___ e ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Ho trovato ___ dentro ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Il mio terapeuta dice che ___ è colpa di ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Il nuovo protocollo di rete: ___ over ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "A Natale ho regalato ___ a mia suocera, lei mi ha regalato ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Nel cloud abbiamo migrato ___, purtroppo anche ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "La ricetta segreta del tiramisù: ___ e un po' di ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Ho perso il lavoro per colpa di ___ e ___.",
+   "pack": "vjt-claude",
+   "pick": 2
+  },
+  {
+   "testo": "Sul diario di scuola ho scritto: «Oggi ___».",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "L'ultimo desiderio del condannato: ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il nostro datacenter è raffreddato con ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Mike Bongiorno, ultima domanda: cos'è ___?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "La quarta legge della termodinamica: ___ si conserva sempre.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Perché sono sveglio alle quattro di notte?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il kernel panic è stato causato da ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Sul muro del bagno dell'autogrill c'era scritto ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il mio primo ricordo di internet: ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Cosa porti su un'isola deserta?",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "La Madonna è apparsa e ha chiesto ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il ministero ha stanziato due milioni per ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il wifi dell'ospedale si chiama ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il CEO ha annunciato ___ e poi si è dimesso.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Mio figlio da grande vuole fare ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Al pranzo della domenica, lo zio ha tirato fuori ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Stanotte ho sognato ___ e mi sono svegliato sudato.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il bug non è un bug, è ___.",
+   "pack": "vjt-claude",
+   "pick": 1
+  },
+  {
+   "testo": "Il vecchio oper, in punto di morte, sussurrò: «___».",
+   "pack": "vjt-claude",
+   "pick": 1
+  }
  ],
  "bianche": [
-  "Un netsplit alle tre di notte",
-  "rm -rf / lanciato da root con fiducia",
-  "Un oper ubriaco con la G-line facile",
-  "La suocera che usa IRC",
-  "Un ping timeout esistenziale",
-  "Il server di posta che gira su un Pentium II",
-  "Lo zio complottista con la licenza di pesca",
-  "Un vibratore con il Bluetooth e il firmware vecchio",
-  "Una carbonara con la panna",
-  "La panna nella carbonara, di nuovo",
-  "Il wifi di Trenitalia",
-  "Un DPCM letto alle 23:59",
-  "Un cinghiale romano sotto casa",
-  "Il mutuo trentennale a tasso variabile",
-  "Mike Bongiorno in versione ologramma",
-  "Allegria!",
-  "Il cesso dell'autogrill di Roncobilaccio",
-  "Il pandoro con la crema spalmato sul cane",
-  "Un'ernia del disco da tastiera",
-  "Una backup mai testata",
-  "La cronologia del browser di tuo padre",
-  "Il televoto di Sanremo",
-  "Un prete con troppa confidenza col vino da messa",
-  "Babbo Natale in cassa integrazione",
-  "Un cassetto pieno di cavi seriali",
-  "Debian merda",
-  "Il kernel ricompilato per sport",
-  "Il cugino che «ripara i computer»",
-  "Una pensione da 480 euro",
-  "Il bonus monopattino",
-  "Un monopattino nel Tevere",
-  "Il Grande Fratello VIP, edizione ventisette",
-  "Il commercialista che sparisce ad aprile",
-  "La dichiarazione dei redditi fatta col pallottoliere",
-  "Un crocifisso alimentato a criceto",
-  "Un criceto su una rotella collegato al datacenter",
-  "Il moto perpetuo a suon di bestemmie",
-  "Porco dio in do minore",
-  "Una novena recitata in Perl",
-  "Un'ostia senza glutine e senza Dio",
-  "La Madonna di Medjugorje in videochiamata",
-  "Padre Pio con il cellulare",
-  "Un rosario di cavi ethernet",
-  "Il mio ex che commenta ancora le mie storie",
-  "Le storie Instagram di un assessore regionale",
-  "Un influencer che vende integratori di aria",
-  "L'aria di montagna in barattolo",
-  "Una scoreggia in riunione su Teams",
-  "Il microfono acceso durante la scoreggia",
-  "Il pulsante «rispondi a tutti»",
-  "Una mail con oggetto «URGENTE!!!»",
-  "Il collega che dice «ci sentiamo dopo» e non si sente mai più",
-  "Un PowerPoint di settantadue slide",
-  "Il team building con i bastoni da trekking",
-  "La cena aziendale al sushi all you can eat",
-  "Le cozze crude del lungomare",
-  "Un'intossicazione alimentare da tiramisù",
-  "Gli spaghetti spezzati a metà",
-  "L'ananas sulla pizza",
-  "Il ketchup sulla pasta",
-  "Il caffè della macchinetta del reparto",
-  "Un caffè corretto alla sambuca alle otto del mattino",
-  "La grappa del nonno da 70 gradi",
-  "Un amaro del Capo dopo la comunione",
-  "Il limoncello fatto in vasca da bagno",
-  "L'anima di un sistemista in un barattolo",
-  "Un sistemista che ha visto cose",
-  "Il sudore freddo prima di un reboot remoto",
-  "Un reboot remoto senza console",
-  "Il firewall configurato da un tirocinante",
-  "Il tirocinante che ora ha accesso root",
-  "Una password scritta su un post-it",
-  "Password123!",
-  "Il post-it sul monitor del direttore",
-  "Un monitor CRT da 21 pollici in braccio",
-  "Il modem a 56k che canta",
-  "Il suono del modem a 56k alle due di notte",
-  "La bolletta Telecom del 1998",
-  "Una connessione ISDN condivisa con il condominio",
-  "Un messaggio in segreteria di tua madre",
-  "Tua madre che scopre IRC",
-  "Tua madre su #sbiffo",
-  "Tre giorni senza dormire e un deploy di venerdì",
-  "Il deploy di venerdì pomeriggio",
-  "La rollback che non funziona",
-  "Il DBA in ferie in Sardegna",
-  "Una tabella senza chiave primaria",
-  "DROP TABLE utenti;",
-  "Il cronjob dimenticato del 2009",
-  "Un cronjob che manda mail a un morto",
-  "Un server sotto la scrivania che nessuno ha il coraggio di spegnere",
-  "Lo stagista che stacca la spina sbagliata",
-  "Una ciabatta elettrica con dodici stufette",
-  "Il condizionatore del datacenter in sciopero",
-  "Un piccione nel datacenter",
-  "Un nido di vespe nell'armadio rack",
-  "Il rack montato al contrario",
-  "Dieci metri di cavo arrotolato come un serpente",
-  "Il cavo che funziona solo se lo tieni con la mano",
-  "Un'antenna fatta con la stagnola",
-  "La stagnola sulla testa per i 5G",
-  "Un complottista con il 5G in casa",
-  "I rettiliani al comune di Roccacannuccia",
-  "La sagra della porchetta",
-  "Una porchetta intera nel bagagliaio",
-  "Il bagagliaio della Panda del nonno",
-  "Una Panda 4x4 del 1987 con le gomme lisce",
-  "L'autovelox nascosto dietro la curva",
-  "Il vigile urbano che non perdona",
-  "Una multa per sosta in doppia fila davanti alla chiesa",
-  "La processione del santo patrono con la banda stonata",
-  "Il santo patrono che non fa più miracoli",
-  "San Gennaro che non si scioglie",
-  "I botti di Capodanno in mano a un dodicenne",
-  "Un dito in meno a Capodanno",
-  "La tombola con la nonna che bara",
-  "Il panettone artigianale da 48 euro",
-  "Il cenone della vigilia che dura sei ore",
-  "Il parente che chiede «e la fidanzata?»",
-  "La domanda «quando ti laurei?»",
-  "Una laurea in Scienze della Comunicazione",
-  "Il master a pagamento in Social Media Management",
-  "Lo stage non retribuito di diciotto mesi",
-  "Un contratto a chiamata",
-  "Il colloquio di lavoro con la domanda «dove ti vedi tra cinque anni?»",
-  "Tra cinque anni, morto",
-  "Una partita IVA forfettaria",
-  "Il commercialista che ride",
-  "L'Agenzia delle Entrate",
-  "Una cartella esattoriale per 3 euro e 12 centesimi",
-  "La coda alla posta con il numerino 847",
-  "Lo SPID della nonna",
-  "La nonna che ha capito lo SPID meglio di te",
-  "Il PIN del bancomat scritto sul bancomat",
-  "Un bonifico istantaneo a un principe nigeriano",
-  "Il principe nigeriano che ti scrive ancora",
-  "Uno scam su Telegram con Elon Musk finto",
-  "Le criptovalute di tuo cognato",
-  "Tuo cognato che ti spiega la blockchain al pranzo di Pasqua",
-  "Un NFT di un gatto sotto il divano",
-  "Il gatto che vomita sulla tastiera",
-  "Il gatto che spegne il server camminando sul pulsante",
-  "Un cane che mangia il cavo di rete",
-  "Il cane del vicino che abbaia in Morse",
-  "Il vicino che fa il trapano la domenica alle otto",
-  "Il trapano a percussione dell'inferno",
-  "L'inferno dei sistemisti, dove tutto gira su Windows Server 2003",
-  "Windows ME",
-  "Clippy che ti giudica",
-  "Un BSOD durante la tesi",
-  "La tesi salvata solo su chiavetta",
-  "La chiavetta USB nella lavatrice",
-  "La lavatrice che centrifuga come un Boeing",
-  "Un calzino orfano",
-  "Il mistero dei calzini scomparsi",
-  "I calzini bianchi con i sandali",
-  "Un tedesco in sandali a Rimini",
-  "La Riviera romagnola ad agosto",
-  "Un ombrellone in quinta fila a 40 euro",
-  "Il bagnino che ti guarda male",
-  "La piadina con la Nutella e il prosciutto insieme",
-  "Un pranzo di nozze con quattordici portate",
-  "Il sorbetto al limone fra il pesce e la carne",
-  "Il trenino al matrimonio sulle note di Raffaella Carrà",
-  "La zia che balla sul tavolo",
-  "Lo zio che fa il discorso ubriaco",
-  "Il prete che si è dimenticato il nome della sposa",
-  "Un divorzio in comunione dei beni",
-  "L'avvocato divorzista che ti dà del tu",
-  "La custodia condivisa del gatto",
-  "Un'eredità di 12 euro e un trullo",
-  "Un trullo con l'Airbnb abusivo",
-  "Gli Airbnb del centro di Firenze",
-  "Il turista che fa il bagno nella fontana di Trevi",
-  "Il centurione finto al Colosseo",
-  "Un selfie col centurione per venti euro",
-  "Una gita scolastica a Gardaland",
-  "La prof di matematica in discoteca",
-  "Il compito in classe copiato da ChatGPT",
-  "ChatGPT che inventa le fonti",
-  "Un'IA che bestemmia in canale",
-  "Un bot che fa il moderatore su un canale di quaranta persone",
-  "Un bot che si innamora di un altro bot",
-  "Il bot dell'impiccato",
-  "Una suora da sparare",
-  "Le suore del convento in sciopero",
-  "Una suora con la mitraglietta",
-  "Il sesto comandamento in versione beta",
-  "Un confessionale con il wifi",
-  "L'acqua santa gassata",
-  "Una benedizione via PEC",
-  "La PEC che non arriva mai",
-  "L'ufficio protocollo chiuso per pausa caffè",
-  "La pausa caffè di due ore e mezza",
-  "Il dipendente pubblico che timbra in mutande",
-  "Le mutande della fortuna di Capodanno",
-  "Il reggiseno appeso al ventilatore",
-  "Uno spogliarellista in pensione",
-  "Il calendario dei pompieri",
-  "Un camion dei pompieri in ritardo perché ha fame",
-  "La frittata di cipolle della mamma di Fantozzi",
-  "La Corazzata Potëmkin",
-  "Novantadue minuti di applausi",
-  "Il ragionier Filini con la mongolfiera",
-  "Un megadirettore galattico",
-  "Il Mascetti che fa una supercazzola",
-  "Una supercazzola prematurata con scappellamento a destra",
-  "Il Grande Lebowski in accappatoio",
-  "Un accappatoio rubato in un hotel a tre stelle",
-  "L'hotel con la piscina chiusa per lavori",
-  "La piscina comunale con i cerotti che galleggiano",
-  "Un cerotto in bocca",
-  "Il dentista che ti fa domande mentre hai il trapano in bocca",
-  "L'anestesia che non fa effetto",
-  "La sala d'attesa del pronto soccorso con il codice bianco",
-  "Il codice bianco da dodici ore",
-  "Un medico di base introvabile",
-  "Il ricettario della nonna con le dosi «quanto basta»",
-  "Quanto basta",
-  "Il sale grosso nell'acqua della pasta, ma prima che bolla",
-  "Gli italiani che spiegano la pizza agli americani",
-  "La pizza col pollo e la salsa barbecue",
-  "Un americano a Roma con lo zaino davanti",
-  "Il napoletano che ti spiega il caffè",
-  "Il milanese che lavora anche a Ferragosto",
-  "Il romano che dice «daje» a un funerale",
-  "Il torinese che non ti saluta da trent'anni",
-  "Il barese che ti invita a pranzo e non puoi rifiutare",
-  "Il veneto che bestemmia con la grazia di un tenore",
-  "Una bestemmia in dialetto bergamasco",
-  "Il dialetto che nessuno capisce tranne la nonna",
-  "La nonna che ti mette cinque chili di sugo nel trolley",
-  "Il trolley pieno di provole",
-  "Il controllo all'aeroporto con la provola",
-  "Ryanair con il bagaglio a mano da 40x20x25",
-  "L'applauso quando atterra l'aereo",
-  "Il pilota che bestemmia nell'altoparlante",
-  "Il treno regionale soppresso",
-  "Il capotreno che si è perso",
-  "Il Frecciarossa fermo a Orte per un'ora",
-  "Orte",
-  "Una panchina a Orte alle due di notte",
-  "Un ubriaco che recita Dante alla stazione",
-  "Il Purgatorio, ma con l'aria condizionata rotta",
-  "Il girone dei sistemisti che non fanno i backup",
-  "Un'interrogazione su Leopardi",
-  "Il passero solitario in un datacenter",
-  "La siepe che esclude lo sguardo del firewall",
-  "Il dottor Divago",
-  "Il canone RAI nella bolletta della luce",
-  "La bolletta della luce a mille euro",
-  "Una stufa a pellet in un monolocale",
-  "Il monolocale a Milano da 1200 euro al mese",
-  "Il coinquilino che ruba lo yogurt",
-  "Lo yogurt scaduto nel 2019",
-  "Il frigo dello studentato",
-  "L'odore del frigo dello studentato",
-  "Un esame da diciotto crediti",
-  "Un diciotto accettato con le lacrime",
-  "Il professore che non si presenta all'appello",
-  "Il fuoricorso del ventesimo anno",
-  "Lo spritz di Campo Santa Margherita",
-  "Uno spritz al Campari a colazione",
-  "L'apericena con le patatine molli",
-  "L'happy hour del lunedì triste",
-  "Il lunedì",
-  "Il lunedì dopo le ferie",
-  "Le ferie in agosto con tutti gli altri",
-  "L'esodo estivo sull'A1",
-  "L'autogrill come luogo dell'anima",
-  "Il Camogli dell'autogrill",
-  "Una fila di ottanta chilometri sul Brennero",
-  "Il Brennero chiuso per neve",
-  "I fiocchi di neve sopra un server rack",
-  "Il riscaldamento globale e la cotoletta",
-  "La cotoletta alla milanese grande come un tombino",
-  "Un tombino che vola durante il temporale",
-  "L'allerta meteo arancione per tre gocce",
-  "Un ombrello rotto alla prima goccia",
-  "Un film porno con i sottotitoli in tedesco",
-  "Il PornHub premium del dirigente",
-  "Una webcam accesa durante la call",
-  "La call che poteva essere una mail",
-  "La mail che poteva essere un messaggio IRC",
-  "Un messaggio IRC che poteva essere un silenzio",
-  "Il silenzio di #it-opers",
-  "Una /kill dettata dall'amore",
-  "Il /msg sbagliato alla persona sbagliata",
-  "Il ban per flood",
-  "Un excess flood alle quattro del mattino",
-  "Il buffer di irssi pieno di highlight",
-  "Un'esc+numero finita male",
-  "Uno screen detached dal 2011",
-  "Il server di BNC che nessuno paga più",
-  "Un eggdrop con la memoria di un pesce",
-  "Un ircd scritto in C da un sedicenne",
-  "Un segfault in produzione",
-  "Il core dump grosso quanto l'Antartide",
-  "Il ticket chiuso con «non riproducibile»",
-  "Funziona sulla mia macchina",
-  "La documentazione scritta in latino",
-  "Il README che dice solo «TODO»",
-  "Un commento nel codice che dice «non toccare»",
-  "Lo spaghetti code con la panna",
-  "Il refactor che dura da sei anni",
-  "La riunione per decidere quando fare la riunione",
-  "Agile, ma con la burocrazia di un ministero",
-  "Il product manager che ha scoperto l'IA",
-  "La blockchain per gestire la spesa",
-  "Un frigorifero connesso a internet che ti spia",
-  "Alexa che ascolta le bestemmie",
-  "Siri che non capisce il calabrese",
-  "Un assistente vocale che risponde in dialetto",
-  "L'aggiornamento di Windows durante la presentazione",
-  "Il proiettore che non si collega mai al primo colpo",
-  "Un adattatore HDMI che nessuno ha",
-  "Un cassetto pieno di caricabatterie Nokia",
-  "Il Nokia 3310 indistruttibile",
-  "Snake sul 3310",
-  "Un MMS del 2006",
-  "Il trillo",
-  "Uno squillo e poi riattacchi",
-  "La ricarica da cinque euro",
-  "Il credito residuo di 12 centesimi",
-  "Un SMS gratis di Natale",
-  "La catena di Sant'Antonio",
-  "Il buongiornissimo con il caffè glitterato",
-  "Un gruppo WhatsApp di genitori",
-  "La mamma di Gennaro che chiede i compiti alle 23",
-  "La maestra in pensione con il profilo Facebook pubblico",
-  "Il vocale da sette minuti",
-  "Un vocale da sette minuti che inizia con «allora, niente»",
-  "Il nulla cosmico",
-  "Un buco nero dentro il frigo",
-  "La fine del mondo, ma di domenica"
+  {
+   "testo": "Una maledizione di un Gitano.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un momento di silenzio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un festival della salsiccia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un poliziotto onesto che non ha niente da perdere.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Carestia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Batteri Mangia-Carne.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Serpenti volanti che fanno sesso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Non fregarsene un cazzo del Terzo Mondo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sexting.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Benny Benassi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pornostar.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Stupro e Saccheggio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "72 vergini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sparatoria da auto in corsa.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un paradosso da viaggio nel tempo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cucina autentica messicana.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gioielli da rapper.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Consulente.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Oberato dai debiti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Problemi col babbo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Avere l'approvazione di Lapo Elkan.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Far cadere un lampadario sopra ai tuoi nemici e farsi sollevare dalla corda che lo sosteneva.",
+   "pack": "ita"
+  },
+  {
+   "testo": "L'Ex presidente George W. Bush.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Nudità completa.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Iniezioni ormonali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Covare un uovo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Spogliarsi e mettersi a guardare l'Albero Azzurro.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Far finta di interessarsi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Ridicolizzarsi in pubblico.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scambiarsi le siringhe.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Caccole.",
+   "pack": "ita"
+  },
+  {
+   "testo": "L'inevitabile morte termica dell'universo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il miracolo della nascita.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il rapimento alieno.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Tirarlo fuori.",
+   "pack": "ita"
+  },
+  {
+   "testo": "I privilegi dei bianchi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Compiti da moglie.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La banda Bassotti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Deodorante AXE.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il sangue di Cristo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Orribili incidenti dovuti alla depilazione laser.",
+   "pack": "ita"
+  },
+  {
+   "testo": "BATMAN!!!",
+   "pack": "ita"
+  },
+  {
+   "testo": "Agricoltura.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un robusto mongoloide.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Selezione naturale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Aborti fatti con l'appendiabiti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mangiarsi tutti i dolci prima dell'inizio della cena di beneficenza per i malati di AIDS.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Le braccia di Michelle Obama.",
+   "pack": "ita"
+  },
+  {
+   "testo": "World of Warcraft.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Andare in picchiata.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Obesità.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un montaggio pallavolistico omoerotico.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Tetano.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una dimostrazione di un accoppiamento.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Torsione del testicolo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cena a buffet per 5 euro.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pizza con la nutella.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gigi D'Alessio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Formaggio piccante.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Attacchi da Velociraptor.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Togliersi la maglietta.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Smegma.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Alcolismo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un uomo di mezza eta' con un paio di pattini in linea.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lo sguardo fisso di una Winx.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Abbuffarsi e vomitare.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lecca-Lecca giganti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Disgusto di sé.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bambini al guinzaglio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Preliminari meschini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La sacra Bibbia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Porno in un sotterraneo tedesco.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Essere in fiamme.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gravidanza in età adolescenziale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gandhi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lasciare un messaggio imbarazzante in segreteria.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Montanti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Agente del servizio clienti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un'erezione che dura più di quattro ore.",
+   "pack": "ita"
+  },
+  {
+   "testo": "I miei genitali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Rimorchiare ragazze all'ospedale dopo un aborto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scienza.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sesso orale non ricambiato.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Uccelli incapaci di volare.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una buona sniffata.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Tortura cinese.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una colazione bilanciata.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scuole gestite da suore.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Rubare veramente una caramella ad un bambino.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La fondazione Make-A-Wish.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una grattata di culo clandestina.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Post-it passivi aggressivi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La squadra di ginnastica artistica cinese.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Passare a Vodafone.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Fare solo un pochino di pipì.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Video di Barbara D'Urso in lacrime mentre ascolta una storia triste.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Polluzione notturna.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gli ebrei.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Le mie tette.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cosce poderose.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Fare l'occhiolino a persone anziane.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mr. Muscolo, giusto dietro di te.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una gentile carezza nell'interno della coscia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Tensione sessuale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il frutto proibito.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Skeletor.",
+   "pack": "ita"
+  },
+  {
+   "testo": "KiteKat.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Essere ricco.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dolce, dolce vendetta.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Popolo delle Libertà.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Centauri.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un'antilope che soffre di flatulenza.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Natalie Portman.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Toccare una tetta senza dare nell'occhio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Piloti Kamikaze.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sean Connery.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Obbiettivi politici degli omosessuali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un operoso cinese.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un falco con un cappuccio in testa.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Chierichetti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pac--Man.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Diventare così arrabbiati da farsi venire un'erezione.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Campioni gratuiti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un gran rumore per nulla.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Fare la cosa giusta.",
+   "pack": "ita"
+  },
+  {
+   "testo": "I patti Lateranensi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Allattamento.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La pace nel mondo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "RoboCop.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Faccia tosta.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Justin Bieber.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Oompa-Loompa.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gorgheggi in momenti inappropriati.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pubertà.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Fantasmi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una spagnola non simmetrica.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mani vigorose da jazzista.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Ditalini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bruno Vespa che si impiglia con lo scroto in un gancio per le tende.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Polaretti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Violenza della polizia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Totò Riina.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Preadolescente.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scalpare.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mascherare una risata quando vengono menzionati gli Hutu e i Tutsi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Twittare.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Darth Fenner.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una pugnetta triste.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Esattamente quello che ti aspetti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Aspettarsi un rutto e invece vomitare sul pavimento.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Psicofarmaci.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cellule staminali embrionali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un succulento seno.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sesso tra panda.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una lobotomia fatta con un punteruolo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Tom Cruise.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Herpes labiale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Capodogli.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Barboni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Petting duro.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Incesto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pac-Man che trangugia sperma.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un mimo che ha un infarto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Hulk Hogan.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Esfoliarsi la pelle sotto i rotoli di grasso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Doccia di piscio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Emozioni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Leccare cose per rivendicarle come proprie.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Birra Moretti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La placenta.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Combustione umana spontanea.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scopamici.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dipingere con le dita.",
+   "pack": "ita"
+  },
+  {
+   "testo": "L'odore delle persone vecchie.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Avere soltanto un pollo di gomma con una carrucola in mezzo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "I miei demoni interiori.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un Liquidator pieno di piscio di gatto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Giuseppe Mazzini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Coccolarsi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Rosso relativo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Combattimenti tra galli.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Fuoco amico.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Ronald Reagan.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un compleanno deludente.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una sfacciata donna di colore.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Ragazzini che partecipano alle olimpiadi della matematica.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un minuscolo cavallo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Diego Abatantuono.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cavalcare al tramonto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un colpo di scena degno di M. Night Shyamalan.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dredlock.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Distruzione reciproca.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pedofili.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lievito.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Saccheggiare tombe.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mangiare l'ultimo bisonte.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Catapulte.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Persone povere.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il nome della rosa.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Hustle — I signori della truffa.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La forza.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pulirle il culo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Creazionismo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bocca larga.",
+   "pack": "ita"
+  },
+  {
+   "testo": "AIDS.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Foto di tette.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il superuomo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sarah Palin.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Giochi senza frontiere.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sballarsi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scientology.",
+   "pack": "ita"
+  },
+  {
+   "testo": "L'invidia per il pene.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Curare l'omosessualità pregando.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Spassarsela.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Due nani che stanno cagando in un secchio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il KKK.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gengis Khan.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cristalli di metanfetamina.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Servi della gleba. Il pericolo degli sconosciuti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bop it",
+   "pack": "ita"
+  },
+  {
+   "testo": "La carriera di attore di Shaquille O'NeaI.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Baldanzoso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La giustizia spicciola.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un bukkake censurato.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una vita di tristezza.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Razzismo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lancio dei nani.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sole e arcobaleni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una scimmia che fuma un sigaro.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Inondazione improvvisa.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il testicolo mancante di Lance Armstrong.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Conati di vomito.",
+   "pack": "ita"
+  },
+  {
+   "testo": "I terroristi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Britney Spears a 55 anni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Atteggiamento.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Entrare a canzone iniziata e mettersi a ballare selvaggiamente.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lebbra.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gloryholes.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lame nei capezzoli.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il cuore di un bambino.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cuccioli!",
+   "pack": "ita"
+  },
+  {
+   "testo": "Svegliarsi mezzo nudo nel parcheggio di un McDonald.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dighe dentali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La vagina di Oriana Fallaci.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il perineo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Ascolto interessato.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pulizia etnica.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il brutto anatroccolo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La mano invisibile.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Aspettare fino al matrimonio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Stupidita' incomprensibile.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Euphoria di Calvin Klein",
+   "pack": "ita"
+  },
+  {
+   "testo": "Riciclare regali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Disfunzione erettile.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sovracompensazione.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Autocannibalismo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La mia collezione di giocattoli erotici high-tech.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il Papa.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Le persone non di colore.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Porno Tentacolari.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Giuliano Ferrara che vomita convulsamente mentre una nidiata di granchi-ragno si schiude nel suo cervello e fuoriesce dai suoi condotti lacrimali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Troppo gel per capelli.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Seppuku.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Ballare su ghiaccio con persone dello stesso sesso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Barare alle Paraolimpiadi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Carisma.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Keanu Reeves.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dario Argento.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Nickelback.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una rapida occhiata.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cagarsi l'anima.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bambini con il cancro al culo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una sorpresa salata.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il sud.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La violazione dei nostri diritti umani basilari.",
+   "pack": "ita"
+  },
+  {
+   "testo": "DEVI COSTRUIRE ALTRI PILONI.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Stupro su appuntamento.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Essere fantastici.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Necrofilia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Super Quark.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Le persone di colore.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Codice cavalleresco.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lunchables.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Stronze.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Le persone totalmente handicappate.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Orfani commoventi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Hitler.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Cacca che fa bruciare il culo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un altro dannato film sui vampiri.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Molle Slinky attorcigliate.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il vero significato del Natale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Estrogeni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un'aspra marmellata per colazione.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Quella cosa che dà la scossa agli addominali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Espellere un calcolo renale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un buco del culo sbiancato.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Michael Jackson.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Impianti cibernetici.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Ragazzi che non telefonano.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Untori.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Masturbazione.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Allusione sul ceto sociale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Flato vaginale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Nascondere un'erezione.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Intimo commestibile.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Viagra.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Zuppa che è troppo calda.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Maometto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sesso a sorpresa!",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mac.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bere da solo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dita a forma di cazzo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Ferite da arma da taglio multiple.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Farsela addosso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Abusi infantili.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Palline anali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Morti civili.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Salto della quaglia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Christian De Sica.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Carne di cavallo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un cappello davvero alla moda.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Kim Jong-il.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Peli pubici sul bordo del cesso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Testimoni di Geova.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Discriminazione politica.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Farlo dall'entrata posteriore.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Imboccare Platinette.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Insegnare a un robot ad amare.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un mare di guai.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un mulino a vento pieno di cadaveri.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La tigre dei KeIIogg's.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Indossare la biancheria al contrario per evitare di lavarla.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un raggio della morte.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il soffitto di vetro.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un frigorifero pieno di organi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il sogno americano.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bere un barile di birra a testa in giù.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Quando scoreggi ma ti esce anche una sgommata.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Rimangiarsi quello che si è detto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Neonati morti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Prepuzio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Assoli di Sassofoni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Americani.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un feto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sparare fucilate al cielo mentre stai penetrando fino alle palle un cinghiale urlante.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Giorgio Napolitano.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mutilati.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Eugenetica.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La mia situazione sentimentale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Christopher Walken.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Api?",
+   "pack": "ita"
+  },
+  {
+   "testo": "Harry Potter erotica.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scuole Superiori.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sbronzarsi di collutorio.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Nazisti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "1 kg di eroina Messicana di scarsa qualità.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Stephen Hawking che parla sporco.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Genitori morti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Permanenza degli oggetti nella sviluppo cognitivo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pollici opponibili.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Test di intelligenza con domande razziste.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Parlare a vanvera.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Motoseghe al posto delle mani.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Nicolas Cage.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una sfilata di bellezza per bambini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Esplosioni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sniffare colla.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bruno Vespa molestato da uno stormo di avvoltoi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Repressione.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Rufis.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La mia vagina.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pantaloni da cowboy senza sedere.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Psyco.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dare il 110%.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sua altezza reale, regina Elisabetta ll.",
+   "pack": "ita"
+  },
+  {
+   "testo": "I Rhapsody of Fire.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Essere tenuto in disparte.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Goblin.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Speranza.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Martin Luther King.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un micropene.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La mia anima.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un'orgia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Vichinghi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Persone eccitanti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Seduzione.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il complesso di Edipo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Oche.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Riscaldamento globale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Musica New Age.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scaldamani tascabili.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Fare il labbrino.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Omicidio mediante veicolo a motore.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Suffragio femminile.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un profilattico difettoso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Forum.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Bambini africani.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Massacro di Utoya in Norvegia.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Barack Obama.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Asiatici che non sono bravi in matematica.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Anziani uomini giapponesi.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scambiarsi battute divertenti.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Coppie omosessuali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Dividere le acque del Mar Rosso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Arnold Schwarzenegger.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Pompino alla guida.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Addominali spettacolari.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Panettone.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un leone depresso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un sacchetto di fagioli magici.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scelte di vita sbagliate.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La mia vita sessuale.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Auschwitz.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una tartaruga alligatore che ti sta mordendo la punta del pene.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Una detonazione termonucleare.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il clitoride.",
+   "pack": "ita"
+  },
+  {
+   "testo": "II Big Bang.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mine antiuomo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Amici che si mangiano tutti i salatini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Capre che si stanno mangiando lattine.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lo Schiaccianoci: La danza della Fata Cofanetto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Farsi una sega in una piscina di lacrime di bambini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Flauto a pelle.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Il mio momento.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La metropolitana.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Battute fuori luogo sull'olocausto.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Fantasie di un taglialegna.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Voce di Morgan Freeman.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Donne nelle pubblicità di yogurt.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Metodo naturale di allungamento del pene.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Essere un fottuto stregone.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Piercing nei genitali.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Travestiti passabili",
+   "pack": "ita"
+  },
+  {
+   "testo": "Combattimenti sexy con i cuscini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Palle.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Nonna.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Attrito.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Rompicoglioni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scoreggiare e andarsene via.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Essere uno stronzo con i bambini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Installare, in casa, trappole esplosive per ostacolare i ladri.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Sistema Oasi Tecnologica del Riposo materassi Eminflex.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Morire.",
+   "pack": "ita"
+  },
+  {
+   "testo": "L'uragano Katrina.",
+   "pack": "ita"
+  },
+  {
+   "testo": "I gay.",
+   "pack": "ita"
+  },
+  {
+   "testo": "La follia di un uomo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Uomini.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Gli Amish.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Uova di pterodattilo.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Esercizi di «costruzione del gruppo».",
+   "pack": "ita"
+  },
+  {
+   "testo": "Un tumore al cervello.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Carte contro l'umanità.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Aver paura di se stesso.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Lady Gaga",
+   "pack": "ita"
+  },
+  {
+   "testo": "L'uomo del latte.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Essere sboccati.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Mestruazioni.",
+   "pack": "ita"
+  },
+  {
+   "testo": "Scaccolarsi con l'alluce del piede sinistro.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Avere peli pubici fra i denti.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Bomba Atomica.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "The Big Bang Theory.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Pulire un water incrostato, in un autogrill nel napoletano.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Tatuaggio sbagliato.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Martello Pneumatico.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Cavallo Pazzo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Cicciolina nuda.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Sheldon Cooper.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "BAZINGA!!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Si trasforma in un razzo missile.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Uscimmo a riveder le stelle.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Giovanni Verga.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Poliziotti senza pantaloni con grossi problemi di igiene personale.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un'orda famelica di napoletani che non hanno pagato il grattino e vogliono il pizzo!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Aver paura dei vicoli bui mentre cammini per strada con addosso soltanto un impermeabile rosa.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Tarapia tapioco come se fosse antani con la supercazzola prematurata, con lo scappellamento a destra.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un panino col prosciutto.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Organizzare cene eleganti per scopi professionali.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Simulare un orgasmo gridando come una capra affamata.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Una Peroni sudata.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "La nipote di Mubarack.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un vaffanculo a colazione è quello che ci vuole.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Ho stato io.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Il celodurismo bossiano.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Scorreggiare nell'ascensore affollato e guardare schifato quello accanto.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Volere la botte piena, la moglie ubriaca e un cazzo in culo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un milione per gli organizzatori, dieci per la questura.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Dormire a quattro di spade come non ci fosse un domani.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Cose che voi umani non potete nemmeno immaginare.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Mangiare il ben di Dio e cagare l'opera del diavolo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Diabolico nell'amplesso, sproporzionato per quel che riguarda le dimensioni del sesso.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Il generatore di fusione che dà energia ai tempo-circuiti e al flusso canalizzatore.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Schiacciare i ricci con il culo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Ascoltare Marco Masini durante un giro alla Roulette Russa.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Travestirsi da puttanone da competizione.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Pierluca Scaccolarsi al semaforo e dire al venditore che non voglio i fazzoletti.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Fare i gargarismi con il cemento liquido a presa rapida.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Controllare le sgommate nelle mutande.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Fare una puzza ed incolpare il cane.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Dire,appena svegli, \"buongiorno Aaamore\" aspirando la A per 3 sec.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Autopsicanalisi.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "La crisi economica.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "L'ascella maleodorante.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Vendere la verginità su ebay.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Truccarsi come Moira Orfei.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Guidare a fari spenti nella notte per vedere, se poi è tanto difficile morire.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Perché tutto attaccato si scrive staccato mentre staccato si scrive tutto attaccato?",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Essere inculato con veemenza, senza vasellina e con la sabbia da un nero mastodontico.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "William Wallace in una spiaggia di nudisti",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Obi Wan Kenobi che simula una pugnetta con la spada laser",
+   "pack": "cah42"
+  },
+  {
+   "testo": "La mamma di Stifler",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Fare economia comprando la carta igienica ruvida",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Video porno di Belen",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Mutande piene di sabbia [della lettiera del gatto]",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Peli pubici di sconosciuti",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Saponette fatte con grasso umano",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Pianta di ficus, simbolo del potere",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Cotton fioc usati",
+   "pack": "cah42"
+  },
+  {
+   "testo": "L'occhio di Sauron con la congiuntivite",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un caffè corretto con del pessimo piscio di cane",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Riaccendersi il mozzicone di una sigaretta trovata per terra",
+   "pack": "cah42"
+  },
+  {
+   "testo": "L'insistente signorina che ti propone di cambiare piano telefonico",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Scorreggiare così tanto da far scattare l'allarme antigas.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Scaccolarsi il naso ed essere scoperti.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Cristiano Malgioglio.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Toccarsi i genitali senza farsi vedere.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Sculacciata.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Uomini nudi che fanno l'elicottero.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Marshmallows avvelenati.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Il 69.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "La versione porno dei Simpsons.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Squali volanti.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Fare piedino alla persona sbagliata.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Fare un rutto mentre si recita la poesia di Natale.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Suocera rompipalle.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Sbagliare DVD e far partire un porno.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Vecchietti che guardano lavori in corso con le braccia dietro la schiena.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Una collezione di porno con protagonisti nani ben dotati.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Blue screen of death",
+   "pack": "cah42"
+  },
+  {
+   "testo": "La pipì che scappa appena usciti di casa",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un cane che lecca il gelato spalmato sulle tue palle.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Il funerale di Nietzsche.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un quadro dipinto da una scimmia con le emorroidi.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Annusare il culo ai passanti credendosi un cane.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "WikiLeaks.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Essere controllati dagli USA tramite l'NSA.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Agenti FBI che si comportano come checche isteriche.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Mettere il dito nel culo di pikachu e prendere la scossa.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Fingere un malessere per non rispondere ad una domanda",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Diventare invisibile e fare scherzi sconci alle ragazze negli spogliatoi delle piscine comunali, mentre il vescovo è in visita alla struttura.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Bambole voodoo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Acconciarsi i capelli con letame di cavallo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Sfidarsi a una gara di lancio di bocce incendiarie.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un nuovo sistema di allungamento del pene.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Farsi un piercing ai genitali con una sparachiodi.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Porno acrobatico.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un rutto da Coppa dei Campioni.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Gare di rutti.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Apparire come guest star nel nuovo video di Gemmadelsud.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Infilarsi un ravanello nel culo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Mangiare teste umane.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Tingersi il pube a righe bianche e rosa.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Brucare.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Autoerotismo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Action Man.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Entrare in una chiesa urlando di essere l'Anticristo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Pollo di gomma con carrucola.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Uno svizzero, un francese, un tedesco e un'italiano.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "L'uomo saggio ama usare l'ombrello quando piove!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "L'uomo coraggioso ama sentire la natura sulla pelle.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Ho visto cose che voi umani non potreste immaginare...",
+   "pack": "cah42"
+  },
+  {
+   "testo": "BitTorrent",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Riso Patate e Cozze.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Voglio Godere!!!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un mondo di dolore!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Finchè c'è vita c'è speranza.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Ferrari FF",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Qui e lì, notte e dì, questo il mondo fa girar.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Fiamme torreggianti.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Sono il conducente del treno di cacca!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "A Kuala Lumpur nel quartiere dei ladyboy.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Navi da combattimento in fiamme al largo dei bastioni di Orione e raggi B balenare nel buio vicino alle porte di Tannhauser.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un Tandem.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "La pillola del giorno dopo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Al mio via scatenate l'inferno!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Drag queen.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Acido Acetilsalicilico.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Il gatto di Schrodinger.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "La Sirenetta di Copenaghen.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un Clochard.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Vita morte e miracoli.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Supercalifragili- stichespiralidoso.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Il Jolly Roger.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Uno alla testa ed uno al cuore.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Il K2.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Bevo il the a testa in giù usando i piedi.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "L'aiuto del pubblico.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Matitina IKEA.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Dieta mediterranea.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Tre Metri Sopra il Cielo.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Jessica Fletcher.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Fughe di gas.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Evadere il canone RAI.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Alice nel Paese delle Pornomeraviglie.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un tristissimo film Bielorusso.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Adolescenti arrapati.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Bombardamenti indiscriminati.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "L'ennesima canzone neomelodica napoletana.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Reggere la candela.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Mirabolanti cadute da tacco 12!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Il Colonnello Giuliacci.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Milf estremamente espansive!",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Sindrome di Down",
+   "pack": "cah42"
+  },
+  {
+   "testo": "PornoStar con desideri sessuali per il proprio padre",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Comprare due banane per mangiarne almeno una",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Immigrati clandestini",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Cowboy gay che mangiano budino",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Ascelle puzzolenti",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un ninja con una diarrea incontrollabile",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un culo grasso in pantaloni da yoga",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Usare poco lubrificante",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un seno così floscio che le arriva alle ginocchia",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un travestito",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Cercatore d'oro",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Scrivere un sms alla propria EX mentre si è ubriachi di vodka",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Una Death Race tra sedie a rotelle",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un aborto fallito.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Realizzare che è finita la carta igenica quando ormai è troppo tardi",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Una tanadi tigri del bengala affamate.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Macchie non identificabili sulla punta del pene.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Capelli nello scarico della doccia.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Botulino.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Anoressia.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Lupus.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Doctor House.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Schiavitù.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Spada Laser.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Feci spalmate sulla parete del bagno.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Pirati inesperti.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Allergia ai Preservativi.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Guardare un porno in pubblico sull'iPad a tutto volume.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Facebook.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Una pellicola in Super-8 della prima GangBang della nonna.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "M2O",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Test della gravidanza.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "GloryHole.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Kim Jong Un.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Anime Hentai.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Penny!? Penny!? Penny!?",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un negro di origine asiatica.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Dolore da emorroidi.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Necromanzia.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Massaggiatrici cinesi molto esperte.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Traffico d'organi.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Lavoro sottopagato.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Riportare in vita i morti.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Vendere organi umani a basso costo e con scarse garanzie igeniche.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Epatite C contratta mangiando cozze crude.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Lenti a contatto a raggi X.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Ridere a crepapelle per nascondere una sonora puzza.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Palpatina furtiva.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Orsi polari che ballano il dadaumpa.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un pappagallo che dice cose sconce.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Isabella.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Animali domestici guardoni.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Gattini ninja.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Crisi di mezza età.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un superdotato.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "L'uomo tigre.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un palestrato con micropene.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Primo bacio con l'alito di aglio.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Uno spinello.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Bicicletta senza sellino.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Pensare di stare per saltare su un bel tronco e finire in una merda di vacca.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un hippie che si è appena fatto di LSD.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Scroto.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Vomitare a denti stretti per sentire i pezzettoni.",
+   "pack": "cah42"
+  },
+  {
+   "testo": "Un netsplit alle tre di notte",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "rm -rf / lanciato da root con fiducia",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un oper ubriaco con la G-line facile",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La suocera che usa IRC",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un ping timeout esistenziale",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il server di posta che gira su un Pentium II",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Lo zio complottista con la licenza di pesca",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un vibratore con il Bluetooth e il firmware vecchio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una carbonara con la panna",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La panna nella carbonara, di nuovo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il wifi di Trenitalia",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un DPCM letto alle 23:59",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un cinghiale romano sotto casa",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il mutuo trentennale a tasso variabile",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Mike Bongiorno in versione ologramma",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Allegria!",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il cesso dell'autogrill di Roncobilaccio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il pandoro con la crema spalmato sul cane",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un'ernia del disco da tastiera",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una backup mai testata",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La cronologia del browser di tuo padre",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il televoto di Sanremo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un prete con troppa confidenza col vino da messa",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Babbo Natale in cassa integrazione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un cassetto pieno di cavi seriali",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Debian merda",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il kernel ricompilato per sport",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il cugino che «ripara i computer»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una pensione da 480 euro",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il bonus monopattino",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un monopattino nel Tevere",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il Grande Fratello VIP, edizione ventisette",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il commercialista che sparisce ad aprile",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La dichiarazione dei redditi fatta col pallottoliere",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un crocifisso alimentato a criceto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un criceto su una rotella collegato al datacenter",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il moto perpetuo a suon di bestemmie",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Porco dio in do minore",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una novena recitata in Perl",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un'ostia senza glutine e senza Dio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La Madonna di Medjugorje in videochiamata",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Padre Pio con il cellulare",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un rosario di cavi ethernet",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il mio ex che commenta ancora le mie storie",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Le storie Instagram di un assessore regionale",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un influencer che vende integratori di aria",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'aria di montagna in barattolo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una scoreggia in riunione su Teams",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il microfono acceso durante la scoreggia",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il pulsante «rispondi a tutti»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una mail con oggetto «URGENTE!!!»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il collega che dice «ci sentiamo dopo» e non si sente mai più",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un PowerPoint di settantadue slide",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il team building con i bastoni da trekking",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La cena aziendale al sushi all you can eat",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Le cozze crude del lungomare",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un'intossicazione alimentare da tiramisù",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Gli spaghetti spezzati a metà",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'ananas sulla pizza",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il ketchup sulla pasta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il caffè della macchinetta del reparto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un caffè corretto alla sambuca alle otto del mattino",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La grappa del nonno da 70 gradi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un amaro del Capo dopo la comunione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il limoncello fatto in vasca da bagno",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'anima di un sistemista in un barattolo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un sistemista che ha visto cose",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il sudore freddo prima di un reboot remoto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un reboot remoto senza console",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il firewall configurato da un tirocinante",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il tirocinante che ora ha accesso root",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una password scritta su un post-it",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Password123!",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il post-it sul monitor del direttore",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un monitor CRT da 21 pollici in braccio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il modem a 56k che canta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il suono del modem a 56k alle due di notte",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La bolletta Telecom del 1998",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una connessione ISDN condivisa con il condominio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un messaggio in segreteria di tua madre",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Tua madre che scopre IRC",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Tua madre su #sbiffo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Tre giorni senza dormire e un deploy di venerdì",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il deploy di venerdì pomeriggio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La rollback che non funziona",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il DBA in ferie in Sardegna",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una tabella senza chiave primaria",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "DROP TABLE utenti;",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il cronjob dimenticato del 2009",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un cronjob che manda mail a un morto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un server sotto la scrivania che nessuno ha il coraggio di spegnere",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Lo stagista che stacca la spina sbagliata",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una ciabatta elettrica con dodici stufette",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il condizionatore del datacenter in sciopero",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un piccione nel datacenter",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un nido di vespe nell'armadio rack",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il rack montato al contrario",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Dieci metri di cavo arrotolato come un serpente",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il cavo che funziona solo se lo tieni con la mano",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un'antenna fatta con la stagnola",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La stagnola sulla testa per i 5G",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un complottista con il 5G in casa",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "I rettiliani al comune di Roccacannuccia",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La sagra della porchetta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una porchetta intera nel bagagliaio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il bagagliaio della Panda del nonno",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una Panda 4x4 del 1987 con le gomme lisce",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'autovelox nascosto dietro la curva",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il vigile urbano che non perdona",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una multa per sosta in doppia fila davanti alla chiesa",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La processione del santo patrono con la banda stonata",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il santo patrono che non fa più miracoli",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "San Gennaro che non si scioglie",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "I botti di Capodanno in mano a un dodicenne",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un dito in meno a Capodanno",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La tombola con la nonna che bara",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il panettone artigianale da 48 euro",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il cenone della vigilia che dura sei ore",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il parente che chiede «e la fidanzata?»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La domanda «quando ti laurei?»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una laurea in Scienze della Comunicazione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il master a pagamento in Social Media Management",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Lo stage non retribuito di diciotto mesi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un contratto a chiamata",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il colloquio di lavoro con la domanda «dove ti vedi tra cinque anni?»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Tra cinque anni, morto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una partita IVA forfettaria",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il commercialista che ride",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'Agenzia delle Entrate",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una cartella esattoriale per 3 euro e 12 centesimi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La coda alla posta con il numerino 847",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Lo SPID della nonna",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La nonna che ha capito lo SPID meglio di te",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il PIN del bancomat scritto sul bancomat",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un bonifico istantaneo a un principe nigeriano",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il principe nigeriano che ti scrive ancora",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Uno scam su Telegram con Elon Musk finto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Le criptovalute di tuo cognato",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Tuo cognato che ti spiega la blockchain al pranzo di Pasqua",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un NFT di un gatto sotto il divano",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il gatto che vomita sulla tastiera",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il gatto che spegne il server camminando sul pulsante",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un cane che mangia il cavo di rete",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il cane del vicino che abbaia in Morse",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il vicino che fa il trapano la domenica alle otto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il trapano a percussione dell'inferno",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'inferno dei sistemisti, dove tutto gira su Windows Server 2003",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Windows ME",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Clippy che ti giudica",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un BSOD durante la tesi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La tesi salvata solo su chiavetta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La chiavetta USB nella lavatrice",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La lavatrice che centrifuga come un Boeing",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un calzino orfano",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il mistero dei calzini scomparsi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "I calzini bianchi con i sandali",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un tedesco in sandali a Rimini",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La Riviera romagnola ad agosto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un ombrellone in quinta fila a 40 euro",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il bagnino che ti guarda male",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La piadina con la Nutella e il prosciutto insieme",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un pranzo di nozze con quattordici portate",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il sorbetto al limone fra il pesce e la carne",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il trenino al matrimonio sulle note di Raffaella Carrà",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La zia che balla sul tavolo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Lo zio che fa il discorso ubriaco",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il prete che si è dimenticato il nome della sposa",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un divorzio in comunione dei beni",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'avvocato divorzista che ti dà del tu",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La custodia condivisa del gatto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un'eredità di 12 euro e un trullo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un trullo con l'Airbnb abusivo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Gli Airbnb del centro di Firenze",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il turista che fa il bagno nella fontana di Trevi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il centurione finto al Colosseo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un selfie col centurione per venti euro",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una gita scolastica a Gardaland",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La prof di matematica in discoteca",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il compito in classe copiato da ChatGPT",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "ChatGPT che inventa le fonti",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un'IA che bestemmia in canale",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un bot che fa il moderatore su un canale di quaranta persone",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un bot che si innamora di un altro bot",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il bot dell'impiccato",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una suora da sparare",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Le suore del convento in sciopero",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una suora con la mitraglietta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il sesto comandamento in versione beta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un confessionale con il wifi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'acqua santa gassata",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una benedizione via PEC",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La PEC che non arriva mai",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'ufficio protocollo chiuso per pausa caffè",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La pausa caffè di due ore e mezza",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il dipendente pubblico che timbra in mutande",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Le mutande della fortuna di Capodanno",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il reggiseno appeso al ventilatore",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Uno spogliarellista in pensione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il calendario dei pompieri",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un camion dei pompieri in ritardo perché ha fame",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La frittata di cipolle della mamma di Fantozzi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La Corazzata Potëmkin",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Novantadue minuti di applausi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il ragionier Filini con la mongolfiera",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un megadirettore galattico",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il Mascetti che fa una supercazzola",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una supercazzola prematurata con scappellamento a destra",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il Grande Lebowski in accappatoio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un accappatoio rubato in un hotel a tre stelle",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'hotel con la piscina chiusa per lavori",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La piscina comunale con i cerotti che galleggiano",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un cerotto in bocca",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il dentista che ti fa domande mentre hai il trapano in bocca",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'anestesia che non fa effetto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La sala d'attesa del pronto soccorso con il codice bianco",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il codice bianco da dodici ore",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un medico di base introvabile",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il ricettario della nonna con le dosi «quanto basta»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Quanto basta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il sale grosso nell'acqua della pasta, ma prima che bolla",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Gli italiani che spiegano la pizza agli americani",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La pizza col pollo e la salsa barbecue",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un americano a Roma con lo zaino davanti",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il napoletano che ti spiega il caffè",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il milanese che lavora anche a Ferragosto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il romano che dice «daje» a un funerale",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il torinese che non ti saluta da trent'anni",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il barese che ti invita a pranzo e non puoi rifiutare",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il veneto che bestemmia con la grazia di un tenore",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una bestemmia in dialetto bergamasco",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il dialetto che nessuno capisce tranne la nonna",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La nonna che ti mette cinque chili di sugo nel trolley",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il trolley pieno di provole",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il controllo all'aeroporto con la provola",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Ryanair con il bagaglio a mano da 40x20x25",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'applauso quando atterra l'aereo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il pilota che bestemmia nell'altoparlante",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il treno regionale soppresso",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il capotreno che si è perso",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il Frecciarossa fermo a Orte per un'ora",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Orte",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una panchina a Orte alle due di notte",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un ubriaco che recita Dante alla stazione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il Purgatorio, ma con l'aria condizionata rotta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il girone dei sistemisti che non fanno i backup",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un'interrogazione su Leopardi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il passero solitario in un datacenter",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La siepe che esclude lo sguardo del firewall",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il dottor Divago",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il canone RAI nella bolletta della luce",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La bolletta della luce a mille euro",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una stufa a pellet in un monolocale",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il monolocale a Milano da 1200 euro al mese",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il coinquilino che ruba lo yogurt",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Lo yogurt scaduto nel 2019",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il frigo dello studentato",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'odore del frigo dello studentato",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un esame da diciotto crediti",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un diciotto accettato con le lacrime",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il professore che non si presenta all'appello",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il fuoricorso del ventesimo anno",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Lo spritz di Campo Santa Margherita",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Uno spritz al Campari a colazione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'apericena con le patatine molli",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'happy hour del lunedì triste",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il lunedì",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il lunedì dopo le ferie",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Le ferie in agosto con tutti gli altri",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'esodo estivo sull'A1",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'autogrill come luogo dell'anima",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il Camogli dell'autogrill",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una fila di ottanta chilometri sul Brennero",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il Brennero chiuso per neve",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "I fiocchi di neve sopra un server rack",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il riscaldamento globale e la cotoletta",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La cotoletta alla milanese grande come un tombino",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un tombino che vola durante il temporale",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'allerta meteo arancione per tre gocce",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un ombrello rotto alla prima goccia",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un film porno con i sottotitoli in tedesco",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il PornHub premium del dirigente",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una webcam accesa durante la call",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La call che poteva essere una mail",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La mail che poteva essere un messaggio IRC",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un messaggio IRC che poteva essere un silenzio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il silenzio di #it-opers",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Una /kill dettata dall'amore",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il /msg sbagliato alla persona sbagliata",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il ban per flood",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un excess flood alle quattro del mattino",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il buffer di irssi pieno di highlight",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un'esc+numero finita male",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Uno screen detached dal 2011",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il server di BNC che nessuno paga più",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un eggdrop con la memoria di un pesce",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un ircd scritto in C da un sedicenne",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un segfault in produzione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il core dump grosso quanto l'Antartide",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il ticket chiuso con «non riproducibile»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Funziona sulla mia macchina",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La documentazione scritta in latino",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il README che dice solo «TODO»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un commento nel codice che dice «non toccare»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Lo spaghetti code con la panna",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il refactor che dura da sei anni",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La riunione per decidere quando fare la riunione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Agile, ma con la burocrazia di un ministero",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il product manager che ha scoperto l'IA",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La blockchain per gestire la spesa",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un frigorifero connesso a internet che ti spia",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Alexa che ascolta le bestemmie",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Siri che non capisce il calabrese",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un assistente vocale che risponde in dialetto",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "L'aggiornamento di Windows durante la presentazione",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il proiettore che non si collega mai al primo colpo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un adattatore HDMI che nessuno ha",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un cassetto pieno di caricabatterie Nokia",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il Nokia 3310 indistruttibile",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Snake sul 3310",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un MMS del 2006",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il trillo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Uno squillo e poi riattacchi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La ricarica da cinque euro",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il credito residuo di 12 centesimi",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un SMS gratis di Natale",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La catena di Sant'Antonio",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il buongiornissimo con il caffè glitterato",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un gruppo WhatsApp di genitori",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La mamma di Gennaro che chiede i compiti alle 23",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La maestra in pensione con il profilo Facebook pubblico",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il vocale da sette minuti",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un vocale da sette minuti che inizia con «allora, niente»",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Il nulla cosmico",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "Un buco nero dentro il frigo",
+   "pack": "vjt-claude"
+  },
+  {
+   "testo": "La fine del mondo, ma di domenica",
+   "pack": "vjt-claude"
+  }
  ]
 }

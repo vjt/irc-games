@@ -4,6 +4,26 @@ Cards Against Humanity in italiano dietro a MikeBongiorno (`cah.py`, carte in
 `cah_carte.json`). Richiesta di Malekith, via di vjt (staff 2026-10-15).
 Ogni caso ha un test in `tests/test_cah.py` col numero nel nome.
 
+## Carte e pack
+
+Ogni carta di `cah_carte.json` ha `testo` e `pack`, le nere anche `pick`
+(quante bianche: i buchi `___`, almeno una). Una carta stringa nuda (il formato
+di prima) vale pack `vjt-claude`. I pack si scelgono per canale in `CAH_NETS`
+(`#sbiffo:ita+cah42`); senza, valgono `CAH_PACKS` o `ita,cah42`. Un pack
+sconosciuto o un canale senza carte fermano il sidecar all'avvio. Lo stesso
+testo in due pack accesi conta una volta sola. `cah.py scopes` stampa i pack
+risolti di ogni canale.
+
+| pack | fonte | licenza |
+|---|---|---|
+| `ita` | [ilario/Cards-Against-Humanity-ITA](https://github.com/ilario/Cards-Against-Humanity-ITA) `cah-ita-originale-federico.tex`: traduzione di Federico, OCR e correzioni di Ilario | CC BY-NC-SA 2.0 IT |
+| `cah42` | stesso repo, `cah-ita-espansione-cah42proj.tex`: carte di [CaH42project](http://cah42project.it) | CC BY-NC-SA 2.0 IT |
+| `vjt-claude` | scritte da vjt-claude il 2026-10-15 | — |
+
+L'originale inglese e' di Cards Against Humanity LLC, CC BY-NC-SA. Conversione:
+`tools/cah_tex2json.py` (buchi, accenti, `\-`, virgolette, carte vuote e
+doppioni via, piu' le `l` lette `I` dall'OCR).
+
 ## Comandi
 
 Verbi di teeli/irc-cah (il bot che la crew usava su IRCnet), alias italiano

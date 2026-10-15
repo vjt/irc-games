@@ -28,14 +28,21 @@ sillabah, che risponde a chiunque.
 Le partite stanno in memoria: un riavvio le perde, in silenzio. Su disco solo
 la classifica storica (mani vinte per nick, per rete).
 
-Carte: cah_carte.json, {"nere": [...], "bianche": [...]}. Nelle nere `___` e'
-un buco da riempire; quanti buchi, tante carte si giocano (almeno una).
+Carte: cah_carte.json, {"packs": {...}, "nere": [...], "bianche": [...]}. Ogni
+carta e' {"testo", "pack"} (le nere anche "pick"); una carta stringa nuda, il
+formato di prima, vale pack LEGACY_PACK. Nelle nere `___` e' un buco da
+riempire; quanti buchi, tante carte si giocano (almeno una).
+
+Pack per canale: `#chan:ita+cah42` in CAH_NETS; senza `:`, CAH_PACKS
+(default DEFAULT_PACKS). Fonti e licenze dei pack in docs/cah_spec.md.
 
 CLI:
   cah.py --net azzurra           il daemon
-  cah.py carte                   conta le carte
-Env (formato di SILLABAH_NETS):
-  CAH_HOME  CAH_CARTE  CAH_NETS=nome|log|fifo|#chan1,#chan2
+  cah.py carte                   conta le carte, per pack
+  cah.py scopes                  i canali risolti, coi loro pack
+Env (formato di SILLABAH_NETS, piu' i pack per canale):
+  CAH_HOME  CAH_CARTE  CAH_PACKS=ita,cah42
+  CAH_NETS=nome|log|fifo|#chan1:ita+cah42,#chan2
 """
 import json
 import os
@@ -69,20 +76,59 @@ IDLE_ROUNDS = 2      # mani di fila senza nessuna giocata: chiude
 MISSED_MAX = 2       # mani di fila saltate da un giocatore: e' fuori
 TICK = 5
 BLANK = "___"
+LEGACY_PACK = "vjt-claude"      # le carte stringa del formato vecchio
+DEFAULT_PACKS = ("ita", "cah42")
 HELP = ("!cah [start N] · entra · esci · stop · punti · top · carte · stato"
         " — in gioco: !play N, lo czar !vince N")
 
 
+def default_packs():
+    raw = os.environ.get("CAH_PACKS", "")
+    return tuple(p for p in re.split(r"[\s,+]+", raw) if p) or DEFAULT_PACKS
+
+
 def load_nets():
-    return ircgame.load_nets(
+    """Come ircgame.load_nets, ma `chans` diventa {canale: (pack, ...)}: il
+    canale puo' portare `:pack1+pack2`, se no valgono i pack di default."""
+    nets = ircgame.load_nets(
         "CAH_NETS", {"azzurra": {"log": REPO / "bot.log", "fifo": REPO / "bot.send",
                                  "chans": {"#sbiffo"}, "state": REPO / "cah_state.json"}},
         "cah_state", REPO)
+    for cfg in nets.values():
+        chans = {}
+        for spec in cfg["chans"]:
+            chan, _, packs = spec.partition(":")
+            chans[chan] = tuple(p for p in packs.split("+") if p) or default_packs()
+        cfg["chans"] = chans
+    return nets
+
+
+def card(c, kind):
+    """Una carta del json come (testo, pack, pick); la stringa nuda e' LEGACY_PACK."""
+    if isinstance(c, str):
+        c = {"testo": c}
+    text = c["testo"]
+    pick = (c.get("pick") or max(1, text.count(BLANK))) if kind == "n" else 1
+    return text, c.get("pack") or LEGACY_PACK, pick
 
 
 def load_carte(path=None):
+    """(nere, bianche), liste di dict {"testo", "pack", "pick"}."""
     d = json.loads(Path(path or CARTE).read_text(encoding="utf-8"))
-    return list(d["nere"]), list(d["bianche"])
+    return tuple([dict(zip(("testo", "pack", "pick"), card(c, k))) for c in d[key]]
+                 for k, key in (("n", "nere"), ("b", "bianche")))
+
+
+def pool(cards, packs):
+    """I testi dei pack scelti (None = tutti), senza doppioni fra un pack e
+    l'altro: in mano le carte sono stringhe, due uguali si confondono."""
+    seen, out = set(), []
+    for c in cards:
+        text, pack, _ = card(c, "b")
+        if (packs is None or pack in packs) and text not in seen:
+            seen.add(text)
+            out.append(text)
+    return out
 
 
 def picks(black):
@@ -126,8 +172,23 @@ class Cah:
         self.net = net
         self.log = str(log)
         self.state_path = Path(state_path)
-        self.chans = {c.lower() for c in chans}
-        self.nere, self.bianche = carte
+        # chans: un set (tutti i pack) o {canale: (pack, ...) o None}
+        if not isinstance(chans, dict):
+            chans = dict.fromkeys(chans)
+        self.packs = {c.lower(): (tuple(p) if p is not None else None)
+                      for c, p in chans.items()}
+        self.chans = set(self.packs)
+        nere, bianche = carte
+        known = {card(c, "b")[1] for c in list(nere) + list(bianche)}
+        unknown = {p for ps in self.packs.values() if ps for p in ps} - known
+        if unknown:
+            raise SystemExit(f"cah: pack sconosciuti {sorted(unknown)}, ci sono {sorted(known)}")
+        self.picks = {t: p for t, _, p in (card(c, "n") for c in nere)}
+        self.decks = {c: (pool(nere, p), pool(bianche, p)) for c, p in self.packs.items()}
+        empty = [c for c, (n, b) in self.decks.items() if not n or not b]
+        if empty:
+            raise SystemExit(f"cah: nessuna carta per {', '.join(sorted(empty))}: "
+                             f"pack {[self.packs[c] for c in sorted(empty)]}")
         self.rng = rng or random.Random()
         self.games = {}                 # in memoria e basta: vedi la docstring
         self.scores = self.load()       # nick casefold -> {"nick", "points"}
@@ -169,13 +230,15 @@ class Cah:
 
     def draw(self, g, kind):
         """Una carta dal mazzo; a mazzo finito si rimescolano gli scarti, cioe'
-        tutto quello che non e' in mano a qualcuno o sul tavolo."""
+        tutto quello che non e' in mano a qualcuno o sul tavolo. I mazzi sono
+        quelli dei pack del canale."""
         deck = g["bdeck"] if kind == "b" else g["wdeck"]
         if not deck:
             busy = {c for h in g["hands"].values() for c in h}
             busy |= {c for s in g["subs"].values() for c in s}
             busy.add(g.get("black"))
-            deck.extend(c for c in (self.nere if kind == "b" else self.bianche)
+            nere, bianche = self.decks[g["chan"]]
+            deck.extend(c for c in (nere if kind == "b" else bianche)
                         if c not in busy)
             self.rng.shuffle(deck)
         return deck.pop()
@@ -200,7 +263,7 @@ class Cah:
     def open_lobby(self, chan, nick, goal, now):
         key = nick.casefold()
         self.games[chan] = {
-            "phase": "lobby", "starter": key, "players": [key], "pending": [],
+            "phase": "lobby", "chan": chan, "starter": key, "players": [key], "pending": [],
             "nicks": {key: nick}, "scores": {}, "hands": {}, "missed": {}, "absent": [], "split": [],
             "subs": {}, "order": [], "goal": goal, "czar": -1, "round": 0, "idle": 0,
             "black": None, "picks": 1, "wdeck": [], "bdeck": [], "deadline": now + LOBBY_S,
@@ -297,7 +360,7 @@ class Cah:
         g["phase"] = "play"
         g["subs"], g["order"], g["absent"] = {}, [], []
         g["black"] = self.draw(g, "b")
-        g["picks"] = picks(g["black"])
+        g["picks"] = self.picks.get(g["black"]) or picks(g["black"])
         g["deadline"] = now + PLAY_S
         for key in g["players"]:
             hand = g["hands"].setdefault(key, [])
@@ -643,8 +706,16 @@ def main():
     cmd = argv[0] if argv else "daemon"
     if cmd == "carte":
         nere, bianche = load_carte()
-        print(f"{len(nere)} nere ({sum(picks(n) == 2 for n in nere)} da due), "
-              f"{len(bianche)} bianche")
+        for pack in sorted({c["pack"] for c in nere + bianche}):
+            n = [c for c in nere if c["pack"] == pack]
+            b = [c for c in bianche if c["pack"] == pack]
+            print(f"{pack}: {len(n)} nere ({sum(c['pick'] > 1 for c in n)} da piu' "
+                  f"carte), {len(b)} bianche")
+        return
+    if cmd == "scopes":
+        for name, cfg in load_nets().items():
+            for chan, packs in sorted(cfg["chans"].items()):
+                print(f"{name}/{chan}: {'+'.join(packs)}")
         return
     cfg = load_nets()[net]
     Cah(net, cfg["log"], cfg["fifo"], cfg["state"], cfg["chans"], load_carte()).run()

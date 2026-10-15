@@ -53,9 +53,65 @@ def chan_lines(g, chan="#t"):
 
 def test_carte_vere():
     nere, bianche = C.load_carte()
-    assert len(nere) >= 80 and len(bianche) >= 300
-    assert len(set(bianche)) == len(bianche)
-    assert all(C.picks(n) in (1, 2) for n in nere)
+    for pack, nn, nb in (("ita", 90, 458), ("cah42", 71, 219), ("vjt-claude", 82, 335)):
+        assert sum(c["pack"] == pack for c in nere) == nn, pack
+        assert sum(c["pack"] == pack for c in bianche) == nb, pack
+    for pack in ("ita", "cah42", "vjt-claude"):
+        testi = [c["testo"] for c in bianche if c["pack"] == pack]
+        assert len(set(testi)) == len(testi), pack
+    assert all(c["testo"].strip() and "\\" not in c["testo"] for c in nere + bianche)
+    assert all(c["pick"] == C.picks(c["testo"]) and 1 <= c["pick"] <= 3 for c in nere)
+    assert all(len(c["testo"].encode()) < 300 for c in nere + bianche)
+
+
+def test_carte_formato_vecchio(tmp_path):
+    """Stringhe nude (il json di prima): pack LEGACY_PACK, pick dai buchi."""
+    p = tmp_path / "c.json"
+    p.write_text(json.dumps({"nere": ["Due ___ e ___."],
+                             "bianche": ["x", {"testo": "y", "pack": "z"}]}))
+    nere, bianche = C.load_carte(p)
+    assert nere == [{"testo": "Due ___ e ___.", "pack": C.LEGACY_PACK, "pick": 2}]
+    assert [c["pack"] for c in bianche] == [C.LEGACY_PACK, "z"]
+
+
+def test_pack_per_canale(tmp_path):
+    nere = [{"testo": f"n{p} ___", "pack": p, "pick": 1} for p in "ab"]
+    bianche = [{"testo": f"w{p}{i}", "pack": p} for p in "ab" for i in range(40)]
+    g = C.Cah("test", "/dev/null", "", tmp_path / "s.json",
+              {"#a": ("a",), "#ab": ("a", "b")}, (nere, bianche), rng=random.Random(1))
+    assert g.decks["#a"] == (["na ___"], [f"wa{i}" for i in range(40)])
+    assert len(g.decks["#ab"][1]) == 80
+    g.handle("x", "#a", "!cah", now=0)
+    for n in "yz":
+        g.handle(n, "#a", "!cah entra", now=1)
+    g.tick(now=C.LOBBY_S)
+    st = g.games["#a"]
+    assert st["black"] == "na ___"
+    assert all(c.startswith("wa") for h in st["hands"].values() for c in h)
+
+
+def test_pack_sconosciuto_o_vuoto(tmp_path):
+    nere, bianche = [{"testo": "n ___", "pack": "a"}], [{"testo": "w", "pack": "a"}]
+    with pytest.raises(SystemExit, match="sconosciuti"):
+        C.Cah("t", "/dev/null", "", tmp_path / "s.json", {"#a": ("nope",)}, (nere, bianche))
+    with pytest.raises(SystemExit, match="nessuna carta"):
+        C.Cah("t", "/dev/null", "", tmp_path / "s.json", {"#a": ("a",)}, (nere, []))
+
+
+def test_load_nets_pack(monkeypatch):
+    monkeypatch.setenv("CAH_NETS", "azzurra|/l|/f|#sbiffo,#It-Opers:vjt-claude+ita")
+    monkeypatch.delenv("CAH_PACKS", raising=False)
+    chans = C.load_nets()["azzurra"]["chans"]
+    assert chans == {"#sbiffo": C.DEFAULT_PACKS, "#it-opers": ("vjt-claude", "ita")}
+    monkeypatch.setenv("CAH_PACKS", "cah42")
+    assert C.load_nets()["azzurra"]["chans"]["#sbiffo"] == ("cah42",)
+
+
+def test_pick_tre(tmp_path):
+    g, st = partita(tmp_path, nere=["___ + ___ = ___"])
+    assert st["picks"] == 3
+    gioca_tutti(g, st, now=61)
+    assert st["phase"] == "judge"
 
 
 def test_lobby_needs_three(tmp_path):
