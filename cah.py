@@ -206,7 +206,7 @@ class Cah:
             "black": None, "picks": 1, "wdeck": [], "bdeck": [], "deadline": now + LOBBY_S,
         }
         self.say(chan, f"🃏 Cards Against Humanity! {nick} apre il tavolo, si gioca a "
-                       f"{goal} punti. `!cah entra` per sedersi, {LOBBY_S}s, "
+                       f"{goal} punti. !cah entra per sedersi, {LOBBY_S}s, "
                        f"servono {MIN_PLAYERS} giocatori.")
 
     def join(self, chan, g, nick, now):
@@ -242,7 +242,7 @@ class Cah:
         g["deadline"] = now + LOBBY_S
         self.emit(chan, list(lead) + [
             f"⏸️ Siamo in {len(g['players'])}, servono {MIN_PLAYERS}: "
-            f"`!cah entra` entro {LOBBY_S}s o chiudo."])
+            f"!cah entra entro {LOBBY_S}s o chiudo."])
 
     def leave(self, chan, g, key, now, why=""):
         if key in g["pending"]:
@@ -459,7 +459,7 @@ class Cah:
                 goal = min(MAX_GOAL, max(1, int(arg))) if arg.isdigit() else GOAL
                 self.open_lobby(chan, nick, goal, now)
         elif not g:
-            self.say(chan, "Nessuna partita: `!cah` per aprire il tavolo.")
+            self.say(chan, "Nessuna partita: !cah per aprire il tavolo.")
         elif sub == "join" or (sub == "start" and g["phase"] in ("lobby", "attesa")):
             self.join(chan, g, nick, now)
         elif sub == "quit":
