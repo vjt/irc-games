@@ -73,6 +73,14 @@ def test_invite_line():
     assert "/msg" not in req, req  # niente /msg hard-coded: query e canale ok
 
 
+def test_find_hint_closes_the_dump():
+    rng = random.Random(4)
+    lines, _names = listgag.build_dump(rng)
+    assert "@find <parola>" in lines[-1], lines[-1]
+    # l'hint deve combaciare col trigger vero
+    assert listgag.FIND_PAT.match("@find il robot selvaggio")
+
+
 def test_payload_is_a_valid_dcc_name():
     # se il nome non passa DCC_NAME_PAT, bot.py rifiuta ogni transfer.
     assert DCC_NAME.match(listgag.PAYLOAD_FILE), listgag.PAYLOAD_FILE

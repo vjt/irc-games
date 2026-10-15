@@ -268,6 +268,9 @@ def build_dump(rng):
         f"** Total Offered: {total:.1f}G  Total Transferred: "
         f"{total * rng.uniform(8, 99):.1f}G **"
     )
+    # Hint in coda (Lucy, #sbiffo 2026-10-15, via di vjt): chi non trova il suo
+    # titolo nei 3 pack sa che c'e' @find.
+    lines.append("** Se cerchi qualcosa di specifico, usa @find <parola> **")
     return lines, names
 
 
