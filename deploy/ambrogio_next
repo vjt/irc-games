@@ -17,8 +17,8 @@ procname="/usr/local/bin/python3.11"
 command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/next.log -t ambrogio-next \
-  /usr/bin/env NEXT_LOG=/var/log/convento/ambrogio.log \
-  NEXT_FIFO=/var/run/convento/ambrogio.send \
+  /usr/bin/env NEXT_LOG=/var/log/convento/ambrogio.log,/var/log/convento/ambrogio.ircnet.log \
+  NEXT_FIFO=/var/run/convento/ambrogio.send,/var/run/convento/ambrogio.ircnet.send \
   NEXT_STATE=/var/db/convento/next_state.json \
   NEXT_OUT=/var/db/convento/next.json \
   /usr/local/bin/python3.11 -u /opt/irc-games/next_counter.py"

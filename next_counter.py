@@ -38,6 +38,9 @@ Env overrides (so a dry run cannot publish or speak):
   NEXT_OUT    path of the public next.json
   NEXT_STATE  path of the private state json
   NEXT_FIFO   path of the bot FIFO ('' disables talking)
+  NEXT_LOG and NEXT_FIFO take comma-separated lists, paired by position:
+  one ballot fed by several networks, each answered on its own bot
+  (Azzurra + IRCnet behind Ambrogio, vjt 2026-10-17).
   NEXT_CHANS  comma-separated channels the poll listens on
 """
 import json, os, re, subprocess, sys, time
@@ -46,12 +49,14 @@ from pathlib import Path
 REPO = Path("/home/vjt/code/IRC/vjt-claude")
 # Overridable since the sidecar moved into the `convento` jail on m42 behind
 # Ambrogio (vjt, 2026-09-10): there the bot log is /var/log/convento/ambrogio.log.
-LOG = os.environ.get("NEXT_LOG", str(REPO / "bot.log"))
+LOGS = os.environ.get("NEXT_LOG", str(REPO / "bot.log")).split(",")
 
 STATE = Path(os.environ.get("NEXT_STATE", str(REPO / "next_state.json")))
 OUT_JSON = Path(os.environ.get("NEXT_OUT", "/srv/www-static/t/next/next.json"))
 # '' disables the channel reply entirely (dry runs must stay mute).
-FIFO = os.environ.get("NEXT_FIFO", str(REPO / "bot.send"))
+FIFOS = os.environ.get("NEXT_FIFO", str(REPO / "bot.send")).split(",")
+# The FIFO of the log the current line came from; the daemon switches it.
+FIFO = FIFOS[0]
 
 # #sniffo added on vjt's order, 13:32. Overridable so a second instance can
 # poll another network's log (IRCnet #grappa, vjt 2026-10-17).
@@ -313,9 +318,10 @@ def process(line, data, ts=None, talk=False):
 
 def backfill(data):
     try:
-        with open(LOG, errors="replace") as f:
-            for raw in f:
-                process(raw, data, ts=None)
+        for log in LOGS:
+            with open(log, errors="replace") as f:
+                for raw in f:
+                    process(raw, data, ts=None)
     except FileNotFoundError:
         pass
     save(data)
@@ -336,9 +342,15 @@ def daemon():
     data = load()
     if not data["votes"]:
         backfill(data)
-    p = subprocess.Popen(["tail", "-F", "-n", "0", LOG],
+    global FIFO
+    p = subprocess.Popen(["tail", "-F", "-n", "0", *LOGS],
                          stdout=subprocess.PIPE, text=True, errors="replace")
     for line in p.stdout:
+        # With several files tail -F marks each switch as "==> path <==".
+        m = re.fullmatch(r"==> (.*) <==\n?", line)
+        if m and m.group(1) in LOGS:
+            FIFO = FIFOS[LOGS.index(m.group(1))] if len(FIFOS) == len(LOGS) else FIFOS[0]
+            continue
         if process(line, data, ts=time.time(), talk=True):
             save(data)
 
