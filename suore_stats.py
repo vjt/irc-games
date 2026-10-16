@@ -138,19 +138,23 @@ def _giorni(primo, ultimo):
 
 
 def _quote(events, scores, n=TOP_QUOTE):
-    """Quota cumulata di suore stese, giorno per giorno (peluche, #sbiffo 16/10).
+    """Corsa al primo posto, giorno per giorno (peluche, #sbiffo 16/10).
 
-    Per ognuno dei primi `n`: stese sue fino a quel giorno diviso stese di tutti
-    fino a quel giorno, in percento, e il posto che aveva quel giorno contando
-    tutti quelli del log (pari merito alla maniera del canale, `None` finche'
-    non ne ha stesa una). Si vede se il distacco si chiude o si allarga.
+    Per ognuno dei primi `n`: stese sue fino a quel giorno, la quota (stese sue
+    sul totale stese fino a quel giorno, in percento), e il posto che aveva
+    quel giorno contando tutti quelli del log (pari merito alla maniera del
+    canale, `None` finche' non ne ha stesa una). Per ogni giorno anche il
+    `capo`: quante ne aveva chi stava in cima, e chi era (in due o piu' se a
+    pari merito) — anche se sta fuori dai primi `n`. La pagina normalizza sul
+    capo: lui piatto in alto, gli altri sotto, e si vede se il distacco si
+    chiude o si allarga.
 
     E' una serie storica, quindi viene dal LOG e parte dal 6 settembre: chi ha
     tutto prima non ci compare, e l'ultimo punto puo' non coincidere con la
     classifica dello stato (la differenza e' gia' in `discrepanza`). L'ORDINE
     dei primi `n` invece e' quello dello stato, come la tabella; chi esiste
     solo nel log viene dopo, col casing dell'ultima volta che si e' visto.
-    Solo i `.bang`: e' la quota di chi spara."""
+    Solo i `.bang`: conta chi spara."""
     colpi = sorted((e for e in events if e["verb"] == "bang"), key=lambda e: e["ts"])
     if not colpi:
         return None
@@ -170,20 +174,27 @@ def _quote(events, scores, n=TOP_QUOTE):
     primi = sorted(finale, key=lambda c: (-kills(c), -finale[c], c))[:n]
 
     acc = collections.Counter()
-    totale, quota, posto = [], {c: [] for c in primi}, {c: [] for c in primi}
+    totale, capo = [], []
+    stese, quota, posto = ({c: [] for c in primi} for _ in range(3))
+    nome = lambda c: _bello(scores, c) if c in scores else visto[c]
     for g in giorni:
         acc.update(per_giorno.get(g, {}))
         tot = sum(acc.values())
         totale.append(tot)
+        top = max(acc.values())
+        capo.append({"stese": top, "chi": sorted((nome(c) for c, v in acc.items() if v == top),
+                                                 key=str.lower)})
         for c in primi:
             mie = acc[c]
+            stese[c].append(mie)
             quota[c].append(round(100 * mie / tot, 1))
             posto[c].append(1 + sum(1 for v in acc.values() if v > mie) if mie else None)
     return {
         "giorni": giorni,
         "totale": totale,
-        "nick": [{"nick": _bello(scores, c) if c in scores else visto[c],
-                  "quota": quota[c], "posto": posto[c]} for c in primi],
+        "capo": capo,
+        "nick": [{"nick": nome(c), "stese": stese[c], "quota": quota[c],
+                  "posto": posto[c]} for c in primi],
     }
 
 

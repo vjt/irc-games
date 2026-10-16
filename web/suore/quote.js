@@ -1,7 +1,11 @@
 // Chi si prende la fetta (peluche, #sbiffo 16/10): per i primi sei della
-// classifica di un canale, la quota cumulata delle suore stese giorno per
-// giorno, e in alternativa il posto in classifica giorno per giorno (le
-// rimonte si vedono come incroci). I dati sono `s.quote` del data.json, fatti
+// classifica di un canale, le stese cumulate giorno per giorno normalizzate su
+// chi era in cima quel giorno ("vs capo": il capo e' un segmento piatto in
+// alto finche' comanda, gli altri sotto a distanza di distacco), e in
+// alternativa la quota sul totale stese del canale e il posto in classifica
+// giorno per giorno (le rimonte si vedono come incroci). Niente percentuali e
+// niente scala in "vs capo" (peluche: «cava via la percentuale che non
+// serve»): i numeri veri, stese e distacco, stanno nel tooltip. I dati sono `s.quote` del data.json, fatti
 // da `suore_stats._quote()`: serie dal LOG, che parte dal 6 settembre.
 //
 // Sta in un file suo, caricato dalla pagina prima dello script principale:
@@ -67,7 +71,7 @@
     if (!q || !q.nick || !q.nick.length || q.giorni.length < 2) return null;
     stile();
     const righe = q.nick.map((r, i) => Object.assign({colore: COLORI[i % COLORI.length]}, r));
-    let modo = "quota";
+    let modo = "capo";
     let scelto = null;
 
     const box = h("div", "quote");
@@ -75,11 +79,12 @@
     hd.appendChild(h("h2", null, "Chi si prende la fetta"));
     const modi = h("div", "modi");
     const bottoni = {};
-    [["quota", "quota %"], ["posto", "posto"]].forEach(([k, label]) => {
+    const TITOLI = {capo: "stese in proporzione a chi era in cima quel giorno",
+      quota: "quota delle stese fino a quel giorno", posto: "posto in classifica quel giorno"};
+    [["capo", "vs capo"], ["quota", "quota %"], ["posto", "posto"]].forEach(([k, label]) => {
       const b = h("button", k === modo ? "on" : null, label);
       b.type = "button";
-      b.title = k === "quota" ? "quota delle stese fino a quel giorno"
-        : "posto in classifica quel giorno";
+      b.title = TITOLI[k];
       b.onclick = () => {
         modo = k;
         Object.keys(bottoni).forEach(x => bottoni[x].classList.toggle("on", x === modo));
@@ -122,7 +127,10 @@
       + "dei colpi, che parte dal 6 settembre: quello che è successo prima non c'è"
       + (s.discrepanza ? ", e il registro non quadra coi contatori (vedi nota sotto)." : ".");
     const spiega = () => {
-      nota.textContent = (modo === "quota"
+      nota.textContent = (modo === "capo"
+        ? "Suore stese (.bang) di ognuno fino a quel giorno, in proporzione a chi era in "
+          + "cima: il capo sta piatto in alto, quanto gli sta sotto è il distacco."
+        : modo === "quota"
         ? "Suore stese (.bang) di ognuno sul totale stese del canale, fino a quel giorno."
         : "Posto in classifica per stese (.bang) a fine giornata, fra tutti quelli del registro.")
         + coda;
@@ -142,7 +150,11 @@
       const pw = W - M.l - M.r, ph = H - M.t - M.b;
       const x = i => M.l + i / (n - 1) * pw;
       let y, ticks;
-      if (modo === "quota") {
+      if (modo === "capo") {
+        // in cima il capo, in fondo lo zero: due righe di riferimento, niente testo
+        y = v => M.t + ph - v / 100 * ph;
+        ticks = [[100, ""], [0, ""]];
+      } else if (modo === "quota") {
         const top = Math.max(10, Math.ceil(Math.max(...righe.map(r => Math.max(...r.quota))) / 10) * 10);
         const passo = top > 60 ? 20 : 10;
         y = v => M.t + ph - v / top * ph;
@@ -155,13 +167,14 @@
         ticks = [[1, "1º"]];
         for (let v = passo === 1 ? 2 : passo; v <= fondo; v += passo) ticks.push([v, v + "º"]);
       }
-      svg.setAttribute("aria-label", modo === "quota"
-        ? "Quota cumulata delle suore stese per giorno" : "Posto in classifica per giorno");
+      svg.setAttribute("aria-label", modo === "capo"
+        ? "Suore stese per giorno, in proporzione al primo in classifica"
+        : modo === "quota" ? "Quota cumulata delle suore stese per giorno" : "Posto in classifica per giorno");
       // griglia orizzontale, recessiva
       ticks.forEach(([v, label]) => {
         svg.appendChild(nodo("line", {x1: M.l, x2: M.l + pw, y1: y(v), y2: y(v),
           stroke: "var(--line)", "stroke-width": 1}));
-        svg.appendChild(nodo("text", {x: M.l - 6, y: y(v) + 3, "text-anchor": "end"}, label));
+        if (label) svg.appendChild(nodo("text", {x: M.l - 6, y: y(v) + 3, "text-anchor": "end"}, label));
       });
       // un'etichetta a settimana, il lunedi', come le barre; sul telefono una
       // ogni due, o le date si toccano
@@ -175,7 +188,9 @@
         svg.appendChild(nodo("text", {x: x(i), y: H - 6, "text-anchor": "middle"}, gg(d)));
       });
       // le linee, l'ultima della classifica sotto e la prima sopra
-      const val = r => modo === "quota" ? r.quota : r.posto;
+      const val = r => modo === "capo"
+        ? r.stese.map((v, i) => v ? v / q.capo[i].stese * 100 : null)
+        : modo === "quota" ? r.quota : r.posto;
       const etichette = [];
       righe.slice().reverse().forEach(r => {
         const vs = val(r);
@@ -212,8 +227,9 @@
           stroke: "var(--panel)", "stroke-width": 1.5}));
         const t = nodo("text", {class: "nm", x: x(n - 1) + 8, y: e.ly + 4});
         t.appendChild(nodo("tspan", {}, e.r.nick.length > 9 ? e.r.nick.slice(0, 8) + "…" : e.r.nick));
+        // in fondo alla linea il posto di oggi (peluche), la quota nella sua vista
         t.appendChild(nodo("tspan", {dx: 4, fill: "var(--dim)"},
-          modo === "quota" ? Math.round(e.v) + "%" : e.v + "º"));
+          modo === "quota" ? Math.round(e.v) + "%" : e.r.posto[n - 1] + "º"));
         svg.appendChild(t);
       });
       // mirino per l'hover, nascosto finche' non serve
@@ -229,24 +245,33 @@
         croce.setAttribute("x1", x(i));
         croce.setAttribute("x2", x(i));
         croce.setAttribute("visibility", "visible");
+        // si ordina sul posto: stesso ordine in tutte le viste
         const ordinati = righe.slice().sort((a, b) => {
-          const va = val(a)[i], vb = val(b)[i];
+          const va = a.posto[i], vb = b.posto[i];
           if (va === vb) return 0;
           if (va === null) return 1;
           if (vb === null) return -1;
-          return modo === "quota" ? vb - va : va - vb;
+          return va - vb;
         });
+        const capo = q.capo[i];
         tip.textContent = "";
-        tip.appendChild(h("b", null, gg(q.giorni[i]) + " · " + q.totale[i] + " stese in tutto"));
+        // il capo puo' stare fuori dai sei in grafico: si dice
+        const chi = capo.chi.map(c => righe.some(r => r.nick === c) ? c
+          : c + " (fuori dal grafico)");
+        tip.appendChild(h("b", null, gg(q.giorni[i]) + (modo === "capo"
+          ? " · capo " + chi.join(", ") + " con " + capo.stese
+          : " · " + q.totale[i] + " stese in tutto")));
         ordinati.forEach(r => {
-          const v = val(r)[i];
+          const st = r.stese[i], p = r.posto[i];
           const riga = h("div");
           const c = h("i");
           c.style.background = r.colore;
           riga.appendChild(c);
           riga.appendChild(document.createTextNode(r.nick));
-          riga.appendChild(h("span", null, v === null ? "—"
-            : modo === "quota" ? v.toFixed(1) + "%" : v + "º"));
+          riga.appendChild(h("span", null, p === null ? "—"
+            : modo === "capo" ? st + (st === capo.stese ? " · capo"
+              : " · −" + (capo.stese - st) + " dal capo")
+            : modo === "quota" ? r.quota[i].toFixed(1) + "%" : p + "º"));
           tip.appendChild(riga);
         });
         tip.style.display = "block";
