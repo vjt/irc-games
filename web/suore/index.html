@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sparasuore</title>
+<link rel="icon" href="data:,">
 <meta name="description" content="Statistiche del gioco delle suore sui canali IRC di Azzurra e IRCnet.">
 
 <!-- Anteprima per gli share. `og:image` vuole un URL ASSOLUTO: gli scraper
@@ -147,37 +148,44 @@
     background: #08090b; border-radius: 10px; isolation: isolate;
     border: var(--b) ridge #c9972f;
     box-shadow: 0 0 0 2px #3a1400, 0 0 0 5px #f0c75a, 0 0 0 7px #7a4a10, 0 0 0 9px #3a1400,
-      0 0 26px 6px rgba(217, 164, 65, .35), inset 0 0 0 2px #3a1400, inset 0 0 40px 8px rgba(0, 0, 0, .95);
+      0 0 26px 6px rgba(217, 164, 65, .35), inset 0 0 0 2px #3a1400;
   }
   .palco canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; border-radius: 4px; }
-  /* il velo del CRT sopra la demo: righe di scansione, e niente mouse */
-  .palco::after {
-    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: 4px;
-    background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, .18) 0 1px, transparent 1px 3px);
-    box-shadow: inset 0 0 50px 10px rgba(0, 0, 0, .85);
-  }
+  /* niente velo del CRT ne' vignettatura sopra la demo (round 6, puppy: «nitido, fotoreale») */
   .stelle { position: absolute; inset: calc(var(--b) / -2); z-index: 3; pointer-events: none; --s: clamp(22px, 2.5vw, 34px); }
-  /* Il registro del convento, in fondo alla demo mentre si va di chiesa in
-     chiesa: solo i comandi del gioco e le risposte del bot, ricostruiti
-     dalle dorate del data.json. Scorre in su per conto suo (CSS), e c'e'
-     solo quando la classe `on` lo accende. */
+  /* Il registro del convento (round 5, puppy: «le prime tre righe leggibili,
+     le altre sempre meno»): l'ultima riga arriva in cima e spinge giu' le
+     altre, che sbiadiscono e rimpiccioliscono. Solo i comandi del gioco e le
+     risposte del bot, ricostruiti dalle dorate del data.json; la dorata
+     della riga in cima e' quella illuminata, col nick, nella processione.
+     Le righe le scrive lo script, a tempo col viaggio. */
   .registro {
-    position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; border-radius: 4px;
-    opacity: 0; transition: opacity 1.2s;
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 70%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 70%, transparent);
+    position: absolute; left: 0; right: 0; top: 0; max-height: 62%; z-index: 0; overflow: hidden; pointer-events: none;
+    border-radius: 4px 4px 0 0; padding: .7rem 1.1rem 0; text-align: left; opacity: 0; transition: opacity 1.2s;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, .62), rgba(0, 0, 0, .35) 45%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent);
   }
-  .registro.on { opacity: .5; }
-  .registro pre {
-    margin: 0; padding: 0 1.2rem; text-align: left; font: 600 clamp(.6rem, 1.15vw, .82rem)/1.5 ui-monospace, Menlo, Consolas, monospace;
-    color: #9fe39a; text-shadow: 0 0 4px rgba(80, 255, 120, .45), 0 1px 0 #000; white-space: pre-wrap; word-break: break-word;
-    animation: registro var(--dur, 120s) linear infinite;
+  .registro.on { opacity: 1; }
+  .registro .righe div {
+    font: 600 clamp(.52rem, 1vw, .72rem)/1.38 ui-monospace, Menlo, Consolas, monospace; color: #9fe39a;
+    text-shadow: 0 1px 0 #000; white-space: pre-wrap; word-break: break-word; margin-bottom: .12rem;
   }
+  .registro .righe div:nth-child(1) { font-size: clamp(.74rem, 1.55vw, 1.06rem); color: #d4ffcc; text-shadow: 0 1px 0 #000; }
+  .registro .righe div:nth-child(2) { font-size: clamp(.68rem, 1.35vw, .93rem); opacity: .9; }
+  .registro .righe div:nth-child(3) { font-size: clamp(.64rem, 1.22vw, .86rem); opacity: .78; }
+  .registro .righe div:nth-child(4) { opacity: .42; }
+  .registro .righe div:nth-child(5) { opacity: .32; }
+  .registro .righe div:nth-child(6) { opacity: .24; }
+  .registro .righe div:nth-child(7) { opacity: .18; }
+  .registro .righe div:nth-child(8) { opacity: .13; }
+  .registro .righe div:nth-child(9) { opacity: .09; }
+  .registro .righe div:nth-child(n+10) { opacity: .05; }
   .registro b { color: #f5cf3d; font-weight: 700; }
   .registro i { color: #e87ba4; font-style: normal; }
   .registro u { color: #8d8b86; text-decoration: none; }
-  @keyframes registro { from { transform: translateY(0); } to { transform: translateY(-50%); } }
-  @media (prefers-reduced-motion: reduce) { .registro pre { animation-duration: calc(var(--dur, 120s) * 2.5); } }
+  .registro s { color: #fff6b0; text-decoration: none; }
+  .registro .righe div:nth-child(-n+3) s { color: #ffe45c; }
   /* Stelle imperfette (puppy, 14/10): ognuna e' un tracciato storto suo,
      disegnato da `stellaStorta`, e pure un po' girata. Ripiene di giallo,
      il bordo dice com'e' finita: rosso stesa, rosa convertita, grigio se
@@ -197,6 +205,8 @@
   /* La storia della stella toccata: il title non esiste sui telefoni. */
   .dorate .storia { margin: 1.6rem auto 0; max-width: 22rem; text-align: left; font-size: .8rem; line-height: 1.45; color: var(--dim); white-space: pre-line; background: rgba(15, 16, 18, .85); border: 1px solid var(--line); border-radius: 4px; padding: .5rem .7rem; }
   .dorate .storia:empty { display: none; }
+  /* l'attribuzione delle foto satellitari del viaggio (Esri World Imagery) */
+  .dorate .crediti { margin: .9rem 1.3rem 0; text-align: right; font-size: .68rem; color: var(--dim); }
   /* WordArt (puppy, 14/10: «più wordart»): riempimento a gradiente, bordo
      grosso, estrusione fatta di drop-shadow in fila. */
   .wordart {
@@ -1008,25 +1018,49 @@ function caso(seme) {
   return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1);
     t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
-function puntiStorti(R) {
-  const p = [];
-  for (let i = 0; i < 10; i++) {
-    const a = -Math.PI / 2 + i * Math.PI / 5 + (R() - .5) * .16, r = (i % 2 ? .45 : 1) * (1 + (R() - .5) * .26);
-    p.push([Math.cos(a) * r, Math.sin(a) * r]);
+// Le stelle delle dorate (round 6, puppy): ognuna diversa, ma nick simili
+// fanno stelle simili. La forma viene dal nick: il suo posto fra tutti i
+// nick in ordine alfabetico (quante punte, quanto girate) e le prime due
+// lettere come numeri continui (quanto tonde, quanto profonde, quanto
+// storte); poi un ritocco piccolo dall'hash di nick+ora della presa, cosi'
+// ogni presa ha la sua. Stesso nick e stessa ora, stessa stella, sempre.
+// Le usano la cornice (SVG) e le aureole della processione (3D).
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function ranghiNick(righe) {
+  const u = [...new Set(righe.map(r => r.nick.toLowerCase()))].sort(), m = new Map();
+  u.forEach((n, i) => m.set(n, u.length > 1 ? i / (u.length - 1) : .5));
+  return m;
+}
+function puntiStella(nick, ts, ranghi) {
+  const k = String(nick).toLowerCase(), r = ranghi && ranghi.has(k) ? ranghi.get(k) : .5;
+  const lettera = i => { const c = k.charCodeAt(i); return c >= 97 && c <= 122 ? (c - 97) / 25 : c >= 48 && c <= 57 ? (c - 48) / 9 : .5; };
+  const c1 = lettera(0), c2 = lettera(1);
+  const punte = 5 + Math.min(3, Math.floor(r * 4)), dentro = .34 + .26 * c2, giro = (r - .5) * .7;
+  const tondo = c1 * .24, storto = (c2 - .5) * .3, R = caso(hashStr(k + "@" + Math.floor(ts || 0)));
+  const n = punte * 2, q = [];
+  for (let i = 0; i < n; i++) {
+    const punta = i % 2 === 0;
+    const a = -Math.PI / 2 + i * Math.PI / punte + (punta ? 0 : giro * Math.PI / punte) + (R() - .5) * .1;
+    const rr = (punta ? 1 : dentro) * (1 + (R() - .5) * .12);
+    q.push([Math.cos(a) * rr * (1 + storto * .5), Math.sin(a) * rr * (1 - storto * .5)]);
   }
-  const q = [];
-  p.forEach((a, i) => {
-    const b = p[(i + 1) % p.length], nx = a[1] - b[1], ny = b[0] - a[0];
-    q.push(a);
+  const out = [];
+  q.forEach((a, i) => {
+    const b = q[(i + 1) % n];
+    out.push(a);
     for (const f of [.33, .66]) {
-      const s = (R() - .5) * .09;
-      q.push([a[0] + (b[0] - a[0]) * f + nx * s, a[1] + (b[1] - a[1]) * f + ny * s]);
+      const mx = a[0] + (b[0] - a[0]) * f, my = a[1] + (b[1] - a[1]) * f, l = Math.hypot(mx, my) || 1;
+      const g = tondo * Math.sin(f * Math.PI) + (R() - .5) * .04;
+      out.push([mx + mx / l * g, my + my / l * g]);
     }
   });
-  return q;
+  return out;
 }
-function stellaStorta(seme) {
-  const q = puntiStorti(caso(seme));
+function stellaStorta(q) {
   const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), path = document.createElementNS(ns, "path");
   svg.setAttribute("viewBox", "-1.25 -1.25 2.5 2.5");
   svg.setAttribute("aria-hidden", "true");
@@ -1038,11 +1072,11 @@ function renderDorate(scopes, d) {
   const righe = (d.dorate || []).filter(r => scopes.includes(r.scope))
     .sort((x, y) => x.ts - y.ts);
   if (!righe.length) return;
-  const box = document.getElementById("dorate");
+  const box = document.getElementById("dorate"), ranghi = ranghiNick(righe);
   const palco = el("div", "palco"), wall = el("div", "stelle"), storia = el("p", "storia");
   const stelle = righe.map((r, i) => {
     const st = el("span", r.verbo === "bef" ? "amica" : r.verbo === "bang" ? "kill" : null);
-    st.appendChild(stellaStorta(Math.floor(r.ts) + i));
+    st.appendChild(stellaStorta(puntiStella(r.nick, r.ts, ranghi)));
     st.style.setProperty("--r", ((caso(i * 7919 + 13)() - .5) * 34).toFixed(1) + "deg");
     st.title = racconto(r);
     st.setAttribute("role", "img");
@@ -1080,6 +1114,7 @@ function renderDorate(scopes, d) {
   box.appendChild(palco);
   box.appendChild(storia);
   box.righe = righe;                       // la demo le rigioca come battute
+  box.ranghi = ranghi;                     // e fa le aureole con le stesse stelle
   box.giocatori = giocatori(righe, d);     // e ci fa i titoli di coda
   box.hidden = false;
   new ResizeObserver(cornice).observe(wall);
@@ -1398,37 +1433,36 @@ setInterval(() => {
      del pacchetto npm, servita da qui accanto (`three.module.min.js`, 670 KB,
      ~165 KB gzip) e caricata con un `import()` solo quando la sezione si
      avvicina: la CSP la lascia passare perche' e' dello stesso origin.
-     In scena, un renderer e undici draw call:
+     Sopra il viaggio (vedi sotto), la scena della demo:
      - la galassia che attraversiamo: bracci a spirale logaritmica, nucleo
        caldo che sfuma nell'azzurro dei bracci, qualche nebulosa rosa, e le
-       corsie di polvere sul bordo interno dei bracci (Points scuri a fusione
-       normale sopra le stelle additive);
-     - il tunnel di stelline che ti vengono addosso;
-     - lo sciame: 1500 stelline che passano per diciotto forme (raddoppiate in
-       scena, `SCALA`), esplodendo nel mezzo. Le forme piatte si disegnano su un canvas e si campionano i
-       pixel pieni; quelle solide sono formule. Il moto lo fa il vertex
-       shader; al cambio di forma il JS ricopia due buffer gia' allocati;
-     - le dorate: una stella estrusa storta per ognuna, gialla se stesa e
-       rosa se convertita, su un guscio che gira, col nick sopra nel colore
-       del giocatore (un atlante disegnato una volta, un'istanza sola);
-     - sette croci low-poly con la suora in cima;
+       corsie di polvere sul bordo interno dei bracci;
+     - il tunnel di stelline e sette croci low-poly con la suora, solo
+       nello spazio;
      - copper bar e due righe di scroller in WordArt: il keygen sopra, i
        titoli di coda sotto.
-     In tandem con gli spari: la demo rigioca le dorate vere colpo per colpo
-     (lampo, esplosione, botta alla camera; vampata rosa per l'amicizia) e
-     sente gli spari di adesso: quelli del saloon (anche il click) e le suore
-     nuove che il `data.json` riletto ogni minuto porta.
+     Lo sciame (1500 stelline, diciotto forme) sta dentro il viaggio: sopra
+     l'Italia, sopra la chiesa che arriva, sotto l'arco trionfale, davanti
+     alla cupola. Le forme piatte si disegnano su un canvas e si campionano
+     nei pixel pieni; il moto lo fa il vertex shader.
+     In tandem con gli spari: ogni riga del registro che arriva in cima fa il
+     suo colpo (lampo, esplosione, botta alla camera; vampata rosa per
+     l'amicizia), e la demo sente gli spari di adesso: quelli del saloon
+     (anche il click) e le suore nuove del `data.json` riletto ogni minuto.
      I momenti importanti, a turno ogni 24 secondi: il cartellone del
-     recordman, la supernova sull'ultima dorata, la processione delle croci.
+     recordman, la supernova sulla dorata di turno, la processione.
      Nel ciclo nessuna allocazione: uniform, matrici in oggetti gia' fatti,
      buffer riscritti. Il loop si ferma fuori schermo e a scheda nascosta.
      Parte da sola sempre: con prefers-reduced-motion va piu' piano, lampi
      piu' tenui e la camera non sobbalza. Senza WebGL niente.
-     Sotto a tutto, il viaggio (puppy, 14/10): dallo spazio al globo low-poly,
-     giu' sull'Italia, atterraggio davanti a una chiesa e poi di chiesa in
-     chiesa, in loop ogni 76 secondi; mentre si va per chiese, in fondo scorre
-     il registro del convento (solo comandi del gioco e risposte del bot,
-     ricostruiti dalle dorate del data.json).
+     Sotto a tutto, il viaggio (puppy, 14/10; round 5): dallo spazio al
+     globo, giu' sull'Italia, dentro sei chiese (navata, mosaici, altare,
+     banchi, suore e chierichetti che passano) e in fondo San Pietro, poi su
+     nel buio, in loop ogni 168 secondi; tutto in nuvole di punti, da scan.
+     Le dorate fanno la stessa strada in processione, e quella che hai davanti
+     e' quella che il registro del convento racconta in cima (solo comandi del
+     gioco e risposte del bot, ricostruiti dalle dorate del data.json).
+     Le stelle del guscio non ci sono piu': sono le aureole delle dorate.
      Per guardare una forma ferma: `#forma=N` in fondo all'URL (0-17); per lo
      sfondo da solo, fermo al secondo S del giro: `#viaggio=S`. -->
 <script>
@@ -1441,24 +1475,24 @@ setInterval(() => {
   const mq = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : null;
   let piano = !!(mq && mq.matches);
 
-  const N = 1500;           // stelline dello sciame
-  const NW = 300;           // stelline del tunnel
-  const NG = 7000;          // stelle della galassia
-  const NP = 1400;          // granelli di polvere
+  // sui telefoni meno di tutto: punti, stelline, figure
+  const PICCOLO = Math.min(screen.width || 9999, screen.height || 9999) < 700;
+  const N = PICCOLO ? 900 : 1500;     // stelline dello sciame
+  const NW = PICCOLO ? 180 : 300;     // stelline del tunnel
+  const NG = PICCOLO ? 3500 : 7000;   // stelle della galassia
+  const NP = PICCOLO ? 700 : 1400;    // granelli di polvere
   const NC = 7;             // croci con la suora
-  const MAXD = 200;         // dorate in scena, al massimo
-  const RS = 3.3;           // raggio del guscio delle dorate
-  const PERIODO = 7;        // secondi per forma: 4.5 ferma, 2.5 di cambio
-  const OGNI = 24, DURA = 6.5;  // i momenti importanti
+  const MAXD = 200;         // dorate in processione, al massimo
+  const PERIODO = 9;        // secondi per forma: 6.5 ferma, 2.5 di cambio
+  const OGNI = 32, DURA = 6.5;  // i momenti importanti
   const FOV = 50;
   const SCALA = 2;          // lo sciame in scena: le forme raddoppiate
-  const LH = .26;           // altezza di un'etichetta, in unita' di scena
   const ALTO = 30;          // altezza di una riga di scroller, px CSS
 
   // ---- le diciotto forme dello sciame: N punti xyz ciascuna, raggio ~1.9,
   // che in scena diventa ~3.8 (`SCALA`: puppy, 14/10, «forme grandi il doppio») ----
   const NOMI_FORME = ["sfera", "croce", "toro", "suora", "stella", "cuore", "teschio", "elica", "666",
-    "galassia", "fucile", "cubo", "luna", "campana", "saturno", "chiesa", "piramide", "bang"];
+    "grappa", "fucile", "mitra", "maiale", "campana", "cancelletto", "chiesa", "bara", "bang"];
   function forme() {
     const R = Math.random, F = [];
     const riempi = fn => { const a = new Float32Array(N * 3); for (let i = 0; i < N; i++) { const p = fn(i); a[i * 3] = p[0]; a[i * 3 + 1] = p[1]; a[i * 3 + 2] = p[2]; } F.push(a); };
@@ -1477,6 +1511,7 @@ setInterval(() => {
         return [((k % L) + R()) / L * 3.9 - 1.95, 1.95 - (Math.floor(k / L) + R()) / L * 3.9, (R() - .5) * .3];
       };
     };
+    const tondo = (x, cx, cy, rx, ry) => { x.beginPath(); x.ellipse(cx, cy, rx, ry, 0, 0, 6.2832); x.fill(); };
     const buca = (x, f) => { x.globalCompositeOperation = "destination-out"; x.beginPath(); f(); x.fill(); x.globalCompositeOperation = "source-over"; };
     const parola = (t, h) => tela(x => {
       x.font = `900 ${h}px Impact, "Arial Black", sans-serif`;
@@ -1523,8 +1558,16 @@ setInterval(() => {
     riempi(i => { const h = (i % (N / 2)) / (N / 2), f = h * 6.2832 * 3 + (i < N / 2 ? 0 : Math.PI);   // elica
       return [Math.cos(f) * .85, h * 3.8 - 1.9, Math.sin(f) * .85]; });
     riempi(parola("666", 120));                                                                          // 666
-    riempi(i => { const r = Math.sqrt(R()) * 1.85, f = r * 2.7 + (i % 2) * Math.PI + (R() - .5) * .5;     // galassia
-      return [Math.cos(f) * r, Math.sin(f) * r, (R() - .5) * .25 * (1.95 - r)]; });
+    riempi(tela(x => {                                                                                   // grappa
+      x.fillRect(70, 2, 20, 10);                                                  // il tappo
+      x.fillRect(73, 12, 14, 40);                                                 // il collo
+      x.beginPath(); x.moveTo(73, 50); x.quadraticCurveTo(52, 62, 52, 84); x.lineTo(52, 150);
+      x.quadraticCurveTo(52, 158, 60, 158); x.lineTo(100, 158); x.quadraticCurveTo(108, 158, 108, 150);
+      x.lineTo(108, 84); x.quadraticCurveTo(108, 62, 87, 50); x.closePath(); x.fill();
+      buca(x, () => x.rect(57, 96, 46, 36));                                      // l'etichetta
+      x.font = '900 13px Impact, "Arial Black", sans-serif'; x.textAlign = "center"; x.textBaseline = "middle";
+      x.fillText("GRAPPA", 80, 114);
+    }));
     riempi(tela(x => {                                                                                   // fucile
       x.fillRect(4, 66, 100, 9);                                                  // la canna
       x.fillRect(4, 60, 5, 7);                                                    // il mirino
@@ -1533,11 +1576,21 @@ setInterval(() => {
       x.lineWidth = 4; x.beginPath(); x.arc(102, 88, 8, 0, Math.PI); x.stroke();  // il ponticello
       x.fillRect(80, 84, 10, 20);                                                 // il caricatore
     }));
-    riempi(() => { const a = (R() - .5) * 2.4, b = (R() - .5) * 2.4, s = R() < .5 ? -1.2 : 1.2, f = Math.floor(R() * 3); // cubo
-      return storto(f === 0 ? [s, a, b] : f === 1 ? [a, s, b] : [a, b, s], .5, .65); });
-    riempi(tela(x => {                                                                                   // luna
-      x.beginPath(); x.arc(76, 80, 64, 0, 6.2832); x.fill();
-      buca(x, () => x.arc(106, 64, 58, 0, 6.2832));
+    riempi(tela(x => {                                                                                   // mitra
+      x.beginPath(); x.moveTo(36, 128); x.quadraticCurveTo(26, 62, 80, 8); x.quadraticCurveTo(134, 62, 124, 128); x.closePath(); x.fill();
+      x.fillRect(50, 126, 13, 34); x.fillRect(97, 126, 13, 34);                   // le infule
+      buca(x, () => { x.rect(77, 22, 6, 106); x.rect(38, 104, 84, 6); });        // i galloni
+      buca(x, () => { x.rect(62, 52, 36, 7); x.rect(76, 38, 8, 36); });          // la croce davanti
+    }));
+    riempi(tela(x => {                                                                                   // maiale
+      tondo(x, 88, 86, 52, 34);                                                   // la pancia
+      tondo(x, 38, 80, 25, 23);                                                   // la testa
+      x.beginPath(); x.ellipse(14, 84, 9, 12, 0, 0, 6.2832); x.fill();          // il grugno
+      x.beginPath(); x.moveTo(30, 62); x.lineTo(40, 40); x.lineTo(52, 62); x.closePath(); x.fill(); // l'orecchio
+      for (const lx of [52, 70, 104, 122]) x.fillRect(lx, 108, 12, 34);         // le zampe
+      x.lineWidth = 5; x.beginPath(); x.arc(146, 74, 8, 3.6, 2.2 + 6.2832); x.stroke(); // la coda a ricciolo
+      buca(x, () => x.arc(34, 74, 4, 0, 6.2832));                                // l'occhio
+      buca(x, () => { x.arc(11, 80, 2.5, 0, 6.2832); x.arc(11, 89, 2.5, 0, 6.2832); }); // le narici
     }));
     riempi(tela(x => {                                                                                   // campana
       x.beginPath(); x.moveTo(60, 34); x.quadraticCurveTo(80, 10, 100, 34); x.lineTo(108, 92);
@@ -1545,10 +1598,11 @@ setInterval(() => {
       x.beginPath(); x.arc(80, 146, 11, 0, 6.2832); x.fill();                     // il batacchio
       x.lineWidth = 7; x.beginPath(); x.arc(80, 16, 9, 0, 6.2832); x.stroke();    // l'anello
     }));
-    riempi(() => { if (R() < .55) { const u = R() * 2 - 1, a = R() * 6.2832, r = Math.sqrt(1 - u * u);  // saturno
-        return [Math.cos(a) * r * 1.05, u * 1.05, Math.sin(a) * r * 1.05]; }
-      const a = R() * 6.2832, r = 1.5 + R() * .75;
-      return [Math.cos(a) * r, Math.sin(a) * r * .34, Math.sin(a) * r * .94]; });
+    riempi(tela(x => {                                                                                   // cancelletto
+      x.lineWidth = 20; x.lineCap = "butt";
+      x.beginPath(); x.moveTo(66, 10); x.lineTo(50, 150); x.moveTo(114, 10); x.lineTo(98, 150);
+      x.moveTo(14, 54); x.lineTo(150, 54); x.moveTo(10, 106); x.lineTo(146, 106); x.stroke();
+    }));
     riempi(tela(x => {                                                                                   // chiesa
       x.fillRect(22, 92, 82, 66);                                                 // la navata
       x.beginPath(); x.moveTo(14, 94); x.lineTo(63, 56); x.lineTo(112, 94); x.closePath(); x.fill();
@@ -1558,11 +1612,10 @@ setInterval(() => {
       buca(x, () => { x.rect(54, 124, 18, 34); x.arc(63, 124, 9, Math.PI, 0); }); // il portone
       buca(x, () => x.arc(121, 74, 7, 0, 6.2832));                                // la finestra della campana
     }));
-    riempi(() => { const f = Math.floor(R() * 5), B = 1.5, H = 1.7;                                      // piramide
-      if (f === 4) return [(R() - .5) * 2 * B, -1.4, (R() - .5) * 2 * B];
-      const c = [[-B, -B], [B, -B], [B, B], [-B, B]], p = c[f], q = c[(f + 1) % 4];
-      let u = R(), v = R(); if (u + v > 1) { u = 1 - u; v = 1 - v; }
-      return [p[0] * (1 - u - v) + q[0] * u, -1.4 + v * (H + 1.4), p[1] * (1 - u - v) + q[1] * u]; });
+    riempi(tela(x => {                                                                                   // bara
+      x.beginPath(); x.moveTo(58, 4); x.lineTo(102, 4); x.lineTo(126, 44); x.lineTo(108, 156); x.lineTo(52, 156); x.lineTo(34, 44); x.closePath(); x.fill();
+      buca(x, () => { x.rect(74, 34, 12, 86); x.rect(54, 58, 52, 12); });       // la croce sul coperchio
+    }));
     riempi(parola("BANG!", 110));                                                                        // bang
     return F;
   }
@@ -1588,7 +1641,7 @@ setInterval(() => {
   const VS_SCIAME = `
     attribute vec3 aA;                 // la forma d'arrivo; position e' quella di partenza
     attribute float aFase;
-    uniform float uT, uK, uPx, uMax, uBoom, uFlash;
+    uniform float uT, uK, uPx, uMax, uBoom, uFlash, uScala;
     varying float vB, vRot, vK;
     void main() {
       float k = smoothstep(0.0, 1.0, clamp(uK * 1.5 - aFase * 0.5, 0.0, 1.0));
@@ -1598,7 +1651,7 @@ setInterval(() => {
       p *= 1.0 + 0.04 * sin(uT * 3.0 + aFase * 6.2832);
       vec4 mv = modelViewMatrix * vec4(p, 1.0);
       gl_Position = projectionMatrix * mv;
-      gl_PointSize = min(uPx / -mv.z, uMax);
+      gl_PointSize = min(uPx * uScala / -mv.z, uMax);
       vB = (0.42 + 0.17 * sin(uT * 5.0 + aFase * 40.0)) * (1.0 + min(uFlash, 1.5) * 1.6);
       vRot = aFase * 6.2832 + uT * (0.8 + aFase * 1.6);
       vK = aFase;
@@ -1640,58 +1693,15 @@ setInterval(() => {
       if (r > 1.0) discard;
       gl_FragColor = vec4(vC, (1.0 - r) * (1.0 - r) * uA);
     }`;
-  const VS_NOMI = `
-    attribute vec3 aCentro;
-    attribute vec4 aReg;
-    attribute float aLarg, aIdx;
-    uniform float uHi, uLH, uRS;
-    varying vec2 vUv;
-    varying float vA;
-    void main() {
-      vec4 c0 = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-      vec4 mv = modelViewMatrix * vec4(aCentro, 1.0);
-      float hi = abs(aIdx - uHi) < 0.5 ? 1.0 : 0.0;
-      float sc = 1.0 + hi * 0.9;
-      mv.y += uLH * 1.5 * sc;
-      mv.xy += position.xy * vec2(aLarg, uLH) * sc;
-      gl_Position = projectionMatrix * mv;
-      vUv = aReg.xy + (position.xy + 0.5) * aReg.zw;
-      vA = max(hi, 0.75 * smoothstep(0.0, uRS * 0.75, mv.z - c0.z));
-    }`;
-  const FS_NOMI = `
-    uniform sampler2D uAtlas;
-    varying vec2 vUv;
-    varying float vA;
-    void main() {
-      vec4 t = texture2D(uAtlas, vUv);
-      if (t.a * vA < 0.02) discard;
-      gl_FragColor = vec4(t.rgb, t.a * vA);
-    }`;
   const VS_PIENO = `
     uniform float uZ;
     void main() { gl_Position = vec4(position.xy, uZ, 1.0); }`;
-  const FS_COPPER = `
-    uniform vec2 uR;
-    uniform float uT, uD, uFlash;
+  // il lampo dei colpi: una tinta piatta che sale e scende, niente altro
+  // (le copper bar sono andate, round 6)
+  const FS_LAMPO = `
+    uniform float uFlash;
     uniform vec3 uFlashCol;
-    void main() {
-      float y = gl_FragCoord.y;
-      vec3 col = vec3(0.0);
-      float al = 0.0;
-      for (int i = 0; i < 5; i++) {
-        float fi = float(i);
-        float cy = uR.y * (0.55 + 0.38 * sin(uT * 1.15 + fi * 0.75));
-        float b = max(0.0, 1.0 - abs(y - cy) / (22.0 * uD));
-        vec3 rame = mix(vec3(0.45, 0.2, 0.05), vec3(1.0, 0.86, 0.5), b * b);
-        float a = b * 0.22;
-        col += rame * a * (1.0 - al);
-        al += a * (1.0 - al);
-      }
-      float fa = min(uFlash, 1.2) * 0.3;
-      col += uFlashCol * fa * (1.0 - al);
-      al += fa * (1.0 - al);
-      gl_FragColor = vec4(col / max(al, 0.0001), al);
-    }`;
+    void main() { float a = min(uFlash, 1.2) * 0.3; if (a < 0.004) discard; gl_FragColor = vec4(uFlashCol, a); }`;
   // Una riga di scroller. Il testo e' una striscia lunga anche decine di
   // migliaia di pixel, spezzata a capo in una texture larga al piu' 4096:
   // lo shader ritrova riga e colonna dalla posizione lungo la striscia.
@@ -1714,10 +1724,10 @@ setInterval(() => {
     }`;
 
   let THREE, renderer, scena, cam, cv, palco, U, sciame, aDa, aA, F, forma = -1, fissa = -1;
-  let dorate, nomi, centri, base, anis, croci, dummy, crPos, galassia, righe = [], ND = 0, camZ = 8;
+  let croci, dummy, crPos, galassia, tunnel, righe = [], ND = 0, camZ = 8;
   let strisce = [], cartello, cartA, cartB, gioc = [];
   let inVista = false, gira = false, raf = 0, t = 7.3, ultimo = 0;
-  let evK, evD, evP, ev = 0, prossimo = 0, liveBang = 0, liveBef = 0, prossimoLive = 0;
+  let liveBang = 0, liveBef = 0, prossimoLive = 0;
   let flash = 0, rosa = 0, boom = 0, kick = 0, kx = 0, ky = 0, hi = -1, stelleDom = [];
   let pezzo = -1, pezzoT = -99, prossimoPezzo = 12, nova = 0, quale = 0;
 
@@ -1786,10 +1796,10 @@ setInterval(() => {
     return [tex, reg];
   }
 
-  // La stella estrusa, storta come quelle della cornice (`puntiStorti`
-  // sta nello script della pagina).
-  function stellaEstrusa() {
-    const q = puntiStorti(caso(1981)), s = new THREE.Shape();
+  // La stella estrusa, con la forma di `puntiStella` (nello script della
+  // pagina): la stessa della cornice.
+  function stellaEstrusa(q) {
+    const s = new THREE.Shape();
     q.forEach(([x, y], i) => { if (i) s.lineTo(x, -y); else s.moveTo(x, -y); });
     const g = new THREE.ExtrudeGeometry(s, {depth: .26, bevelEnabled: true,
       bevelThickness: .1, bevelSize: .06, bevelSegments: 1});
@@ -1887,21 +1897,11 @@ setInterval(() => {
     return m;
   }
 
-  function battute(rr) {
-    const K = [], Dd = [], P = [], COD = {bang: 0, bef: 1, jam: 2, nope: 3, boom: 4};
-    rr.forEach((r, i) => {
-      (r.storia || []).forEach(x => { K.push(COD[x[1]] === undefined ? 3 : COD[x[1]]); Dd.push(i); P.push(.42); });
-      K.push(r.verbo === "bef" ? 7 : r.rpg ? 6 : 5); Dd.push(i); P.push(2.2);
-    });
-    evK = Uint8Array.from(K); evD = Uint16Array.from(Dd); evP = Float32Array.from(P);
-  }
-
   function evidenzia(d) {
     if (d === hi) return;
     if (stelleDom[hi]) stelleDom[hi].classList.remove("batte");
     hi = d;
     if (stelleDom[hi]) stelleDom[hi].classList.add("batte");
-    nomi.material.uniforms.uHi.value = hi;
   }
 
   function colpo(k, d) {
@@ -1933,11 +1933,10 @@ setInterval(() => {
       a = top.nick; b = `recordman delle dorate: ${top.prese}`; r = top.rosa;
       flash = 1; U.uFlashCol.value.setRGB(1, .9, .5); boom = 1.2; kick = piano ? 0 : .8;
     } else if (k === 1 && ult) {
-      a = "supernova"; b = `l'ultima dorata, di ${ult.nick}`; r = ult.verbo === "bef";
+      a = "supernova"; b = "sulla dorata di turno"; r = false;
       nova = 1; flash = 1.5; U.uFlashCol.value.setRGB(.85, .92, 1); kick = piano ? 0 : 1.2;
-      evidenzia(ND - 1);
     } else {
-      a = "processione"; b = "le suore in fila per le dorate";
+      a = "processione"; b = "le dorate in fila verso San Pietro";
     }
     cartA.textContent = a; cartB.textContent = b;
     cartello.classList.toggle("rosa", r);
@@ -1946,20 +1945,39 @@ setInterval(() => {
     cartello.classList.add("via");
   }
 
-  // ---- il viaggio sullo sfondo (puppy, 14/10) ----------------------------
-  // Si parte nello spazio, col globo lontano; si scende sull'Italia, si
-  // attraversa l'atmosfera e si atterra davanti a una chiesa low-poly, poi
-  // di chiesa in chiesa; alla fine si risale nel buio e si ricomincia.
-  // Niente texture: il globo e' un icosaedro colorato faccia per faccia coi
-  // poligoni (grossolani, apposta) delle terre emerse; la campagna e le
-  // chiese sono geometria generata, tutta fusa in un buffer solo.
-  // Due scene di sfondo con la loro camera, disegnate prima della scena
-  // della demo (che si disegna sopra, dopo un clearDepth).
-  const VIAGGIO = 76;                        // secondi per giro
-  const NCH = 6, PASSO = 16;                 // chiese sulla strada, e quanto distano
-  const T_ATM = 17.5, T_ATTERRA = 25, T_SALITA = VIAGGIO - 9, T_SPAZIO = VIAGGIO - 3.5;
+  // ---- il viaggio sullo sfondo (puppy, 14/10; round 7: tutto in Vaticano) --
+  // Si parte nello spazio, col globo lontano; si scende su Roma, dentro
+  // l'atmosfera, e da tre chilometri di quota giu' fino a San Pietro: mentre
+  // si scende la basilica, il colonnato e la piazza si montano da punti che
+  // cadono dal cielo. A terra si arriva da via della Conciliazione, si
+  // attraversa la piazza e si entra dal portone; dentro, la navata, la
+  // crociera sotto la cupola, il baldacchino del Bernini e la Gloria in
+  // fondo all'abside; poi su, dentro la cupola, fino alla luce della
+  // lanterna, fuori sopra la cupola e di nuovo nel buio.
+  // Fuori, 1 unita' = 10 metri, misure vere: l'obelisco nell'origine, +z a
+  // est, +x a nord. Il suolo e' colorato con le tessere satellitari Esri
+  // World Imagery (z17 attorno al Vaticano, z14 per il resto di Roma, z2 per
+  // il globo), scaricate una volta sola e cotte in sat{2,14,17}.webp accanto
+  // alla pagina (puppy, round 8: zero richieste a Esri); se non arrivano,
+  // colori finti. Dentro, metri.
+  // Tutto e' una nuvola di punti (puppy: «point mesh», da fotogrammetria): la
+  // geometria si costruisce come si farebbe coi triangoli e poi si campiona
+  // in punti sulle superfici (`campiona`), con la luce gia' cotta nel colore,
+  // un filo di rumore e qualche buco, come uno scan vero; il dettaglio e'
+  // tutto sul Vaticano, il resto del mondo e' rado. Quelli girati di spalle
+  // li butta il vertex shader.
+  // Le dorate sono una processione: via della Conciliazione, la piazza, il
+  // portone, e dentro su per la navata fino alla confessione, una alla volta.
+  // Quella illuminata, col nick, e' quella che il registro racconta in cima.
+  // In giro, come comparse, le bestemmie del canale fatte di punti.
+  const VIAGGIO = 190;                       // secondi per giro (round 7)
+  const T_ATM = 24, T_GIU = 54, T_PORTA = 80, T_LUCE = 152, T_SALITA = 172, T_SPAZIO = VIAGGIO - 6;
   const DEG = Math.PI / 180, RG0 = 5;        // raggio del globo
-  const ITALIA = [42.4, 12.6];               // dove si scende: lat, lon
+  const ITALIA = [41.9022, 12.4573];         // dove si scende: San Pietro, lat e lon
+  const LEAD = [1.2, 1.6, 4], GAP = [.55, 1.05, 3.2];   // la processione, per scena: quanto avanti la dorata di turno, e il passo
+  const Z_FAC = -18.4, Z_CUP = -34.4;        // la facciata e la cupola, dall'obelisco verso ovest
+  // la tessera z17 dell'obelisco in pixel globali, e i metri di un pixel a quella latitudine
+  const OBEL = [17938316, 12468227], PXU = 10 / (156543.03392 * Math.cos(ITALIA[0] * DEG) / 131072);
   // [oro, [[lon, lat], ...]], a mano e grossolani: si vedono da lontano o di corsa
   const TERRE = [
     [1, [[6.6,45.1],[7,45.9],[8.4,46.4],[9,46],[10.1,46.6],[12.2,47],[13.7,46.5],[13.7,45.7],[12.4,45.4],[12.3,44.6],
@@ -2004,39 +2022,279 @@ setInterval(() => {
     return c;
   }
 
-  // Tanti pezzi [geometria, matrice, colore] in un buffer solo, coi colori
-  // per vertice: una draw call per materiale. Colore null = quello che la
-  // geometria ha gia'.
   const M4 = (x, y, z, rx, ry, rz, sx, sy, sz) => new THREE.Matrix4().compose(new THREE.Vector3(x, y, z),
     new THREE.Quaternion().setFromEuler(new THREE.Euler(rx || 0, ry || 0, rz || 0)),
     new THREE.Vector3(sx || 1, sy || sx || 1, sz || sx || 1));
-  function fondi(parti) {
-    let n = 0;
-    const hh = parti.map(([g, m]) => {
-      const h = g.index ? g.toNonIndexed() : g;
-      if (h !== g) g.dispose();
-      if (m) h.applyMatrix4(m);
-      n += h.attributes.position.count;
-      return h;
-    });
-    const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), col = new Float32Array(n * 3);
-    let o = 0;
-    hh.forEach((h, i) => {
-      const k = h.attributes.position.count, c = parti[i][2];
-      pos.set(h.attributes.position.array, o * 3);
-      nor.set(h.attributes.normal.array, o * 3);
-      if (c) for (let j = 0; j < k; j++) col.set(c, (o + j) * 3);
-      else col.set(h.attributes.color.array, o * 3);
-      o += k;
-      h.dispose();
-    });
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    g.setAttribute("normal", new THREE.BufferAttribute(nor, 3));
-    g.setAttribute("color", new THREE.BufferAttribute(col, 3));
-    return g;
+  const liscio = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+  const norm3 = (x, y, z) => { const l = Math.hypot(x, y, z); return [x / l, y / l, z / l]; };
+
+  // rumore: un hash intero e il suo value noise, per i buchi e le venature
+  const hs3 = (x, y, z) => {
+    let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(z | 0, 1274126177)) | 0;
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+  };
+  function rumore(x, y, z) {
+    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+    let u = x - xi, v = y - yi, w = z - zi;
+    u = u * u * (3 - 2 * u); v = v * v * (3 - 2 * v); w = w * w * (3 - 2 * w);
+    const a = hs3(xi, yi, zi), b = hs3(xi + 1, yi, zi), c = hs3(xi, yi + 1, zi), d = hs3(xi + 1, yi + 1, zi);
+    const e = hs3(xi, yi, zi + 1), f = hs3(xi + 1, yi, zi + 1), g = hs3(xi, yi + 1, zi + 1), h = hs3(xi + 1, yi + 1, zi + 1);
+    const ab = a + (b - a) * u, cd = c + (d - c) * u, ef = e + (f - e) * u, gh = g + (h - g) * u;
+    const giu = ab + (cd - ab) * v, su = ef + (gh - ef) * v;
+    return giu + (su - giu) * w;
   }
 
+  // Il campionatore. `parti`: {g geometria, m matrice, c colore | cf(p, n, c)
+  // | tex+uv, d densita' relativa, em emette (niente luce), ds senza lato,
+  // inv normali girate, gl(c) quanto luccica, wf densita' secondo il posto,
+  // base quota del suolo per l'occlusione finta}. Ne escono circa `B` punti,
+  // ripartiti per area, con colore (luce cotta, gamma gia' applicata),
+  // normale per scartare quelli di spalle, e spaziatura per la misura.
+  function campiona(parti, B, o) {
+    const R = o.R || Math.random, wf = o.wf, bf = o.buchi ? o.buchi[0] : 0, bs = o.buchi ? o.buchi[1] : 9;
+    const gg = parti.map(q => { const h = q.g.index ? q.g.toNonIndexed() : q.g; if (h !== q.g) q.g.dispose(); if (q.m) h.applyMatrix4(q.m); return h; });
+    if (o.prima) o.prima(gg, parti);
+    // densita' adattiva (round 8): i triangoli piccoli sono dettaglio
+    // (cornici, statue, capitelli) e prendono piu' punti, quindi piu' piccoli
+    // e netti; i grandi sono piatti e ne prendono meno, piu' grossi. Il
+    // riferimento e' l'area media dei triangoli di questa chiamata.
+    let aTot = 0, nTot = 0;
+    gg.forEach(h => { const P = h.attributes.position.array; for (let k = 0; k + 8 < P.length; k += 9) {
+      const ax = P[k + 3] - P[k], ay = P[k + 4] - P[k + 1], az = P[k + 5] - P[k + 2], bx = P[k + 6] - P[k], by = P[k + 7] - P[k + 1], bz = P[k + 8] - P[k + 2];
+      aTot += .5 * Math.hypot(ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx); nTot++; } });
+    const aRif = aTot / Math.max(1, nTot);
+    const pesi = [];
+    let tot = 0;
+    gg.forEach((h, i) => {
+      const P = h.attributes.position.array, nt = P.length / 9 | 0, w = new Float32Array(nt * 2), q = parti[i], d = q.d || 1;
+      for (let t = 0; t < nt; t++) {
+        const k = t * 9;
+        const ax = P[k + 3] - P[k], ay = P[k + 4] - P[k + 1], az = P[k + 5] - P[k + 2];
+        const bx = P[k + 6] - P[k], by = P[k + 7] - P[k + 1], bz = P[k + 8] - P[k + 2];
+        const cx = ay * bz - az * by, cy = az * bx - ax * bz, cz = ax * by - ay * bx;
+        const a = .5 * Math.sqrt(cx * cx + cy * cy + cz * cz);
+        const v = a * d * (o.piatto ? 1 : Math.min(2.2, Math.max(.6, Math.pow(aRif / Math.max(a, 1e-9), .3)))) * (q.wf && wf ? wf((P[k] + P[k + 3] + P[k + 6]) / 3, (P[k + 2] + P[k + 5] + P[k + 8]) / 3) : 1);
+        w[t * 2] = v; w[t * 2 + 1] = a; tot += v;
+      }
+      pesi.push(w);
+    });
+    const K = B / Math.max(tot, 1e-9), M = Math.ceil(B * 1.1) + 256;
+    const pos = new Float32Array(M * 3), col = new Uint8Array(M * 3), nor = new Int8Array(M * 3), siz = new Float32Array(M), gli = new Uint8Array(M);
+    const ids = o.ids ? new Float32Array(M) : null, lum = o.cuoci ? new Uint8Array(M * 3) : null, L3 = [0, 0, 0];
+    const p = [0, 0, 0], n = [0, 0, 0], c = [0, 0, 0], gam = 1 / 2.2;
+    let N = 0;
+    for (let i = 0; i < gg.length; i++) {
+      const h = gg[i], q = parti[i], w = pesi[i], P = h.attributes.position.array, nt = w.length / 2;
+      const NN = h.attributes.normal.array, C = h.attributes.color ? h.attributes.color.array : null;
+      const UV = h.attributes.uv ? h.attributes.uv.array : null, tx = q.tex, nz = q.nz !== undefined ? q.nz : (o.nz || 0);
+      const inv = q.inv ? -1 : 1, vari = q.vari !== undefined ? q.vari : .13;
+      for (let t = 0; t < nt && N < M; t++) {
+        const m = Math.floor(w[t * 2] * K + R());
+        if (!m) continue;
+        const sp = Math.sqrt(w[t * 2 + 1] / (w[t * 2] * K)) * (q.sz || 1.8), k = t * 9;
+        for (let j = 0; j < m && N < M; j++) {
+          let u = R(), v = R();
+          if (u + v > 1) { u = 1 - u; v = 1 - v; }
+          const s = 1 - u - v;
+          for (let e = 0; e < 3; e++) p[e] = P[k + e] * s + P[k + 3 + e] * u + P[k + 6 + e] * v;
+          if (bf && !q.pieno && rumore(p[0] * bf + 17.3, p[1] * bf + 5.1, p[2] * bf) > bs + R() * .05) continue;
+          for (let e = 0; e < 3; e++) n[e] = (NN[k + e] * s + NN[k + 3 + e] * u + NN[k + 6 + e] * v) * inv;
+          const l = Math.hypot(n[0], n[1], n[2]) || 1;
+          n[0] /= l; n[1] /= l; n[2] /= l;
+          if (tx && UV) {
+            const t6 = t * 6, uu = UV[t6] * s + UV[t6 + 2] * u + UV[t6 + 4] * v, vv = UV[t6 + 1] * s + UV[t6 + 3] * u + UV[t6 + 5] * v;
+            const X = Math.min(tx.w - 1, Math.max(0, Math.floor((q.fu ? 1 - uu : uu) * tx.w)));
+            const Y = Math.min(tx.h - 1, Math.max(0, Math.floor((1 - vv) * tx.h))), ix = (Y * tx.w + X) * 4;
+            for (let e = 0; e < 3; e++) c[e] = Math.pow(tx.d[ix + e] / 255, 2.2);
+          } else if (q.cf) q.cf(p, n, c);
+          else if (q.c) { c[0] = q.c[0]; c[1] = q.c[1]; c[2] = q.c[2]; }
+          else if (C) for (let e = 0; e < 3; e++) c[e] = C[k + e] * s + C[k + 3 + e] * u + C[k + 6 + e] * v;
+          const g = q.gl ? q.gl(c) : 0;
+          if (lum) {                  // luce cotta: il colore resta albedo, la luce va in aL
+            if (q.em) { L3[0] = 0; L3[1] = 0; L3[2] = 0; } else o.cuoci(p, n, q, L3);
+            for (let e = 0; e < 3; e++) lum[N * 3 + e] = Math.round(Math.min(1, L3[e]) * 255);
+          } else if (!q.em) o.luce(c, p, n, q);
+          const f = 1 - vari / 2 + R() * vari, z = (R() - .5) * nz;
+          for (let e = 0; e < 3; e++) {
+            col[N * 3 + e] = Math.min(255, Math.pow(Math.max(0, c[e] * f), gam) * 255);
+            pos[N * 3 + e] = p[e] + n[e] * z + (R() - .5) * nz * .6;
+            nor[N * 3 + e] = q.ds ? 0 : Math.round(n[e] * 127);
+          }
+          siz[N] = sp; gli[N] = g * 255;
+          if (ids) ids[N] = q.id;
+          N++;
+        }
+      }
+      h.dispose();
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos.slice(0, N * 3), 3));
+    geo.setAttribute("aCol", new THREE.BufferAttribute(col.slice(0, N * 3), 3, true));
+    geo.setAttribute("aN", new THREE.BufferAttribute(nor.slice(0, N * 3), 3, true));
+    geo.setAttribute("aS", new THREE.BufferAttribute(siz.slice(0, N), 1));
+    geo.setAttribute("aG", new THREE.BufferAttribute(gli.slice(0, N), 1, true));
+    if (ids) geo.setAttribute("aId", new THREE.BufferAttribute(ids.slice(0, N), 1));
+    if (lum) geo.setAttribute("aL", new THREE.BufferAttribute(lum.slice(0, N * 3), 3, true));
+    return geo;
+  }
+
+  const VS_PUNTI = `
+    attribute vec3 aCol, aN, aL;
+    attribute float aS, aG;
+    uniform float uPxW, uMaxP, uT, uDyn, uMont, uCotta;
+    uniform vec3 uSole;
+    uniform vec3 uFogC, uSun, uTint;
+    uniform vec2 uFog;
+    varying vec3 vC, vN;
+    void main() {
+      vec3 pp = position;
+      if (uMont > 0.0) {             // il montaggio: ogni punto cade dal cielo al suo posto, ognuno col suo ritardo
+        vec3 h = fract(sin(vec3(dot(position, vec3(12.9898, 78.233, 37.719)), dot(position, vec3(39.346, 11.135, 83.155)),
+          dot(position, vec3(73.156, 52.235, 9.151)))) * 43758.5453);
+        float e = clamp(uMont * 1.7 - h.x * 0.7, 0.0, 1.0);
+        pp += vec3((h.y - 0.5) * 70.0, 25.0 + h.z * 140.0, (h.x - 0.5) * 70.0) * e * e * (3.0 - 2.0 * e);
+      }
+      vec4 mv = modelViewMatrix * vec4(pp, 1.0);
+      vec3 n = normalize(normalMatrix * aN + vec3(0.0, 0.0, 1e-5));
+      if (dot(aN, aN) > 0.01 && dot(n, mv.xyz) > 0.0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(aS * 1.3 * uPxW / -mv.z, 1.0, uMaxP);
+      vN = dot(aN, aN) > 0.01 ? n : vec3(0.0, 0.0, 1.0);
+      vec3 c = aCol * uTint;
+      if (uCotta > 1.5) c *= (0.45 + 0.55 * aL.x) * (0.55 + 0.45 * aL.y);   // il suolo: ombra e occlusione cotte
+      else if (uCotta > 0.5 && aL.y > 0.002) {
+        // aL = (sole visibile, occlusione ambientale, rimbalzo), cotti; il
+        // lambert del sole si fa qui, a ogni fotogramma, dalle normali
+        vec3 alb = c * c, nw = dot(aN, aN) > 0.01 ? normalize(aN) : vec3(0.0, 1.0, 0.0);
+        float d = max(0.0, dot(nw, uSole)), u = 0.5 + 0.5 * nw.y;
+        vec3 li = vec3(1.35, 0.98, 0.7) * d * aL.x + (vec3(0.16, 0.1, 0.08) + vec3(0.34, 0.3, 0.52) * u) * aL.y + vec3(0.62, 0.48, 0.34) * aL.z;
+        c = sqrt(alb * li);
+      }
+      if (uDyn > 0.5) c *= 0.16 + 1.1 * max(0.0, dot(n, uSun));
+      c += aG * vec3(1.0, 0.86, 0.5) * pow(max(0.0, sin(uT * 1.9 + dot(position, vec3(9.1, 7.3, 5.7)))), 14.0);
+      vC = mix(c, uFogC, smoothstep(uFog.x, uFog.y, -mv.z));
+    }`;
+  const FS_PUNTI = `
+    varying vec3 vC;
+    void main() { vec2 q = gl_PointCoord * 2.0 - 1.0; if (dot(q, q) > 1.0) discard; gl_FragColor = vec4(vC, 1.0); }`;
+  // Le scene: splat orientati (round 8). Ogni punto e' un dischetto sul suo
+  // piano, come i surfel del surface splatting (arXiv 1906.04173) e i dischi
+  // 2D di 2D Gaussian Splatting (arXiv 2403.17888): il pixel interseca il
+  // piano del disco (dz dalla normale in vista) e di sbieco il tondo diventa
+  // un'ellisse, cosi' il suolo radente si chiude in superficie invece di
+  // fare monetine. Il bordo e' una gaussiana come in 3D Gaussian Splatting
+  // (arXiv 2308.04079), ma senza ordinare i punti: il bordo si dissolve a
+  // retino (soglia di rumore per pixel), un pass solo, depth write e 60 fps.
+  const FS_SPLAT = `
+    varying vec3 vC, vN;
+    float h2(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    void main() {
+      vec2 q = gl_PointCoord * 2.0 - 1.0;
+      q.y = -q.y;
+      float dz = -dot(vN.xy, q) / max(vN.z, 0.5), r2 = dot(q, q) + dz * dz;
+      if (r2 > 1.0) discard;
+      if (r2 > 0.6 && exp(-(r2 - 0.6) * 6.0) < h2(gl_FragCoord.xy)) discard;
+      gl_FragColor = vec4(vC, 1.0);
+    }`;
+  // Le figure: un campione di punti per tipo, e un'istanza per figura (dove,
+  // quanto grande, girata come, accesa o no, rosa o no).
+  const VS_FIG = `
+    attribute vec3 aCol;
+    attribute float aS;
+    attribute vec4 aI, aJ;
+    uniform float uPxW, uMaxP, uT, uGira;
+    uniform vec3 uFogC, uSu;
+    uniform vec2 uFog;
+    varying vec3 vC;
+    void main() {
+      if (aI.w <= 0.0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
+      float a = aJ.x + uGira * (uT * 1.7 + aJ.w * 6.2832), c = cos(a), s = sin(a);
+      vec3 p = vec3(c * position.x + s * position.z, position.y, -s * position.x + c * position.z) + uSu;
+      p = p * aI.w * (1.0 + aJ.y * 0.4) + aI.xyz;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(aS * aI.w * uPxW / -mv.z, 1.0, uMaxP) * (1.0 + aJ.y * 0.3);
+      float l = dot(aCol, vec3(0.3, 0.55, 0.15));
+      vec3 col = mix(aCol, vec3(1.0, 0.55, 0.72) * (0.3 + l * 1.15), aJ.z);
+      col = col * (1.0 + aJ.y * 0.7) + aJ.y * vec3(0.25, 0.18, 0.05) * (0.75 + 0.25 * sin(uT * 9.0));
+      vC = mix(col, uFogC, smoothstep(uFog.x, uFog.y, -mv.z));
+    }`;
+  // Le aureole: una stella diversa per dorata (`puntiStella`), tutte in un
+  // buffer solo; dove sta e com'e' girata ognuna lo legge da una texture di
+  // due righe (le stesse quattro+quattro cifre delle figure).
+  const VS_AUREOLA = VS_FIG.replace("attribute vec4 aI, aJ;", "attribute float aId;\n    uniform sampler2D uDati;")
+    .replace("void main() {", "void main() {\n      vec4 aI = texelFetch(uDati, ivec2(int(aId), 0), 0), aJ = texelFetch(uDati, ivec2(int(aId), 1), 0);");
+  // il pulviscolo nei raggi delle finestre
+  const VS_MOTE = `
+    attribute float aF;
+    uniform float uT, uPxW;
+    varying float vA;
+    void main() {
+      float k = fract(aF * 7.0 + uT * 0.02);
+      vec3 p = position + vec3(sin(uT * 0.3 + aF * 40.0) * 0.25, -k * 2.0, cos(uT * 0.23 + aF * 31.0) * 0.25);
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(0.035 * uPxW / -mv.z, 1.0, 7.0);
+      vA = sin(k * 3.14159) * 0.55;
+    }`;
+  const FS_MOTE = `
+    varying float vA;
+    void main() { float r = length(gl_PointCoord * 2.0 - 1.0); if (r > 1.0) discard; gl_FragColor = vec4(vec3(1.0, 0.84, 0.55) * vA * (1.0 - r), 1.0); }`;
+  // il nick sopra la dorata di turno, sempre di fronte
+  const VS_TARGA = `
+    uniform vec3 uPos;
+    uniform vec4 uReg;
+    uniform float uLarg, uH;
+    varying vec2 vUv;
+    void main() {
+      vec4 mv = viewMatrix * vec4(uPos, 1.0);
+      mv.xy += position.xy * vec2(uLarg, 1.0) * uH;
+      gl_Position = projectionMatrix * mv;
+      vUv = uReg.xy + (position.xy + 0.5) * uReg.zw;
+    }`;
+  const FS_TARGA = `
+    uniform sampler2D uAtlas;
+    uniform float uA;
+    varying vec2 vUv;
+    void main() { vec4 t = texture2D(uAtlas, vUv); if (t.a * uA < 0.02) discard; gl_FragColor = vec4(t.rgb, t.a * uA); }`;
+  // la raffica di stelline al cambio della dorata di turno
+  const VS_SCOPPIO = `
+    attribute vec3 aDir;
+    attribute float aF;
+    uniform float uK, uSc, uPxW;
+    varying float vA, vR;
+    void main() {
+      float e = 1.0 - pow(1.0 - clamp(uK, 0.0, 1.0), 3.0);
+      vec3 p = aDir * e * uSc * (0.45 + aF * 0.9);
+      p.y -= uK * uK * uSc * 0.35;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = clamp(uSc * 0.07 * uPxW / -mv.z, 1.5, 22.0) * (1.2 - uK * 0.7);
+      vA = uK < 0.0 ? 0.0 : (1.0 - uK) * (0.6 + 0.4 * sin(uK * 40.0 + aF * 60.0));
+      vR = aF * 6.2832 + uK * 8.0;
+    }`;
+  const FS_SCOPPIO = `
+    uniform vec3 uCol;
+    varying float vA, vR;
+    void main() {
+      vec2 q = gl_PointCoord * 2.0 - 1.0;
+      float r = length(q), a = atan(q.y, q.x) + vR;
+      float st = 1.0 - smoothstep(mix(0.3, 0.95, pow(0.5 + 0.5 * cos(5.0 * a), 2.0)) - 0.15, mix(0.3, 0.95, pow(0.5 + 0.5 * cos(5.0 * a), 2.0)), r);
+      if (st * vA < 0.01) discard;
+      gl_FragColor = vec4(mix(uCol, vec3(1.0, 0.97, 0.85), st * 0.5) * st * vA, st * vA);
+    }`;
+  // e il suo alone
+  const VS_BAGLIORE = `
+    uniform float uPxW, uSz;
+    void main() {
+      vec4 mv = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = min(uSz * uPxW / max(-mv.z, 0.1), 320.0);
+    }`;
+  const FS_BAGLIORE = `
+    uniform float uA;
+    void main() { float r = length(gl_PointCoord * 2.0 - 1.0); if (r > 1.0) discard; float a = pow(1.0 - r, 2.2) * uA; gl_FragColor = vec4(vec3(1.0, 0.82, 0.42) * a, a); }`;
   const FS_TINTA = `
     uniform vec3 uCol;
     uniform float uA;
@@ -2060,232 +2318,1121 @@ setInterval(() => {
     varying float vF;
     void main() { float a = smoothstep(0.0, 0.33, -vF); gl_FragColor = vec4(vec3(0.35, 0.6, 1.0) * a, a); }`;
 
-  let spazio, terra, camV, globoM, veloU, galA = [], CC = [], TT = [], registroBox, viaggioFisso = -1;
+  let spazio, terra = null, chiesaD = null, camV, globoM, veloU, galA = [], registroBox, viaggioFisso = -1;
+  let datiA = null, SCHERMO = 1, matT, matD, oro, aureole, targa, bagliore, scoppio, suoreN, chierici, mote, regNick = {};
+  let _p, _q, _a, _b, _d, _e, _u, _qq, _eul, ancora, scalaS = 1, scenaOra = -1;
+  const NEBBIA = [[0, 0, 0], [.62, .44, .38], [.08, .06, .045]], NEBBIA_D = [[1e4, 2e4], [60, 320], [45, 170]];
 
-  function globo() {
-    const g = new THREE.IcosahedronGeometry(RG0, 60), p = g.attributes.position.array, n = p.length / 3;
-    const col = new Float32Array(n * 3), R = caso(1946);
-    for (let f = 0; f < n; f += 3) {
-      const x = p[f * 3] + p[f * 3 + 3] + p[f * 3 + 6], y = p[f * 3 + 1] + p[f * 3 + 4] + p[f * 3 + 7], z = p[f * 3 + 2] + p[f * 3 + 5] + p[f * 3 + 8];
-      const la = Math.asin(y / Math.hypot(x, y, z)) / DEG, lo = Math.atan2(x, z) / DEG;
-      let c = [.05, .14, .36], j = .88 + R() * .24;
-      if (Math.abs(la) > 76 || la < -66) c = [.82, .88, .95];
-      else for (const [oro, poly] of TERRE) if (dentro(poly, lo, la)) {
-        c = oro ? [.95, .72, .2] : (R() < .7 ? [.2, .42, .16] : [.48, .4, .22]);
-        if (oro) j = .92 + R() * .16;
+  const MAXP = [24, 34, 30];                 // la misura massima di un punto, per scena, px CSS (round 6: superfici piene anche da vicino)
+  function matPunti(s, dyn) {
+    return new THREE.ShaderMaterial({vertexShader: VS_PUNTI, fragmentShader: FS_SPLAT,
+      uniforms: {uPxW: U.uPxW, uMaxP: {value: MAXP[s] * DPR}, uT: U.uT, uSun: U.uSun, uDyn: {value: dyn ? 1 : 0}, uMont: {value: 0},
+        uFogC: {value: new THREE.Color().fromArray(NEBBIA[s])}, uFog: {value: new THREE.Vector2().fromArray(NEBBIA_D[s])},
+        uTint: {value: new THREE.Color(1, 1, 1)}, uCotta: {value: 0}, uSole: {value: new THREE.Vector3().fromArray(SOLE)}}});
+  }
+  function punti(geo, mat) { const m = new THREE.Points(geo, mat); m.frustumCulled = false; return m; }
+
+  // ---- le luci, cotte nei punti ----
+  const SOLE = norm3(9, 6, 12);
+  // Fuori, la luce si cuoce (round 8, puppy): una mappa delle altezze del
+  // Vaticano, rasterizzando i triangoli dall'alto (celle di 2 m), e da li'
+  // per ogni punto: il sole (si marcia verso il sole, ombra se si sbatte
+  // contro qualcosa di piu' alto), l'occlusione ambientale (l'orizzonte in
+  // 8 direzioni, quello che copre il cielo) e un rimbalzo (quanta luce di
+  // sole prende il suolo davanti al punto, se il punto lo guarda).
+  let ALT = null;
+  function altezze(gg) {
+    let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9;
+    for (const h of gg) { const P = h.attributes.position.array; for (let k = 0; k < P.length; k += 3) {
+      x0 = Math.min(x0, P[k]); x1 = Math.max(x1, P[k]); z0 = Math.min(z0, P[k + 2]); z1 = Math.max(z1, P[k + 2]); } }
+    const c = .2, W = Math.ceil((x1 - x0) / c) + 1, H = Math.ceil((z1 - z0) / c) + 1, A = new Float32Array(W * H);
+    const met = (x, y, z) => { const i = Math.round((x - x0) / c), j = Math.round((z - z0) / c), k = j * W + i; if (y > A[k]) A[k] = y; };
+    for (const h of gg) { const P = h.attributes.position.array; for (let k = 0; k + 8 < P.length; k += 9) {
+      const ex = Math.max(Math.abs(P[k + 3] - P[k]), Math.abs(P[k + 6] - P[k]), Math.abs(P[k + 6] - P[k + 3])), ez = Math.max(Math.abs(P[k + 5] - P[k + 2]), Math.abs(P[k + 8] - P[k + 2]), Math.abs(P[k + 8] - P[k + 5]));
+      const m = Math.min(60, Math.ceil(Math.max(ex, ez) / c) + 1);
+      for (let a = 0; a <= m; a++) for (let b = 0; b <= m - a; b++) {
+        const u = a / m, v = b / m, w = 1 - u - v;
+        met(P[k] * w + P[k + 3] * u + P[k + 6] * v, P[k + 1] * w + P[k + 4] * u + P[k + 7] * v, P[k + 2] * w + P[k + 5] * u + P[k + 8] * v);
+      } } }
+    let top = 0; for (let i = 0; i < A.length; i++) top = Math.max(top, A[i]);
+    return {A, W, H, x0, z0, c, top};
+  }
+  function alt(x, z) {
+    const M = ALT, i = Math.round((x - M.x0) / M.c), j = Math.round((z - M.z0) / M.c);
+    return i < 0 || j < 0 || i >= M.W || j >= M.H ? 0 : M.A[j * M.W + i];
+  }
+  function visSole(x, y, z) {
+    if (!ALT) return 1;
+    for (let t = ALT.c * 1.5; y + SOLE[1] * t < ALT.top; t += ALT.c) if (alt(x + SOLE[0] * t, z + SOLE[2] * t) > y + SOLE[1] * t + .03) return 0;
+    return 1;
+  }
+  const DIR8 = [...Array(8)].map((_, i) => [Math.cos(i * Math.PI / 4), Math.sin(i * Math.PI / 4)]), RAGGI = [.25, .6, 1.3, 2.8, 5.5];
+  function occlusione(x, y, z, n) {
+    if (!ALT) return 1;
+    let occ = 0, pes = 0;
+    for (const d of DIR8) {
+      const w = Math.max(0, .35 + d[0] * n[0] + d[1] * n[2]);   // conta il cielo che il punto guarda
+      if (!w) continue;
+      let s = 0;
+      for (const r of RAGGI) { const h = alt(x + d[0] * r, z + d[1] * r) - y; if (h > 0) s = Math.max(s, h / Math.hypot(h, r)); }
+      occ += s * w; pes += w;
+    }
+    return Math.max(.08, 1 - (pes ? occ / pes : 0) * .85) * (n[1] < -.5 ? .6 : 1);
+  }
+  function cuociFuori(p, n, q, L) {
+    const x = p[0] + n[0] * .25, y = p[1] + Math.max(0, n[1]) * .05 + .02, z = p[2] + n[2] * .25;   // fuori dalla sua cella
+    L[0] = visSole(x, y, z);
+    L[1] = occlusione(x, y, z, n);
+    // il rimbalzo: il suolo (o il tetto) a 1.5 unita' davanti al punto, se e' al sole
+    const gx = x + n[0] * 1.5, gz = z + n[2] * 1.5;
+    L[2] = (.5 - .5 * n[1]) * visSole(gx, alt(gx, gz) + .02, gz) * .55;
+  }
+  function cuociSuolo(p, n, q, L) { L[0] = visSole(p[0], .02, p[2]); L[1] = occlusione(p[0], .02, p[2], n); L[2] = 0; }
+  function luceCampagna(c, p, n, q) {
+    const d = Math.max(0, n[0] * SOLE[0] + n[1] * SOLE[1] + n[2] * SOLE[2]), u = .5 + .5 * n[1];
+    const ao = q.base !== undefined ? .5 + .5 * liscio((p[1] - q.base) / 1.4) : .78 + .3 * rumore(p[0] * .35, 1.7, p[2] * .35);
+    c[0] *= (1.35 * d + .16 + .34 * u) * ao; c[1] *= (.98 * d + .1 + .3 * u) * ao; c[2] *= (.7 * d + .08 + .52 * u) * ao;
+  }
+  const LF = norm3(-.4, .6, .7), LB = norm3(.35, .5, -.8);   // davanti e di spalle: le dorate si vedono anche andare via
+  function luceFigura(c, p, n) {
+    const f = .55 + .55 * Math.max(0, n[0] * LF[0] + n[1] * LF[1] + n[2] * LF[2]) + .4 * Math.max(0, n[0] * LB[0] + n[1] * LB[1] + n[2] * LB[2]);
+    c[0] *= f; c[1] *= f; c[2] *= f;
+  }
+  const luccica = c => c[0] > .45 && c[1] > .28 && c[2] < .2 ? .4 + .6 * Math.random() : 0;
+
+  // ---- i mosaici: un disegno su canvas, ridotto a tessere con le fughe ----
+  function tessere(w, h, disegna, lato) {
+    const cv2 = document.createElement("canvas");
+    cv2.width = w; cv2.height = h;
+    const x = cv2.getContext("2d");
+    disegna(x, w, h);
+    const src = x.getImageData(0, 0, w, h).data, out = new Uint8ClampedArray(w * h * 4), R = caso(w * 7 + h);
+    for (let ty = 0; ty < h; ty += lato) for (let tx = 0; tx < w; tx += lato) {
+      const off = (ty / lato & 1) ? lato >> 1 : 0;
+      const k = (Math.min(h - 1, ty + (lato >> 1)) * w + Math.min(w - 1, tx + (lato >> 1))) * 4, j = .8 + R() * .4;
+      for (let y = ty; y < Math.min(h, ty + lato); y++) for (let xx = tx; xx < Math.min(w, tx + lato); xx++) {
+        const o2 = (y * w + Math.min(w - 1, xx + off)) * 4, fuga = y - ty === lato - 1 || xx - tx === lato - 1 ? .45 : 1;
+        out[o2] = src[k] * j * fuga; out[o2 + 1] = src[k + 1] * j * fuga; out[o2 + 2] = src[k + 2] * j * fuga; out[o2 + 3] = 255;
+      }
+    }
+    return {d: out, w, h};
+  }
+  const tondo = (x, cx, cy, rx, ry) => { x.beginPath(); x.ellipse(cx, cy, rx, ry || rx, 0, 0, 6.2832); x.fill(); };
+  function santo(x, fx, fy, k, veste) {          // una figura in piedi con l'aureola, alta ~200*k
+    x.fillStyle = "#fff2bf"; tondo(x, fx, fy, 30 * k); x.strokeStyle = "#a0281e"; x.lineWidth = 4 * k; x.stroke();
+    x.fillStyle = veste; x.beginPath(); x.moveTo(fx - 22 * k, fy + 26 * k); x.lineTo(fx - 48 * k, fy + 200 * k);
+    x.lineTo(fx + 48 * k, fy + 200 * k); x.lineTo(fx + 22 * k, fy + 26 * k); x.closePath(); x.fill();
+    x.strokeStyle = "rgba(60,50,40,.45)"; x.lineWidth = 3 * k;
+    for (const d of [-14, 0, 14]) { x.beginPath(); x.moveTo(fx + d * k * .6, fy + 40 * k); x.lineTo(fx + d * k * 1.6, fy + 196 * k); x.stroke(); }
+    x.fillStyle = "#e6bf98"; tondo(x, fx, fy + 4 * k, 14 * k, 18 * k);
+    x.fillStyle = "#3a2214"; x.fillRect(fx - 7 * k, fy, 4 * k, 3 * k); x.fillRect(fx + 3 * k, fy, 4 * k, 3 * k);
+  }
+  function stelline(x, W, H, n, R, y0, y1) {
+    x.fillStyle = "#f3d27a";
+    for (let i = 0; i < n; i++) { const sx = R() * W, sy = y0 + R() * (y1 - y0), s = 3 + R() * 5; x.fillRect(sx - s, sy - 1.5, 2 * s, 3); x.fillRect(sx - 1.5, sy - s, 3, 2 * s); }
+  }
+  // il mosaico della cupola: sedici spicchi fra costoloni d'oro, cielo blu
+  // stellato in alto, una corona di santi e una di medaglioni sotto
+  function disegnaCupola(x, W, H) {
+    const R = caso(1590);
+    const g = x.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#0f2466"); g.addColorStop(.45, "#1c3b8a"); g.addColorStop(1, "#c9a23a");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    stelline(x, W, H, 260, R, 0, H * .4);
+    for (let k = 0; k < 16; k++) {
+      const cx = (k + .5) * W / 16;
+      santo(x, cx, H * .5, .62, k % 2 ? "#f2efe6" : "#b8321f");
+      x.fillStyle = "#f3d27a"; tondo(x, cx, H * .82, 20, 20);
+      x.fillStyle = "#1b2f7a"; tondo(x, cx, H * .82, 14, 14);
+      x.fillStyle = "#e8b84a"; x.fillRect(k * W / 16 - 4, 0, 8, H);
+    }
+    x.fillStyle = "#e8c45a"; x.fillRect(0, H * .66, W, 10); x.fillRect(0, H - 14, W, 14);
+  }
+  // la scritta d'oro su fondo blu alla base del tamburo
+  function disegnaScritta(x, W, H) {
+    x.fillStyle = "#14286a"; x.fillRect(0, 0, W, H);
+    x.fillStyle = "#e8c45a"; x.fillRect(0, 0, W, 6); x.fillRect(0, H - 6, W, 6);
+    x.fillStyle = "#f4dc8a"; x.font = `bold ${H * .62}px Georgia, "Times New Roman", serif`;
+    x.textAlign = "center"; x.textBaseline = "middle";
+    x.fillText("TV ES PETRVS ET SVPER HANC PETRAM AEDIFICABO ECCLESIAM MEAM ET TIBI DABO CLAVES REGNI CAELORVM", W / 2, H / 2 + 2);
+  }
+
+  // ---- il globo: punti sulla sfera, piu' fitti attorno a Roma; i colori
+  // finti diventano quelli veri quando arrivano le tessere z2 ----
+  function globo(B) {
+    const R = caso(1946), la0 = ITALIA[0] * DEG, lo0 = ITALIA[1] * DEG;
+    const it = [Math.cos(la0) * Math.sin(lo0), Math.sin(la0), Math.cos(la0) * Math.cos(lo0)];
+    const peso = (x, y, z) => .2 + .8 * Math.exp(-(1 - (x * it[0] + y * it[1] + z * it[2])) * 34);
+    let media = 0;
+    for (let i = 0; i < 3000; i++) { const u = R() * 2 - 1, a = R() * 6.2832, r = Math.sqrt(1 - u * u); media += peso(r * Math.cos(a), u, r * Math.sin(a)); }
+    media /= 3000;
+    const NB = Math.round(B * .1), M = B + NB, area = 4 * Math.PI * RG0 * RG0;
+    const pos = new Float32Array(M * 3), col = new Uint8Array(M * 3), nor = new Int8Array(M * 3), siz = new Float32Array(M), gli = new Uint8Array(M);
+    let n = 0;
+    const metti = (x, y, z, r, c, w) => {
+      pos[n * 3] = x * r; pos[n * 3 + 1] = y * r; pos[n * 3 + 2] = z * r;
+      for (let e = 0; e < 3; e++) col[n * 3 + e] = Math.min(255, Math.pow(c[e], 1 / 2.2) * 255);
+      nor[n * 3] = x * 127; nor[n * 3 + 1] = y * 127; nor[n * 3 + 2] = z * 127;
+      siz[n] = Math.sqrt(area * media / (B * w)) * 1.35; n++;
+    };
+    while (n < B) {
+      const u = R() * 2 - 1, a = R() * 6.2832, r = Math.sqrt(1 - u * u), x = r * Math.cos(a), y = u, z = r * Math.sin(a), w = peso(x, y, z);
+      if (R() > w) continue;
+      const la = Math.asin(y) / DEG, lo = Math.atan2(x, z) / DEG;
+      let c = [.05, .14, .36], j = .85 + R() * .3, alt = 0;
+      if (Math.abs(la) > 76 || la < -66) { c = [.82, .88, .95]; alt = .004; }
+      else for (const [oroT, poly] of TERRE) if (dentro(poly, lo, la)) {
+        c = oroT ? [.95, .72, .2] : (rumore(x * 9, y * 9, z * 9) < .55 ? [.2, .42, .16] : [.48, .4, .22]);
+        alt = .003 + .006 * rumore(x * 30, y * 30, z * 30);
         break;
       }
-      for (let k = 0; k < 3; k++) col.set([c[0] * j, c[1] * j, c[2] * j], (f + k) * 3);
+      metti(x, y, z, RG0 * (1 + alt), [c[0] * j, c[1] * j, c[2] * j], w);
     }
-    g.setAttribute("color", new THREE.BufferAttribute(col, 3));
-    const m = new THREE.Mesh(g, new THREE.MeshPhongMaterial({vertexColors: true, flatShading: true, shininess: 18, specular: 0x334455}));
+    while (n < M) {                              // le nuvole, a chiazze
+      const u = R() * 2 - 1, a = R() * 6.2832, r = Math.sqrt(1 - u * u), x = r * Math.cos(a), y = u, z = r * Math.sin(a);
+      if (rumore(x * 4 + 3, y * 4, z * 4) < .62 || R() > peso(x, y, z)) continue;
+      const k = .8 + R() * .2;
+      metti(x, y, z, RG0 * 1.014, [k, k, k * 1.02], peso(x, y, z) * .5);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute("aCol", new THREE.BufferAttribute(col, 3, true));
+    geo.setAttribute("aN", new THREE.BufferAttribute(nor, 3, true));
+    geo.setAttribute("aS", new THREE.BufferAttribute(siz, 1));
+    geo.setAttribute("aG", new THREE.BufferAttribute(gli, 1, true));
+    globoN = B;
+    const m = punti(geo, matPunti(0, true));
     const alone = new THREE.Mesh(new THREE.SphereGeometry(RG0 * 1.07, 40, 20), new THREE.ShaderMaterial({vertexShader: VS_ALONE,
       fragmentShader: FS_ALONE, side: THREE.BackSide, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending}));
     return [m, alone];
   }
 
-  // Una chiesa: navata, tetto a capanna, portone, rosone e finestre accese,
-  // il campanile quasi sempre, la cupola a volte. Facciata verso +z.
-  function chiesa(R, mc, solido, lume) {
-    const MURI = [[.93, .85, .7], [.87, .72, .55], [.95, .9, .82], [.84, .62, .5], [.9, .78, .6]];
-    const muro = MURI[Math.floor(R() * MURI.length)], tegole = [.6, .26, .17], buio = [.1, .07, .06], oro = [.95, .75, .3];
-    const luce = [1, .78, .36];
-    const W = 2.4 + R() * 1.2, L = 4.6 + R() * 2.6, H = 2 + R() * 1.3;
-    const metti = (lista, g, m, c) => lista.push([g, mc.clone().multiply(m), c]);
-    const croce = (x, y, z) => {
-      metti(solido, new THREE.BoxGeometry(.07, .7, .07), M4(x, y + .35, z), oro);
-      metti(solido, new THREE.BoxGeometry(.4, .07, .07), M4(x, y + .48, z), oro);
+  // ---- San Pietro, da fuori: 1 unita' = 10 m, obelisco nell'origine,
+  // +z verso est (via della Conciliazione), +x verso nord. Le misure vengono
+  // dalla foto satellitare: facciata 184 m a ovest dell'obelisco e larga 115,
+  // cupola 344 m a ovest, l'ovale della piazza 222 m per 178. ----
+  function vaticano(parti, R) {
+    const TRAV = [.86, .8, .66], TRAV2 = [.76, .7, .57], PIOMBO = [.45, .5, .56], BUIO = [.1, .08, .07], ORO = [.95, .75, .3], TEGOLE = [.55, .42, .34];
+    const metti = (g, m, c, o) => parti.push(Object.assign({g, m, c, d: 1.6, base: 0}, o || {}));
+    const B = (w, h, d) => new THREE.BoxGeometry(w, h, d), C = (a, b, h, s, aperto) => new THREE.CylinderGeometry(a, b, h, s, 1, !!aperto);
+    const croce = (x, y, z, k) => {
+      metti(B(.05 * k, .5 * k, .05 * k), M4(x, y + .25 * k, z), ORO, {d: 6});
+      metti(B(.28 * k, .05 * k, .05 * k), M4(x, y + .35 * k, z), ORO, {d: 6});
     };
-    metti(solido, new THREE.BoxGeometry(W, H, L), M4(0, H / 2, 0), muro);
-    const r = (W + .35) / 1.732, alto = 1.5 * r * .55;
-    metti(solido, new THREE.CylinderGeometry(r, r, L + .3, 3), M4(0, H + .5 * r * .55, 0, -Math.PI / 2, 0, 0, 1, 1, .55), tegole);
-    metti(solido, new THREE.BoxGeometry(.75, 1.25, .1), M4(0, .62, L / 2 + .04), buio);
-    metti(lume, new THREE.CylinderGeometry(.36, .36, .08, 8), M4(0, H * .74, L / 2 + .05, Math.PI / 2), luce);
-    for (let k = 0; k < 3; k++) for (const s of [-1, 1])
-      metti(lume, new THREE.BoxGeometry(.08, .62, .28), M4(s * (W / 2 + .03), H * .56, -L / 2 + (k + .5) * L / 3), luce);
-    if (R() < .85) {
-      const lato = R() < .5 ? -1 : 1, tw = .9 + R() * .35, th = H + 2.3 + R() * 2.6;
-      const tz = R() < .55 ? L / 2 - tw / 2 : -L / 2 + tw / 2, tx = lato * (W / 2 + tw / 2 + .04);
-      metti(solido, new THREE.BoxGeometry(tw, th, tw), M4(tx, th / 2, tz), muro.map(v => v * .9));
-      metti(lume, new THREE.BoxGeometry(tw + .03, .5, .34), M4(tx, th - .55, tz), luce);
-      metti(lume, new THREE.BoxGeometry(.34, .5, tw + .03), M4(tx, th - .55, tz), luce);
-      const ch = 1.1 + R() * .9;
-      metti(solido, new THREE.ConeGeometry(tw * .78, ch, 4), M4(tx, th + ch / 2, tz, 0, Math.PI / 4), tegole);
-      croce(tx, th + ch, tz);
+    // il colonnato del Bernini: due emicicli di quattro file, la trabeazione, i santi in cima
+    const AX = 9.5, AZ = 7.5, F = 24, A0 = -55 * DEG, A1 = 55 * DEG;
+    const su = (s, r, f) => [s * (AX + r * .45) * Math.cos(f), (AZ + r * .45) * Math.sin(f)];
+    for (const s of [-1, 1]) {
+      for (let r = 0; r < 4; r++) for (let j = 0; j <= F; j++) {
+        const [x, z] = su(s, r, A0 + (A1 - A0) * j / F);
+        metti(C(.07, .08, 1.3, 7, true), M4(x, .15 + .65, z), TRAV, {d: 2.6});
+      }
+      for (let j = 0; j < F; j++) {
+        const fa = A0 + (A1 - A0) * j / F, fb = A0 + (A1 - A0) * (j + 1) / F;
+        const [xa, za] = su(s, 1.5, fa), [xb, zb] = su(s, 1.5, fb), len = Math.hypot(xb - xa, zb - za) + .04, ry = Math.atan2(xb - xa, zb - za);
+        metti(B(1.75, .3, len), M4((xa + xb) / 2, 1.6, (za + zb) / 2, 0, ry), TRAV, {d: 2});
+        metti(B(1.9, .15, len), M4((xa + xb) / 2, .075, (za + zb) / 2, 0, ry), TRAV2);
+        const [xs, zs] = su(s, 3.2, fa);
+        metti(C(.05, .06, .3, 6), M4(xs, 1.9, zs), TRAV2, {d: 5});
+        metti(new THREE.SphereGeometry(.05, 6, 4), M4(xs, 2.1, zs), TRAV2, {d: 5});
+      }
+      // i bracci dritti fino alla facciata
+      const [xa, za] = su(s, 1.5, A0), xb = s * 6.6, zb = Z_FAC + 1.2, len = Math.hypot(xb - xa, zb - za), ry = Math.atan2(xb - xa, zb - za);
+      metti(B(1.5, 1.9, len), M4((xa + xb) / 2, .95, (za + zb) / 2, 0, ry), TRAV2);
+      metti(B(1.8, .25, len), M4((xa + xb) / 2, 2.0, (za + zb) / 2, 0, ry), TRAV);
+      // le fontane
+      metti(C(.6, .62, .25, 16), M4(s * 5.5, .125, 0), TRAV2, {d: 3});
+      metti(C(.56, .56, .02, 16), M4(s * 5.5, .26, 0), [.5, .64, .78], {d: 3});
+      metti(C(.08, .12, .6, 8), M4(s * 5.5, .55, 0), TRAV, {d: 4});
+      metti(C(.32, .18, .12, 12), M4(s * 5.5, .9, 0), TRAV, {d: 4});
     }
-    if (R() < .45) {
-      const dr = W * .42, y0 = H + alto * .7;
-      metti(solido, new THREE.CylinderGeometry(dr, dr, .55, 8), M4(0, y0 + .27, -L / 5), muro);
-      metti(solido, new THREE.SphereGeometry(dr, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2), M4(0, y0 + .55, -L / 5), [.5, .55, .6]);
-      croce(0, y0 + .55 + dr, -L / 5);
-    } else croce(0, H + alto - .05, L / 2 - .1);
+    // l'obelisco
+    metti(B(.6, .5, .6), M4(0, .25, 0), TRAV2, {d: 4});
+    metti(C(.09, .16, 2.55, 4), M4(0, .5 + 1.275, 0, 0, Math.PI / 4), [.72, .58, .52], {d: 5});
+    metti(new THREE.ConeGeometry(.11, .2, 4), M4(0, 3.15, 0, 0, Math.PI / 4), [.8, .68, .55], {d: 6});
+    croce(0, 3.25, 0, 1);
+    // il sagrato e la facciata, con le statue e gli orologi
+    [[12, 2.4, .1], [11, 1.8, .3], [10, 1.3, .5]].forEach(([w, d, y]) => metti(B(w, .2, d), M4(0, y, Z_FAC + d / 2), TRAV, {d: 2.4}));
+    metti(B(11.5, 3.8, 1.2), M4(0, .6 + 1.9, Z_FAC - .6), TRAV, {d: 2.6});
+    for (const x of [-4.3, -3.2, -1.5, -.5, .5, 1.5, 3.2, 4.3]) metti(C(.22, .24, 3.4, 10, true), M4(x, .6 + 1.7, Z_FAC + .05), TRAV, {d: 3});
+    for (let k = -2; k <= 2; k++) {
+      metti(B(.75, 1.5, .08), M4(k * 1.9, .6 + .75, Z_FAC + .01), BUIO, {d: 3});
+      metti(B(.7, .8, .08), M4(k * 1.9, .6 + 2.8, Z_FAC + .01), k ? BUIO : [1, .72, .38], {d: 3, em: !k});
+    }
+    metti(B(11.8, .4, 1.5), M4(0, 4.6, Z_FAC - .55), TRAV, {d: 2.4});
+    metti(B(11.5, .75, 1.2), M4(0, 5.17, Z_FAC - .6), TRAV2, {d: 2.4});
+    metti(C(2, 2, .8, 3), M4(0, 4.8 + .4, Z_FAC - .2, -Math.PI / 2, 0, 0, 1, 1, .4), TRAV, {d: 2.4});
+    for (let k = -6; k <= 6; k++) {
+      metti(C(.09, .11, .5, 6), M4(k * .85, 5.8, Z_FAC - .6), TRAV2, {d: 5});
+      metti(new THREE.SphereGeometry(.08, 6, 4), M4(k * .85, 6.12, Z_FAC - .6), TRAV2, {d: 5});
+    }
+    for (const s of [-1, 1]) {
+      metti(C(.5, .5, .6, 12, true), M4(s * 6.1, 5.85, Z_FAC - .6), TRAV, {d: 2});
+      metti(new THREE.SphereGeometry(.5, 12, 6, 0, 6.2832, 0, Math.PI / 2), M4(s * 6.1, 6.15, Z_FAC - .6, 0, 0, 0, 1, 1.3, 1), PIOMBO, {d: 2});
+    }
+    // la navata, il transetto, l'abside
+    metti(B(8, 4.6, 10.9), M4(0, 2.3, -25.05), TRAV2, {d: 1.1});
+    metti(C(4.6, 4.6, 10.9, 3), M4(0, 4.6 + .69, -25.05, -Math.PI / 2, 0, 0, 1, 1, .3), TEGOLE, {d: 1.1});
+    metti(B(13.2, 4.6, 6), M4(0, 2.3, Z_CUP), TRAV2, {d: 1.1});
+    metti(C(3.5, 3.5, 13.2, 3), M4(0, 4.6 + .52, Z_CUP, -Math.PI / 2, 0, -Math.PI / 2, 1, 1, .3), TEGOLE, {d: 1.1});
+    metti(C(3, 3, 4.6, 18, true), M4(0, 2.3, Z_CUP - 3), TRAV2, {d: 1.1});
+    // il tamburo coi contrafforti, la cupola coi costoloni, la lanterna
+    metti(C(3.1, 3.1, 2.5, 34, true), M4(0, 4.9 + 1.25, Z_CUP), TRAV, {d: 2.8});
+    for (let k = 0; k < 16; k++) {
+      const a = k / 16 * 6.2832, b = a + Math.PI / 16;
+      metti(B(.35, 2.5, .55), M4(3.3 * Math.sin(a), 6.15, Z_CUP + 3.3 * Math.cos(a), 0, a), TRAV, {d: 2.8});
+      metti(B(.4, 1, .08), M4(3.12 * Math.sin(b), 6.15, Z_CUP + 3.12 * Math.cos(b), 0, b), BUIO, {d: 2.8});
+    }
+    metti(C(3.45, 3.45, .25, 34), M4(0, 7.5, Z_CUP), TRAV, {d: 2.8});
+    metti(new THREE.SphereGeometry(2.95, 44, 14, 0, 6.2832, 0, Math.PI / 2), M4(0, 7.62, Z_CUP, 0, 0, 0, 1, 1.18, 1), null, {d: 3.4, cf: (p, n, c) => {
+      const a = Math.atan2(p[0], p[2] - Z_CUP) / 6.2832 * 16, f = ((a % 1) + 1) % 1, v = (p[1] - 7.62) / 3.48;
+      const k = .9 + .2 * hs3(p[0] * 20, p[1] * 20, p[2] * 20);
+      if (f < .06 || f > .94) { c[0] = .9 * k; c[1] = .86 * k; c[2] = .78 * k; }
+      else if ((Math.abs(v - .2) < .035 || Math.abs(v - .45) < .03 || Math.abs(v - .66) < .025) && Math.abs(f - .5) < .09) { c[0] = BUIO[0]; c[1] = BUIO[1]; c[2] = BUIO[2]; }
+      else { c[0] = PIOMBO[0] * k; c[1] = PIOMBO[1] * k; c[2] = PIOMBO[2] * k; }
+    }});
+    metti(C(.5, .5, 1.1, 12), M4(0, 11.65, Z_CUP), TRAV, {d: 4});
+    metti(new THREE.ConeGeometry(.56, .7, 12), M4(0, 12.55, Z_CUP), PIOMBO, {d: 4});
+    metti(new THREE.SphereGeometry(.16, 8, 6), M4(0, 13, Z_CUP), ORO, {d: 6});
+    croce(0, 13.12, Z_CUP, 1.1);
+    for (const s of [-1, 1]) {                   // le cupole minori
+      metti(C(.8, .8, .7, 14, true), M4(s * 4.4, 4.95, Z_CUP + 4), TRAV, {d: 2});
+      metti(new THREE.SphereGeometry(.8, 14, 6, 0, 6.2832, 0, Math.PI / 2), M4(s * 4.4, 5.3, Z_CUP + 4, 0, 0, 0, 1, 1.25, 1), PIOMBO, {d: 2});
+      metti(C(.15, .15, .4, 8), M4(s * 4.4, 6.5, Z_CUP + 4), TRAV, {d: 3});
+    }
+    // via della Conciliazione: i palazzi, con le finestre accese al tramonto
+    const OCRE = [[.86, .66, .42], [.9, .78, .6], [.8, .55, .38], [.88, .72, .5]];
+    for (const s of [-1, 1]) for (let k = 0; k < 9; k++) {
+      const z = 9.5 + k * 4.4, h = 2.2 + R() * .6;
+      metti(B(3, h, 3.8), M4(s * 4.2, h / 2, z), OCRE[(k + (s > 0 ? 1 : 0)) % 4], {d: 1});
+      for (let f = 0; f < 2; f++) for (const w of [-1, 0, 1])
+        metti(B(.04, .3, .4), M4(s * 2.69, .7 + f * .8, z + w * 1.1), [1, .74, .4], {d: 2.5, em: true});
+    }
   }
 
-  function campagna() {
-    const sc = new THREE.Scene(), R = caso(1517);
-    sc.fog = new THREE.Fog(new THREE.Color(.5, .27, .22), 28, 90);
-    const hraw = (x, z) => 1.3 * Math.sin(x * .19 + z * .07) + .9 * Math.sin(z * .16 - x * .06 + 1) + .45 * Math.sin(x * .47 + z * .41)
-      + Math.max(0, Math.abs(x) - 12) * .35;
-    const P = [];
-    for (let i = 0; i < NCH; i++) { const x = (i % 2 ? 1 : -1) * (3 + R() * 2.5), z = -i * PASSO; P.push([x, hraw(x, z), z]); }
-    const h = (x, z) => {
-      let best = 1e9, b = 0;
-      for (const p of P) { const d = Math.hypot(x - p[0], z - p[2]); if (d < best) { best = d; b = p[1]; } }
-      const w = Math.min(1, Math.max(0, (best - 5) / 4));
-      return b + (hraw(x, z) - b) * w * w * (3 - 2 * w);
-    };
-    // la campagna: una griglia storta a facce piene, colorate a campi
-    const NX = 46, NZ = 96, X0 = -40, X1 = 40, Z0 = 42, Z1 = -(NCH - 1) * PASSO - 60;
-    const V = [];
-    for (let j = 0; j <= NZ; j++) for (let i = 0; i <= NX; i++) {
-      const x = X0 + (X1 - X0) * i / NX + (i && i < NX ? (R() - .5) * .9 : 0), z = Z0 + (Z1 - Z0) * j / NZ + (j && j < NZ ? (R() - .5) * .9 : 0);
-      V.push([x, h(x, z), z]);
+  // ---- il suolo di Roma: un piano, piu' fitto attorno al Vaticano; il
+  // colore viene dalle tessere satellitari quando arrivano ----
+  function suoloFinto(p, n, c) {
+    const x = p[0], z = p[2], e = Math.hypot(x / 9.8, z / 7.8), h = rumore(x * .35, 0, z * .35), k = .85 + .3 * hs3(x * 3, 0, z * 3);
+    let b;
+    if (e < 1) b = [.55, .52, .48];
+    else if (z < -42 || (z < -20 && Math.abs(x) > 10)) b = h < .55 ? [.2, .34, .16] : [.32, .4, .2];
+    else if (((x / 1.6) % 1 + 1) % 1 < .14 || ((z / 2.1) % 1 + 1) % 1 < .12) b = [.33, .31, .3];
+    else b = h < .4 ? [.66, .4, .27] : h < .7 ? [.78, .64, .45] : [.27, .38, .19];
+    c[0] = b[0] * k; c[1] = b[1] * k; c[2] = b[2] * k;
+  }
+  function luceSuolo(c) { c[0] *= 1.02; c[1] *= .92; c[2] *= .8; }
+  let suoloGeo = null, globoGeo = null, globoN = 0, M17 = null, M14 = null, M2 = null, crediti = null, matV = null;
+  const _sat = {d: null, i: 0};
+  function satellite(x, z) {
+    const X = OBEL[0] + z * PXU, Y = OBEL[1] - x * PXU;
+    for (const m of [M17, M14]) {
+      if (!m) continue;
+      const f = m.z === 17 ? 1 : .125, u = Math.floor(X * f) - m.x0 * 256, v = Math.floor(Y * f) - m.y0 * 256;
+      if (u >= 0 && v >= 0 && u < m.w && v < m.h) { _sat.d = m.d; _sat.i = (v * m.w + u) * 4; return _sat; }
     }
-    const CAMPI = [[.2, .36, .14], [.3, .42, .16], [.45, .42, .2], [.55, .45, .22], [.24, .3, .12]];
-    const tp = [], tc = [];
-    const tri = (a, b, c) => {
-      tp.push(...a, ...b, ...c);
-      const k = CAMPI[Math.floor(R() * CAMPI.length)], j = .85 + R() * .3;
-      for (let q = 0; q < 3; q++) tc.push(k[0] * j, k[1] * j, k[2] * j);
-    };
-    for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) {
-      const a = V[j * (NX + 1) + i], b = V[j * (NX + 1) + i + 1], c = V[(j + 1) * (NX + 1) + i], d = V[(j + 1) * (NX + 1) + i + 1];
-      tri(a, b, c); tri(b, d, c);
-    }
-    const tg = new THREE.BufferGeometry();
-    tg.setAttribute("position", new THREE.Float32BufferAttribute(tp, 3));
-    tg.setAttribute("color", new THREE.Float32BufferAttribute(tc, 3));
-    tg.computeVertexNormals();
-    const solido = [[tg, null, null]], lume = [];
-    // dove passa la camera: da li' niente cipressi
-    CC = P.map(p => new THREE.Vector3(p[0] * .6, p[1] + 2.6, p[2] + 12));
-    TT = P.map(p => new THREE.Vector3(p[0], p[1] + 2.1, p[2]));
-    const vicino = (x, z) => {
-      for (let i = 0; i < NCH; i++) {
-        if (Math.hypot(x - P[i][0], z - P[i][2]) < 6.5) return true;
-        const a = CC[i], b = CC[Math.min(i + 1, NCH - 1)], dx = b.x - a.x, dz = b.z - a.z, l = dx * dx + dz * dz || 1;
-        const u = Math.min(1, Math.max(0, ((x - a.x) * dx + (z - a.z) * dz) / l));
-        if (Math.hypot(x - a.x - u * dx, z - a.z - u * dz) < 3.2) return true;
+    return null;
+  }
+  // Le zone piatte del suolo (piazza, Tevere, prati, tetti uguali) si
+  // fondono: punti vicini dello stesso colore diventano uno splat piu'
+  // grande al loro baricentro, con l'area dei fusi (idea di puppy, round 8).
+  // Solo lo sfondo. Due giri: celle di 2.5 passi, poi di nuovo sui gia' fusi.
+  function fondi(geo, tol) {
+    let P = geo.attributes.position.array, C = geo.attributes.aCol.array, S = geo.attributes.aS.array, Nn = geo.attributes.aN.array;
+    let L = geo.attributes.aL ? geo.attributes.aL.array : new Uint8Array(S.length * 3);
+    for (let giro = 0; giro < 2; giro++) {
+      const n = S.length, celle = new Map();
+      for (let i = 0; i < n; i++) {
+        const c = S[i] * 2.5, l = Math.round(Math.log2(S[i]) * 2);
+        // vicino al Vaticano no: la camera ci passa radente e gli splat grossi
+        // sbattono contro la misura massima dei punti e aprono buchi
+        const k = Math.hypot(P[i * 3], (P[i * 3 + 2] + 12) * .85) < 40 ? "v" + i : l + ":" + Math.floor(P[i * 3] / c) + ":" + Math.floor(P[i * 3 + 2] / c);
+        let a = celle.get(k); if (!a) celle.set(k, a = []); a.push(i);
       }
-      return false;
-    };
-    for (let k = 0; k < 260; k++) {
-      const x = (R() - .5) * 60, z = Z0 - 6 - R() * (Z0 - Z1 - 20);
-      if (vicino(x, z)) continue;
-      const s = .7 + R() * .6, alt = 2 + R() * 1.4;
-      solido.push([new THREE.CylinderGeometry(0, .34 * s, alt * s, 5), M4(x, h(x, z) + alt * s / 2 - .05, z), [.08, .2, .1].map(v => v * (.8 + R() * .4))]);
+      const p = [], c = [], sz = [], nr = [], lu = [];
+      for (const a of celle.values()) {
+        let m0 = 0, m1 = 0, m2 = 0;
+        for (const i of a) { m0 += C[i * 3]; m1 += C[i * 3 + 1]; m2 += C[i * 3 + 2]; }
+        m0 /= a.length; m1 /= a.length; m2 /= a.length;
+        let ok = a.length >= 3;
+        for (const i of a) if (ok && (Math.max(Math.abs(C[i * 3] - m0), Math.abs(C[i * 3 + 1] - m1), Math.abs(C[i * 3 + 2] - m2)) > tol || Math.abs(L[i * 3] - L[a[0] * 3]) > 40)) ok = false;
+        if (!ok) { for (const i of a) { p.push(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); c.push(C[i * 3], C[i * 3 + 1], C[i * 3 + 2]); sz.push(S[i]); nr.push(Nn[i * 3], Nn[i * 3 + 1], Nn[i * 3 + 2]); lu.push(L[i * 3], L[i * 3 + 1], L[i * 3 + 2]); } continue; }
+        let x = 0, y = 0, z = 0, ar = 0, l0 = 0, l1 = 0, l2 = 0;
+        for (const i of a) { x += P[i * 3]; y += P[i * 3 + 1]; z += P[i * 3 + 2]; ar += S[i] * S[i]; l0 += L[i * 3]; l1 += L[i * 3 + 1]; l2 += L[i * 3 + 2]; }
+        lu.push(l0 / a.length, l1 / a.length, l2 / a.length);
+        p.push(x / a.length, y / a.length, z / a.length); c.push(m0, m1, m2); sz.push(Math.sqrt(ar) * .8);
+        nr.push(Nn[a[0] * 3], Nn[a[0] * 3 + 1], Nn[a[0] * 3 + 2]);
+      }
+      P = new Float32Array(p); C = new Uint8Array(c); S = new Float32Array(sz); Nn = new Int8Array(nr); L = new Uint8Array(lu);
     }
-    P.forEach(p => chiesa(R, M4(p[0], p[1], p[2], 0, (R() - .5) * .5 - p[0] * .03), solido, lume));
-    const ms = new THREE.Mesh(fondi(solido), new THREE.MeshPhongMaterial({vertexColors: true, flatShading: true, shininess: 4, specular: 0x111111}));
-    const ml = new THREE.Mesh(fondi(lume), new THREE.MeshBasicMaterial({vertexColors: true}));
-    const cielo = pieno(FS_CIELO, {uR: U.uR}, .99999, -100, true);     // dietro a tutto: trasparente, va dopo gli opachi
-    const sole = new THREE.DirectionalLight(0xffc89a, 2.4);
-    sole.position.set(9, 6, 12);
-    sc.add(cielo, ms, ml, sole, new THREE.HemisphereLight(0x8a80c0, 0x2a1a10, 1.3));
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(P, 3));
+    g.setAttribute("aCol", new THREE.BufferAttribute(C, 3, true));
+    g.setAttribute("aN", new THREE.BufferAttribute(Nn, 3, true));
+    g.setAttribute("aS", new THREE.BufferAttribute(S, 1));
+    g.setAttribute("aL", new THREE.BufferAttribute(L, 3, true));
+    g.setAttribute("aG", new THREE.BufferAttribute(new Uint8Array(S.length), 1, true));
+    return g;
+  }
+  let suoloM = null;
+  function colora() {
+    if (!suoloGeo) return;
+    if (M17 || M14) satura();
+    if (!suoloM) return;
+    const vecchia = suoloM.geometry;
+    suoloM.geometry = fondi(suoloGeo, 24);
+    if (vecchia !== suoloGeo) vecchia.dispose();
+  }
+  function satura() {
+    const P = suoloGeo.attributes.position.array, C = suoloGeo.attributes.aCol.array, n = P.length / 3;
+    for (let i = 0; i < n; i++) {
+      const s = satellite(P[i * 3], P[i * 3 + 2]);
+      if (!s) continue;
+      const j = .94 + .12 * hs3(i, 7, 3);
+      C[i * 3] = Math.min(255, s.d[s.i] * 1.08 * j); C[i * 3 + 1] = Math.min(255, s.d[s.i + 1] * 1.0 * j); C[i * 3 + 2] = Math.min(255, s.d[s.i + 2] * .9 * j);
+    }
+    suoloGeo.attributes.aCol.needsUpdate = true;
+  }
+  function coloraGlobo() {
+    if (!globoGeo || !M2) return;
+    const P = globoGeo.attributes.position.array, C = globoGeo.attributes.aCol.array;
+    for (let i = 0; i < globoN; i++) {
+      const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2], la = Math.asin(y / Math.hypot(x, y, z)), lo = Math.atan2(x, z);
+      if (Math.abs(la) > 84 * DEG) continue;
+      const u = Math.floor((lo / DEG + 180) / 360 * M2.w), v = Math.floor((1 - Math.log(Math.tan(la) + 1 / Math.cos(la)) / Math.PI) / 2 * M2.h);
+      const ix = (Math.min(M2.h - 1, Math.max(0, v)) * M2.w + Math.min(M2.w - 1, Math.max(0, u))) * 4;
+      for (let e = 0; e < 3; e++) C[i * 3 + e] = Math.min(255, Math.pow(M2.d[ix + e] / 255, .8) * 290);
+    }
+    globoGeo.attributes.aCol.needsUpdate = true;
+  }
+  // le tessere Esri cotte: un mosaico nx*ny gia' rimpicciolito, stesso
+  // dominio, riportato in scala alle coordinate delle tessere vere
+  function tessereEsri(z, x0, y0, nx, ny) {
+    return new Promise(fatto => {
+      const im = new Image();
+      im.onload = () => {
+        const c = document.createElement("canvas");
+        c.width = nx * 256; c.height = ny * 256;
+        const x = c.getContext("2d", {willReadFrequently: true});
+        x.drawImage(im, 0, 0, c.width, c.height);
+        try { fatto({d: x.getImageData(0, 0, c.width, c.height).data, w: c.width, h: c.height, x0, y0, z}); } catch (e) { fatto(null); }
+      };
+      im.onerror = () => fatto(null);
+      im.src = "sat" + z + ".webp";
+    });
+  }
+  function satelliti() {
+    const x17 = Math.floor((OBEL[0] - 560) / 256), y17 = Math.floor((OBEL[1] - 560) / 256);
+    const x14 = Math.floor(OBEL[0] / 2048) - 1, y14 = Math.floor(OBEL[1] / 2048) - 1;
+    Promise.all([tessereEsri(2, 0, 0, 4, 4), tessereEsri(14, x14, y14, 4, 4),
+      tessereEsri(17, x17, y17, Math.floor((OBEL[0] + 640) / 256) - x17 + 1, Math.floor((OBEL[1] + 560) / 256) - y17 + 1)]).then(([a, b, c]) => {
+      M2 = a; M14 = b; M17 = c;
+      coloraGlobo(); colora();
+      if ((a || b || c) && !crediti) { crediti = el("p", "crediti", "Imagery © Esri, Maxar, Earthstar Geographics"); palco.after(crediti); }
+    });
+  }
+
+  // la strada della camera, a tratti: chiavi di posizione e di mira, e a che
+  // punto del tratto arriva ognuna
+  function tratto(kp, kq, uk) {
+    const v = a => new THREE.Vector3(a[0], a[1], a[2]);
+    return {p: new THREE.CatmullRomCurve3(kp.map(v)), q: new THREE.CatmullRomCurve3(kq.map(v)), uk};
+  }
+  function suCurva(tr, u, P, Q) {
+    const UK = tr.uk;
+    let k = 0;
+    while (k < UK.length - 2 && u > UK[k + 1]) k++;
+    const w = (k + Math.min(1, Math.max(0, (u - UK[k]) / (UK[k + 1] - UK[k])))) / (UK.length - 1);
+    tr.p.getPoint(w, P); tr.q.getPoint(w, Q);
+  }
+  let AEREO, TERRA, DENTRO, VFINE;
+  function strade() {
+    AEREO = tratto([[24, 420, 230], [12, 170, 120], [5, 55, 70], [2, 12, 52], [1.5, 3.5, 46]],
+      [[0, 0, -14], [0, 0, -18], [0, 1, -20], [0, 2, -24], [0, 2.5, -24]], [0, .35, .65, .88, 1]);
+    TERRA = tratto([[1.5, 3.5, 46], [1.2, 1.8, 24], [2.2, 1.2, 7], [2, .9, -5], [.6, .55, -14], [0, .33, -18.1]],
+      [[0, 2.5, -24], [0, 2.4, -26], [0, 2.6, -26], [0, 2.4, -30], [0, .6, -26], [0, .32, -26]], [0, .3, .5, .68, .88, 1]);
+    DENTRO = tratto([[0, 1.8, 48], [1.5, 3, 26], [3.5, 5, 9], [10, 6, 1], [15, 9, -30], [6, 10, -40], [0, 30, -22], [0, 66, -22]],
+      [[0, 5, 0], [0, 8, CROCIERA], [0, 14, CROCIERA], [0, 40, CROCIERA], [0, 18, -60], [0, 20, -60], [0, 60, CROCIERA], [0, 100, CROCIERA]],
+      [0, .18, .36, .5, .62, .72, .86, 1]);
+    VFINE = new THREE.Vector3(Math.sin(2.9) * 14, 17.5, Z_CUP + Math.cos(2.9) * 14);
+  }
+
+  function roma(B) {
+    const sc = new THREE.Scene(), R = caso(1517);
+    const wf = (x, z) => { const r = Math.hypot(x, (z + 12) * .85); return r < 45 ? 1 : Math.max(.005, Math.exp(-(r - 45) / 28)); };
+    const parti = [];
+    vaticano(parti, R);
+    // prima il Vaticano, che si cuoce la sua mappa delle altezze; poi il suolo,
+    // che ci prende le ombre
+    const vatGeo = campiona(parti, B * .45, {luce: luceCampagna, cuoci: cuociFuori, prima: gg => { ALT = altezze(gg); }, buchi: [.45, .86], nz: .008, R});
+    suoloGeo = campiona([{g: new THREE.PlaneGeometry(600, 600, 150, 150), m: M4(0, 0, 0, -Math.PI / 2), wf: true, cf: suoloFinto, pieno: true, vari: .16}],
+      B * .55, {luce: luceSuolo, cuoci: cuociSuolo, piatto: true, nz: .004, wf, R});
+    matT = matPunti(1, false); matV = matPunti(1, false);
+    matT.uniforms.uCotta.value = 2; matV.uniforms.uCotta.value = 1;
+    suoloM = punti(suoloGeo, matT);
+    sc.add(pieno(FS_CIELO, {uR: U.uR}, .99999, -100, true), suoloM, punti(vatGeo, matV), pieno(FS_TINTA, veloU, 0, 100, false));
+    colora();
     return sc;
+  }
+
+  // ---- dentro San Pietro, in metri: ingresso a z=+50, crociera e
+  // baldacchino a z=-22, abside e Gloria in fondo a z=-60 ----
+  const CROCIERA = -22;
+  const LUCE_C = [0, 50, CROCIERA], LUCE_G = [0, 22, -58];
+  function luceBasilica(c, p, n, q) {
+    if (q.mos) { const k = .95 + .15 * Math.max(0, n[1]); c[0] *= k; c[1] *= k; c[2] *= k * .96; return; }
+    const lu = (L, I, R2) => {
+      const dx = L[0] - p[0], dy = L[1] - p[1], dz = L[2] - p[2], dd = Math.hypot(dx, dy, dz) || 1;
+      return Math.max(0, (n[0] * dx + n[1] * dy + n[2] * dz) / dd) * I * R2 / (R2 + dd * dd);
+    };
+    const dc = lu(LUCE_C, 1.3, 2500), dg = lu(LUCE_G, .7, 220), alto = .3 * Math.max(0, n[1]) + .25 * Math.max(0, -n[1]);
+    const ao = .62 + .38 * liscio(p[1] / 7);
+    const k = (.32 + alto + dc + dg) * ao;
+    c[0] *= k * 1.06; c[1] *= k * .96; c[2] *= k * .82;
+  }
+  function pavimentoSP(p, n, c) {
+    const x = p[0], z = p[2], d = Math.hypot(x, z - CROCIERA);
+    let b;
+    if (d < 21) {
+      const r = d % 3.5;
+      b = r < .25 ? [.85, .8, .7] : Math.floor(d / 3.5) % 2 ? [.62, .55, .5] : [.86, .82, .74];
+      if (Math.abs(((Math.atan2(x, z - CROCIERA) / 6.2832 * 32) % 1 + 1) % 1 - .5) < .03) b = [.5, .14, .12];
+    } else if (Math.abs(x) < 12.5 && z > 0) {
+      const zc = Math.round(z / 6) * 6, dd = Math.hypot(x, z - zc);
+      if (dd < 1.4) b = [.48, .1, .1];
+      else if (dd < 1.6) b = [.9, .86, .78];
+      else {
+        const u = ((x / 3 % 1) + 1) % 1, v = ((z / 3 % 1) + 1) % 1;
+        b = Math.min(u, 1 - u, v, 1 - v) < .06 ? [.35, .3, .28] : (Math.floor(x / 3) + Math.floor(z / 3)) & 1 ? [.88, .84, .76] : [.7, .64, .58];
+      }
+    } else b = (Math.floor(x / 2.5) + Math.floor(z / 2.5)) & 1 ? [.82, .78, .7] : [.6, .56, .52];
+    const v = .88 + .2 * rumore(x * .8, 0, z * .8);
+    c[0] = b[0] * v; c[1] = b[1] * v; c[2] = b[2] * v;
+  }
+  // le pareti: pilastri coi capitelli d'oro ogni 12,5 m, archi scuri verso le
+  // navate laterali, il cornicione
+  function pareteSP(p, n, c) {
+    const y = p[1], u0 = Math.abs(n[0]) > .5 ? p[2] : p[0], u = ((u0 / 12.5) % 1 + 1) % 1 * 12.5, du = Math.min(u, 12.5 - u);
+    let b;
+    if (y > 23.5 && y < 26) b = y > 24.2 && y < 25.3 ? [.9, .72, .32] : [.86, .82, .74];
+    else if (du < 2.1) b = y > 21.5 ? [.92, .74, .3] : (Math.floor(du * 3) & 1) && du < 1.7 ? [.8, .76, .68] : [.9, .86, .78];
+    else {
+      const r = Math.hypot(u - 6.25, Math.max(0, y - 13));
+      b = r < 4 && y < 17 ? [.13, .1, .08] : r < 4.4 && y < 17.4 ? [.9, .74, .34] : [.74, .7, .62];
+    }
+    const v = .9 + .15 * rumore(p[0] * .5 + p[2] * .5, y * .5, 2);
+    c[0] = b[0] * v; c[1] = b[1] * v; c[2] = b[2] * v;
+  }
+  // i cassettoni delle volte: la cornice d'oro, il fondo bianco, la rosa d'oro
+  const cassettone = (u, v, c) => {
+    u = ((u / 3.1) % 1 + 1) % 1; v = ((v / 3.1) % 1 + 1) % 1;
+    const e = Math.min(u, 1 - u, v, 1 - v);
+    const b = e < .1 ? [.92, .74, .32] : e < .16 ? [.95, .93, .88] : Math.hypot(u - .5, v - .5) < .14 ? [.95, .78, .35] : [.86, .84, .8];
+    c[0] = b[0]; c[1] = b[1]; c[2] = b[2];
+  };
+  const voltaZ = (p, n, c) => cassettone(Math.atan2(p[0], p[1] - 26) * 12.5, p[2], c);
+  const voltaX = (p, n, c) => cassettone(Math.atan2(p[2] - CROCIERA, p[1] - 26) * 12.5, p[0], c);
+  const catino = (p, n, c) => cassettone(Math.atan2(p[0], -(p[2] + 48)) * 12.5, Math.hypot(p[1] - 38, Math.hypot(p[0], p[2] + 48)) * 1.2, c);
+  function tamburo(p, n, c) {                    // le finestre del tamburo, accese, fra pilastri
+    const f = ((Math.atan2(p[0], p[2] - CROCIERA) / 6.2832 * 16) % 1 + 1) % 1, y = p[1];
+    const fin = Math.abs(f - .5) < .15 && y > 49 && y < 54 + 2 * Math.cos((f - .5) * 10);
+    const b = fin ? [1.7, 1.55, 1.2] : Math.abs(f - .5) > .4 ? [.9, .74, .32] : [.86, .83, .76];
+    c[0] = b[0]; c[1] = b[1]; c[2] = b[2];
+  }
+  function pennacchi(p, n, c) {                  // i quattro evangelisti nei tondi
+    const a = Math.atan2(p[0], p[2] - CROCIERA), q = ((a / (Math.PI / 2) - .5) % 1 + 1) % 1, da = Math.min(q, 1 - q) * 33, dy = p[1] - 41.5;
+    const r = Math.hypot(da, dy);
+    if (r < 2.6) { c[0] = .12; c[1] = .2; c[2] = .5; if (r < 1.2) { c[0] = .95; c[1] = .9; c[2] = .82; } return; }
+    if (r < 3) { c[0] = .95; c[1] = .78; c[2] = .35; return; }
+    oroT(p, n, c);
+  }
+  const oroT = (p, n, c) => {
+    const h = hs3(Math.floor(p[0] * 7 + 300), Math.floor(p[1] * 7), Math.floor(p[2] * 7 + 300)), j = .75 + h * .45;
+    c[0] = .92 * j; c[1] = .68 * j; c[2] = .26 * j * (.8 + .4 * h);
+  };
+  // un cilindro fra due punti
+  function trave(parti, a, b, r, c, o) {
+    const d = new THREE.Vector3(b[0] - a[0], b[1] - a[1], b[2] - a[2]), l = d.length();
+    const m = new THREE.Matrix4().compose(new THREE.Vector3((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2),
+      new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()), new THREE.Vector3(1, 1, 1));
+    parti.push(Object.assign({g: new THREE.CylinderGeometry(r, r, l, 8, 1, true), m, c}, o || {}));
+  }
+  function basilica(B) {
+    const sc = new THREE.Scene(), parti = [], R = caso(1626);
+    const P = (g, m, c, o) => parti.push(Object.assign({g, m, c}, o || {}));
+    const MARMO = [.88, .85, .78], BRONZO = [.24, .15, .08], ORO = [.95, .75, .3], FIAMMA = [1, .82, .4];
+    P(new THREE.PlaneGeometry(66, 112), M4(0, 0, -6, -Math.PI / 2), null, {cf: pavimentoSP, d: .9});
+    // la navata: le pareti coi pilastri e gli archi, la volta a botte coi cassettoni, la controfacciata
+    for (const s of [-1, 1]) P(new THREE.PlaneGeometry(51, 26), M4(s * 12.5, 13, 24.5, 0, -s * Math.PI / 2), null, {cf: pareteSP});
+    P(new THREE.CylinderGeometry(12.5, 12.5, 51, 64, 1, true, Math.PI / 2, Math.PI), M4(0, 26, 24.5, Math.PI / 2), null, {cf: voltaZ, inv: true, d: .8});
+    P(new THREE.PlaneGeometry(25, 38), M4(0, 19, 50, 0, Math.PI), [.72, .66, .58], {d: .5});
+    // la crociera: quattro piloni, quattro arconi, i pennacchi, il tamburo con la scritta, la cupola, la lanterna
+    for (const sx of [-1, 1]) for (const sz of [-5.25, -38.75]) P(new THREE.BoxGeometry(8.5, 38, 8.5), M4(sx * 16.75, 19, sz), null, {cf: pareteSP});
+    P(new THREE.TorusGeometry(12.5, 1, 6, 32, Math.PI), M4(0, 26, -1), null, {cf: oroT, gl: luccica, mos: true});
+    P(new THREE.TorusGeometry(12.5, 1, 6, 32, Math.PI), M4(0, 26, -43), null, {cf: oroT, gl: luccica, mos: true});
+    for (const s of [-1, 1]) P(new THREE.TorusGeometry(12.5, 1, 6, 32, Math.PI), M4(s * 21, 26, CROCIERA, 0, Math.PI / 2), null, {cf: oroT, gl: luccica, mos: true});
+    P(new THREE.CylinderGeometry(21, 21, 7, 72, 1, true), M4(0, 41.5, CROCIERA), null, {cf: pennacchi, inv: true, mos: true, gl: luccica});
+    P(new THREE.CylinderGeometry(21, 21, 2.5, 72, 1, true), M4(0, 46.25, CROCIERA), null, {tex: SCRITTA, inv: true, mos: true, gl: luccica, d: 2});
+    P(new THREE.CylinderGeometry(21, 21, 9.5, 72, 1, true), M4(0, 52.25, CROCIERA), null, {cf: tamburo, inv: true, mos: true});
+    P(new THREE.SphereGeometry(21, 72, 24, 0, 6.2832, 0, Math.PI / 2), M4(0, 57, CROCIERA), null, {tex: CUPOLA, inv: true, mos: true, gl: luccica, d: 1.2});
+    P(new THREE.CylinderGeometry(3, 3, 6, 24, 1, true), M4(0, 81, CROCIERA), [1, .96, .84], {inv: true, em: true, d: 2});
+    // i bracci del transetto
+    for (const s of [-1, 1]) {
+      P(new THREE.PlaneGeometry(12, 26), M4(s * 27, 13, -9.5, 0, Math.PI), null, {cf: pareteSP});
+      P(new THREE.PlaneGeometry(12, 26), M4(s * 27, 13, -34.5), null, {cf: pareteSP});
+      P(new THREE.PlaneGeometry(25, 26), M4(s * 33, 13, CROCIERA, 0, -s * Math.PI / 2), null, {cf: pareteSP});
+      P(new THREE.CylinderGeometry(12.5, 12.5, 12, 40, 1, true, Math.PI / 2, Math.PI), M4(s * 27, 26, CROCIERA, Math.PI / 2, 0, Math.PI / 2), null, {cf: voltaX, inv: true, d: .8});
+      P(new THREE.PlaneGeometry(5, 26), M4(s * 12.5, 13, -45.5, 0, -s * Math.PI / 2), null, {cf: pareteSP});
+    }
+    // l'abside, il catino coi cassettoni, e la Gloria del Bernini con la colomba
+    P(new THREE.CylinderGeometry(12.5, 12.5, 38, 48, 1, true, Math.PI / 2, Math.PI), M4(0, 19, -48), null, {cf: pareteSP, inv: true});
+    P(new THREE.SphereGeometry(12.5, 48, 16, Math.PI, Math.PI, 0, Math.PI / 2), M4(0, 38, -48), null, {cf: catino, inv: true, d: .9});
+    P(new THREE.CircleGeometry(2.2, 40), M4(0, 22, -60.1, 0, 0, 0, 1, 1.25, 1), [1, .86, .45], {em: true, d: 6});
+    P(new THREE.CircleGeometry(.6, 16), M4(0, 22, -60.05, 0, 0, 0, 1.4, .5, 1), [1, 1, .96], {em: true, d: 10});
+    for (let k = 0; k < 28; k++) {
+      const a = k / 28 * 6.2832, l = 3.5 + (k % 2 ? 3 : 5.5) + R() * 1.2;
+      P(new THREE.BoxGeometry(.22, l, .1), M4(Math.sin(a) * (2.6 + l / 2), 22 + Math.cos(a) * (2.6 + l / 2) * 1.1, -60.2, 0, 0, -a), [1, .8, .35], {mos: true, gl: luccica, d: 5});
+    }
+    for (let k = 0; k < 16; k++) {
+      const a = k / 16 * 6.2832 + R() * .3, r = 4.2 + R() * 1.2;
+      P(new THREE.SphereGeometry(.8 + R() * .8, 10, 8), M4(Math.sin(a) * r, 22 + Math.cos(a) * r * 1.1, -59.6), [.82, .74, .6], {mos: true, d: 2});
+    }
+    P(new THREE.BoxGeometry(3.2, 4, 1.6), M4(0, 12, -59.2), BRONZO, {gl: luccica, d: 3});
+    for (const [x, z] of [[-4.2, -57.5], [4.2, -57.5], [-2.2, -56.5], [2.2, -56.5]]) P(new THREE.CylinderGeometry(.55, .7, 5, 10), M4(x, 2.5, z), BRONZO, {d: 3});
+    // il baldacchino: quattro colonne tortili di bronzo con le spire d'oro, il
+    // cielo con le frange, le volute, il globo e la croce; sotto, l'altare
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      const cx = sx * 5.5, cz = CROCIERA + sz * 5.5;
+      P(new THREE.BoxGeometry(1.9, 3, 1.9), M4(cx, 1.5, cz), MARMO, {d: 2});
+      const g = new THREE.CylinderGeometry(.85, 1.05, 11, 18, 40, true), a = g.attributes.position;
+      for (let i = 0; i < a.count; i++) { const y = a.getY(i) + 5.5; a.setX(i, a.getX(i) + .38 * Math.cos(y * 1.15)); a.setZ(i, a.getZ(i) + .38 * Math.sin(y * 1.15)); }
+      g.computeVertexNormals();
+      P(g, M4(cx, 3 + 5.5, cz), null, {d: 4, gl: luccica, cf: (p, n, c) => {
+        const th = Math.atan2(p[2] - cz, p[0] - cx) / 6.2832, y = p[1] - 3, f = ((th - y / 5.4) % 1 + 1) % 1;
+        const b = f < .13 ? [.95, .74, .3] : BRONZO; c[0] = b[0]; c[1] = b[1]; c[2] = b[2]; }});
+      P(new THREE.BoxGeometry(2.2, 1.2, 2.2), M4(cx, 14.6, cz), BRONZO, {gl: luccica, d: 3});
+      trave(parti, [cx, 15.2, cz], [cx * .25, 21, CROCIERA + sz * 5.5 * .25], .32, BRONZO, {d: 4, gl: luccica});
+    }
+    for (const [w, d, x, z] of [[13, 1.3, 0, CROCIERA + 5.5], [13, 1.3, 0, CROCIERA - 5.5], [1.3, 13, 5.5, CROCIERA], [1.3, 13, -5.5, CROCIERA]]) {
+      P(new THREE.BoxGeometry(w, 1.5, d), M4(x, 15.7, z), BRONZO, {gl: luccica, d: 3});
+      P(new THREE.BoxGeometry(w * .98 + .02, .9, d * .98 + .02), M4(x, 14.5, z), [.85, .66, .28], {gl: luccica, d: 3});
+    }
+    P(new THREE.SphereGeometry(.8, 14, 10), M4(0, 21.8, CROCIERA), ORO, {gl: luccica, d: 6});
+    P(new THREE.BoxGeometry(.2, 2.4, .2), M4(0, 23.6, CROCIERA), ORO, {d: 8});
+    P(new THREE.BoxGeometry(1.3, .2, .2), M4(0, 24.1, CROCIERA), ORO, {d: 8});
+    P(new THREE.BoxGeometry(7, .5, 5), M4(0, .25, CROCIERA), MARMO, {d: 2});
+    P(new THREE.BoxGeometry(4.2, 1.3, 2.2), M4(0, .5 + .65, CROCIERA), [.92, .9, .84], {d: 3});
+    // la confessione: le lampade sempre accese, a ferro di cavallo davanti all'altare
+    for (let k = 0; k < 30; k++) {
+      const a = -1.5 + k / 29 * 3, x = Math.sin(a) * 6.5, z = CROCIERA + 4 + Math.cos(a) * 4;
+      P(new THREE.CylinderGeometry(.07, .1, .9, 6), M4(x, .45, z), ORO, {gl: luccica, d: 6});
+      P(new THREE.ConeGeometry(.08, .22, 6), M4(x, 1.02, z), FIAMMA, {em: true, d: 12});
+    }
+    matD = matPunti(2, false);
+    sc.add(punti(campiona(parti, B, {luce: luceBasilica, buchi: [.18, .88], nz: .02, R}), matD));
+    // il pulviscolo nei raggi delle finestre del tamburo, giu' fino all'altare
+    const NM = PICCOLO ? 900 : 2400, mp = new Float32Array(NM * 3), mf = new Float32Array(NM);
+    for (let i = 0; i < NM; i++) {
+      const a = Math.floor(R() * 16) / 16 * 6.2832, u = R(), tx = Math.sin(a) * 4, tz = CROCIERA + Math.cos(a) * 4;
+      mp[i * 3] = Math.sin(a) * 20 * (1 - u) + tx * u + (R() - .5) * 1.6; mp[i * 3 + 1] = 52 - u * 50 + (R() - .5) * 1.6;
+      mp[i * 3 + 2] = CROCIERA + Math.cos(a) * 20 * (1 - u) + (tz - CROCIERA) * u + (R() - .5) * 1.6;
+      mf[i] = R();
+    }
+    const mg = new THREE.BufferGeometry();
+    mg.setAttribute("position", new THREE.BufferAttribute(mp, 3));
+    mg.setAttribute("aF", new THREE.BufferAttribute(mf, 1));
+    mote = new THREE.Points(mg, new THREE.ShaderMaterial({vertexShader: VS_MOTE, fragmentShader: FS_MOTE, uniforms: {uT: U.uT, uPxW: U.uPxW},
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending}));
+    mote.frustumCulled = false;
+    suoreN = gregge(figura(1, PICCOLO ? 700 : 1100), 6, [0, 0, 0], 0, 2);
+    chierici = gregge(figura(2, PICCOLO ? 700 : 1100), 4, [0, 0, 0], 0, 2);
+    sc.add(mote, suoreN, chierici, pieno(FS_TINTA, veloU, 0, 100, false));
+    return sc;
+  }
+  let SCRITTA = null, CUPOLA = null;
+
+  // Le figure in un'altezza di 1, facce verso +z: 0 la dorata, 1 la suora
+  // nera, 2 il chierichetto col cero.
+  function figura(tipo, n) {
+    const parti = [], P = (g, x, y, z, c, o) => parti.push(Object.assign({g, m: M4(x, y, z, o && o.rx, 0, 0, o && o.sx, o && o.sy, o && o.sz), c}, o && o.x));
+    if (tipo === 2) {
+      P(new THREE.CylinderGeometry(.12, .2, .5, 10), 0, .25, 0, [.62, .08, .07]);
+      P(new THREE.CylinderGeometry(.13, .27, .32, 10), 0, .58, 0, [.96, .95, .9]);
+      P(new THREE.SphereGeometry(.13, 10, 6), 0, .74, 0, [.96, .95, .9]);
+      P(new THREE.SphereGeometry(.09, 10, 8), 0, .87, .01, [.93, .74, .6]);
+      P(new THREE.SphereGeometry(.096, 10, 6, 0, 6.2832, 0, Math.PI / 2), 0, .885, -.008, [.25, .15, .07]);
+      P(new THREE.CylinderGeometry(.018, .018, .32, 6), .13, .72, .15, [.97, .95, .88]);
+      P(new THREE.ConeGeometry(.026, .07, 6), .13, .91, .15, [1, .82, .4], {x: {em: true, d: 6}});
+    } else {
+      const d = tipo === 0;
+      const TON = d ? [.92, .7, .26] : [.05, .05, .06], VEL = d ? [.66, .45, .12] : [.03, .03, .04];
+      const BIA = d ? [1, .93, .7] : [.95, .95, .92], VIS = d ? [1, .88, .68] : [.92, .74, .62], CRO = d ? [1, .96, .65] : [.75, .75, .78];
+      P(new THREE.CylinderGeometry(.13, .27, .7, 12), 0, .35, 0, TON);
+      P(new THREE.BoxGeometry(.13, .5, .02), 0, .43, .205, VEL);
+      P(new THREE.SphereGeometry(.15, 12, 8), 0, .78, -.01, VEL, {sy: 1.15, sx: 1, sz: 1});
+      P(new THREE.CylinderGeometry(.14, .21, .34, 12, 1, true), 0, .62, -.02, VEL);
+      P(new THREE.CylinderGeometry(.1, .12, .08, 12), 0, .72, .01, BIA);
+      P(new THREE.SphereGeometry(.075, 10, 8), 0, .8, .075, VIS);
+      P(new THREE.BoxGeometry(.025, .1, .02), 0, .55, .235, CRO);
+      P(new THREE.BoxGeometry(.065, .022, .02), 0, .575, .235, CRO);
+      P(new THREE.BoxGeometry(.09, .12, .07), 0, .48, .2, VIS);
+    }
+    return campiona(parti, n, {luce: luceFigura, nz: .004, R: caso(tipo * 31 + 5)});
+  }
+  function gregge(geo, n, su, gira, s) {
+    const ig = new THREE.InstancedBufferGeometry();
+    ["position", "aCol", "aS"].forEach(k => ig.setAttribute(k, geo.getAttribute(k)));
+    const aI = new THREE.InstancedBufferAttribute(new Float32Array(n * 4), 4), aJ = new THREE.InstancedBufferAttribute(new Float32Array(n * 4), 4);
+    aI.setUsage(THREE.DynamicDrawUsage); aJ.setUsage(THREE.DynamicDrawUsage);
+    ig.setAttribute("aI", aI); ig.setAttribute("aJ", aJ);
+    ig.instanceCount = n;
+    const m = new THREE.Points(ig, new THREE.ShaderMaterial({vertexShader: VS_FIG, fragmentShader: FS_PUNTI,
+      uniforms: {uPxW: U.uPxW, uMaxP: U.uMaxP, uT: U.uT, uGira: {value: gira}, uSu: {value: new THREE.Vector3().fromArray(su)},
+        uFogC: {value: new THREE.Color().fromArray(NEBBIA[s])}, uFog: {value: new THREE.Vector2().fromArray(NEBBIA_D[s])}}}));
+    m.frustumCulled = false;
+    return m;
+  }
+
+  // Le comparse (round 7, puppy: «le bestemmie come personaggi»): ogni
+  // bestemmia del canale e' una scritta di punti, in piedi, che va a spasso
+  // per la piazza e per la basilica e galleggia nel cielo. Lettere alte 1,
+  // base a terra; sempre girate verso la camera, che si leggano.
+  const BESTEMMIE = [["PORCO DIO", [1, .55, .65]], ["DIO PORCO", [.98, .78, .3]], ["DIO CANE", [.82, .56, .32]],
+    ["MADONNA PUTTANA", [.42, .6, 1]], ["CRISTO CANE", [1, .32, .25]], ["PORCA MADONNA", [.7, .85, 1]], ["DIO BOIA", [.86, .86, .86]]];
+  const NCOMP = 3;
+  let comparse = [];
+  function parolaPunti(testo, col, n) {
+    const c = document.createElement("canvas"), x = c.getContext("2d", {willReadFrequently: true}), H = 128;
+    x.font = '900 100px Impact, Haettenschweiler, "Arial Black", sans-serif';
+    const W = Math.min(2000, Math.ceil(x.measureText(testo).width) + 24);
+    c.width = W; c.height = H;
+    x.font = '900 100px Impact, Haettenschweiler, "Arial Black", sans-serif';
+    x.textBaseline = "alphabetic"; x.fillStyle = "#fff"; x.fillText(testo, 12, 108);
+    const px = x.getImageData(0, 0, W, H).data, pieni = [];
+    for (let i = 0; i < W * H; i++) if (px[i * 4 + 3] > 128) pieni.push(i);
+    const R = caso(hashStr(testo)), pos = new Float32Array(n * 3), cl = new Uint8Array(n * 3), sz = new Float32Array(n);
+    const sp = Math.sqrt(pieni.length / 10000 / n) * 1.9;
+    for (let i = 0; i < n; i++) {
+      const k = pieni[Math.floor(R() * pieni.length)] || 0, y = (108 - Math.floor(k / W) - R()) / 75;
+      pos[i * 3] = (k % W + R() - W / 2) / 75; pos[i * 3 + 1] = y; pos[i * 3 + 2] = (R() - .5) * .2;
+      const f = (.62 + .45 * Math.min(1, Math.max(0, y))) * (.9 + R() * .2);
+      for (let e = 0; e < 3; e++) cl[i * 3 + e] = Math.min(255, Math.pow(col[e] * f, 1 / 2.2) * 255);
+      sz[i] = sp;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setAttribute("aCol", new THREE.BufferAttribute(cl, 3, true));
+    g.setAttribute("aS", new THREE.BufferAttribute(sz, 1));
+    return g;
+  }
+  function comparseInScena(tv, s, camP, camD) {
+    const alto = s === 1 && camP.y > 25;
+    comparse.forEach((m, w) => {
+      const I = m.geometry.attributes.aI.array, J = m.geometry.attributes.aJ.array;
+      for (let k = 0; k < NCOMP; k++) {
+        const id = w * NCOMP + k, o4 = k * 4, fa = id * 2.39996, v = 1 + (id % 5) * .13;
+        let x, y = 0, z, sc;
+        if (s === 0) {
+          if (k) { I[o4 + 3] = 0; continue; }
+          const d = 7 + w * 2.2;
+          _a.copy(camP).addScaledVector(camD, d).addScaledVector(_u, (w % 2 ? 1 : -1) * (2.2 + (w % 3) * .7));
+          x = _a.x; y = _a.y + ((w % 3) - 1) * 1.4; z = _a.z; sc = .55;
+        } else if (s === 1 && (k === 0 || alto)) {   // in volo attorno alla cupola, giganti
+          const a = t * .05 * v + fa, r = 10 + (id % 4) * 3;
+          x = Math.sin(a) * r; z = Z_CUP + 4 + Math.cos(a) * r; y = 14 + 4 * Math.sin(t * .2 + fa); sc = alto ? 2.6 : 1.4;
+        } else if (s === 1) {                       // a spasso per la piazza
+          x = 7 * Math.sin(t * .03 * v + fa); z = 5.2 * Math.sin(t * .023 * v + fa * 1.7) - .5;
+          y = Math.abs(Math.sin(t * 3.4 + id)) * .05; sc = .42;
+        } else if (k === 0) {                       // sotto la cupola, in volo
+          const a = t * .06 * v + fa, r = 9 + (id % 3) * 3;
+          x = Math.sin(a) * r; z = CROCIERA + Math.cos(a) * r; y = 30 + 6 * Math.sin(t * .17 + fa); sc = 3.2;
+        } else {                                    // su e giu' per la navata
+          x = (k % 2 ? 1 : -1) * (6.5 + 3 * Math.sin(fa)); z = 18 + 26 * Math.sin(t * .035 * v + fa);
+          y = Math.abs(Math.sin(t * 3.6 + id)) * .12; sc = 2.1;
+        }
+        I[o4] = x; I[o4 + 1] = y; I[o4 + 2] = z; I[o4 + 3] = sc;
+        J[o4] = Math.atan2(camP.x - x, camP.z - z) + .18 * Math.sin(t * 3.4 + id);   // verso la camera, ancheggiando
+      }
+      m.geometry.attributes.aI.needsUpdate = m.geometry.attributes.aJ.needsUpdate = true;
+    });
   }
 
   function costruisciViaggio() {
-    camV = new THREE.PerspectiveCamera(FOV, 1, .05, 200);
+    camV = new THREE.PerspectiveCamera(FOV, 1, .05, 2400);
     veloU = {uCol: {value: new THREE.Color(0, 0, 0)}, uA: {value: 0}};
     spazio = new THREE.Scene();
-    const [g, alone] = globo();
-    globoM = g;
-    const sole = new THREE.DirectionalLight(0xfff4e6, 2.8);
-    sole.position.set(-5, 6, 10);
-    spazio.add(g, alone, sole, new THREE.AmbientLight(0x8090b0, .5), pieno(FS_TINTA, veloU, 0, 100, false));
-    terra = campagna();
-    terra.add(pieno(FS_TINTA, veloU, 0, 100, false));
+    const [g, alone] = globo(Math.round(450000 * SCHERMO));
+    globoM = g; globoGeo = g.geometry;
+    spazio.add(g, alone, pieno(FS_TINTA, veloU, 0, 100, false));
     galassia.children.forEach(m => galA.push([m.material.uniforms.uA, m.material.uniforms.uA.value]));
-  }
-
-  const liscio = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
-  let _p, _q;
-  // Dove sta la camera dello sfondo al secondo `tv` del giro: torna la scena
-  // da disegnare, e intanto regola velo, galassia e registro.
-  function viaggio(tv) {
-    let sc, gal = 0, log = false, va = 0;
-    const atmo = veloU.uCol.value;
-    if (tv < T_ATM || tv >= T_SPAZIO) {
-      sc = spazio;
-      // avvicinamento fino a vedere l'Italia intera, poi il tuffo nell'atmosfera
-      const e = tv >= T_SPAZIO ? 0 : liscio((tv - 4) / (T_ATM - 6.5)), sp = tv >= T_SPAZIO ? tv - VIAGGIO : tv;
-      const tuffo = tv >= T_SPAZIO ? 0 : liscio((tv - T_ATM + 2.5) / 2.5);
-      camV.position.set(0, 0, RG0 + 1.5 + 28.5 * Math.pow(1 - e, 2.2) - 1.2 * tuffo);
-      camV.lookAt(0, e * .9, 0);
-      globoM.rotation.set(ITALIA[0] * DEG * e + .3 * (1 - e), -ITALIA[1] * DEG + (1 - e) * (2.4 - sp * .16), 0);
-      gal = tv >= T_SPAZIO ? liscio((tv - T_SPAZIO) / 3) : 1 - liscio((tv - 8) / 7);
-      if (tv >= T_SPAZIO) { va = 1 - liscio((tv - T_SPAZIO) / 2.5); atmo.setRGB(.01, .01, .03); }
-      else if (tv > T_ATM - 1.6) { va = liscio((tv - T_ATM + 1.6) / 1.6); atmo.setRGB(.62, .78, 1); }
-    } else {
-      sc = terra;
-      log = tv > T_ATTERRA - 2 && tv < T_SALITA + 3;
-      const n = NCH - 1;
-      if (tv < T_ATTERRA) {
-        const k = liscio((tv - T_ATM) / (T_ATTERRA - T_ATM)), kk = 1 - Math.pow(1 - k, 2);
-        _p.set(0, 36, 34).multiplyScalar(1 - kk).add(CC[0]);
-        _q.set(0, -6, -18).multiplyScalar(1 - kk).add(TT[0]);
-        if (tv < T_ATM + 1.6) { va = 1 - liscio((tv - T_ATM) / 1.6); atmo.setRGB(.62, .78, 1); }
-      } else if (tv < T_SALITA) {
-        const q = (tv - T_ATTERRA) / (T_SALITA - T_ATTERRA) * n, i = Math.min(n - 1, Math.floor(q)), f = Math.min(1, q - i);
-        const gg = liscio((f - .3) / .7);
-        _p.copy(CC[i]).lerp(CC[i + 1], gg);
-        _p.y += Math.sin(gg * Math.PI) * 6;
-        _p.x += Math.sin(tv * .55) * .5 * (1 - Math.sin(gg * Math.PI));
-        _q.copy(TT[i]).lerp(TT[i + 1], liscio((f - .22) / .6));
-      } else {
-        const k = liscio((tv - T_SALITA) / (T_SPAZIO - T_SALITA));
-        _p.set(0, k * k * 46, k * 14).add(CC[n]);
-        _q.set(0, k * 70, -k * 10).add(TT[n]);
-        if (tv > T_SPAZIO - 2) { va = liscio((tv - T_SPAZIO + 2) / 2); atmo.setRGB(.01, .01, .03); }
-      }
-      camV.position.copy(_p);
-      camV.lookAt(_q);
+    strade();
+    // la processione, il nick e l'alone di quella di turno
+    oro = gregge(figura(0, PICCOLO ? 1200 : 2800), Math.max(1, ND), [0, 0, 0], 0, 0);
+    const ranghi = box.ranghi || ranghiNick(righe), NA = Math.max(1, ND);
+    const pa = righe.slice(0, ND).map((r, i) => ({g: stellaEstrusa(puntiStella(r.nick, r.ts, ranghi)), m: M4(0, 0, 0, 0, 0, 0, .16, .16, .16), c: [.98, .8, .3], id: i}));
+    const ga = campiona(pa, NA * (PICCOLO ? 260 : 480), {luce: luceFigura, nz: .003, R: caso(1981), ids: true});
+    datiA = new Float32Array(NA * 8);
+    const tx = new THREE.DataTexture(datiA, NA, 2, THREE.RGBAFormat, THREE.FloatType);
+    tx.needsUpdate = true;
+    aureole = new THREE.Points(ga, new THREE.ShaderMaterial({vertexShader: VS_AUREOLA, fragmentShader: FS_PUNTI,
+      uniforms: {uPxW: U.uPxW, uMaxP: U.uMaxP, uT: U.uT, uGira: {value: 1}, uSu: {value: new THREE.Vector3(0, 1.1, 0)}, uDati: {value: tx},
+        uFogC: {value: new THREE.Color().fromArray(NEBBIA[0])}, uFog: {value: new THREE.Vector2().fromArray(NEBBIA_D[0])}}}));
+    aureole.frustumCulled = false;
+    comparse = BESTEMMIE.map(([w, c]) => gregge(parolaPunti(w, c, PICCOLO ? 900 : 2200), NCOMP, [0, 0, 0], 0, 0));
+    const [atl, reg] = atlante(righe.slice(0, ND));
+    regNick = reg;
+    targa = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.ShaderMaterial({vertexShader: VS_TARGA, fragmentShader: FS_TARGA,
+      uniforms: {uAtlas: {value: atl}, uPos: {value: new THREE.Vector3()}, uReg: {value: new THREE.Vector4()}, uLarg: {value: 1}, uH: {value: .3}, uA: {value: 0}},
+      transparent: true, depthWrite: false, depthTest: false}));
+    targa.frustumCulled = false; targa.renderOrder = 20;
+    const bg = new THREE.BufferGeometry();
+    bg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(3), 3));
+    bagliore = new THREE.Points(bg, new THREE.ShaderMaterial({vertexShader: VS_BAGLIORE, fragmentShader: FS_BAGLIORE,
+      uniforms: {uPxW: U.uPxW, uSz: {value: 1}, uA: {value: 0}}, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending}));
+    bagliore.frustumCulled = false; bagliore.renderOrder = 5;
+    const NS = PICCOLO ? 260 : 600, sd = new Float32Array(NS * 3), sf = new Float32Array(NS), sR = caso(66);
+    for (let i = 0; i < NS; i++) {
+      const u = sR() * 2 - 1, a = sR() * 6.2832, r = Math.sqrt(1 - u * u), anello = i % 3 === 0;   // un terzo ad anello, il resto a sfera
+      sd[i * 3] = Math.cos(a) * (anello ? 1 : r); sd[i * 3 + 1] = anello ? (sR() - .5) * .12 : u; sd[i * 3 + 2] = Math.sin(a) * (anello ? 1 : r);
+      sf[i] = sR();
     }
-    veloU.uA.value = va;
-    for (let i = 0; i < galA.length; i++) galA[i][0].value = galA[i][1] * gal;
-    galassia.visible = gal > .01 && fissa < 0;
-    if (registroBox && registroBox.classList.contains("on") !== log) registroBox.classList.toggle("on", log);
-    return sc;
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute("position", new THREE.BufferAttribute(new Float32Array(NS * 3), 3));
+    sg.setAttribute("aDir", new THREE.BufferAttribute(sd, 3));
+    sg.setAttribute("aF", new THREE.BufferAttribute(sf, 1));
+    scoppio = new THREE.Points(sg, new THREE.ShaderMaterial({vertexShader: VS_SCOPPIO, fragmentShader: FS_SCOPPIO,
+      uniforms: {uK: {value: -1}, uSc: {value: 1}, uPxW: U.uPxW, uCol: {value: new THREE.Color(1, .82, .35)}},
+      transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending}));
+    scoppio.frustumCulled = false; scoppio.renderOrder = 21; scoppio.visible = false;
+  }
+  // Roma e la basilica si fanno dopo i primi fotogrammi, per non fermare la
+  // pagina, e i loro shader si compilano subito, non al primo che li usa
+  const MOBILI = () => [sciame, oro, aureole, targa, bagliore, scoppio, ...comparse];
+  function compila(sc) {
+    const vis = scoppio.visible;
+    MOBILI().filter(o => o && o.parent !== sc).forEach(o => sc.add(o));
+    scoppio.visible = true;
+    renderer.compile(sc, camV);
+    scoppio.visible = vis;
+    scenaOra = -1;                             // al prossimo giro rimette tutto nella scena giusta
+  }
+  function romaPronta() { if (!terra) { terra = roma(Math.round(1700000 * SCHERMO)); compila(terra); } return terra; }
+  function basilicaPronta() {
+    if (!chiesaD) {
+      SCRITTA = SCRITTA || tessere(4096, 96, disegnaScritta, 4);
+      CUPOLA = CUPOLA || tessere(2048, 512, disegnaCupola, 6);
+      chiesaD = basilica(Math.round(1300000 * SCHERMO));
+      compila(chiesaD);
+    }
+    return chiesaD;
   }
 
-  // Il registro: per ogni dorata, la comparsa, i colpi della sua storia e la
-  // presa, con le parole che il bot dice in canale (le formule di suore.py).
-  // Ora e canale sono quelli della presa: il data.json non ha l'ora dei
-  // singoli colpi. Mai le chiacchiere, solo comandi e risposte.
+  // Dove sta la camera al secondo `tv` del giro: torna la scena (0 spazio, 1
+  // Roma e San Pietro da fuori, 2 dentro la basilica), in P la posizione e
+  // in Q dove guarda.
+  function posa(tv, P, Q) {
+    if (tv < T_ATM || tv >= T_SPAZIO) {
+      const e = tv >= T_SPAZIO ? 0 : liscio((tv - 4) / (T_ATM - 6.5));
+      const tuffo = tv >= T_SPAZIO ? 0 : liscio((tv - T_ATM + 2.5) / 2.5);
+      P.set(0, 0, RG0 + 1.5 + 28.5 * Math.pow(1 - e, 2.2) - 1.2 * tuffo);
+      Q.set(0, e * .9, 0);
+      return 0;
+    }
+    if (tv < T_GIU) { suCurva(AEREO, (tv - T_ATM) / (T_GIU - T_ATM), P, Q); return 1; }
+    if (tv < T_PORTA) { suCurva(TERRA, (tv - T_GIU) / (T_PORTA - T_GIU), P, Q); return 1; }
+    if (tv < T_LUCE) { suCurva(DENTRO, (tv - T_PORTA) / (T_LUCE - T_PORTA), P, Q); return 2; }
+    if (tv < T_SALITA) {                         // fuori dalla lanterna, attorno alla cupola
+      const k = (tv - T_LUCE) / (T_SALITA - T_LUCE), a = .3 + k * 2.6, r = 4 + 10 * liscio(k);
+      P.set(Math.sin(a) * r, 14.5 + 3 * k, Z_CUP + Math.cos(a) * r);
+      Q.set(0, 9.5 - 1.5 * k, Z_CUP);
+      return 1;
+    }
+    const k = liscio((tv - T_SALITA) / (T_SPAZIO - T_SALITA));
+    P.copy(VFINE); P.y += k * k * 900; P.z -= k * 160;
+    Q.set(0, 8 + k * 1600, Z_CUP - k * 260);
+    return 1;
+  }
+
+  // ---- la processione: un percorso a terra per scena (x, z), e la dorata
+  // i sta a LEAD - (i - cur) * GAP davanti alla camera lungo il percorso:
+  // quelle gia' passate davanti, le prossime dietro, tutte che camminano
+  // verso il portone (fuori) e verso la confessione (dentro), una alla volta.
+  function percorso(pts) {
+    const L = [0];
+    for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    return {pts, L, tot: L[L.length - 1]};
+  }
+  const VIA = percorso([[0, 62], [0, 10], [0, 3.4], [1.6, 0], [0, -3.4], [0, -15.8], [0, -18.25]]);
+  const NAVATA = percorso([[0, 49], [0, 2], [0, -11.5]]);
+  function proietta(pc, x, z) {                  // dove cade (x, z) lungo il percorso, in metri dal suo inizio
+    let best = 1e9, s = 0;
+    for (let i = 1; i < pc.pts.length; i++) {
+      const a = pc.pts[i - 1], b = pc.pts[i], dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz || 1;
+      const u = Math.min(1, Math.max(0, ((x - a[0]) * dx + (z - a[1]) * dz) / l2)), ex = a[0] + u * dx - x, ez = a[1] + u * dz - z, d = ex * ex + ez * ez;
+      if (d < best) { best = d; s = pc.L[i - 1] + u * (pc.L[i] - pc.L[i - 1]); }
+    }
+    return s;
+  }
+  function lungo(pc, s, P, D) {                  // il punto a s lungo il percorso, e la direzione
+    let i = 1;
+    while (i < pc.pts.length - 1 && s > pc.L[i]) i++;
+    const a = pc.pts[i - 1], b = pc.pts[i], l = pc.L[i] - pc.L[i - 1] || 1, u = (s - pc.L[i - 1]) / l;
+    P.set(a[0] + (b[0] - a[0]) * u, 0, a[1] + (b[1] - a[1]) * u);
+    D.set((b[0] - a[0]) / l, 0, (b[1] - a[1]) / l);
+  }
+
+  let LOG = null, logL = -1, logRighe = [];
+  const NV = 12;
+  function curDi(tv) {
+    const A = LOG.a;
+    if (tv <= A[0]) return 0;
+    let lo = 0, hi2 = A.length - 1;
+    if (tv >= A[hi2]) return hi2;
+    while (hi2 - lo > 1) { const m = (lo + hi2) >> 1; if (A[m] <= tv) lo = m; else hi2 = m; }
+    return lo + (tv - A[lo]) / (A[lo + 1] - A[lo]);
+  }
+
+  // Il registro: per ogni dorata, la comparsa, i colpi della sua storia (gli
+  // ultimi, se sono tanti) e la presa, comando e risposta del bot su una riga
+  // (le formule di suore.py). Le righe arrivano in cima una alla volta, due al
+  // secondo; ogni comando fa il suo colpo nella demo. Ora e canale sono quelli della
+  // presa: il data.json non ha l'ora dei singoli colpi.
   function registro(rr) {
-    const B = "Convento", out = [];
+    const B = "Convento", righe2 = [];
     const TESTE = ["☩", "✠", "✟"], GRIDA = ["AVE MARIA GRATIA PLENA!", "ALLELUIA!", "GLORIA IN EXCELSIS!"];
     const INCEPPI = ["Il fucile si e' inceppato! Riprova fra 7 secondi.", "Ti si e' inceppato il fucile, porco dio. Riprova fra 7 secondi."];
     const NO = ["Chi l'avrebbe detto che le suore fossero cosi' schizzinose? Riprova fra 7 secondi.",
       "La suora ha detto no. Magari corrompila con una pizza, alle suore piace la pizza no? Riprova fra 7 secondi.",
       "La suora ti ha lanciato un'occhiataccia e ha tirato dritto. Riprova fra 7 secondi."];
+    const COD = {bang: 0, bef: 1, jam: 2, nope: 3, boom: 4};
     const esc = s => String(s).replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"})[c]);
     const vite = v => `le ${v === 1 ? "resta" : "restano"} ${v} ${v === 1 ? "vita" : "vite"}`;
-    rr.slice().sort((a, b) => a.ts - b.ts).forEach((r, i) => {
+    rr.forEach((r, i) => {
       const ora = new Date(r.ts * 1000).toLocaleTimeString("it-IT", {timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit"});
-      const chan = esc(r.scope.split("/")[1] || "");
-      const di = (chi, testo, cls) => out.push(`<u>${ora} ${chan}</u> &lt;${chi === B ? "<b>" + B + "</b>" : esc(chi)}&gt; `
-        + (cls ? `<${cls}>${esc(testo)}</${cls}>` : esc(testo)));
-      di(B, `◦◦•◦◦•◦◦\\_${TESTE[i % 3]}< ${GRIDA[(i >> 1) % 3]}`, "b");
-      (r.storia || []).forEach(([n, e, v], j) => {
-        if (e === "bang" || e === "bef") {
-          di(n, "." + e);
-          di(B, `${n}: ${e === "bang" ? "Il colpo l'ha presa in pieno" : "Ha quasi ceduto"}, ma la suora dorata regge ancora: ${vite(v)}.`);
-        } else if (e === "jam") { di(n, ".bang"); di(B, `${n}: ${INCEPPI[(i + j) % 2]}`); }
-        else if (e === "nope") { di(n, ".bef"); di(B, `${n}: ${NO[(i + j) % 3]}`); }
-        else if (e === "boom") { di(n, ".bang"); di(B, `${n}: l'RPG ti e' esploso in faccia, porco dio. Sei fuori per questa suora, riprova fra 7 secondi.`); }
+      const testa = `<u>${ora} ${esc(r.scope.split("/")[1] || "")}</u> `;
+      const di = (chi, testo, cls) => `&lt;${chi === B ? "<b>" + B + "</b>" : "<s>" + esc(chi) + "</s>"}&gt; ` + (cls ? `<${cls}>${esc(testo)}</${cls}>` : esc(testo));
+      const ln = [[testa + di(B, `◦◦•◦◦•◦◦\\_${TESTE[i % 3]}< ${GRIDA[(i >> 1) % 3]}`, "b"), -1]];
+      let st = r.storia || [];
+      if (st.length > 3) { ln.push([testa + `<u>… e altri ${st.length - 2} colpi …</u>`, -1]); st = st.slice(-2); }
+      st.forEach(([n, e, v], j) => {
+        const cmd = e === "jam" || e === "boom" ? ".bang" : e === "nope" ? ".bef" : "." + e;
+        const ris = e === "bang" || e === "bef" ? `${n}: ${e === "bang" ? "Il colpo l'ha presa in pieno" : "Ha quasi ceduto"}, ma la suora dorata regge ancora: ${vite(v)}.`
+          : e === "jam" ? `${n}: ${INCEPPI[(i + j) % 2]}` : e === "nope" ? `${n}: ${NO[(i + j) % 3]}`
+          : `${n}: l'RPG ti e' esploso in faccia, porco dio. Sei fuori per questa suora, riprova fra 7 secondi.`;
+        ln.push([testa + di(n, cmd) + "  " + di(B, ris), COD[e] === undefined ? 3 : COD[e]]);
       });
-      di(r.nick, "." + (r.verbo === "bef" ? "bef" : "bang"));
-      di(B, r.verbo === "bef" ? `${r.nick} ha fatto amicizia con la SUORA DORATA!` : `${r.nick} ha steso la SUORA DORATA!${r.rpg ? " Con l'RPG." : ""}`,
-        r.verbo === "bef" ? "i" : "b");
+      ln.push([testa + di(r.nick, "." + (r.verbo === "bef" ? "bef" : "bang")) + "  " + di(B, r.verbo === "bef"
+        ? `${r.nick} ha fatto amicizia con la SUORA DORATA!` : `${r.nick} ha steso la SUORA DORATA!${r.rpg ? " Con l'RPG." : ""}`,
+        r.verbo === "bef" ? "i" : "b"), r.verbo === "bef" ? 7 : r.rpg ? 6 : 5]);
+      righe2.push(ln);
     });
-    const b = el("div", "registro"), pre = document.createElement("pre");
-    pre.innerHTML = out.join("\n") + "\n" + out.join("\n");
-    pre.style.setProperty("--dur", Math.max(40, out.length * 1.4) + "s");
+    // due righe al secondo, sempre (round 7, puppy): il registro ha il suo giro,
+    // e la dorata di turno e' quella della riga in cima
+    const a = [], h = [], at = [], nn = [], kk = [];
+    righe2.forEach((ln, i) => { a.push(.8 + h.length * .5); ln.forEach(([html, k]) => { at.push(.8 + h.length * .5); h.push(html); nn.push(i); kk.push(k); }); });
+    a.push(.8 + h.length * .5);
+    LOG = {a: Float32Array.from(a), at: Float32Array.from(at), h, n: Int16Array.from(nn), k: Int8Array.from(kk), T: .8 + h.length * .5 + 3};
+    const b = el("div", "registro"), lista = el("div", "righe");
+    for (let i = 0; i < NV; i++) logRighe.push(lista.appendChild(el("div")));
     b.setAttribute("aria-hidden", "true");
-    b.appendChild(pre);
+    b.appendChild(lista);
+    b.lista = lista;
     return b;
+  }
+  function aggiornaRegistro(tv, vivo) {
+    if (!LOG || !LOG.h.length) return;
+    let L = logL;
+    if (L >= 0 && LOG.at[L] > tv) L = -1;        // ricominciato il giro
+    const da = L;
+    while (L + 1 < LOG.h.length && LOG.at[L + 1] <= tv) {
+      L++;
+      if (vivo && L - da <= 3 && LOG.k[L] >= 0) colpo(LOG.k[L], -1);
+    }
+    if (L === logL) return;
+    const passo1 = L === logL + 1, nuova = L >= 0 && (logL < 0 || LOG.n[L] !== LOG.n[logL]);
+    logL = L;
+    for (let i = 0; i < NV; i++) logRighe[i].innerHTML = L - i >= 0 ? LOG.h[L - i] : "";
+    if (passo1 && vivo && registroBox.lista.animate)
+      registroBox.lista.animate([{transform: "translateY(-1.4em)"}, {transform: "none"}], {duration: 280, easing: "ease-out"});
+    if (nuova && vivo) cambio(LOG.n[L]);
+  }
+
+  // Il cambio della dorata di turno (round 6, puppy: «piu' spettacolo»):
+  // quando in cima al registro arriva la prima riga di una dorata nuova, la
+  // riga sbatte giu' in grande, lampo nel colore della presa, la camera
+  // prende il colpo (niente zoom, round 7), lo sciame esplode, e dalla
+  // dorata parte una raffica di stelline mentre l'aureola si gonfia.
+  let cambioT = -99;
+  function cambio(n) {
+    cambioT = t;
+    const rosaN = righe[n] && righe[n].verbo === "bef", m = piano ? .35 : 1;
+    flash = Math.min(1.5, flash + 1.2 * m); boom = Math.min(2.4, boom + 1.1 * m);
+    U.uFlashCol.value.setRGB(...(rosaN ? [1, .55, .78] : [1, .86, .45]));
+    if (!piano) { kick = 1.3; kx = Math.random() - .5; ky = Math.random() - .5; }
+    if (rosaN) rosa = 1.4;
+    scoppio.material.uniforms.uCol.value.setRGB(...(rosaN ? [1, .5, .75] : [1, .82, .35]));
+    const r0 = logRighe[0];
+    if (r0.animate) r0.animate([
+      {transform: "scale(1.9) translateY(-.2em)", filter: "brightness(2.6)", opacity: 0},
+      {transform: "scale(.94)", filter: "brightness(1.8)", opacity: 1, offset: .35},
+      {transform: "scale(1.04) translateX(.15em)", offset: .55},
+      {transform: "none", filter: "none"}], {duration: piano ? 1 : 700, easing: "cubic-bezier(.2, .9, .3, 1.2)"});
+  }
+
+  const SCALE = [.42, .32, 1.7], LATO = [1.5, .18, .55];
+  // le dorate gia' arrivate in fondo alla navata, in ginocchio attorno alla confessione
+  function posto(k, P) {
+    const fila = Math.floor(k / 22), j = k % 22, r = 8.5 + fila * 1.7, a = -1.75 + (j + .5) / 22 * 3.5;
+    P.set(Math.sin(a) * r, 0, CROCIERA + Math.cos(a) * r);
+  }
+  function processione(tl, s, camP, camD) {
+    const cur = curDi(tl), I = oro.geometry.attributes.aI, J = oro.geometry.attributes.aJ;
+    const hiN = logL >= 0 ? LOG.n[logL] : 0;
+    const sc = SCALE[s], gira = pezzo === 2 && t - pezzoT < DURA ? .45 : 0;
+    const dc = t - cambioT, botta = dc >= 0 ? Math.exp(-dc * 2.6) : 0;
+    _u.set(camD.z, 0, -camD.x).normalize();      // a destra della camera, in piano
+    const pc = s === 1 ? VIA : NAVATA, sCam = s ? proietta(pc, camP.x, camP.z) : 0;
+    // davanti alla camera, ma la dorata di turno passa il portone mentre il registro la racconta
+    const lead = s === 1 ? Math.max(.25, Math.min(LEAD[1], pc.tot - sCam - GAP[1] * .4)) : LEAD[s];
+    let vis = 0;
+    for (let i = 0; i < ND; i++) {
+      const lat = (i % 2 ? 1 : -1) * (.45 + .5 * hs3(i, 1, 2)) * LATO[s];
+      let f = 1, yaw = 0;
+      if (s === 0) {
+        const dl = LEAD[0] + (i - cur) * GAP[0];
+        f = liscio((dl + 1.2) / .7) * liscio((9 - dl) / 1.5);
+        _a.copy(camP).addScaledVector(camD, Math.min(2.6 + dl * 2.3, Math.max(.8, camP.length() - RG0 - .4))).addScaledVector(_u, lat).y += (hs3(i, 3, 4) - .5) * 1.4;
+        yaw = Math.atan2(-camD.x, -camD.z);
+      } else {
+        const si = sCam + lead - (i - cur) * GAP[s];
+        if (s === 1 && (si > pc.tot || si < -12)) f = 0;          // gia' dentro, o ancora lontane
+        else if (s === 2 && si < 0) f = 0;                         // ancora fuori
+        else if (s === 2 && si > pc.tot) { posto(Math.round((si - pc.tot) / GAP[2]), _a); yaw = Math.atan2(-_a.x, CROCIERA - _a.z); }
+        else {
+          lungo(pc, si, _a, _b);
+          _a.x += _b.z * lat; _a.z -= _b.x * lat;
+          _a.y = Math.abs(Math.sin(t * 5 + i)) * .03 * sc;
+          yaw = Math.atan2(_b.x, _b.z);
+        }
+        if (f && s === 1) f = Math.min(1, Math.max(0, (pc.tot - si) / (GAP[1] * .4)));      // svanisce passando il portone
+        if (f && s === 2) f = Math.min(1, si / 1.5);
+      }
+      const acc = i === hiN ? 1 : gira, k = f > 0 ? sc * f : 0, o4 = i * 4, A = I.array, C = J.array, D = datiA, o5 = o4 + ND * 4;
+      A[o4] = D[o4] = _a.x; A[o4 + 1] = D[o4 + 1] = _a.y; A[o4 + 2] = D[o4 + 2] = _a.z; A[o4 + 3] = D[o4 + 3] = k;
+      C[o4] = D[o5] = yaw; C[o4 + 1] = acc + (i === hiN ? botta * 1.4 : 0); D[o5 + 1] = acc + (i === hiN ? nova * 1.5 + 3.2 * botta : 0); C[o4 + 2] = 0; C[o4 + 3] = 0;
+      D[o5 + 2] = righe[i].verbo === "bef" ? 1 : 0; D[o5 + 3] = i * .37;
+      if (i === hiN && f > .05) {
+        vis = f;
+        bagliore.position.copy(_a).y += sc * .62;
+        scoppio.position.copy(bagliore.position);
+        targa.material.uniforms.uPos.value.copy(_a).y += sc * 1.75;
+      }
+    }
+    I.needsUpdate = J.needsUpdate = aureole.material.uniforms.uDati.value.needsUpdate = true;
+    const tu = targa.material.uniforms, q = regNick[righe[hiN] && righe[hiN].nick];
+    tu.uA.value = q ? vis : 0;
+    if (q) {
+      tu.uReg.value.set(q[0], q[1], q[2], q[3]); tu.uLarg.value = q[4];
+      tu.uH.value = Math.max(sc * .3, tu.uPos.value.distanceTo(camP) * .045);
+    }
+    bagliore.material.uniforms.uSz.value = sc * (2.6 + 7 * botta);
+    bagliore.material.uniforms.uA.value = vis * (.5 + .15 * Math.sin(t * 7) + .9 * botta);
+    scoppio.material.uniforms.uK.value = dc >= 0 && dc < 1.6 ? dc / 1.6 : -1;
+    scoppio.material.uniforms.uSc.value = sc * 3.2;
+    scoppio.visible = vis > 0 && dc >= 0 && dc < 1.6;
+    evidenzia(hiN);
+  }
+  // suore e chierichetti che passano lungo la navata e davanti alla confessione
+  function viandanti() {
+    const I = suoreN.geometry.attributes.aI, J = suoreN.geometry.attributes.aJ, n = PICCOLO ? 3 : 6;
+    for (let k = 0; k < 6; k++) {
+      const ph = k * 1.9, z = 22 + 22 * Math.sin(t * .045 + ph), v = Math.cos(t * .045 + ph), x = (k % 2 ? 1 : -1) * (9 + (k >> 1) * .9), o4 = k * 4;
+      I.array[o4] = x; I.array[o4 + 1] = Math.abs(Math.sin(t * 4.2 + k)) * .02; I.array[o4 + 2] = z; I.array[o4 + 3] = k < n ? 1.62 : 0;
+      J.array[o4] = v > 0 ? 0 : Math.PI;
+    }
+    const C = chierici.geometry.attributes.aI, D = chierici.geometry.attributes.aJ;
+    for (let k = 0; k < 4; k++) {
+      let x, z, yaw;
+      if (k < 2) { const a = t * .07 + k * Math.PI; x = 10 * Math.sin(a); z = CROCIERA + 10.5 + k * .6; yaw = Math.cos(a) > 0 ? Math.PI / 2 : -Math.PI / 2; }
+      else { const a = t * .05 + k * 2.3; z = 22 + 20 * Math.sin(a); x = (k % 2 ? 1 : -1) * 10.8; yaw = Math.cos(a) > 0 ? 0 : Math.PI; }
+      const o4 = k * 4;
+      C.array[o4] = x; C.array[o4 + 1] = Math.abs(Math.sin(t * 5 + k)) * .02; C.array[o4 + 2] = z; C.array[o4 + 3] = (k < 2 || !PICCOLO) ? 1.32 : 0;
+      D.array[o4] = yaw;
+    }
+    I.needsUpdate = J.needsUpdate = C.needsUpdate = D.needsUpdate = true;
+  }
+
+  // La camera dello sfondo al secondo `tv`: torna la scena da disegnare, e
+  // intanto regola velo, nebbia, montaggio, galassia, globo, sciame,
+  // processione e comparse. `tl` e' il secondo del registro, che ha il suo giro.
+  const _fog = [0, 0];
+  function viaggio(tv, tl, dt) {
+    if (tv >= T_ATM - 6 || tv < 0) romaPronta();
+    const s = posa(tv, _p, _q);
+    if (s === 2) basilicaPronta();
+    let gal = 0, va = 0;
+    const atmo = veloU.uCol.value;
+    if (s === 0) {
+      const e = tv >= T_SPAZIO ? 0 : liscio((tv - 4) / (T_ATM - 6.5)), sp = tv >= T_SPAZIO ? tv - VIAGGIO : tv;
+      globoM.rotation.set(ITALIA[0] * DEG * e + .3 * (1 - e), -ITALIA[1] * DEG + (1 - e) * (2.4 - sp * .16), 0);
+      gal = tv >= T_SPAZIO ? liscio((tv - T_SPAZIO) / 3) : 1 - liscio((tv - 8) / 7);
+      if (tv >= T_SPAZIO) { va = 1 - liscio((tv - T_SPAZIO) / 2.5); atmo.setRGB(.01, .01, .03); }
+      else if (tv > T_ATM - 1.6) { va = liscio((tv - T_ATM + 1.6) / 1.6); atmo.setRGB(.62, .78, 1); }
+    } else if (tv < T_GIU) {
+      if (tv < T_ATM + 1.8) { va = 1 - liscio((tv - T_ATM) / 1.8); atmo.setRGB(.62, .78, 1); }
+    } else if (tv < T_PORTA) {
+      if (tv > T_PORTA - .7) { va = liscio((tv - T_PORTA + .7) / .7); atmo.setRGB(.012, .008, .005); }
+    } else if (tv < T_LUCE) {
+      if (tv < T_PORTA + .9) { va = 1 - liscio((tv - T_PORTA) / .9); atmo.setRGB(.012, .008, .005); }
+      else if (tv > T_LUCE - 3) { va = liscio((tv - T_LUCE + 3) / 3); atmo.setRGB(1, .96, .86); }
+    } else if (tv < T_LUCE + 2) { va = 1 - liscio((tv - T_LUCE) / 2); atmo.setRGB(1, .96, .86); }
+    else if (tv > T_SPAZIO - 2) { va = liscio((tv - T_SPAZIO + 2) / 2); atmo.setRGB(.01, .01, .03); }
+    camV.position.copy(_p);
+    camV.lookAt(_q);
+    const kk = kick * .09;
+    if (kk) { camV.translateX(kx * kk * SCALE[s]); camV.translateY(ky * kk * SCALE[s]); }
+    // vicino e lontano secondo la quota: da tre chilometri si vede tutta Roma
+    const alto = s === 1 ? Math.max(0, _p.y) : 0, near = s === 0 ? .05 : s === 2 ? .1 : Math.min(4, Math.max(.03, alto * .008)), far = s === 1 ? 900 + alto * 2 : 400;
+    if (camV.near !== near || camV.far !== far) { camV.near = near; camV.far = far; camV.updateProjectionMatrix(); }
+    camV.updateMatrixWorld();
+    _d.subVectors(_q, _p).normalize();
+    veloU.uA.value = va;
+    for (let i = 0; i < galA.length; i++) galA[i][0].value = galA[i][1] * gal;
+    galassia.visible = gal > .01;
+    const sc = s === 0 ? spazio : s === 1 ? terra : chiesaD;
+    if (s === 0) U.uSun.value.set(-5, 6, 10).normalize().transformDirection(camV.matrixWorldInverse);
+    // fuori la nebbia segue la quota; San Pietro si monta da punti che cadono
+    // dal cielo mentre si scende
+    if (s === 1) {
+      _fog[0] = 40 + alto * 1.2; _fog[1] = 300 + alto * 2.6;
+      [matT, matV].forEach(m => m.uniforms.uFog.value.fromArray(_fog));
+      matV.uniforms.uMont.value = tv < T_GIU ? 1 - liscio((tv - T_ATM - 3) / (T_GIU - T_ATM - 7)) : 0;
+    }
+    if (s === 2) viandanti();
+    // lo sciame: sopra Roma dallo spazio, sopra la cupola fuori, sotto la cupola dentro
+    let sS;
+    if (s === 0) { _e.set(Math.sin(ITALIA[1] * DEG) * Math.cos(ITALIA[0] * DEG), Math.sin(ITALIA[0] * DEG), Math.cos(ITALIA[1] * DEG) * Math.cos(ITALIA[0] * DEG)).multiplyScalar(RG0 + 1.4).applyEuler(globoM.rotation); sS = .62; }
+    else if (s === 2) { _e.set(0, 42, CROCIERA); sS = 9; }
+    else if (tv < T_GIU) { _e.set(0, 30, Z_CUP + 6); sS = 9; }
+    else { _e.set(0, 19, Z_CUP + 4); sS = 4.5; }
+    if (s !== scenaOra || dt <= 0) { ancora.copy(_e); scalaS = sS; }
+    else { const w = 1 - Math.exp(-dt * 1.2); ancora.lerp(_e, w); scalaS += (sS - scalaS) * w; }
+    if (s !== scenaOra) {
+      sc.add(...MOBILI());
+      [oro, aureole, ...comparse].forEach(m => { m.material.uniforms.uFogC.value.fromArray(NEBBIA[s]); m.material.uniforms.uFog.value.fromArray(NEBBIA_D[s]); });
+      scenaOra = s;
+    }
+    if (s === 1) [oro, aureole, ...comparse].forEach(m => m.material.uniforms.uFog.value.fromArray(_fog));
+    sciame.position.copy(ancora);
+    sciame.scale.setScalar(scalaS);
+    sciame.material.uniforms.uScala.value = scalaS * .5;
+    sciame.quaternion.copy(camV.quaternion);
+    _eul.set(Math.sin(t * .27) * .25, Math.sin(t * .35) * .75, 0);
+    sciame.quaternion.multiply(_qq.setFromEuler(_eul));
+    processione(tl, s, _p, _d);
+    comparseInScena(tv, s, _p, _d);
+    if (registroBox) registroBox.classList.add("on");
+    return sc;
   }
 
   function avvia() {
@@ -2298,21 +3445,26 @@ setInterval(() => {
     cv.setAttribute("aria-hidden", "true");
     try {
       renderer = new THREE.WebGLRenderer({canvas: cv, alpha: true, antialias: false,
-        stencil: false, powerPreference: "low-power"});
+        stencil: false, powerPreference: "high-performance"});
     } catch (e) { return false; }
     renderer.setPixelRatio(DPR);
     renderer.setClearColor(0x000000, 0);
+    // quanti punti: in proporzione ai pixel del palco, fra un terzo e poco piu' del pieno
+    SCHERMO = Math.min(1.15, Math.max(.3, palco.clientWidth * palco.clientHeight * DPR * DPR / (1600 * 900)));
 
     U = {uT: {value: t}, uR: {value: new THREE.Vector2(1, 1)}, uD: {value: DPR},
       uPx: {value: 1}, uMax: {value: 44 * DPR}, uFlash: {value: 0}, uRosa: {value: 0},
       uBoom: {value: 0}, uFlashCol: {value: new THREE.Color(1, .9, .6)},
-      uPxG: {value: 1}, uMaxG: {value: 24 * DPR}};
+      uPxG: {value: 1}, uMaxG: {value: 24 * DPR}, uPxW: {value: 1}, uMaxP: {value: 18 * DPR}, uSun: {value: new THREE.Vector3(0, 0, 1)}};
     scena = new THREE.Scene();
     cam = new THREE.PerspectiveCamera(FOV, 1, .1, 80);
 
     galassia = galassiaVera();
     scena.add(galassia);
-    _p = new THREE.Vector3(); _q = new THREE.Vector3();
+    _p = new THREE.Vector3(); _q = new THREE.Vector3(); _a = new THREE.Vector3(); _b = new THREE.Vector3();
+    _d = new THREE.Vector3(); _e = new THREE.Vector3(); _u = new THREE.Vector3(); ancora = new THREE.Vector3();
+    _qq = new THREE.Quaternion(); _eul = new THREE.Euler();
+    dummy = new THREE.Object3D();
     costruisciViaggio();
     renderer.autoClear = false;
 
@@ -2325,11 +3477,10 @@ setInterval(() => {
     g.setAttribute("aA", aA);
     g.setAttribute("aFase", new THREE.BufferAttribute(fase, 1));
     sciame = new THREE.Points(g, new THREE.ShaderMaterial({vertexShader: VS_SCIAME, fragmentShader: FS_STELLINA,
-      uniforms: {uT: U.uT, uPx: U.uPx, uMax: U.uMax, uBoom: U.uBoom, uFlash: U.uFlash, uRosa: U.uRosa, uK: {value: 0}},
+      uniforms: {uT: U.uT, uPx: U.uPx, uMax: U.uMax, uBoom: U.uBoom, uFlash: U.uFlash, uRosa: U.uRosa, uK: {value: 0}, uScala: {value: 1}},
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending}));
     sciame.frustumCulled = false;
-    sciame.scale.setScalar(SCALA);
-    scena.add(sciame);
+    sciame.renderOrder = 4;
 
     const tw = new Float32Array(NW * 3), tf = new Float32Array(NW);
     for (let i = 0; i < NW; i++) {
@@ -2340,54 +3491,12 @@ setInterval(() => {
     const gt = new THREE.BufferGeometry();
     gt.setAttribute("position", new THREE.BufferAttribute(tw, 3));
     gt.setAttribute("aFase", new THREE.BufferAttribute(tf, 1));
-    const tunnel = new THREE.Points(gt, new THREE.ShaderMaterial({vertexShader: VS_TUNNEL, fragmentShader: FS_STELLINA,
+    tunnel = new THREE.Points(gt, new THREE.ShaderMaterial({vertexShader: VS_TUNNEL, fragmentShader: FS_STELLINA,
       uniforms: {uT: U.uT, uPx: U.uPx, uMax: U.uMax, uRosa: U.uRosa},
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending}));
     tunnel.frustumCulled = false;
     tunnel.renderOrder = -5;
     scena.add(tunnel);
-
-    // le dorate su un guscio di Fibonacci; ognuna un po' schiacciata a
-    // modo suo, che le stelle fatte a mano non sono tutte uguali
-    dummy = new THREE.Object3D();
-    const n1 = Math.max(1, ND), R = caso(7);
-    base = new Float32Array(n1 * 3); centri = new Float32Array(n1 * 3); anis = new Float32Array(n1 * 2);
-    for (let i = 0; i < ND; i++) {
-      const y = 1 - 2 * (i + .5) / ND, r = Math.sqrt(1 - y * y), a = i * 2.39996;
-      base[i * 3] = Math.cos(a) * r * RS; base[i * 3 + 1] = y * RS * .8; base[i * 3 + 2] = Math.sin(a) * r * RS;
-      anis[i * 2] = .82 + R() * .36; anis[i * 2 + 1] = .82 + R() * .36;
-    }
-    dorate = new THREE.InstancedMesh(stellaEstrusa(), new THREE.MeshPhongMaterial({color: 0xffffff,
-      specular: 0xfff2c0, shininess: 70, flatShading: true, emissive: 0x2a1600}), n1);
-    dorate.count = ND;
-    dorate.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    const giallo = new THREE.Color(0xf5cf3d), rosaC = new THREE.Color(0xe87ba4);
-    for (let i = 0; i < ND; i++) dorate.setColorAt(i, righe[i].verbo === "bef" ? rosaC : giallo);
-    dorate.frustumCulled = false;
-    scena.add(dorate);
-
-    const [atl, reg] = atlante(righe.slice(0, ND));
-    const pg = new THREE.PlaneGeometry(1, 1), ig = new THREE.InstancedBufferGeometry();
-    ig.index = pg.index;
-    ig.setAttribute("position", pg.getAttribute("position"));
-    const aReg = new Float32Array(n1 * 4), aLarg = new Float32Array(n1), aIdx = new Float32Array(n1);
-    for (let i = 0; i < ND; i++) {
-      const q = reg[righe[i].nick] || [0, 0, 0, 0, 0];
-      aReg.set(q.slice(0, 4), i * 4); aLarg[i] = q[4] * LH; aIdx[i] = i;
-    }
-    const aC = new THREE.InstancedBufferAttribute(centri, 3);
-    aC.setUsage(THREE.DynamicDrawUsage);
-    ig.setAttribute("aCentro", aC);
-    ig.setAttribute("aReg", new THREE.InstancedBufferAttribute(aReg, 4));
-    ig.setAttribute("aLarg", new THREE.InstancedBufferAttribute(aLarg, 1));
-    ig.setAttribute("aIdx", new THREE.InstancedBufferAttribute(aIdx, 1));
-    ig.instanceCount = ND;
-    nomi = new THREE.Mesh(ig, new THREE.ShaderMaterial({vertexShader: VS_NOMI, fragmentShader: FS_NOMI,
-      uniforms: {uAtlas: {value: atl}, uHi: {value: -1}, uLH: {value: LH}, uRS: {value: RS}},
-      transparent: true, depthWrite: false, depthTest: false}));
-    nomi.frustumCulled = false;
-    nomi.renderOrder = 8;
-    scena.add(nomi);
 
     croci = new THREE.InstancedMesh(croceConSuora(), new THREE.MeshPhongMaterial({vertexColors: true,
       flatShading: true, shininess: 80, specular: 0x777766}), NC);
@@ -2404,13 +3513,13 @@ setInterval(() => {
     luce.position.set(3, 4, 5);
     scena.add(luce, new THREE.AmbientLight(0xffffff, .8));
 
-    scena.add(pieno(FS_COPPER, {uR: U.uR, uT: U.uT, uD: U.uD, uFlash: U.uFlash, uFlashCol: U.uFlashCol}, .9999, -10, true));
+    scena.add(pieno(FS_LAMPO, {uFlash: U.uFlash, uFlashCol: U.uFlashCol}, .9999, -10, true));
 
     // le due righe di scroller: sopra il keygen, sotto i titoli di coda,
     // ogni giocatore nel suo colore
     const sep = ["   ***   ", "oro"];
     const keygen = [["      *** SPARASUORE KEYGEN v6.66 *** CRACKED BY IL CONVENTO *** " + ND
-      + " DORATE IN BACHECA, PER NON DIMENTICARE *** .BANG PER STENDERLE, .BEF PER CONVERTIRLE *** "
+      + " DORATE IN PROCESSIONE FINO A SAN PIETRO, PER NON DIMENTICARE *** .BANG PER STENDERLE, .BEF PER CONVERTIRLE *** "
       + "GREETZ TO #SNIFFO #SBIFFO #CYBERNET E A TUTTE LE SUORE CADUTE *** CIAO MAMMA ***", "oro"]];
     const titoli = [["      *** TITOLI DI CODA ***   ", "oro"]];
     gioc.forEach(s => { titoli.push([s.riga.toUpperCase(), s.rosa ? "rosa" : "giallo"]); titoli.push(sep); });
@@ -2428,35 +3537,40 @@ setInterval(() => {
     cartello.append(cartA, cartB);
     palco.appendChild(cartello);
 
-    battute(righe.slice(0, ND));
     stelleDom = [...box.querySelectorAll(".stelle span")];
     document.addEventListener("suore:sparo", () => { liveBang = Math.min(liveBang + 1, 12); });
     document.addEventListener("suore:spari", e => {
       liveBang = Math.min(liveBang + (e.detail.bang | 0), 20);
       liveBef = Math.min(liveBef + (e.detail.bef | 0), 20);
     });
+    registroBox = registro(righe.slice(0, ND));
     // `#forma=N` ferma lo sciame sulla forma N; `#viaggio=S` ferma lo
     // sfondo al secondo S del giro e lo mostra da solo (per guardarli e fotografarli)
     const leggiFissa = () => {
       const m = /[#&]forma=(\d+)/.exec(location.hash), v = /[#&]viaggio=([\d.]+)/.exec(location.hash);
       fissa = m ? +m[1] % F.length : -1; forma = -1;
       viaggioFisso = v ? +v[1] % VIAGGIO : -1;
+      if (viaggioFisso >= 0) { romaPronta(); basilicaPronta(); }
+      scenaOra = -1;
       if (!gira && renderer) disegna(0);
     };
     window.addEventListener("hashchange", leggiFissa);
-    leggiFissa();
 
     cv.addEventListener("webglcontextlost", e => { e.preventDefault(); ferma(); renderer = null; });
     box.classList.add("demo");
     palco.insertBefore(cv, palco.firstChild);
-    registroBox = registro(righe);
     cv.after(registroBox);
+    leggiFissa();
     new ResizeObserver(misura).observe(cv);
     new IntersectionObserver(v => { inVista = v[v.length - 1].isIntersecting; decidi(); }).observe(palco);
     document.addEventListener("visibilitychange", decidi);
     if (mq && mq.addEventListener) mq.addEventListener("change", () => { piano = mq.matches; });
     misura();
     decidi();
+    compila(spazio);
+    // Roma e la basilica dopo i primi fotogrammi; le tessere satellitari quando arrivano
+    satelliti();
+    setTimeout(() => { romaPronta(); setTimeout(basilicaPronta, 400); }, 1500);
     return true;
   }
 
@@ -2472,25 +3586,23 @@ setInterval(() => {
     cam.updateProjectionMatrix();
     U.uPx.value = .15 * U.uR.value.y / (2 * tg);
     U.uPxG.value = .05 * U.uR.value.y / (2 * tg);
+    U.uPxW.value = U.uR.value.y / (2 * tg);
     if (!gira) disegna(0);
   }
 
   function disegna(dt) {
     const fermo = fissa >= 0;
+    const tv = viaggioFisso >= 0 ? viaggioFisso : fermo ? 0 : ((t - 7.3) % VIAGGIO + VIAGGIO) % VIAGGIO;
+    const tl = !LOG ? 0 : viaggioFisso >= 0 ? viaggioFisso % LOG.T : ((t - 7.3) % LOG.T + LOG.T) % LOG.T;
     if (dt > 0 && !fermo) {
       // il momento importante, a turno
       if (t >= prossimoPezzo) { momento(quale++ % 3); prossimoPezzo = t + OGNI; }
-      // le battute, ma non durante la supernova
-      if (evK && evK.length && !(pezzo === 1 && t - pezzoT < DURA) && t >= prossimo) {
-        colpo(evK[ev], evD[ev]);
-        prossimo = t + evP[ev];
-        ev = (ev + 1) % evK.length;
-      }
       if ((liveBang || liveBef) && t >= prossimoLive) {
         if (liveBef) { liveBef--; colpo(1, -1); } else { liveBang--; colpo(0, -1); }
         prossimoLive = t + .22;
       }
     }
+    if (!fermo) aggiornaRegistro(tl, dt > 0 && viaggioFisso < 0);
     flash *= Math.exp(-dt * 4.5); boom *= Math.exp(-dt * 3); rosa *= Math.exp(-dt * 2);
     kick *= Math.exp(-dt * 9); nova *= Math.exp(-dt * .45);
     U.uFlash.value = flash; U.uRosa.value = rosa;
@@ -2505,10 +3617,7 @@ setInterval(() => {
       aDa.array.set(F[n % F.length]); aDa.needsUpdate = true;
       aA.array.set(F[(n + 1) % F.length]); aA.needsUpdate = true;
     }
-    sciame.material.uniforms.uK.value = fermo ? 0 : Math.min(1, Math.max(0, ((fase % 1) * PERIODO - 4.5) / 2.5));
-    // dondola invece di girare: le forme piatte si leggono sempre
-    if (fermo) sciame.rotation.set(0, 0, 0);
-    else sciame.rotation.set(Math.sin(t * .27) * .25, Math.sin(t * .35) * .75, 0);
+    sciame.material.uniforms.uK.value = fermo ? 0 : Math.min(1, Math.max(0, ((fase % 1) * PERIODO - 6.5) / 2.5));
     for (let i = 0; i < strisce.length; i++) {
       const u = strisce[i];
       u.uOff.value = (t * 95 * DPR * u.uTx.value.y / u.uAlto.value) % u.uTx.value.w;
@@ -2517,47 +3626,36 @@ setInterval(() => {
     galassia.rotation.z = t * .015;
     galassia.position.z = -27 + Math.sin(t * .05) * 6;
 
-    const gy = t * .12, cy = Math.cos(gy), sy = Math.sin(gy), ct = Math.cos(.3), st = Math.sin(.3);
-    for (let i = 0; i < ND; i++) {
-      const bx = base[i * 3], by = base[i * 3 + 1], bz = base[i * 3 + 2];
-      const x = bx * cy + bz * sy, z0 = -bx * sy + bz * cy;
-      const y = by * ct - z0 * st, z = by * st + z0 * ct;
-      centri[i * 3] = x; centri[i * 3 + 1] = y; centri[i * 3 + 2] = z;
-      dummy.position.set(x, y, z);
-      dummy.rotation.set(t * .9 + i, t * 1.4 + i * .5, i * .7);
-      const s = i === hi ? .56 + .07 * Math.sin(t * 12) + (pezzo === 1 ? nova * 1.4 : 0) : .34;
-      dummy.scale.set(s * anis[i * 2], s * anis[i * 2 + 1], s);
-      dummy.updateMatrix();
-      dorate.setMatrixAt(i, dummy.matrix);
-    }
-    dorate.instanceMatrix.needsUpdate = true;
-    nomi.geometry.attributes.aCentro.needsUpdate = true;
-
-    // le croci: dal fondo verso di te, di lato; nella processione sfilano
-    // in fila davanti, e camminano
-    const proc = pezzo === 2 ? (t - pezzoT) / DURA : -1;
-    for (let i = 0; i < NC; i++) {
-      if (proc >= 0 && proc <= 1) {
-        dummy.position.set(-10 + proc * 22 - i * 1.5, -1.9 + Math.abs(Math.sin(t * 5 + i)) * .18, 1.2);
-        dummy.rotation.set(0, .35, Math.sin(t * 5 + i) * .1);
-      } else {
+    // il fondo: il viaggio, con dentro lo sciame e la processione; con
+    // `#forma=N` lo sciame da solo, davanti, nella scena della demo
+    let fondo = null;
+    if (fermo) {
+      if (sciame.parent !== scena) scena.add(sciame);
+      scenaOra = -1;
+      sciame.position.set(0, 0, 0); sciame.scale.setScalar(SCALA); sciame.rotation.set(0, 0, 0); sciame.material.uniforms.uScala.value = 1;
+      galassia.visible = false;
+      if (registroBox) registroBox.classList.remove("on");
+    } else fondo = viaggio(tv, tl, dt);
+    const nello = fondo === spazio || fermo;
+    tunnel.visible = nello;
+    croci.visible = fondo === spazio;
+    // le croci nello spazio: dal fondo verso di te, di lato
+    if (croci.visible) {
+      for (let i = 0; i < NC; i++) {
         const z = (crPos[i * 3 + 2] + t * .03) % 1;
         dummy.position.set(crPos[i * 3], crPos[i * 3 + 1], -30 + z * 33);
         dummy.rotation.set(Math.sin(t * .4 + i) * .5, t * .6 + i * 2, Math.sin(t * .3 + i) * .3);
+        dummy.scale.setScalar(.65);
+        dummy.updateMatrix();
+        croci.setMatrixAt(i, dummy.matrix);
       }
-      dummy.scale.setScalar(.65);
-      dummy.updateMatrix();
-      croci.setMatrixAt(i, dummy.matrix);
+      croci.instanceMatrix.needsUpdate = true;
     }
-    croci.instanceMatrix.needsUpdate = true;
-
-    const k = kick * .25, sway = fermo ? 0 : 1;
-    const fondo = viaggio(viaggioFisso >= 0 ? viaggioFisso : fermo ? 0 : (t - 7.3) % VIAGGIO);
-    dorate.visible = nomi.visible = croci.visible = !fermo;
-    cam.position.set(Math.sin(t * .25) * camZ * .16 * sway + kx * k, Math.cos(t * .2) * camZ * .09 * sway + ky * k, camZ * (1 - kick * .03));
+    const sway = fermo ? 0 : 1;
+    cam.position.set(Math.sin(t * .25) * camZ * .16 * sway, Math.cos(t * .2) * camZ * .09 * sway, camZ);
     cam.lookAt(0, 0, 0);
     renderer.clear();
-    if (!fermo) renderer.render(fondo, camV);              // con `#forma=N` la forma da sola
+    if (fondo) renderer.render(fondo, camV);
     renderer.clearDepth();
     if (viaggioFisso < 0) renderer.render(scena, cam);     // con `#viaggio=S` lo sfondo da solo
   }
@@ -2583,10 +3681,11 @@ setInterval(() => {
     import("./three.module.min.js").then(m => {
       THREE = m;
       if (!avvia()) { renderer = null; box.classList.remove("demo"); if (cv) cv.remove(); }
-    }).catch(() => {});
+    }).catch(e => { if (window.console) console.error(e); });
   }, {rootMargin: "400px 0px"});
   prima.observe(box);
 })();
+
 </script>
 <!-- Audio far west (vjt): tutto sintetizzato in WebAudio, niente file e niente
      media-src da aprire nella CSP. Fischio in La minore + chitarra pizzicata +
