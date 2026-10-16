@@ -717,9 +717,9 @@ assert json.load(open(outw))["dorate"][0]["storia"][-1] == ["vjt", "bang", 1]
 print("ok: storia delle dorate")
 
 # --- corsa al primo posto per giorno (peluche, #sbiffo 16/10) ----------------
-# Per i primi N della classifica, le stese cumulate, la quota sul totale e il
-# posto in classifica giorno per giorno, e il capo di ogni giorno. Solo `.bang`: conta chi spara. I giorni senza colpi ci sono, l'asse e' il
-# tempo. Il giorno si taglia sull'ora di Roma.
+# Per i primi N della classifica, le stese cumulate e il posto in classifica
+# giorno per giorno, e il capo di ogni giorno. Solo `.bang`: conta chi spara.
+# I giorni senza colpi ci sono, l'asse e' il tempo. Il giorno si taglia sull'ora di Roma.
 def _roma(y, m, d, h):
     return _dt.datetime(y, m, d, h, tzinfo=suore_stats.ROME).timestamp()
 
@@ -748,9 +748,8 @@ assert caio["posto"] == [None, 2, 2, 1], caio
 assert tizio["posto"] == [1, 1, 1, 2], tizio
 assert solo["posto"] == [None, None, None, 3], solo
 assert solo["stese"] == [0, 0, 0, 1], solo
-assert caio["quota"] == [0.0, 33.3, 33.3, 50.0], caio
-assert tizio["quota"] == [100.0, 66.7, 66.7, 33.3], tizio
-assert solo["quota"] == [0.0, 0.0, 0.0, 16.7], solo
+# la quota sul totale non c'e' piu' (peluche, 16/10: «colpi» al posto di «quota %»)
+assert all("quota" not in r for r in q["nick"]), q["nick"]
 # Contro il capo (peluche, #sbiffo 16/10): servono le stese crude di ognuno e
 # il capo di ogni giorno, chi e quante. Il capo puo' stare fuori dai primi N
 # (qui con n=1: fino al 9 comanda TiZio, ma la riga c'e' solo per Caio).

@@ -140,8 +140,7 @@ def _giorni(primo, ultimo):
 def _quote(events, scores, n=TOP_QUOTE):
     """Corsa al primo posto, giorno per giorno (peluche, #sbiffo 16/10).
 
-    Per ognuno dei primi `n`: stese sue fino a quel giorno, la quota (stese sue
-    sul totale stese fino a quel giorno, in percento), e il posto che aveva
+    Per ognuno dei primi `n`: stese sue fino a quel giorno, e il posto che aveva
     quel giorno contando tutti quelli del log (pari merito alla maniera del
     canale, `None` finche' non ne ha stesa una). Per ogni giorno anche il
     `capo`: quante ne aveva chi stava in cima, e chi era (in due o piu' se a
@@ -175,26 +174,23 @@ def _quote(events, scores, n=TOP_QUOTE):
 
     acc = collections.Counter()
     totale, capo = [], []
-    stese, quota, posto = ({c: [] for c in primi} for _ in range(3))
+    stese, posto = {c: [] for c in primi}, {c: [] for c in primi}
     nome = lambda c: _bello(scores, c) if c in scores else visto[c]
     for g in giorni:
         acc.update(per_giorno.get(g, {}))
-        tot = sum(acc.values())
-        totale.append(tot)
+        totale.append(sum(acc.values()))
         top = max(acc.values())
         capo.append({"stese": top, "chi": sorted((nome(c) for c, v in acc.items() if v == top),
                                                  key=str.lower)})
         for c in primi:
             mie = acc[c]
             stese[c].append(mie)
-            quota[c].append(round(100 * mie / tot, 1))
             posto[c].append(1 + sum(1 for v in acc.values() if v > mie) if mie else None)
     return {
         "giorni": giorni,
         "totale": totale,
         "capo": capo,
-        "nick": [{"nick": nome(c), "stese": stese[c], "quota": quota[c],
-                  "posto": posto[c]} for c in primi],
+        "nick": [{"nick": nome(c), "stese": stese[c], "posto": posto[c]} for c in primi],
     }
 
 
