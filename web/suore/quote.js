@@ -64,6 +64,7 @@
     return n;
   }
 
+  let conteggio = 0;
   const gg = iso => iso.slice(8, 10) + "/" + iso.slice(5, 7);
 
   window.suoreQuote = function (s) {
@@ -137,6 +138,7 @@
     };
     box.appendChild(nota);
 
+    const id = ++conteggio;
     let W = 0;
     const H = 230, M = {t: 10, r: 86, b: 22, l: 34};
     const n = q.giorni.length;
@@ -161,11 +163,13 @@
         ticks = [];
         for (let v = 0; v <= top; v += passo) ticks.push([v, v + "%"]);
       } else {
-        const fondo = Math.max(2, ...righe.map(r => Math.max(0, ...r.posto.filter(v => v !== null))));
+        // Solo i posti di chi e' in grafico, 1..6 (peluche, 16/10): chi in un
+        // giorno stava piu' giu' esce dal bordo di sotto, tagliato dal clip
+        // qui sotto. Il posto vero resta nel tooltip.
+        const fondo = Math.max(2, righe.length);
         y = v => M.t + (v - 1) / (fondo - 1) * ph;
-        const passo = fondo > 12 ? 5 : fondo > 6 ? 2 : 1;
-        ticks = [[1, "1º"]];
-        for (let v = passo === 1 ? 2 : passo; v <= fondo; v += passo) ticks.push([v, v + "º"]);
+        ticks = [];
+        for (let v = 1; v <= fondo; v++) ticks.push([v, v + "º"]);
       }
       svg.setAttribute("aria-label", modo === "capo"
         ? "Suore stese per giorno, in proporzione al primo in classifica"
@@ -192,6 +196,13 @@
         ? r.stese.map((v, i) => v ? v / q.capo[i].stese * 100 : null)
         : modo === "quota" ? r.quota : r.posto;
       const etichette = [];
+      // le linee stanno dentro l'area del grafico, piu' lo spessore del tratto
+      const clip = "quote-clip-" + id;
+      const cp = nodo("clipPath", {id: clip});
+      cp.appendChild(nodo("rect", {x: M.l - 4, y: M.t - 4, width: pw + 8, height: ph + 8}));
+      svg.appendChild(cp);
+      const linee = nodo("g", {"clip-path": "url(#" + clip + ")"});
+      svg.appendChild(linee);
       righe.slice().reverse().forEach(r => {
         const vs = val(r);
         let d = "", su = false;
@@ -204,14 +215,15 @@
         if (d) {
           // anello del colore del pannello sotto la linea: dove si incrociano
           // si capisce quale passa sopra
-          svg.appendChild(nodo("path", {d, fill: "none", stroke: "var(--panel)",
+          linee.appendChild(nodo("path", {d, fill: "none", stroke: "var(--panel)",
             "stroke-width": 4, "stroke-linejoin": "round", opacity: spento ? 0 : 1}));
-          svg.appendChild(nodo("path", {d, fill: "none", stroke: r.colore,
+          linee.appendChild(nodo("path", {d, fill: "none", stroke: r.colore,
             "stroke-width": r.nick === scelto ? 2.5 : 2, "stroke-linejoin": "round",
             "stroke-linecap": "round", opacity: spento ? .18 : 1}));
         }
         const ult = vs[n - 1];
-        if (ult !== null && !spento) etichette.push({r, y: y(ult), v: ult});
+        // il pallino in fondo non scende sotto il bordo
+        if (ult !== null && !spento) etichette.push({r, y: Math.min(y(ult), M.t + ph), v: ult});
       });
       // nick in fondo alla linea, spinti in giu' se si accavallano
       etichette.sort((a, b) => a.y - b.y);
