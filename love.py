@@ -981,7 +981,7 @@ PROT_PHRASES = [
 VOMITO_PHRASES = [
     # vjt, #sbiffo 2026-10-16 12:32, on kazam's ask: «un centinaio di frasi
     # molto vomitevoli, tipo vomito con pezzettoni, vomito liquido rancido».
-    # Short and dry like !prot.
+    # Short and dry like !prot. Five lines from vjt-muse's notes (12:34).
     "{from} vomita in testa a {to}. Con i pezzettoni.",
     "{from} rigurgita la carbonara di ieri sulle scarpe di {to}",
     "BLEAAARGH. {from} su {to}. Si riconosce ancora il mais",
@@ -1017,7 +1017,7 @@ VOMITO_PHRASES = [
     "{from} vomita sul bavaglino di {to}. {to} ha 43 anni",
     "Pezzi di wurstel nel colletto di {to}. Firma: {from}",
     "{from} vomita nella fontana di Trevi. {to} ci aveva appena tirato la moneta",
-    "{from} vomita sul curriculum di {to}. Assunto lo stesso",
+    "{from} rigurgita su {to} il pranzo intero. Acido, non digerito, si legge ancora il menu'",
     "{from} rimette su {to} il menu' completo: antipasto, primo, secondo",
     "{to} si sveglia sul divano coperto dal vomito di {from}. Non era una coperta",
     "{from} vomita su {to} in metro. Linea gialla. Ora anche marrone",
@@ -1062,18 +1062,18 @@ VOMITO_PHRASES = [
     "{to} trova un pezzettone di wurstel nel reggiseno. {from} non commenta",
     "{from} vomita dal trenino delle giostre. Nel vagone dietro c'e' {to}",
     "{from} vomita sul sellino della bici di {to}. Si asciuga col sole",
-    "{from} vomita nel pozzo dei desideri. {to} beve dal pozzo",
+    "Il bolo mezzo masticato torna su in bocca a {from}. {from} lo passa a {to}",
     "{from} vomita sulla torta di compleanno di {to}. Le candeline resistono",
     "{from} rimette brodo di pollo su {to}. Senza il pollo. Col brodo vecchio",
     "{from} vomita sulle lenzuola di {to}. Il materasso beve tutto",
     "Sciacquone rotto. {from} vomita lo stesso. {to} e' il prossimo in fila",
-    "{from} vomita sul mappamondo di {to}. L'Europa sparisce",
+    "Pezzettoni gialli colano dal mento di {from}. Direzione: {to}",
     "{to} sente caldo sul collo. Non e' l'amore. E' {from} che rigurgita",
     "{from} vomita nella pentola di {to}. {to} aggiunge sale",
-    "{from} vomita sulla foto della nonna di {to}. La nonna sembra contenta",
+    "Sbocco liquido rancido: risale, brucia la gola di {from}, finisce su {to}",
     "{from} vomita sul vestito da sposa. L'ha affittato {to}",
     "{from} vomita sul divano in pelle di {to}. Scivola in mezzo ai cuscini",
-    "{from} vomita in faccia a {to}. {to} si fa la foto profilo cosi'",
+    "Vomito a fontana, caldo e puzzolente. {from} innaffia {to}",
     "{from} vomita liquido giallo su {to}. Il colore e' quello di una volta",
     "{from} rimette ostriche scadute su {to}. Le perle sono vere",
     "{from} vomita nel thermos di {to}. In montagna, a 2000 metri",
