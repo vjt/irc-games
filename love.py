@@ -978,6 +978,112 @@ PROT_PHRASES = [
     "{from} scorreggia nel presepe di {to}. Il bue chiede il trasferimento",
 ]
 
+VOMITO_PHRASES = [
+    # vjt, #sbiffo 2026-10-16 12:32, on kazam's ask: «un centinaio di frasi
+    # molto vomitevoli, tipo vomito con pezzettoni, vomito liquido rancido».
+    # Short and dry like !prot.
+    "{from} vomita in testa a {to}. Con i pezzettoni.",
+    "{from} rigurgita la carbonara di ieri sulle scarpe di {to}",
+    "BLEAAARGH. {from} su {to}. Si riconosce ancora il mais",
+    "{from} vomita liquido rancido nel caffe' di {to}. {to} lo zucchera",
+    "{to} apre il cappuccio della felpa. Dentro c'e' il vomito di {from}",
+    "{from} rimette sul cuscino di {to}. Poi lo gira dall'altra parte",
+    "Ascensore. {from}, {to}, un kebab di troppo. Undici piani",
+    "{from} vomita nel casco di {to}. Il motorino parte lo stesso",
+    "{to} cerca il telecomando. E' sotto il vomito di {from}",
+    "{from} restituisce la cena a {to}. Scontrino non incluso",
+    "Pezzettoni di carota su {to}. {from} giura di non averne mangiate",
+    "{from} fa il getto a idrante su {to}. Tre metri, record di sezione",
+    "{from} vomita nel tupperware di {to}. Domani e' il pranzo",
+    "{to} si gira di scatto. Troppo tardi: {from} ha gia' rigurgitato",
+    "{from} vomita bile verde su {to}. L'esorcista chiede i diritti",
+    "Rancido, tiepido, con grumi. {from} lo dedica a {to}",
+    "{from} vomita nella borsa di {to}. Cerniera chiusa, con cura",
+    "{from} sboccia sul tappeto persiano di {to}. Ora e' un tappeto afghano",
+    "{to} si lecca le labbra. Errore: c'era il vomito di {from}",
+    "{from} rimette in faccia a {to} il pranzo di Natale. E' marzo",
+    "BLORF. {from} su {to}. Il cane si avvicina interessato",
+    "{from} vomita nell'acquario di {to}. I pesci mangiano",
+    "{from} vomita sulla tastiera di {to}. Il tasto Invio non torna su",
+    "{from} offre a {to} uno smoothie. Fatto in casa. Fatto dentro {from}",
+    "Grumi di ragu' sui capelli di {to}. {from} si scusa senza convinzione",
+    "{from} vomita nel finestrino aperto della Panda di {to}. Ad agosto",
+    "{to} trova un fagiolo nell'orecchio. {from} sa perche'",
+    "{from} vomita sullo sposo. Lo sposo e' {to}",
+    "{from} si sporge dal balcone. {to} passa sotto. Tempismo perfetto",
+    "Il vomito di {from} su {to} ha la consistenza dello yogurt scaduto",
+    "{from} vomita in bocca e lo sputa su {to}. Doppio servizio",
+    "{to} dice «che odore e'?». {from} risponde vomitandogli addosso",
+    "{from} vomita sul bavaglino di {to}. {to} ha 43 anni",
+    "Pezzi di wurstel nel colletto di {to}. Firma: {from}",
+    "{from} vomita nella fontana di Trevi. {to} ci aveva appena tirato la moneta",
+    "{from} vomita sul curriculum di {to}. Assunto lo stesso",
+    "{from} rimette su {to} il menu' completo: antipasto, primo, secondo",
+    "{to} si sveglia sul divano coperto dal vomito di {from}. Non era una coperta",
+    "{from} vomita su {to} in metro. Linea gialla. Ora anche marrone",
+    "{from} vomita nel calice di {to}. Il sommelier: «note di tonno»",
+    "Il rigurgito di {from} su {to} fa i fili. Come la mozzarella",
+    "{from} vomita sul presepe di {to}. Il bambinello chiede asilo",
+    "{to} bacia {from}. {from} ricambia. Con la cena",
+    "{from} vomita nelle ciabatte di {to}. {to} se ne accorge al secondo passo",
+    "{from} vomita sul cane di {to}. Il cane si pulisce. Con la lingua",
+    "Sei birre e una piadina dopo, {from} riporta tutto a {to}",
+    "{from} fa un rutto umido su {to}. Poi arriva il resto",
+    "{from} vomita nello zaino di {to}. Gita scolastica, primo giorno",
+    "{from} vomita liquido rancido su {to}. Sa di latte del 2019",
+    "{to} pesca il cetriolino dal panino. Era di {from}, gia' masticato",
+    "{from} vomita sul parabrezza di {to}. I tergicristalli peggiorano tutto",
+    "{from} vomita nella tasca del giubbotto di {to}. Scoperto a dicembre",
+    "Il vomito di {from} cola lento lungo la schiena di {to}",
+    "{from} vomita su {to} durante il bacio della pace",
+    "{from} vomita nella vasca di {to}. {to} ci fa il bagno comunque",
+    "Spaghetti interi dal naso di {from}. Dritti su {to}",
+    "{from} vomita nel frullatore di {to}. {to} preme ON",
+    "{from} vomita sul gatto di {to}. Il gatto non lo perdonera' mai",
+    "{to} ordina il passato di verdure. Lo serve {from}. Direttamente",
+    "{from} rimette sulla tesi di laurea di {to}. Centodieci e conato",
+    "{from} vomita sul cornetto di {to}. Ora e' ripieno",
+    "{to} sente un plop sulla spalla. E' un gnocco. Di {from}",
+    "{from} vomita in faccia a {to} con la bocca piena di mortadella",
+    "{from} vomita nel lavandino di {to}. Si intasa. Coi pezzettoni",
+    "{from} vomita sulla PlayStation di {to}. La ventola lo spalma",
+    "{from} sbocca a fontana. {to} era in prima fila",
+    "{from} vomita il cenone su {to}. Le lenticchie portano soldi, dicono",
+    "{to} apre la lavastoviglie. {from} ci aveva vomitato ieri",
+    "{from} vomita la grappa su {to}. Si sente anche il pecorino",
+    "{from} vomita nelle mani a coppa di {to}. «tienilo un attimo»",
+    "Odore di acido gastrico e cipolla. {to} capisce subito: {from}",
+    "{from} vomita nella cassetta della posta di {to}. Raccomandata",
+    "{from} vomita al karaoke. Il microfono lo tiene {to}",
+    "{from} vomita sulle scarpe nuove di {to}. Scamosciate",
+    "Il vomito di {from} entra nel taschino di {to}. Preciso come un dardo",
+    "{from} vomita addosso a {to}. Poi chiede un tovagliolo a {to}",
+    "{from} vomita dentro la bocca di {to}. Mamma uccellina",
+    "{to} trova un pezzettone di wurstel nel reggiseno. {from} non commenta",
+    "{from} vomita dal trenino delle giostre. Nel vagone dietro c'e' {to}",
+    "{from} vomita sul sellino della bici di {to}. Si asciuga col sole",
+    "{from} vomita nel pozzo dei desideri. {to} beve dal pozzo",
+    "{from} vomita sulla torta di compleanno di {to}. Le candeline resistono",
+    "{from} rimette brodo di pollo su {to}. Senza il pollo. Col brodo vecchio",
+    "{from} vomita sulle lenzuola di {to}. Il materasso beve tutto",
+    "Sciacquone rotto. {from} vomita lo stesso. {to} e' il prossimo in fila",
+    "{from} vomita sul mappamondo di {to}. L'Europa sparisce",
+    "{to} sente caldo sul collo. Non e' l'amore. E' {from} che rigurgita",
+    "{from} vomita nella pentola di {to}. {to} aggiunge sale",
+    "{from} vomita sulla foto della nonna di {to}. La nonna sembra contenta",
+    "{from} vomita sul vestito da sposa. L'ha affittato {to}",
+    "{from} vomita sul divano in pelle di {to}. Scivola in mezzo ai cuscini",
+    "{from} vomita in faccia a {to}. {to} si fa la foto profilo cosi'",
+    "{from} vomita liquido giallo su {to}. Il colore e' quello di una volta",
+    "{from} rimette ostriche scadute su {to}. Le perle sono vere",
+    "{from} vomita nel thermos di {to}. In montagna, a 2000 metri",
+    "{from} vomita in riunione. {to} aveva lo schermo condiviso",
+    "{to} si chiede perche' il risotto e' tiepido. {from} lo sa",
+    "{from} vomita sul gelato di {to}. Stracciatella, ora coi pezzi",
+    "{from} vomita su {to} dalle montagne russe. Giro della morte",
+    "{from} vomita su {to}. Poi su se stesso. Poi di nuovo su {to}",
+]
+
 # command -> phrase pool. All of them share the target rule and the cooldown.
 POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES,
          # vjt, #sbiffo 2026-10-10 13:51, on katia's ask.
@@ -985,13 +1091,17 @@ POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES
          # vjt, #sbiffo 2026-10-10 14:01, on tom's ask.
          "doccia": DOCCIA_PHRASES, "sessua": SESSUA_PHRASES,
          # vjt, #sbiffo 2026-10-15 23:12.
-         "prot": PROT_PHRASES}
+         "prot": PROT_PHRASES,
+         # vjt, #sbiffo 2026-10-16 12:32, on kazam's ask.
+         "vomito": VOMITO_PHRASES}
 # alias -> command (vjt, #sbiffo 2026-10-10 13:40): people type the feminine.
 ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio",
            # vjt, #sbiffo 2026-10-10 14:09.
            "sessualizza": "sessua",
            # vjt, #sbiffo 2026-10-15 23:14; brap is puppy's.
-           "scorreggia": "prot", "praaat": "prot", "peto": "prot", "brap": "prot"}
+           "scorreggia": "prot", "praaat": "prot", "peto": "prot", "brap": "prot",
+           # vjt, #sbiffo 2026-10-16 12:32.
+           "vomita": "vomito"}
 
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!\S+\s+PRIVMSG\s+(?P<chan>#\S+)\s+:(?P<text>.*?)$')

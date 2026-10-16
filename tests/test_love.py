@@ -293,3 +293,17 @@ def test_prot_pool_and_aliases():
         assert love.parse(alias) == ("prot", "vjt"), alias
     for t in ("!prot", "!protesta vjt", "!petone vjt"):
         assert love.parse(t) is None, t
+
+
+def test_vomito_pool_and_alias():
+    # vjt, #sbiffo 2026-10-16: !vomito / !vomita, su richiesta di kazam.
+    pool = love.POOLS["vomito"]
+    assert len(pool) == len(set(pool)) == 100
+    for p in pool:
+        assert "{from}" in p and "{to}" in p and not p.startswith("/me "), p
+        out = love.render(p, "kazam", "vjt")
+        assert "{" not in out and "}" not in out, p
+    for t in ("!vomito vjt", "!VOMITA vjt"):
+        assert love.parse(t) == ("vomito", "vjt"), t
+    for t in ("!vomito", "!vomitare vjt"):
+        assert love.parse(t) is None, t
