@@ -38,6 +38,7 @@ Env overrides (so a dry run cannot publish or speak):
   NEXT_OUT    path of the public next.json
   NEXT_STATE  path of the private state json
   NEXT_FIFO   path of the bot FIFO ('' disables talking)
+  NEXT_CHANS  comma-separated channels the poll listens on
 """
 import json, os, re, subprocess, sys, time
 from pathlib import Path
@@ -52,7 +53,9 @@ OUT_JSON = Path(os.environ.get("NEXT_OUT", "/srv/www-static/t/next/next.json"))
 # '' disables the channel reply entirely (dry runs must stay mute).
 FIFO = os.environ.get("NEXT_FIFO", str(REPO / "bot.send"))
 
-POLL_CHANS = {"#grappa", "#sniffo"}   # #sniffo added on vjt's order, 13:32
+# #sniffo added on vjt's order, 13:32. Overridable so a second instance can
+# poll another network's log (IRCnet #grappa, vjt 2026-10-17).
+POLL_CHANS = set(filter(None, os.environ.get("NEXT_CHANS", "#grappa,#sniffo").split(",")))
 
 TITLE = "grappa — cosa facciamo dopo la 1.3"
 REPO_URL = "https://github.com/vjt/grappa-irc/issues/"
