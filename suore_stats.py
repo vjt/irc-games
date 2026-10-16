@@ -121,6 +121,72 @@ def _rivalita(soffiate, scores, n=5):
     return coppie[:n]
 
 
+# Quante righe nel grafico delle quote: oltre le sei i colori non si
+# distinguono piu' e le linee in fondo sono un pettine schiacciato sullo zero.
+TOP_QUOTE = 6
+
+
+def _giorni(primo, ultimo):
+    """Tutti i giorni da `primo` a `ultimo`, compresi, anche quelli vuoti."""
+    d = datetime.date.fromisoformat(primo)
+    fine = datetime.date.fromisoformat(ultimo)
+    out = []
+    while d <= fine:
+        out.append(d.isoformat())
+        d += datetime.timedelta(days=1)
+    return out
+
+
+def _quote(events, scores, n=TOP_QUOTE):
+    """Quota cumulata di suore stese, giorno per giorno (peluche, #sbiffo 16/10).
+
+    Per ognuno dei primi `n`: stese sue fino a quel giorno diviso stese di tutti
+    fino a quel giorno, in percento, e il posto che aveva quel giorno contando
+    tutti quelli del log (pari merito alla maniera del canale, `None` finche'
+    non ne ha stesa una). Si vede se il distacco si chiude o si allarga.
+
+    E' una serie storica, quindi viene dal LOG e parte dal 6 settembre: chi ha
+    tutto prima non ci compare, e l'ultimo punto puo' non coincidere con la
+    classifica dello stato (la differenza e' gia' in `discrepanza`). L'ORDINE
+    dei primi `n` invece e' quello dello stato, come la tabella; chi esiste
+    solo nel log viene dopo, col casing dell'ultima volta che si e' visto.
+    Solo i `.bang`: e' la quota di chi spara."""
+    colpi = sorted((e for e in events if e["verb"] == "bang"), key=lambda e: e["ts"])
+    if not colpi:
+        return None
+    visto = {}
+    per_giorno = collections.defaultdict(collections.Counter)
+    for e in colpi:
+        c = e["nick"].lower()
+        visto[c] = e["nick"]
+        per_giorno[_day(e["ts"])][c] += 1
+    giorni = _giorni(min(per_giorno), max(per_giorno))
+
+    def kills(c):
+        row = scores.get(c)
+        return row.get("kills", 0) if isinstance(row, dict) else 0
+
+    finale = collections.Counter(e["nick"].lower() for e in colpi)
+    primi = sorted(finale, key=lambda c: (-kills(c), -finale[c], c))[:n]
+
+    acc = collections.Counter()
+    totale, quota, posto = [], {c: [] for c in primi}, {c: [] for c in primi}
+    for g in giorni:
+        acc.update(per_giorno.get(g, {}))
+        tot = sum(acc.values())
+        totale.append(tot)
+        for c in primi:
+            mie = acc[c]
+            quota[c].append(round(100 * mie / tot, 1))
+            posto[c].append(1 + sum(1 for v in acc.values() if v > mie) if mie else None)
+    return {
+        "giorni": giorni,
+        "totale": totale,
+        "nick": [{"nick": _bello(scores, c) if c in scores else visto[c],
+                  "quota": quota[c], "posto": posto[c]} for c in primi],
+    }
+
+
 def _scope_stats(events, scores, flops=None, soffiate=None):
     """Statistiche di uno scope. `events` gia' filtrati, `scores` dallo stato."""
     per_day = collections.defaultdict(lambda: {"bang": 0, "bef": 0})
@@ -214,6 +280,7 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
         # Chi spara fra mezzanotte e le sei, i primi tre.
         "nottambuli": [[_bello(scores, n), k] for n, k in notte.most_common(3)],
         "rivalita": _rivalita(soffiate, scores),
+        "quote": _quote(events, scores),
         # Non e' un errore da correggere: il log e lo stato hanno storie
         # diverse (azzeramenti a mano, annunci mai archiviati). Dichiararlo.
         "discrepanza": bang_log - kills_stato,

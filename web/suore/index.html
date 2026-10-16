@@ -388,6 +388,7 @@
   <footer id="foot"></footer>
 </div>
 
+<script src="quote.js"></script>
 <script>
 const MEDALS = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
 
@@ -818,6 +819,10 @@ function renderScope(scope, s, G) {
     }));
   if (lato.children.length) duo.appendChild(lato);
   if (duo.children.length) box.appendChild(duo);
+
+  // Quota cumulata e posto per giorno (peluche, 16/10): sta in quote.js.
+  const fetta = window.suoreQuote && window.suoreQuote(s);
+  if (fetta) box.appendChild(fetta);
 
   if (s.discrepanza) {
     const w = el("div", "warn");

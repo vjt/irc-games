@@ -716,4 +716,46 @@ os.environ["SUORE_NETS"] = os.environ.pop("SUORE_NETS_BAK")
 assert json.load(open(outw))["dorate"][0]["storia"][-1] == ["vjt", "bang", 1]
 print("ok: storia delle dorate")
 
+# --- quota cumulata per giorno (peluche, #sbiffo 16/10) ----------------------
+# Per i primi N della classifica, la fetta di suore stese sul totale stese del
+# canale fino a quel giorno, e il posto in classifica giorno per giorno. Solo
+# `.bang`: e' la quota di chi spara. I giorni senza colpi ci sono, l'asse e' il
+# tempo. Il giorno si taglia sull'ora di Roma.
+def _roma(y, m, d, h):
+    return _dt.datetime(y, m, d, h, tzinfo=suore_stats.ROME).timestamp()
+
+qe = [
+    {"ts": _roma(2026, 9, 6, 12), "scope": "x/#q", "nick": "tizio", "verb": "bang"},
+    {"ts": _roma(2026, 9, 6, 13), "scope": "x/#q", "nick": "Tizio", "verb": "bang"},
+    # 00:30 di Roma del 7 = 22:30 UTC del 6: e' il 7
+    {"ts": _roma(2026, 9, 7, 0) + 1800, "scope": "x/#q", "nick": "caio", "verb": "bang"},
+    {"ts": _roma(2026, 9, 9, 10), "scope": "x/#q", "nick": "caio", "verb": "bang"},
+    {"ts": _roma(2026, 9, 9, 11), "scope": "x/#q", "nick": "caio", "verb": "bang"},
+    {"ts": _roma(2026, 9, 9, 12), "scope": "x/#q", "nick": "sempronio", "verb": "bef"},
+    {"ts": _roma(2026, 9, 9, 13), "scope": "x/#q", "nick": "solo_log", "verb": "bang"},
+]
+qs = {"tizio": {"nick": "TiZio", "kills": 2}, "caio": {"nick": "Caio", "kills": 9},
+      "sempronio": {"nick": "Sempronio", "kills": 0, "friends": 1},
+      "zero": {"nick": "Zero", "kills": 50}}   # tutto prima del log: niente riga
+q = suore_stats._quote(qe, qs)
+assert q["giorni"] == ["2026-09-06", "2026-09-07", "2026-09-08", "2026-09-09"], q["giorni"]
+assert q["totale"] == [2, 3, 3, 6], q["totale"]
+# ordine dalla classifica dello STATO, casing dello stato; chi c'e' solo nel log
+# viene dopo, col casing dell'ultima volta che si e' visto
+assert [r["nick"] for r in q["nick"]] == ["Caio", "TiZio", "solo_log"], q["nick"]
+caio, tizio, solo = q["nick"]
+assert caio["quota"] == [0.0, 33.3, 33.3, 50.0], caio
+assert tizio["quota"] == [100.0, 66.7, 66.7, 33.3], tizio
+assert solo["quota"] == [0.0, 0.0, 0.0, 16.7], solo
+# posto a pari merito come in canale; chi non ha ancora steso niente non ha posto
+assert caio["posto"] == [None, 2, 2, 1], caio
+assert tizio["posto"] == [1, 1, 1, 2], tizio
+assert solo["posto"] == [None, None, None, 3], solo
+assert [r["nick"] for r in suore_stats._quote(qe, qs, n=1)["nick"]] == ["Caio"]
+# niente colpi nel log, niente grafico
+assert suore_stats._quote([e for e in qe if e["verb"] == "bef"], qs) is None
+qb = suore_stats.build(qe, {"scores": {"x/#q": qs}}, 0)["scopes"]["x/#q"]
+assert qb["quote"] == q, qb.get("quote")
+print("ok: quota cumulata e posto per giorno")
+
 print("\nTUTTO VERDE, porco dio")
