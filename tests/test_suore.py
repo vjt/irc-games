@@ -531,6 +531,39 @@ assert "esploso" in sent[-1][2] and dr["flops"][sc]["malekith"]["jam"] == 1, sen
 assert suore.on_penalty(dr, sc, "Malekith", 9102.0)
 print("ok: RPG esploso = penalita' + cilecca, suora ancora li'")
 
+# Malekith 16/10: l'RPG esploso costa una stesa, mai sotto zero; la dorata
+# segue se non e' piu' coperta dalle stese.
+def boom(kills, golden=0, here=True):
+    d = suore.empty()
+    if kills is not None:
+        d["scores"][sc] = {"bomber": {"kills": kills, "friends": 0, "nick": "Bomber",
+                                      "golden": golden}}
+    d["rpg"] = {sc: {"bomber": True}}
+    if here:
+        suore.spawn(d, sc, 20000.0)
+    sent.clear()
+    assert suore.handle(d, sc, "Bomber", "bang", 20001.0)
+    assert "esploso" in sent[-1][2] and suore.on_penalty(d, sc, "Bomber", 20002.0), sent
+    assert d["flops"][sc]["bomber"]["jam"] == 1
+    return d, sent[-1][2], d["scores"].get(sc, {}).get("bomber")
+
+d, riga, s = boom(3)
+assert s["kills"] == 2 and s["rpg_lost"] == 1 and "(ne hai 2)" in riga, (s, riga)
+d, riga, s = boom(1, golden=1)
+assert s["kills"] == 0 and s["golden"] == 0, s
+d, riga, s = boom(0)
+assert s["kills"] == 0 and "rpg_lost" not in s and "niente da perdere" in riga, (s, riga)
+d, riga, s = boom(None)
+assert s is None and "niente da perdere" in riga, riga
+d, riga, s = boom(2, here=False)
+assert s["kills"] == 1 and "Sprecato" not in riga, (s, riga)
+d, riga, s = boom(0, here=False)
+assert s["kills"] == 0 and "niente da perdere" in riga, riga
+st = suore_stats._scope_stats([{"ts": 1.0, "scope": sc, "nick": "Bomber", "verb": "bang"}] * 3,
+                              boom(3)[0]["scores"][sc])
+assert st["discrepanza"] == 0, st["discrepanza"]
+print("ok: RPG esploso costa una stesa, mai sotto zero, anche a canale vuoto")
+
 # il .bef non trova e non usa l'RPG
 suore.P_RPG, suore.P_NOPE = 1.0, 0.0
 dr["rpg"][sc]["puppy"] = True
@@ -666,7 +699,7 @@ righe = [
     # dorata chiusa col razzo, la riga di chiusura non ancora nel log
     f"11:00:00 > [suore] PRIVMSG #sbiffo :{B}\u25e6\\_\u2720< GLORIA IN EXCELSIS!{O}",
     f"11:00:02 > [suore] PRIVMSG #sbiffo :{B}vjt: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le restano 4 vite.{O}",
-    "11:00:03 > [suore] PRIVMSG #sbiffo :" + suore.RPG_BOOM.format(nick="alk", p=7),
+    "11:00:03 > [suore] PRIVMSG #sbiffo :" + suore.RPG_BOOM.format(nick="alk", p=7, n=3),
 ]
 ircnet = [
     f"12:00:00 > [suore] PRIVMSG #cybernet :{B}\\_\u271f< ALLELUIA!{O}",

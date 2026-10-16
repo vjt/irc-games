@@ -267,6 +267,10 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
 
     kills_stato = sum(r["kills"] for r in tabella)
     bang_log = sum(1 for e in events if e["verb"] == "bang")
+    # Le stese perse per un RPG esploso (suore.rpg_boom) stanno nel log ma non
+    # piu' nello stato: non sono discrepanza, sono conto.
+    perse_rpg = sum(r.get("rpg_lost", 0) for r in scores.values()
+                    if isinstance(r, dict))
 
     return {
         "totali": {
@@ -290,7 +294,7 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
         "quote": _quote(events, scores),
         # Non e' un errore da correggere: il log e lo stato hanno storie
         # diverse (azzeramenti a mano, annunci mai archiviati). Dichiararlo.
-        "discrepanza": bang_log - kills_stato,
+        "discrepanza": bang_log - kills_stato - perse_rpg,
     }
 
 

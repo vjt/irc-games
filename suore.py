@@ -793,12 +793,37 @@ def grado(n, field):
 # non lo trova e non lo usa (puppy: «l'amore è il motivo della vita»). Chi lo
 # tiene spara col prossimo `.bang`: 3 volte su 4 stende qualunque suora,
 # dorata compresa; 1 su 4 gli esplode in faccia, penalita' e cilecca come un
-# inceppamento. Sparato a canale vuoto e' sprecato.
+# inceppamento, e in piu' ci rimette una suora stesa (mai sotto zero; Malekith,
+# #sbiffo 16/10). Sparato a canale vuoto esplode con la stessa probabilita' e
+# lo stesso conto; se non esplode e' sprecato.
 P_RPG = float(os.environ.get("SUORE_RPG", "0.03"))
 P_RPG_BOOM = 0.25
 RPG_FOUND = "{nick}: per terra c'e' un RPG, l'hai raccolto. Il prossimo .bang lo spara."
-RPG_BOOM = ("{nick}: l'RPG ti e' esploso in faccia, porco dio. Sei fuori per "
-            "questa suora, riprova fra {p} secondi.")
+RPG_BOOM = ("{nick}: l'RPG ti e' esploso in faccia, porco dio. Ci rimetti una "
+            "suora (ne hai {n}). Sei fuori per questa suora, riprova fra {p} secondi.")
+RPG_BOOM_NULLA = ("{nick}: l'RPG ti e' esploso in faccia, porco dio. Non avevi "
+                  "niente da perdere. Sei fuori per questa suora, riprova fra "
+                  "{p} secondi.")
+
+
+def rpg_boom(data, scope, nick, now, net, chan, coda=""):
+    """L'RPG esplode: penalita', cilecca e una stesa in meno (mai sotto zero).
+    Se la stesa persa era l'ultima dorata coperta, se ne va anche la dorata:
+    `dorate(s, "kills")` non deve mai superare `kills`. `rpg_lost` tiene il
+    conto per `suore_stats`, che senza vedrebbe il log eventi contare piu'
+    stese dello stato. Chi non ha una riga in classifica non ne prende una."""
+    punish(data, scope, nick, now)
+    s = data["scores"].get(scope, {}).get(canon(nick))
+    if s and s.get("kills", 0) > 0:
+        s["kills"] -= 1
+        if dorate(s, "kills") > s["kills"]:
+            s["golden"] -= 1
+        s["rpg_lost"] = s.get("rpg_lost", 0) + 1
+        riga = RPG_BOOM.format(nick=nick, p=PENALTY, n=s["kills"])
+    else:
+        riga = RPG_BOOM_NULLA.format(nick=nick, p=PENALTY)
+    say(net, chan, riga + coda)
+    conta_flop(data, scope, nick, "jam")
 
 
 def find_rpg(data, scope, nick, net, chan):
@@ -958,6 +983,9 @@ def handle(data, scope, nick, cmd, now):
             conta_soffiata(data, scope, nick,
                            now - data["last_taken"][scope].get("at", 0))
         if rpg:
+            if random.random() < P_RPG_BOOM:
+                rpg_boom(data, scope, nick, now, net, chan, f"{mancata}{prossima}")
+                return True
             say(net, chan, f"{nick}: hai sparato l'RPG contro il nulla. Sprecato."
                            f"{mancata}{prossima}")
             return True
@@ -972,8 +1000,7 @@ def handle(data, scope, nick, cmd, now):
 
     if rpg:
         if random.random() < P_RPG_BOOM:
-            punish(data, scope, nick, now)
-            flop(data, scope, nick, RPG_BOOM, net, chan, "jam")
+            rpg_boom(data, scope, nick, now, net, chan)
             return True
         nun["hp"] = 1               # one-shot: la dorata non regge un razzo
     elif cmd == "bang" and random.random() < P_JAM:
