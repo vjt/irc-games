@@ -19,7 +19,8 @@ semantica, sta in docs/suore_spec.md. Qui il riassunto operativo:
     annunciato è tutto il tempo passato dalla comparsa (misurate uccisioni a
     923 secondi).
   * `.bang` / `!bang` spara, `.bef` / `!bef` fa amicizia. Il primo che arriva
-    si prende la suora; chi arriva dopo trova il canale vuoto.
+    si prende la suora; chi arriva dopo trova il canale vuoto. `.take` /
+    `!take` raccoglie l'RPG trovato per terra (vedi `find_rpg()`).
   * Sparare o fare amicizia può fallire: fucile inceppato, suora schizzinosa.
     Il fallimento NON consuma la suora e costa 7 secondi di penalità, durante
     i quali i tentativi di quel nick sono ignorati IN SILENZIO — misurato su
@@ -325,7 +326,7 @@ PRIVMSG_PAT = re.compile(
 # allineato. `pewpew` sta prima di `pew` nell'alternanza solo per leggibilita':
 # il separatore obbligato fa gia' fallire `pew` su `.pewpew`.
 CMD_PAT = re.compile(
-    r'^\s*[.!](?P<cmd>bang|pewpew|pew|bef|suore|killers|chiestato|chiesato)'
+    r'^\s*[.!](?P<cmd>bang|pewpew|pew|bef|take|suore|killers|chiestato|chiesato)'
     r'(?:\s.*)?$',
     re.IGNORECASE)
 ALIAS = {"pew": "bang", "pewpew": "bang"}
@@ -796,9 +797,20 @@ def grado(n, field):
 # inceppamento, e in piu' ci rimette una suora stesa (mai sotto zero; Malekith,
 # #sbiffo 16/10). Sparato a canale vuoto esplode con la stessa probabilita' e
 # lo stesso conto; se non esplode e' sprecato.
+#
+# Raccoglierlo e' una scelta (Sythos, #sbiffo 2026-10-17 19:03, irc-games#20;
+# via di vjt alle 20:01): l'RPG resta per terra e lo prende con `.take` solo
+# chi l'ha trovato, entro RPG_TTL secondi, poi sparisce. Lasciarlo non costa
+# niente, e la scommessa e' vera: contro una suora normale il fucile stende
+# l'85% delle volte, l'RPG il 75% con l'esplosione in coda. Conviene solo
+# sulla dorata, e chi lo raccoglie lo spara al `.bang` dopo comunque vada.
 P_RPG = float(os.environ.get("SUORE_RPG", "0.03"))
 P_RPG_BOOM = 0.25
-RPG_FOUND = "{nick}: per terra c'e' un RPG, l'hai raccolto. Il prossimo .bang lo spara."
+RPG_TTL = 60.0
+RPG_FOUND = ("{nick}: per terra c'e' un RPG. Scrivi .take entro {ttl} secondi "
+             "per raccoglierlo, il .bang dopo lo spara; se lo lasci, sparisce.")
+RPG_TAKEN = "{nick}: RPG raccolto. Il prossimo .bang lo spara."
+RPG_NONE = "{nick}: per terra non c'e' niente da raccogliere."
 RPG_BOOM = ("{nick}: l'RPG ti e' esploso in faccia, porco dio. Ci rimetti una "
             "suora (ne hai {n}). Sei fuori per questa suora, riprova fra {p} secondi.")
 RPG_BOOM_NULLA = ("{nick}: l'RPG ti e' esploso in faccia, porco dio. Non avevi "
@@ -826,15 +838,30 @@ def rpg_boom(data, scope, nick, now, net, chan, coda=""):
     conta_flop(data, scope, nick, "jam")
 
 
-def find_rpg(data, scope, nick, net, chan):
+def find_rpg(data, scope, nick, net, chan, now):
     """Il dado del 3%, tirato dopo un `.bang` contro una suora vera (presa,
-    colpo sulla dorata o inceppamento). Chi ne ha gia' uno non ne trova un
-    secondo."""
-    tasca = data.setdefault("rpg", {}).setdefault(scope, {})
-    if canon(nick) in tasca or random.random() >= P_RPG:
+    colpo sulla dorata o inceppamento). Chi ne ha gia' uno in tasca non ne
+    trova un secondo. Quello trovato va per terra, non in tasca: lo tiene su
+    `take_rpg()`. Un RPG nuovo prende il posto di quello ancora per terra."""
+    if canon(nick) in data.get("rpg", {}).get(scope, {}) or random.random() >= P_RPG:
         return
-    tasca[canon(nick)] = True
-    say(net, chan, RPG_FOUND.format(nick=nick))
+    data.setdefault("rpg_ground", {})[scope] = {"nick": canon(nick), "at": now}
+    say(net, chan, RPG_FOUND.format(nick=nick, ttl=int(RPG_TTL)))
+
+
+def take_rpg(data, scope, nick, now):
+    """`.take`: l'RPG per terra passa in tasca, se e' di chi lo chiede e non e'
+    scaduto. Ritorna la riga da dire e se lo stato e' cambiato."""
+    ground = data.get("rpg_ground", {})
+    g = ground.get(scope)
+    if g and now - g["at"] > RPG_TTL:
+        del ground[scope]
+        return RPG_NONE.format(nick=nick), True
+    if not g or g["nick"] != canon(nick):
+        return RPG_NONE.format(nick=nick), False
+    del ground[scope]
+    data.setdefault("rpg", {}).setdefault(scope, {})[canon(nick)] = True
+    return RPG_TAKEN.format(nick=nick), True
 
 
 def promosso(prima, dopo, field):
@@ -963,6 +990,13 @@ def handle(data, scope, nick, cmd, now):
                        f"Rientri fra {human_time(until - now)}.")
         return False
 
+    if cmd == "take":
+        # Prima della penalita': raccogliere non e' sparare, e chi ha appena
+        # trovato l'RPG su un inceppamento e' gia' dentro i suoi 7 secondi.
+        riga, changed = take_rpg(data, scope, nick, now)
+        say(net, chan, riga)
+        return changed
+
     if on_penalty(data, scope, nick, now):
         # Silenzio voluto: vedi il commento in testa al file.
         return False
@@ -1006,7 +1040,7 @@ def handle(data, scope, nick, cmd, now):
     elif cmd == "bang" and random.random() < P_JAM:
         punish(data, scope, nick, now)
         flop(data, scope, nick, random.choice(JAMS), net, chan, "jam")
-        find_rpg(data, scope, nick, net, chan)
+        find_rpg(data, scope, nick, net, chan, now)
         return True
     if cmd == "bef" and random.random() < P_NOPE:
         punish(data, scope, nick, now)
@@ -1026,7 +1060,7 @@ def handle(data, scope, nick, cmd, now):
                        f"le {plural(nun['hp'], 'resta', 'restano')} {nun['hp']} "
                        f"{plural(nun['hp'], 'vita', 'vite')}.\x0F")
         if cmd == "bang":
-            find_rpg(data, scope, nick, net, chan)
+            find_rpg(data, scope, nick, net, chan, now)
         return True
 
     took = human_time(now - nun["at"])
@@ -1088,7 +1122,7 @@ def handle(data, scope, nick, cmd, now):
             say(net, chan, f"{nick} hai fatto secca una suora in {took}! "
                            f"Ne hai stese {s['kills']} in {chan}.{tail}{prossima}")
         if not rpg:
-            find_rpg(data, scope, nick, net, chan)
+            find_rpg(data, scope, nick, net, chan, now)
     else:
         if golden:
             say(net, chan, f"\x02{nick} ha fatto amicizia con la SUORA DORATA in "

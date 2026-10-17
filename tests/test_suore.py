@@ -505,8 +505,17 @@ suore.P_RPG, suore.P_RPG_BOOM = 1.0, 0.0
 suore.spawn(dr, sc, 5000.0)
 sent.clear()
 assert suore.handle(dr, sc, "Malekith", "bang", 5001.0)
-assert "RPG" in sent[-1][2] and dr["rpg"][sc]["malekith"], sent
+assert ".take" in sent[-1][2] and "malekith" not in dr.get("rpg", {}).get(sc, {}), sent
+assert dr["rpg_ground"][sc]["nick"] == "malekith", dr
 suore.P_RPG = 0.0
+# l'RPG per terra e' di chi l'ha trovato: gli altri non lo prendono
+sent.clear()
+assert not suore.handle(dr, sc, "puppy", "take", 5010.0)
+assert "niente da raccogliere" in sent[-1][2] and dr["rpg_ground"][sc], sent
+assert suore.handle(dr, sc, "Malekith", "take", 5020.0)
+assert "raccolto" in sent[-1][2] and dr["rpg"][sc]["malekith"], sent
+assert sc not in dr["rpg_ground"], dr
+print("ok: RPG per terra, .take solo per chi l'ha trovato")
 dr["nuns"][sc] = {"chan": "#sbiffo", "at": 5100.0, "golden": True, "hp": 6}
 sent.clear()
 assert suore.handle(dr, sc, "Malekith", "bang", 5102.0)
@@ -570,7 +579,30 @@ dr["rpg"][sc]["puppy"] = True
 assert suore.handle(dr, sc, "puppy", "bef", 9200.0)
 assert dr["rpg"][sc].get("puppy"), "il .bef ha consumato l'RPG"
 assert list(dr["rpg"][sc]) == ["puppy"], dr["rpg"]
+assert sc not in dr.get("rpg_ground", {}), dr["rpg_ground"]
 print("ok: col .bef niente RPG")
+
+# lasciato per terra oltre RPG_TTL, sparisce; il .take tardivo non lo prende
+de = suore.empty()
+suore.P_RPG, suore.P_JAM = 1.0, 0.0
+suore.spawn(de, sc, 1000.0)
+assert suore.handle(de, sc, "Sythos", "bang", 1001.0)
+suore.P_RPG = 0.0
+sent.clear()
+assert suore.handle(de, sc, "Sythos", "take", 1001.0 + suore.RPG_TTL + 1)
+assert "niente da raccogliere" in sent[-1][2], sent
+assert sc not in de["rpg_ground"] and "sythos" not in de.get("rpg", {}).get(sc, {}), de
+# e se non lo raccoglie, il .bang dopo e' un colpo di fucile normale
+suore.spawn(de, sc, 2000.0)
+sent.clear()
+assert suore.handle(de, sc, "Sythos", "bang", 2001.0)
+assert "Con l'RPG." not in sent[0][2], sent
+print("ok: RPG scaduto sparisce, il .bang resta un fucile")
+
+# .take e' un comando riconosciuto, anche col !
+assert suore.CMD_PAT.match(".take") and suore.CMD_PAT.match("!TAKE")
+assert not suore.CMD_PAT.match(".takeaway")
+print("ok: .take nel parser")
 
 # colpo a vuoto per sondare il timer = cilecca (Malekith, #sbiffo 13/10);
 # chi l'ha mancata di poco invece no
