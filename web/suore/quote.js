@@ -9,6 +9,11 @@
 // serve»): i numeri veri, stese e distacco, stanno nel tooltip. I dati sono `s.quote` del data.json, fatti
 // da `suore_stats._quote()`: serie dal LOG, che parte dal 6 settembre.
 //
+// Tre serie dietro un selettore (puppy, #sbiffo 19/10): tutte le prese
+// (.bang + .bef, come contano nottambuli e soffiate, e di suo si parte da qui),
+// le sole stese (com'era, peluche 16/10) e le sole amiche. Stessa forma, dal
+// data.json `s.quote_tutte`, `s.quote`, `s.quote_amiche`.
+//
 // Sta in un file suo, caricato dalla pagina prima dello script principale:
 // `renderScope` chiama `suoreQuote(s)` e appende quello che torna. Niente
 // librerie, SVG a mano come il resto della pagina. Il CSS lo porta con se'
@@ -27,6 +32,7 @@
   .quote .qhd { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; }
   .quote .qhd h2 { margin: 0; }
   .quote .modi { margin-left: auto; display: flex; gap: .3rem; }
+  .quote .serie { display: flex; gap: .3rem; margin-top: .4rem; }
   .quote button { font: inherit; font-size: .68rem; color: var(--dim); background: none; border: 1px solid var(--line); border-radius: 99px; padding: .1rem .55rem; cursor: pointer; }
   .quote button:hover { color: var(--ink); }
   .quote button.on { color: var(--gold); border-color: var(--gold); }
@@ -68,11 +74,19 @@
   let conteggio = 0;
   const gg = iso => iso.slice(8, 10) + "/" + iso.slice(5, 7);
 
+  // Le parole di ogni serie: il dato si chiama sempre `stese`, il testo no.
+  const SERIE = [
+    ["tutte", "quote_tutte", "tutte", "prese (.bang e .bef)", "prese"],
+    ["stese", "quote", "stese", "stese (.bang)", "stese"],
+    ["amiche", "quote_amiche", "amiche", "fatte amiche (.bef)", "amiche"],
+  ];
+  const buona = q => q && q.nick && q.nick.length && q.giorni.length >= 2;
+
   window.suoreQuote = function (s) {
-    const q = s && s.quote;
-    if (!q || !q.nick || !q.nick.length || q.giorni.length < 2) return null;
+    const serie = SERIE.filter(([, k]) => s && buona(s[k]));
+    if (!serie.length) return null;
     stile();
-    const righe = q.nick.map((r, i) => Object.assign({colore: COLORI[i % COLORI.length]}, r));
+    let q, righe, n, parole;
     let modo = "capo";
     let scelto = null;
 
@@ -81,8 +95,8 @@
     hd.appendChild(h("h2", null, "Chi si prende la fetta"));
     const modi = h("div", "modi");
     const bottoni = {};
-    const TITOLI = {capo: "stese in proporzione a chi era in cima quel giorno",
-      colpi: "suore stese fino a quel giorno", posto: "posto in classifica quel giorno"};
+    const TITOLI = {capo: "in proporzione a chi era in cima quel giorno",
+      colpi: "quante fino a quel giorno", posto: "posto in classifica quel giorno"};
     [["capo", "vs capo"], ["colpi", "colpi"], ["posto", "posto"]].forEach(([k, label]) => {
       const b = h("button", k === modo ? "on" : null, label);
       b.type = "button";
@@ -97,6 +111,16 @@
     });
     hd.appendChild(modi);
     box.appendChild(hd);
+    const sel = h("div", "serie");
+    const bserie = {};
+    serie.forEach(([k, , label]) => {
+      const b = h("button", null, label);
+      b.type = "button";
+      b.onclick = () => { usa(k); disegna(); };
+      bserie[k] = b;
+      sel.appendChild(b);
+    });
+    if (serie.length > 1) box.appendChild(sel);
 
     const plot = h("div", "plot");
     const svg = nodo("svg", {role: "img"});
@@ -106,43 +130,57 @@
     box.appendChild(plot);
 
     // Legenda: tocchi un nick e resta acceso solo lui, ritocchi e tornano tutti.
+    // Si rifà a ogni cambio di serie: i primi sei non sono gli stessi.
     const leg = h("div", "leg");
-    righe.forEach(r => {
-      const b = h("button");
-      b.type = "button";
-      const i = h("i");
-      i.style.background = r.colore;
-      b.appendChild(i);
-      b.appendChild(document.createTextNode(r.nick));
-      b.onclick = () => {
-        scelto = scelto === r.nick ? null : r.nick;
-        leg.querySelectorAll("button").forEach((x, j) =>
-          x.classList.toggle("off", scelto !== null && righe[j].nick !== scelto));
-        disegna();
-      };
-      leg.appendChild(b);
-    });
     box.appendChild(leg);
+    function legenda() {
+      leg.textContent = "";
+      righe.forEach(r => {
+        const b = h("button");
+        b.type = "button";
+        const i = h("i");
+        i.style.background = r.colore;
+        b.appendChild(i);
+        b.appendChild(document.createTextNode(r.nick));
+        b.onclick = () => {
+          scelto = scelto === r.nick ? null : r.nick;
+          leg.querySelectorAll("button").forEach((x, j) =>
+            x.classList.toggle("off", scelto !== null && righe[j].nick !== scelto));
+          disegna();
+        };
+        leg.appendChild(b);
+      });
+    }
 
     const nota = h("p", "nota");
-    const coda = " I primi " + righe.length + " della classifica per stese. Dal registro "
-      + "dei colpi, che parte dal 6 settembre: quello che è successo prima non c'è"
-      + (s.discrepanza ? ", e il registro non quadra coi contatori (vedi nota sotto)." : ".");
     const spiega = () => {
+      const [, , , lungo, corto] = parole;
       nota.textContent = (modo === "capo"
-        ? "Suore stese (.bang) di ognuno fino a quel giorno, in proporzione a chi era in "
+        ? "Suore " + lungo + " di ognuno fino a quel giorno, in proporzione a chi era in "
           + "cima: il capo sta piatto in alto, quanto gli sta sotto è il distacco."
         : modo === "colpi"
-        ? "Suore stese (.bang) di ognuno, sommate giorno per giorno."
-        : "Posto in classifica per stese (.bang) a fine giornata, fra tutti quelli del registro.")
-        + coda;
+        ? "Suore " + lungo + " di ognuno, sommate giorno per giorno."
+        : "Posto in classifica per " + corto + " a fine giornata, fra tutti quelli del registro.")
+        + " I primi " + righe.length + " della classifica per " + corto + ". Dal registro "
+        + "dei colpi, che parte dal 6 settembre: quello che è successo prima non c'è"
+        + (s.discrepanza ? ", e il registro non quadra coi contatori (vedi nota sotto)." : ".");
     };
     box.appendChild(nota);
 
     const id = ++conteggio;
     let W = 0;
     const H = 230, M = {t: 10, r: 86, b: 22, l: 34};
-    const n = q.giorni.length;
+
+    function usa(k) {
+      parole = serie.find(x => x[0] === k);
+      q = s[parole[1]];
+      righe = q.nick.map((r, i) => Object.assign({colore: COLORI[i % COLORI.length]}, r));
+      n = q.giorni.length;
+      scelto = null;
+      Object.keys(bserie).forEach(x => bserie[x].classList.toggle("on", x === k));
+      legenda();
+    }
+    usa(serie[0][0]);
 
     function disegna() {
       spiega();
@@ -176,8 +214,9 @@
         for (let v = 1; v <= fondo; v++) ticks.push([v, v + "º"]);
       }
       svg.setAttribute("aria-label", modo === "capo"
-        ? "Suore stese per giorno, in proporzione al primo in classifica"
-        : modo === "colpi" ? "Suore stese cumulate per giorno" : "Posto in classifica per giorno");
+        ? "Suore " + parole[4] + " per giorno, in proporzione al primo in classifica"
+        : modo === "colpi" ? "Suore " + parole[4] + " cumulate per giorno"
+        : "Posto in classifica per giorno");
       // griglia orizzontale, recessiva
       ticks.forEach(([v, label]) => {
         svg.appendChild(nodo("line", {x1: M.l, x2: M.l + pw, y1: y(v), y2: y(v),
@@ -276,7 +315,7 @@
           : c + " (fuori dal grafico)");
         tip.appendChild(h("b", null, gg(q.giorni[i]) + (modo === "capo"
           ? " · capo " + chi.join(", ") + " con " + capo.stese
-          : " · " + q.totale[i] + " stese in tutto")));
+          : " · " + q.totale[i] + " " + parole[4] + " in tutto")));
         ordinati.forEach(r => {
           const st = r.stese[i], p = r.posto[i];
           const riga = h("div");

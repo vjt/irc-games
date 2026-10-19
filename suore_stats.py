@@ -137,7 +137,7 @@ def _giorni(primo, ultimo):
     return out
 
 
-def _quote(events, scores, n=TOP_QUOTE):
+def _quote(events, scores, n=TOP_QUOTE, verbi=("bang",)):
     """Corsa al primo posto, giorno per giorno (peluche, #sbiffo 16/10).
 
     Per ognuno dei primi `n`: stese sue fino a quel giorno, e il posto che aveva
@@ -153,8 +153,12 @@ def _quote(events, scores, n=TOP_QUOTE):
     classifica dello stato (la differenza e' gia' in `discrepanza`). L'ORDINE
     dei primi `n` invece e' quello dello stato, come la tabella; chi esiste
     solo nel log viene dopo, col casing dell'ultima volta che si e' visto.
-    Solo i `.bang`: conta chi spara."""
-    colpi = sorted((e for e in events if e["verb"] == "bang"), key=lambda e: e["ts"])
+    `verbi` dice cosa si conta. Di suo solo i `.bang`, chi spara (peluche,
+    16/10); `("bef",)` le amiche e tutt'e due le prese, come contano gia'
+    nottambuli e soffiate (puppy, #sbiffo 19/10). Il campo resta `stese` in
+    ogni serie: la pagina lo legge uguale, le parole le mette lei. L'ordine
+    dei primi `n` segue la colonna dello stato che corrisponde."""
+    colpi = sorted((e for e in events if e["verb"] in verbi), key=lambda e: e["ts"])
     if not colpi:
         return None
     visto = {}
@@ -165,9 +169,11 @@ def _quote(events, scores, n=TOP_QUOTE):
         per_giorno[_day(e["ts"])][c] += 1
     giorni = _giorni(min(per_giorno), max(per_giorno))
 
+    campi = [{"bang": "kills", "bef": "friends"}[v] for v in verbi]
+
     def kills(c):
         row = scores.get(c)
-        return row.get("kills", 0) if isinstance(row, dict) else 0
+        return sum(row.get(k, 0) for k in campi) if isinstance(row, dict) else 0
 
     finale = collections.Counter(e["nick"].lower() for e in colpi)
     primi = sorted(finale, key=lambda c: (-kills(c), -finale[c], c))[:n]
@@ -292,6 +298,10 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
         "nottambuli": [[_bello(scores, n), k] for n, k in notte.most_common(3)],
         "rivalita": _rivalita(soffiate, scores),
         "quote": _quote(events, scores),
+        # Le stesse serie per le amiche e per tutte le prese (puppy, 19/10):
+        # la pagina le mette dietro un selettore, di suo restano le stese.
+        "quote_amiche": _quote(events, scores, verbi=("bef",)),
+        "quote_tutte": _quote(events, scores, verbi=("bang", "bef")),
         # Non e' un errore da correggere: il log e lo stato hanno storie
         # diverse (azzeramenti a mano, annunci mai archiviati). Dichiararlo.
         "discrepanza": bang_log - kills_stato - perse_rpg,

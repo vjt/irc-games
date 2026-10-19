@@ -831,6 +831,16 @@ assert [r["nick"] for r in suore_stats._quote(qe, qs, n=1)["nick"]] == ["Caio"]
 assert suore_stats._quote([e for e in qe if e["verb"] == "bef"], qs) is None
 qb = suore_stats.build(qe, {"scores": {"x/#q": qs}}, 0)["scopes"]["x/#q"]
 assert qb["quote"] == q, qb.get("quote")
+# Amiche e tutte le prese (puppy, #sbiffo 19/10): stessa forma, altri verbi,
+# ordine dalla colonna dello stato che corrisponde.
+qa = suore_stats._quote(qe, qs, verbi=("bef",))
+assert [r["nick"] for r in qa["nick"]] == ["Sempronio"], qa["nick"]
+assert qa["nick"][0]["stese"] == [1], qa
+assert qa["giorni"] == ["2026-09-09"], qa["giorni"]
+qt = suore_stats._quote(qe, qs, verbi=("bang", "bef"))
+assert qt["totale"] == [2, 3, 3, 7], qt["totale"]
+assert [r["nick"] for r in qt["nick"]] == ["Caio", "TiZio", "Sempronio", "solo_log"], qt["nick"]
+assert qb["quote_amiche"] == qa and qb["quote_tutte"] == qt
 print("ok: stese cumulate, posto e capo per giorno")
 
 print("\nTUTTO VERDE, porco dio")
