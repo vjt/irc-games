@@ -495,7 +495,7 @@ PERNACCHIO_PHRASES = [
     "{from} riceve da {to} «ma tu hai provato a spegnere e riaccendere?» e spegne la pernacchia e la riaccende: PRRT... PRRRRRRT",
     "{from} legge la cover letter di {to} scritta da ChatGPT con «delve» tre volte e risponde: PFFFRRRRT, let's delve",
     "{from} vede {to} con l'anello Oura che controlla il punteggio del sonno al bar e pernacchia: PRRRT, readiness 12",
-    "{from} assiste al gender reveal di {to} con fumogeno e incendio boschivo e contribuisce: BRRRRRAAAAP rosa e celeste",
+    "{from} assiste al gender reveal di {to} con fumogeno e incendio boschivo e contribuisce: BRRRRRAAAAP rosa, celeste e ə",
     "{from} ascolta {to} che dice «io sono empatia pura» e soffia una pernacchia piena di compassione: PTHHHBBBT",
     "{from} riceve da {to} la foto della sua colazione proteica: 4 albumi e tristezza. Risposta: PRRRRRRT al cornetto",
     "{from} guarda {to} comprare Labubu falsi a 80 euro e pernacchia in edizione limitata: PFFFRRRRRRT",
