@@ -146,10 +146,30 @@ spenti, perche' col lucchetto per canale i due non sono mai aperti insieme.
 python3 -m pytest tests/test_briscola.py
 ```
 
+## Scopa
+
+`scopa.py`, a 2, 3 o 4 (in 4 a coppie), dietro a MikeBongiorno (richiesta di
+Malekith, 2026-10-20). Regole in `docs/scopa_spec.md`; rc.d in
+`deploy/mikebongiorno_scopa`, config in `SCOPA_NETS` (formato di
+`BRISCOLA_NETS`). Stesso mazzo e stesso motore della briscola: lobby, `jo`,
+mani in query, timeout, abbandono, cambio nick, netsplit, lucchetto e
+classifica stanno in `tavolo.py`, che le due usano; ogni gioco ci mette solo
+le regole. `!scopa` apre il tavolo, partita a 11 (`!scopa 21`: a 21), niente
+alias corto e niente «al meglio di N». Si gioca con `pl N`; se le prese
+possibili sono piu' d'una si sceglie con `pl N a b …` (le carte della tavola,
+numerate in canale), e chi non sceglie riceve l'elenco in query. A fine
+smazzata il conto voce per voce (carte, denari, settebello, primiera, scope).
+Su disco solo la classifica (`scopa_state.json`). Canali: `#sbiffo`, `#bot`.
+`pl N a b` in query o in NOTICE lo ignora sillabah (stesso pattern di CaH).
+
+```
+python3 -m pytest tests/test_scopa.py
+```
+
 ## Una partita per canale
 
 Ordine di Malekith (2026-10-15): in un canale gira un gioco per volta, fra
-tutti i giochi, che sono processi diversi. CaH, Briscola, Trivial e Sillabah, prima di
+tutti i giochi, che sono processi diversi. CaH, Briscola, Scopa, Trivial e Sillabah, prima di
 aprire una partita, chiamano `ircgame.start_refusal()`:
 
 - un **lucchetto per rete+canale** (`ircgame.ChannelLock`): un file
