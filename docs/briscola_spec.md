@@ -26,8 +26,10 @@ Totale 120. Vince chi fa **piu' di 60**; 60 pari e' patta.
 - **2**: testa a testa.
 - **4**: coppie tirate a sorte, sedute alternate (A1 B1 A2 B2): i compagni
   non giocano mai uno dopo l'altro. I punti sono di coppia.
-- **3**: ognuno per se'. Si toglie il **2 di coppe**: 39 carte, 3 a testa, 30 da
-  pescare = 10 giri. Vince chi fa piu' punti (su 120); parita' in testa = patta.
+- **3**: ognuno per se'. Si scopre prima la briscola dal mazzo intero, poi si
+  toglie il **2 di coppe** (il **2 di denari** se coppe e' briscola: le briscole
+  restano sempre 10, Malekith 2026-10-20), poi si distribuisce. 39 carte, 3 a
+  testa, 30 da pescare = 10 giri. Vince chi fa piu' punti (su 120); parita' in testa = patta.
 - **5+**: il tavolo si chiude a 4, il `jo` del quinto e' rifiutato con una riga.
   Niente panchina: alla partita dopo rientra da solo con `jo`.
 - **1** a tavolo chiuso: non si parte.
