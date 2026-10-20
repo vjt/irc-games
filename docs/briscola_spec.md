@@ -1,8 +1,8 @@
-# Briscola — regole e casi limite (BOZZA)
+# Briscola — regole e casi limite
 
 Briscola dietro a MikeBongiorno (`briscola.py`, stesso sidecar degli altri
-giochi). Richiesta di Malekith, staff 2026-10-20. Bozza: niente codice
-finche' Malekith non la approva. Ogni caso limite avra' un test in
+giochi). Richiesta di Malekith, staff 2026-10-20; domande chiuse su #bot lo
+stesso giorno. Ogni caso limite ha un test in
 `tests/test_briscola.py` col numero nel nome.
 
 ## Mazzo e punti
@@ -26,7 +26,11 @@ Totale 120. Vince chi fa **piu' di 60**; 60 pari e' patta.
 - **2**: testa a testa.
 - **4**: coppie tirate a sorte, sedute alternate (A1 B1 A2 B2): i compagni
   non giocano mai uno dopo l'altro. I punti sono di coppia.
-- **3** e **5+**: vedi domande aperte.
+- **3**: ognuno per se'. Si toglie il **2 di coppe**: 39 carte, 3 a testa, 30 da
+  pescare = 10 giri. Vince chi fa piu' punti (su 120); parita' in testa = patta.
+- **5+**: il tavolo si chiude a 4, il `jo` del quinto e' rifiutato con una riga.
+  Niente panchina: alla partita dopo rientra da solo con `jo`.
+- **1** a tavolo chiuso: non si parte.
 
 ## Svolgimento
 
@@ -51,19 +55,21 @@ li raccolgono gli altri giochi.
 
 | comando | cosa |
 |---|---|
-| `!briscola` / `!bri` | apre il tavolo (60s) |
+| `!briscola` / `!bri` | apre il tavolo (60s), partita secca |
+| `!briscola N` / `!bri N` | al meglio di N partite (N dispari, 3…9): finisce appena qualcuno ne vince (N+1)/2. N pari: non parte, riga «N deve essere dispari». In 3, se una partita e' patta non conta e si rigioca |
 | `jo` | si siede (riga intera, solo a tavolo aperto). Max 4 |
 | `!bri esci` | si alza (a partita viva = abbandono, caso 2) |
 | `!bri stop` | chiude: chi l'ha aperta o chi passa `ircgame.can_control()` |
 | `pl N` | gioca la carta N della mano, in canale, in query o in NOTICE (come CaH) |
 | `!bri carte` | rimanda la mano in privato |
-| `!bri stato` | briscola, carte nel mazzo, a chi tocca, punti presi finora? (domanda aperta 4) |
+| `!bri stato` | briscola, carte nel mazzo, a chi tocca, partite vinte nella serie. **Mai** i punti presi nella partita in corso |
 | `!bri top` | classifica storica (partite vinte, per rete) |
 
 ## In canale e in privato
 
 - **In canale**: la briscola all'inizio, ogni carta giocata col nick, chi prende
-  e quanti punti, quante carte restano, a fine partita il conto.
+  (senza i punti: si contano a mente), quante carte restano. A fine partita, in
+  coda, il conto dei punti di ognuno (o di coppia) e le prese.
 - **In query**: la mano numerata dopo ogni pesca (una riga sotto i 400 byte),
   es. `Mano: 1) Asso di spade  2) Re di coppe  3) 7 di denari — briscola: coppe`.
 - Uscita dalla coda col freno di `ircgame.Outbox`, come CaH.
@@ -89,18 +95,11 @@ li raccolgono gli altri giochi.
    `briscola_state.json` con la classifica.
 8. **Modi di canale**: stessa tabella di CaH (`+c`, `+u`, `+m/+M`).
 
-## Domande aperte (per Malekith)
+## Deciso (Malekith 2026-10-20)
 
-1. **3 giocatori** a tavolo chiuso: briscola a 3 ognuno per se' (si toglie un 2,
-   39 carte, 13 a testa, vince il piu' alto) oppure non si parte?
-2. **5+ giocatori**: si siedono i primi 4, gli altri restano fuori — oppure il
-   tavolo si chiude a 4 e `jo` del quinto viene rifiutato?
-3. **Partita singola o ai punti** (es. la prima coppia a 2 partite vinte)?
-4. **`!bri stato` dice i punti presi finora?** Nella briscola vera si contano a
-   mente: dirli toglie un pezzo del gioco. Proposta: no, solo a fine partita.
-
-## Deciso
-
+- In 3 si gioca, senza un 2. Il quinto: rifiutato, niente panchina.
+- Partita secca o al meglio di N dispari, a comando.
+- I punti restano a mente, il conto esce in coda alla partita.
 - **Carte passate in query fra compagni** (Malekith 2026-10-20): non si possono
   impedire, nessun bot vede le query fra due nick. Come i segni al tavolo vero:
   si gioca con chi ci si fida.
