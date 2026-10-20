@@ -129,10 +129,27 @@ python3 -m pytest tests/test_cah.py tests/test_ircgame.py
 python3 cah.py carte
 ```
 
+## Briscola
+
+`briscola.py`, a 2, 3 o 4 (in 4 a coppie), dietro a MikeBongiorno (richiesta
+di Malekith, 2026-10-20). Regole e casi limite in `docs/briscola_spec.md`;
+rc.d in `deploy/mikebongiorno_briscola`, config in `BRISCOLA_NETS` (formato di
+`CAH_NETS`, opzione per canale `:ops`). `!bri` apre il tavolo (`!bri 5`: al
+meglio di 5), `jo` per sedersi, la mano arriva in query, si gioca con `pl N` in
+canale, in query o in NOTICE. I punti non si vedono fino a fine partita. Su
+disco solo la classifica (`briscola_state.json`, partite vinte per rete).
+Canali: `#sbiffo`, `#bot`. `pl N` in query lo ignora sillabah (stesso pattern
+di CaH); la nota di CaH sul Trivial e `pl 3` in canale vale solo a lucchetti
+spenti, perche' col lucchetto per canale i due non sono mai aperti insieme.
+
+```
+python3 -m pytest tests/test_briscola.py
+```
+
 ## Una partita per canale
 
 Ordine di Malekith (2026-10-15): in un canale gira un gioco per volta, fra
-tutti i giochi, che sono processi diversi. CaH, Trivial e Sillabah, prima di
+tutti i giochi, che sono processi diversi. CaH, Briscola, Trivial e Sillabah, prima di
 aprire una partita, chiamano `ircgame.start_refusal()`:
 
 - un **lucchetto per rete+canale** (`ircgame.ChannelLock`): un file

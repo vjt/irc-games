@@ -1,0 +1,77 @@
+#!/bin/sh
+# PROVIDE: mikebongiorno_briscola
+# REQUIRE: mikebongiorno_bot
+# KEYWORD: shutdown
+#
+# Briscola dietro a MikeBongiorno: stesso bot, stesso log, stessa FIFO.
+# Richiesta di Malekith (staff 2026-10-20). Regole e casi limite in
+# docs/briscola_spec.md.
+#
+# BRISCOLA_NETS ha il formato di CAH_NETS (nome|log|fifo|#canali, opzioni dopo
+# il canale con `:`, es. `#chan:ops`), fra APICI SINGOLI: rc.subr fa eval di
+# command_args, e senza apici la '|' diventa una pipe e la '#' apre un commento.
+#
+# Canali: #sbiffo e #bot. Ne' #italia ne' #it-opers.
+. /etc/rc.subr
+name="mikebongiorno_briscola"
+rcvar="mikebongiorno_briscola_enable"
+load_rc_config "$name"
+: ${mikebongiorno_briscola_enable:="NO"}
+pidfile="/var/run/convento/briscola.pid"
+# Vedi mikebongiorno_bot: daemon(8) scrive il pid del figlio.
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+daemon_pidfile="${pidfile%.pid}.daemon.pid"
+command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/briscola.log -t mike-briscola \
+  /usr/bin/env BRISCOLA_HOME=/var/db/convento \
+  IRCGAME_LOCKS=/var/run/convento/ircgame \
+  BRISCOLA_NICK=MikeBongiorno \
+  'BRISCOLA_NETS=azzurra|/var/log/convento/mike.log|/var/run/convento/mike.send|#sbiffo,#bot' \
+  'IRCGAME_TRUST=vjt *.openssl.it, vjt 2a03:4000:2:33c::42, vjt due.dita.di.grappa.chat' \
+  /usr/local/bin/python3.11 -u /opt/irc-games/briscola.py --net azzurra daemon"
+# daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
+# stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
+# lo start dopo muore con «process already running» e il sidecar resta giu' in
+# silenzio (visto su convento_suore, 2026-09-11 23:33). -P da' al supervisore un
+# pidfile suo, e l'hook qui sotto lo miete sia dopo stop che prima di start.
+start_precmd="convento_reap_supervisor"
+stop_postcmd="convento_reap_supervisor"
+convento_reap_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	rm -f "${daemon_pidfile}"; return 0 ;;
+	esac
+	if kill -0 "${_dpid}" 2>/dev/null; then
+		# figlio vivo = supervisore sano: giu' le mani, ci pensa rc.subr a
+		# dire «already running».
+		if [ -r "${pidfile}" ] && kill -0 "$(cat ${pidfile} 2>/dev/null)" 2>/dev/null; then
+			return 0
+		fi
+		kill -TERM "${_dpid}" 2>/dev/null
+		sleep 1
+		kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	fi
+	rm -f "${daemon_pidfile}" "${pidfile}"
+}
+
+# Con -R il supervisore rigenera il figlio dopo 5s, quindi uno stop che
+# ammazza solo il python non ferma niente: il supervisore muore PRIMA
+# (daemon(8) inoltra il TERM al figlio e se ne va), e rc.subr trova il
+# campo gia sgombro. Ordine di vjt 2026-09-19: "rendilo resilient convento".
+stop_precmd="convento_kill_supervisor"
+convento_kill_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	return 0 ;;
+	esac
+	kill -TERM "${_dpid}" 2>/dev/null
+	sleep 2
+	kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	return 0
+}
+
+run_rc_command "$1"
