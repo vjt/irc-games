@@ -8,5 +8,6 @@
 JOIN #sniffo
 JOIN #sbiffo
 JOIN #italia
-# #bot (Malekith 2026-10-20): banco di prova di CaH, briscola, scopa.
-JOIN #bot
+# #bot (Malekith 2026-10-20): banco di prova di CaH, briscola, scopa. Canale +O:
+# Mike e' in VOP, entra col ChanServ INVITE (il JOIN nudo torna 481).
+RAW PRIVMSG ChanServ :INVITE #bot
