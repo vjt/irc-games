@@ -1,8 +1,8 @@
-# Scopa — regole e casi limite (BOZZA)
+# Scopa — regole e casi limite
 
 Scopa dietro a MikeBongiorno (`scopa.py`), stesso mazzo e stesso motore di
 tavolo della briscola (`docs/briscola_spec.md`). Richiesta di Malekith, #bot
-2026-10-20. Bozza: niente codice finche' Malekith non chiude le domande in fondo.
+2026-10-20. Domande chiuse da Malekith lo stesso giorno, su #bot.
 
 ## Mazzo e valori
 
@@ -20,13 +20,14 @@ Conti: in 2, 6 + 4 in tavola, 30 = 5 giri; in 4, 12 + 4, 24 = 2 giri.
 
 ## Smazzata
 
-1. Si mescola, 3 carte a testa, 4 scoperte in tavola.
+1. Si mescola, 3 carte a testa, 4 scoperte in tavola. Con 3 o 4 Re fra le 4
+   in tavola si rimescola e si ridistribuisce.
 2. A turno ognuno gioca una carta. Se in tavola c'e' una carta dello **stesso
    valore**, la prende (obbligo, e ha la precedenza su ogni somma). Se no, puo'
    prendere un gruppo di carte la cui **somma** fa il valore giocato. Se non
    prende niente, la carta resta in tavola.
 3. Se la presa svuota la tavola e' **scopa**: un punto. L'ultima giocata della
-   smazzata non vale scopa.
+   smazzata non vale scopa. Niente asso pigliatutto: l'Asso prende come le altre.
 4. Finite le mani, se c'e' mazzo, 3 carte a testa (in tavola niente).
 5. A mazzo finito, le carte rimaste in tavola vanno a chi ha preso per ultimo.
 
@@ -43,22 +44,21 @@ Conti: in 2, 6 + 4 in tavola, 30 = 5 giri; in 4, 12 + 4, 24 = 2 giri.
 Pari su carte, denari o primiera: il punto non va a nessuno. Il conto si
 stampa in canale a fine smazzata, voce per voce.
 
-## Partita e serie
+## Partita
 
-- La **partita** va a **11** punti (domanda aperta 1): si gioca smazzata dopo
-  smazzata. Se a fine smazzata piu' giocatori (o coppie) sono a 11 o piu', vince
-  il piu' alto; pari in testa = un'altra smazzata.
-- `!scopa` = partita secca, `!scopa N` = al meglio di N partite, N dispari
-  3…9; N pari non parte, riga «N deve essere dispari» (Malekith 2026-10-20,
-  stessa regola della briscola).
+- La **partita** va a **11** punti, o a **21** con `!scopa 21`: si gioca
+  smazzata dopo smazzata. Se a fine smazzata piu' giocatori (o coppie) sono alla
+  soglia o oltre, vince il piu' alto; pari in testa = un'altra smazzata.
+- Niente «al meglio di N»: la scopa e' sempre a punti, la serie e' roba della
+  briscola (Malekith 2026-10-20). Qualunque altro argomento: riga d'uso.
 
 ## Comandi
 
-Sotto `!scopa` (niente alias corto: domanda aperta 4).
+Sotto `!scopa`, niente alias corto.
 
 | comando | cosa |
 |---|---|
-| `!scopa [N]` | apre il tavolo (60s) |
+| `!scopa [21]` | apre il tavolo (60s), a 11 o a 21 |
 | `jo` | si siede. Max 4 |
 | `!scopa esci` / `stop` / `carte` / `stato` / `top` | come la briscola |
 | `pl N` | gioca la carta N della mano. Se la presa e' una sola possibile, la fa il bot |
@@ -84,12 +84,3 @@ Gli stessi della briscola (timeout di turno, abbandono, cambio nick, netsplit,
 fuori turno, un tavolo per canale, riavvio, modi di canale), con una regola in
 piu': al **timeout** il bot gioca per lui la carta che non prende niente e vale
 meno; se tutte prendono, quella che prende di piu'.
-
-## Domande aperte (per Malekith)
-
-1. **A quanto si va**: 11 (classico) o 21?
-2. **Re in tavola**: con 3 o 4 Re fra le 4 carte iniziali si rimescola (regola
-   di molti tavoli) o niente?
-3. **Asso pigliatutto** (l'Asso prende tutta la tavola, senza scopa): si o no?
-   Di default no.
-4. **Alias corto** di `!scopa`: serve? `!sc` e simili si pestano con altro.
