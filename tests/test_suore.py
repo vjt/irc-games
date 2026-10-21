@@ -20,9 +20,6 @@ suore.say = lambda net, chan, text: sent.append((net.name, chan, text))
 # su 5 fallivano). Le comparse dorate si provano dove servono, montando la suora
 # a mano; qui il fucile spara e basta.
 suore.P_GOLDEN = 0.0
-# Idem l'RPG: al 3% di default una riga «per terra c'e' un RPG» in coda
-# rompeva a caso gli assert su sent[-1] (2 run su 20). Si prova dove serve.
-suore.P_RPG = 0.0
 
 data = suore.empty()
 now = time.time()
@@ -497,112 +494,22 @@ assert suore.promosso(4, 5, "kills") == " Nuovo grado: sagrestano!"
 assert suore.promosso(5, 6, "kills") == ""
 print("ok: gradi e promozioni")
 
-# RPG: trovato col dado, un colpo, one-shot sulla dorata, a vuoto sprecato
+# L'RPG non c'e' piu' (vjt, #sbiffo 2026-10-21), ma gli stati vecchi hanno
+# ancora `rpg_lost`: le stese perse per l'esplosione stanno nel log e non nello
+# stato, e la discrepanza della storia deve continuare a tornare.
+suore.P_JAM = suore.P_NOPE = 0.0
 sc = "azzurra/#sbiffo"
-dr = suore.empty()
-suore.P_JAM = 0.0
-suore.P_RPG, suore.P_RPG_BOOM = 1.0, 0.0
-suore.spawn(dr, sc, 5000.0)
-sent.clear()
-assert suore.handle(dr, sc, "Malekith", "bang", 5001.0)
-assert ".take" in sent[-1][2] and "malekith" not in dr.get("rpg", {}).get(sc, {}), sent
-assert dr["rpg_ground"][sc]["nick"] == "malekith", dr
-suore.P_RPG = 0.0
-# l'RPG per terra e' di chi l'ha trovato: gli altri non lo prendono
-sent.clear()
-assert not suore.handle(dr, sc, "puppy", "take", 5010.0)
-assert "niente da raccogliere" in sent[-1][2] and dr["rpg_ground"][sc], sent
-assert suore.handle(dr, sc, "Malekith", "take", 5020.0)
-assert "raccolto" in sent[-1][2] and dr["rpg"][sc]["malekith"], sent
-assert sc not in dr["rpg_ground"], dr
-print("ok: RPG per terra, .take solo per chi l'ha trovato")
-dr["nuns"][sc] = {"chan": "#sbiffo", "at": 5100.0, "golden": True, "hp": 6}
-sent.clear()
-assert suore.handle(dr, sc, "Malekith", "bang", 5102.0)
-assert dr["nuns"][sc] is None, "la dorata ha retto un RPG"
-assert "Con l'RPG." in sent[0][2] and suore_events.parse(sent[0][2]), sent
-assert "malekith" not in dr["rpg"][sc], "RPG non consumato"
-print("ok: RPG trovato e sparato, dorata stesa in un colpo")
-
-dr["rpg"][sc]["malekith"] = True
-sent.clear()
-assert suore.handle(dr, sc, "Malekith", "bang", 9000.0)   # nessuna suora
-assert "Sprecato" in sent[-1][2] and "malekith" not in dr["rpg"][sc], sent
-print("ok: RPG a vuoto sprecato")
-
-suore.P_RPG_BOOM = 1.0
-dr["rpg"][sc]["malekith"] = True
-suore.spawn(dr, sc, 9100.0)
-sent.clear()
-assert suore.handle(dr, sc, "Malekith", "bang", 9101.0)
-assert dr["nuns"][sc] is not None, "l'esplosione ha consumato la suora"
-assert "esploso" in sent[-1][2] and dr["flops"][sc]["malekith"]["jam"] == 1, sent
-assert suore.on_penalty(dr, sc, "Malekith", 9102.0)
-print("ok: RPG esploso = penalita' + cilecca, suora ancora li'")
-
-# Malekith 16/10: l'RPG esploso costa una stesa, mai sotto zero; la dorata
-# segue se non e' piu' coperta dalle stese.
-def boom(kills, golden=0, here=True):
-    d = suore.empty()
-    if kills is not None:
-        d["scores"][sc] = {"bomber": {"kills": kills, "friends": 0, "nick": "Bomber",
-                                      "golden": golden}}
-    d["rpg"] = {sc: {"bomber": True}}
-    if here:
-        suore.spawn(d, sc, 20000.0)
-    sent.clear()
-    assert suore.handle(d, sc, "Bomber", "bang", 20001.0)
-    assert "esploso" in sent[-1][2] and suore.on_penalty(d, sc, "Bomber", 20002.0), sent
-    assert d["flops"][sc]["bomber"]["jam"] == 1
-    return d, sent[-1][2], d["scores"].get(sc, {}).get("bomber")
-
-d, riga, s = boom(3)
-assert s["kills"] == 2 and s["rpg_lost"] == 1 and "(ne hai 2)" in riga, (s, riga)
-d, riga, s = boom(1, golden=1)
-assert s["kills"] == 0 and s["golden"] == 0, s
-d, riga, s = boom(0)
-assert s["kills"] == 0 and "rpg_lost" not in s and "niente da perdere" in riga, (s, riga)
-d, riga, s = boom(None)
-assert s is None and "niente da perdere" in riga, riga
-d, riga, s = boom(2, here=False)
-assert s["kills"] == 1 and "Sprecato" not in riga, (s, riga)
-d, riga, s = boom(0, here=False)
-assert s["kills"] == 0 and "niente da perdere" in riga, riga
 st = suore_stats._scope_stats([{"ts": 1.0, "scope": sc, "nick": "Bomber", "verb": "bang"}] * 3,
-                              boom(3)[0]["scores"][sc])
+                              {"bomber": {"kills": 2, "friends": 0, "nick": "Bomber", "rpg_lost": 1}})
 assert st["discrepanza"] == 0, st["discrepanza"]
-print("ok: RPG esploso costa una stesa, mai sotto zero, anche a canale vuoto")
-
-# il .bef non trova e non usa l'RPG
-suore.P_RPG, suore.P_NOPE = 1.0, 0.0
-dr["rpg"][sc]["puppy"] = True
-assert suore.handle(dr, sc, "puppy", "bef", 9200.0)
-assert dr["rpg"][sc].get("puppy"), "il .bef ha consumato l'RPG"
-assert list(dr["rpg"][sc]) == ["puppy"], dr["rpg"]
-assert sc not in dr.get("rpg_ground", {}), dr["rpg_ground"]
-print("ok: col .bef niente RPG")
-
-# lasciato per terra oltre RPG_TTL, sparisce; il .take tardivo non lo prende
-de = suore.empty()
-suore.P_RPG, suore.P_JAM = 1.0, 0.0
-suore.spawn(de, sc, 1000.0)
-assert suore.handle(de, sc, "Sythos", "bang", 1001.0)
-suore.P_RPG = 0.0
-sent.clear()
-assert suore.handle(de, sc, "Sythos", "take", 1001.0 + suore.RPG_TTL + 1)
-assert "niente da raccogliere" in sent[-1][2], sent
-assert sc not in de["rpg_ground"] and "sythos" not in de.get("rpg", {}).get(sc, {}), de
-# e se non lo raccoglie, il .bang dopo e' un colpo di fucile normale
-suore.spawn(de, sc, 2000.0)
-sent.clear()
-assert suore.handle(de, sc, "Sythos", "bang", 2001.0)
-assert "Con l'RPG." not in sent[0][2], sent
-print("ok: RPG scaduto sparisce, il .bang resta un fucile")
-
-# .take e' un comando riconosciuto, anche col !
-assert suore.CMD_PAT.match(".take") and suore.CMD_PAT.match("!TAKE")
-assert not suore.CMD_PAT.match(".takeaway")
-print("ok: .take nel parser")
+# e il caricamento butta le chiavi dell'RPG dagli stati vecchi
+vecchio = dict(suore.empty(), rpg={sc: {"vjt": True}},
+               rpg_ground={sc: {"nick": "vjt", "at": 1.0}})
+open(os.environ["SUORE_STATE"], "w").write(json.dumps(vecchio))
+caricato = suore.load()
+assert "rpg" not in caricato and "rpg_ground" not in caricato, caricato
+assert not suore.CMD_PAT.match(".take")
+print("ok: niente RPG, la storia con rpg_lost torna")
 
 # colpo a vuoto per sondare il timer = cilecca (Malekith, #sbiffo 13/10);
 # chi l'ha mancata di poco invece no
@@ -651,7 +558,7 @@ print("ok: rivalita' e heatmap")
 # altrui ruba una volta a ciascuno, non una per colpo; sui colpi propri niente
 dg = suore.empty()
 sg = "azzurra/#sbiffo"
-suore.P_JAM = suore.P_NOPE = suore.P_RPG = 0.0
+suore.P_JAM = suore.P_NOPE = 0.0
 dg["nuns"][sg] = {"chan": "#sbiffo", "at": 30000.0, "golden": True, "hp": 4}
 suore.handle(dg, sg, "vjt", "bang", 30001.0)
 suore.handle(dg, sg, "VJT", "bang", 30002.0)
@@ -731,7 +638,9 @@ righe = [
     # dorata chiusa col razzo, la riga di chiusura non ancora nel log
     f"11:00:00 > [suore] PRIVMSG #sbiffo :{B}\u25e6\\_\u2720< GLORIA IN EXCELSIS!{O}",
     f"11:00:02 > [suore] PRIVMSG #sbiffo :{B}vjt: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le restano 4 vite.{O}",
-    "11:00:03 > [suore] PRIVMSG #sbiffo :" + suore.RPG_BOOM.format(nick="alk", p=7, n=3),
+    # riga storica: l'RPG e' stato tolto il 21/10, i log vecchi ce l'hanno
+    "11:00:03 > [suore] PRIVMSG #sbiffo :alk: l'RPG ti e' esploso in faccia, porco dio. Ci rimetti "
+    "una suora (ne hai 3). Sei fuori per questa suora, riprova fra 7 secondi.",
 ]
 ircnet = [
     f"12:00:00 > [suore] PRIVMSG #cybernet :{B}\\_\u271f< ALLELUIA!{O}",

@@ -273,8 +273,9 @@ def _scope_stats(events, scores, flops=None, soffiate=None):
 
     kills_stato = sum(r["kills"] for r in tabella)
     bang_log = sum(1 for e in events if e["verb"] == "bang")
-    # Le stese perse per un RPG esploso (suore.rpg_boom) stanno nel log ma non
-    # piu' nello stato: non sono discrepanza, sono conto.
+    # Le stese perse per un RPG esploso stanno nel log ma non piu' nello stato:
+    # non sono discrepanza, sono conto. L'RPG e' stato tolto il 21/10 (vjt),
+    # ma `rpg_lost` resta negli stati vecchi e la storia deve tornare.
     perse_rpg = sum(r.get("rpg_lost", 0) for r in scores.values()
                     if isinstance(r, dict))
 
@@ -330,6 +331,7 @@ _FLOP = (
                        r"Ti si e' inceppato il fucile)")),
     ("nope", re.compile(r"^(?P<nick>[^:\s]+): (?:Chi l'avrebbe detto che le suore|"
                         r"La suora ha detto no|La suora ti ha lanciato un'occhiataccia)")),
+    # Storico: l'RPG non c'e' piu' dal 21/10, ma i log delle dorate vecchie si.
     ("boom", re.compile(r"^(?P<nick>[^:\s]+): l'RPG ti e' esploso in faccia")),
 )
 # «si e' fatto amico» e' la riga del .bef dorato prima del 13/10.
@@ -451,7 +453,8 @@ def _chiave(ev):
 def storia(g):
     """Dal giro del log a quello che finisce nel JSON. `rpg` se la riga lo
     dice, o se l'ultimo colpo le lasciava piu' di una vita (o nessun colpo:
-    una dorata parte da tre): solo il razzo chiude in un colpo solo."""
+    una dorata parte da tre): solo il razzo chiude in un colpo solo. Tutto
+    storico: l'RPG e' stato tolto il 21/10, le dorate di prima lo raccontano."""
     colpi = [r for r in g["storia"] if r[1] in ("bang", "bef")]
     out = {"storia": g["storia"]}
     if g.get("rpg") or not colpi or colpi[-1][2] > 1:

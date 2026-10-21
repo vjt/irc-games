@@ -1180,7 +1180,7 @@ function giocatori(righe, dati) {
   const S = new Map();
   const di = n => {
     const k = n.toLowerCase();
-    if (!S.has(k)) S.set(k, {nick: n, prese: 0, stese: 0, convertite: 0, bang: 0, bef: 0, inceppi: 0, toccate: 0, rpg: 0,
+    if (!S.has(k)) S.set(k, {nick: n, prese: 0, stese: 0, convertite: 0, bang: 0, bef: 0, inceppi: 0, toccate: 0,
       eventi: 0, suore: 0, kills: 0, friends: 0, cil: 0, med: 0, media: 0, record: null, canali: 0, ore: new Array(24).fill(0),
       soffiate: 0, derubato: 0});
     return S.get(k);
@@ -1189,7 +1189,6 @@ function giocatori(righe, dati) {
     const f = di(r.nick), visti = new Set([r.nick.toLowerCase()]);
     f.prese++; f.toccate++;
     if (r.verbo === "bef") f.convertite++; else f.stese++;
-    if (r.rpg) f.rpg++;
     (r.storia || []).forEach(([n, e]) => {
       const s = di(n);
       if (!visti.has(n.toLowerCase())) { visti.add(n.toLowerCase()); s.toccate++; }

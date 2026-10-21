@@ -19,8 +19,7 @@ semantica, sta in docs/suore_spec.md. Qui il riassunto operativo:
     annunciato è tutto il tempo passato dalla comparsa (misurate uccisioni a
     923 secondi).
   * `.bang` / `!bang` spara, `.bef` / `!bef` fa amicizia. Il primo che arriva
-    si prende la suora; chi arriva dopo trova il canale vuoto. `.take` /
-    `!take` raccoglie l'RPG trovato per terra (vedi `find_rpg()`).
+    si prende la suora; chi arriva dopo trova il canale vuoto.
   * Sparare o fare amicizia può fallire: fucile inceppato, suora schizzinosa.
     Il fallimento NON consuma la suora e costa 7 secondi di penalità, durante
     i quali i tentativi di quel nick sono ignorati IN SILENZIO — misurato su
@@ -326,7 +325,7 @@ PRIVMSG_PAT = re.compile(
 # allineato. `pewpew` sta prima di `pew` nell'alternanza solo per leggibilita':
 # il separatore obbligato fa gia' fallire `pew` su `.pewpew`.
 CMD_PAT = re.compile(
-    r'^\s*[.!](?P<cmd>bang|pewpew|pew|bef|take|suore|killers|chiestato|chiesato)'
+    r'^\s*[.!](?P<cmd>bang|pewpew|pew|bef|suore|killers|chiestato|chiesato)'
     r'(?:\s.*)?$',
     re.IGNORECASE)
 ALIAS = {"pew": "bang", "pewpew": "bang"}
@@ -387,6 +386,11 @@ def load():
     except (OSError, ValueError):
         return empty()
     data = migrate(data)
+    # L'RPG non c'e' piu' (vjt, #sbiffo 2026-10-21 16:07): le sue chiavi
+    # escono dallo stato al primo salvataggio. `rpg_lost` nei punteggi resta,
+    # lo legge suore_stats per far quadrare la storia.
+    data.pop("rpg", None)
+    data.pop("rpg_ground", None)
     for k, v in empty().items():
         data.setdefault(k, v)
     return data
@@ -789,81 +793,6 @@ def grado(n, field):
     return GRADI[field][i]
 
 
-# L'RPG per terra (stessa discussione). La fortuna non guarda la classifica:
-# stessa probabilita' per tutti, uno alla volta, solo col fucile — il `.bef`
-# non lo trova e non lo usa (puppy: «l'amore è il motivo della vita»). Chi lo
-# tiene spara col prossimo `.bang`: 3 volte su 4 stende qualunque suora,
-# dorata compresa; 1 su 4 gli esplode in faccia, penalita' e cilecca come un
-# inceppamento, e in piu' ci rimette una suora stesa (mai sotto zero; Malekith,
-# #sbiffo 16/10). Sparato a canale vuoto esplode con la stessa probabilita' e
-# lo stesso conto; se non esplode e' sprecato.
-#
-# Raccoglierlo e' una scelta (Sythos, #sbiffo 2026-10-17 19:03, irc-games#20;
-# via di vjt alle 20:01): l'RPG resta per terra e lo prende con `.take` solo
-# chi l'ha trovato, entro RPG_TTL secondi, poi sparisce. Lasciarlo non costa
-# niente, e la scommessa e' vera: contro una suora normale il fucile stende
-# l'85% delle volte, l'RPG il 75% con l'esplosione in coda. Conviene solo
-# sulla dorata, e chi lo raccoglie lo spara al `.bang` dopo comunque vada.
-P_RPG = float(os.environ.get("SUORE_RPG", "0.03"))
-P_RPG_BOOM = 0.25
-RPG_TTL = 60.0
-RPG_FOUND = ("{nick}: per terra c'e' un RPG. Scrivi .take entro {ttl} secondi "
-             "per raccoglierlo, il .bang dopo lo spara; se lo lasci, sparisce.")
-RPG_TAKEN = "{nick}: RPG raccolto. Il prossimo .bang lo spara."
-RPG_NONE = "{nick}: per terra non c'e' niente da raccogliere."
-RPG_BOOM = ("{nick}: l'RPG ti e' esploso in faccia, porco dio. Ci rimetti una "
-            "suora (ne hai {n}). Sei fuori per questa suora, riprova fra {p} secondi.")
-RPG_BOOM_NULLA = ("{nick}: l'RPG ti e' esploso in faccia, porco dio. Non avevi "
-                  "niente da perdere. Sei fuori per questa suora, riprova fra "
-                  "{p} secondi.")
-
-
-def rpg_boom(data, scope, nick, now, net, chan, coda=""):
-    """L'RPG esplode: penalita', cilecca e una stesa in meno (mai sotto zero).
-    Se la stesa persa era l'ultima dorata coperta, se ne va anche la dorata:
-    `dorate(s, "kills")` non deve mai superare `kills`. `rpg_lost` tiene il
-    conto per `suore_stats`, che senza vedrebbe il log eventi contare piu'
-    stese dello stato. Chi non ha una riga in classifica non ne prende una."""
-    punish(data, scope, nick, now)
-    s = data["scores"].get(scope, {}).get(canon(nick))
-    if s and s.get("kills", 0) > 0:
-        s["kills"] -= 1
-        if dorate(s, "kills") > s["kills"]:
-            s["golden"] -= 1
-        s["rpg_lost"] = s.get("rpg_lost", 0) + 1
-        riga = RPG_BOOM.format(nick=nick, p=PENALTY, n=s["kills"])
-    else:
-        riga = RPG_BOOM_NULLA.format(nick=nick, p=PENALTY)
-    say(net, chan, riga + coda)
-    conta_flop(data, scope, nick, "jam")
-
-
-def find_rpg(data, scope, nick, net, chan, now):
-    """Il dado del 3%, tirato dopo un `.bang` contro una suora vera (presa,
-    colpo sulla dorata o inceppamento). Chi ne ha gia' uno in tasca non ne
-    trova un secondo. Quello trovato va per terra, non in tasca: lo tiene su
-    `take_rpg()`. Un RPG nuovo prende il posto di quello ancora per terra."""
-    if canon(nick) in data.get("rpg", {}).get(scope, {}) or random.random() >= P_RPG:
-        return
-    data.setdefault("rpg_ground", {})[scope] = {"nick": canon(nick), "at": now}
-    say(net, chan, RPG_FOUND.format(nick=nick, ttl=int(RPG_TTL)))
-
-
-def take_rpg(data, scope, nick, now):
-    """`.take`: l'RPG per terra passa in tasca, se e' di chi lo chiede e non e'
-    scaduto. Ritorna la riga da dire e se lo stato e' cambiato."""
-    ground = data.get("rpg_ground", {})
-    g = ground.get(scope)
-    if g and now - g["at"] > RPG_TTL:
-        del ground[scope]
-        return RPG_NONE.format(nick=nick), True
-    if not g or g["nick"] != canon(nick):
-        return RPG_NONE.format(nick=nick), False
-    del ground[scope]
-    data.setdefault("rpg", {}).setdefault(scope, {})[canon(nick)] = True
-    return RPG_TAKEN.format(nick=nick), True
-
-
 def promosso(prima, dopo, field):
     """La coda « Nuovo grado: X!» quando il punto appena fatto passa una soglia."""
     g = grado(dopo, field)
@@ -956,8 +885,7 @@ def handle(data, scope, nick, cmd, now):
                        f"{plural(s['kills'], 'suora', 'suore')}{di_cui} e ne ha "
                        f"fatte amiche {s['friends']} in {chan}: "
                        f"{grado(s['kills'], 'kills')} e "
-                       f"{grado(s['friends'], 'friends')}"
-                       f"{', con un RPG in tasca' if canon(nick) in data.get('rpg', {}).get(scope, {}) else ''}. "
+                       f"{grado(s['friends'], 'friends')}. "
                        f"{when_line(data, scope, now, nick)}")
         return True  # score_for puo' aver creato la riga del nick
 
@@ -990,20 +918,9 @@ def handle(data, scope, nick, cmd, now):
                        f"Rientri fra {human_time(until - now)}.")
         return False
 
-    if cmd == "take":
-        # Prima della penalita': raccogliere non e' sparare, e chi ha appena
-        # trovato l'RPG su un inceppamento e' gia' dentro i suoi 7 secondi.
-        riga, changed = take_rpg(data, scope, nick, now)
-        say(net, chan, riga)
-        return changed
-
     if on_penalty(data, scope, nick, now):
         # Silenzio voluto: vedi il commento in testa al file.
         return False
-
-    # L'RPG si stacca dallo stato appena lo si spara, comunque vada: uno alla
-    # volta, e chi lo spreca a vuoto non se lo ritrova al colpo dopo.
-    rpg = cmd == "bang" and bool(data.get("rpg", {}).get(scope, {}).pop(canon(nick), None))
 
     if not here:
         # La previsione va in coda al buco: e' proprio qui che serve a chi ha
@@ -1016,13 +933,6 @@ def handle(data, scope, nick, cmd, now):
         else:
             conta_soffiata(data, scope, nick,
                            now - data["last_taken"][scope].get("at", 0))
-        if rpg:
-            if random.random() < P_RPG_BOOM:
-                rpg_boom(data, scope, nick, now, net, chan, f"{mancata}{prossima}")
-                return True
-            say(net, chan, f"{nick}: hai sparato l'RPG contro il nulla. Sprecato."
-                           f"{mancata}{prossima}")
-            return True
         if cmd == "bang":
             say(net, chan, f"{nick}: Non c'e' nessuna suora! A cosa stai sparando?"
                            f"{mancata}{prossima}")
@@ -1032,15 +942,9 @@ def handle(data, scope, nick, cmd, now):
                            f"{mancata}{prossima}")
         return not mancata
 
-    if rpg:
-        if random.random() < P_RPG_BOOM:
-            rpg_boom(data, scope, nick, now, net, chan)
-            return True
-        nun["hp"] = 1               # one-shot: la dorata non regge un razzo
-    elif cmd == "bang" and random.random() < P_JAM:
+    if cmd == "bang" and random.random() < P_JAM:
         punish(data, scope, nick, now)
         flop(data, scope, nick, random.choice(JAMS), net, chan, "jam")
-        find_rpg(data, scope, nick, net, chan, now)
         return True
     if cmd == "bef" and random.random() < P_NOPE:
         punish(data, scope, nick, now)
@@ -1059,8 +963,6 @@ def handle(data, scope, nick, cmd, now):
         say(net, chan, f"\x02{nick}: {verbo}, ma la suora dorata regge ancora: "
                        f"le {plural(nun['hp'], 'resta', 'restano')} {nun['hp']} "
                        f"{plural(nun['hp'], 'vita', 'vite')}.\x0F")
-        if cmd == "bang":
-            find_rpg(data, scope, nick, net, chan, now)
         return True
 
     took = human_time(now - nun["at"])
@@ -1093,11 +995,10 @@ def handle(data, scope, nick, cmd, now):
     now_above = {canon(x["nick"]) for x in above(data, scope, nick, field)}
     jumped = was_above - now_above
     passed = [x for x in board(data, scope, field) if canon(x["nick"]) in jumped]
-    # Grado e RPG stanno in CODA, dopo il punto che chiude la formula: la
+    # Il grado sta in CODA, dopo il punto che chiude la formula: la
     # testa dell'annuncio la rilegge il parser del backfill (suore_events), e
     # un titolo davanti al nick la renderebbe irriconoscibile.
     tail = (standing(data, scope, nick, passed, field)
-            + (" Con l'RPG." if rpg else "")
             + (promosso(s[field] - 1, s[field], field)
                or f" Grado: {grado(s[field], field)}."))
     # La reazione qui e' il numero grezzo, non la stringa di human_time(): il
@@ -1121,8 +1022,6 @@ def handle(data, scope, nick, cmd, now):
         else:
             say(net, chan, f"{nick} hai fatto secca una suora in {took}! "
                            f"Ne hai stese {s['kills']} in {chan}.{tail}{prossima}")
-        if not rpg:
-            find_rpg(data, scope, nick, net, chan, now)
     else:
         if golden:
             say(net, chan, f"\x02{nick} ha fatto amicizia con la SUORA DORATA in "
