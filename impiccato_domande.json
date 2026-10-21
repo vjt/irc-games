@@ -425,96 +425,6 @@
    "a": "TOTP"
   },
   {
-   "cat": "irc",
-   "q": "Quale comando IRC entra in un canale?",
-   "a": "JOIN"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale comando IRC manda un messaggio senza pretendere risposta automatica?",
-   "a": "NOTICE"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale servizio di rete custodisce la registrazione dei nick?",
-   "a": "NickServ"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale servizio di rete custodisce la registrazione dei canali?",
-   "a": "ChanServ"
-  },
-  {
-   "cat": "irc",
-   "q": "Come si chiama la rottura di una rete IRC in due tronconi?",
-   "a": "netsplit"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale modo utente nasconde l'host dietro una maschera?",
-   "a": "cloak",
-   "alt": [
-    "vhost",
-    "host mask"
-   ]
-  },
-  {
-   "cat": "irc",
-   "q": "Quale numerico IRC saluta il client appena registrato?",
-   "a": "001"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale messaggio tiene viva la connessione IRC e va sempre ricambiato?",
-   "a": "PING"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale modo di canale impedisce a chi non e' dentro di scriverci?",
-   "a": "no external",
-   "alt": [
-    "n",
-    "modo n"
-   ]
-  },
-  {
-   "cat": "irc",
-   "q": "Quale comando IRC chiede a un server chi e' un certo utente?",
-   "a": "WHOIS"
-  },
-  {
-   "cat": "irc",
-   "q": "Come si chiama l'estensione moderna che porta tag e capacita' al protocollo IRC?",
-   "a": "IRCv3"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale demone IRC fa girare la rete Azzurra?",
-   "a": "bahamut"
-  },
-  {
-   "cat": "irc",
-   "q": "Come si chiama il messaggio che il canale mostra a chi entra?",
-   "a": "topic",
-   "alt": [
-    "entrymsg"
-   ]
-  },
-  {
-   "cat": "irc",
-   "q": "Quale comando butta fuori qualcuno da un canale senza bandirlo?",
-   "a": "KICK"
-  },
-  {
-   "cat": "irc",
-   "q": "Come si chiama il client che resta connesso al posto tuo mentre dormi?",
-   "a": "bouncer",
-   "alt": [
-    "bnc",
-    "znc"
-   ]
-  },
-  {
    "cat": "web",
    "q": "Quale header indica al server che i dati inviati sono in formato JSON?",
    "a": "Content type"
@@ -3274,120 +3184,6 @@
    ]
   },
   {
-   "cat": "irc",
-   "q": "Quale comando IRC esce da un canale?",
-   "a": "PART"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale comando IRC cambia il proprio soprannome?",
-   "a": "NICK"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale comando IRC chiede informazioni su un utente?",
-   "a": "WHOIS"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale comando IRC caccia qualcuno da un canale?",
-   "a": "KICK"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale modo di canale impedisce di entrare senza invito?",
-   "a": "i",
-   "alt": [
-    "+i"
-   ]
-  },
-  {
-   "cat": "irc",
-   "q": "Quale modo di canale nasconde il canale dalla lista?",
-   "a": "s",
-   "alt": [
-    "+s"
-   ]
-  },
-  {
-   "cat": "irc",
-   "q": "Quale modo utente rende invisibile nella lista dei canali?",
-   "a": "i",
-   "alt": [
-    "+i"
-   ]
-  },
-  {
-   "cat": "irc",
-   "q": "Quale servizio di Azzurra registra e protegge i soprannomi?",
-   "a": "NickServ"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale servizio di Azzurra gestisce i canali registrati?",
-   "a": "ChanServ"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale simbolo precede il soprannome di chi ha i privilegi di operatore di canale?",
-   "a": "chiocciola",
-   "alt": [
-    "@"
-   ]
-  },
-  {
-   "cat": "irc",
-   "q": "Come si chiama la separazione della rete in due tronconi che non si vedono?",
-   "a": "netsplit"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale messaggio manda il server per verificare che il client sia vivo?",
-   "a": "PING"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale risposta deve dare il client al PING del server?",
-   "a": "PONG"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale comando manda un messaggio senza aspettarsi risposta automatica dai bot?",
-   "a": "NOTICE"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale comando IRC descrive un'azione in terza persona?",
-   "a": "ACTION",
-   "alt": [
-    "me",
-    "/me"
-   ]
-  },
-  {
-   "cat": "irc",
-   "q": "Quale porta usa di solito IRC su TLS?",
-   "a": "6697"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale porta usa storicamente IRC in chiaro?",
-   "a": "6667"
-  },
-  {
-   "cat": "irc",
-   "q": "Come si chiama la riga di descrizione in cima a un canale?",
-   "a": "topic"
-  },
-  {
-   "cat": "irc",
-   "q": "Quale estensione moderna del protocollo IRC aggiunge le capability?",
-   "a": "IRCv3",
-   "alt": [
-    "ircv3"
-   ]
-  },
-  {
    "cat": "web",
    "q": "Quale codice HTTP significa che la risorsa non esiste?",
    "a": "404"
@@ -5538,6 +5334,378 @@
     "route origin authorization",
     "route origin authorisation"
    ]
+  },
+  {
+   "cat": "irc",
+   "q": "Chi ha scritto il primo server IRC, nel 1988?",
+   "a": "Oikarinen",
+   "alt": [
+    "Jarkko Oikarinen",
+    "Jarkko"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "In quale paese e' nato IRC?",
+   "a": "Finlandia",
+   "alt": [
+    "Finland"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "In quale universita' finlandese e' nato IRC?",
+   "a": "Oulu"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiamava il primo server IRC della storia, tolsun.oulu.fi?",
+   "a": "tolsun",
+   "alt": [
+    "tolsun.oulu.fi"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale BBS finlandese doveva rimpiazzare IRC con la sua chat?",
+   "a": "OuluBox"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale RFC del 1993 descrive per la prima volta il protocollo IRC?",
+   "a": "1459",
+   "alt": [
+    "rfc 1459",
+    "rfc1459"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale RFC del 2000 descrive il protocollo lato client di IRC?",
+   "a": "2812",
+   "alt": [
+    "rfc 2812",
+    "rfc2812"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Cosa significa la E di EFnet?",
+   "a": "Eris"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale rete nasce dalla grande scissione europea di EFnet del 1996?",
+   "a": "IRCnet"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale rete introdusse NickServ e ChanServ nel 1994?",
+   "a": "DALnet"
+  },
+  {
+   "cat": "irc",
+   "q": "Da quale rete arriva bahamut, il demone di Azzurra?",
+   "a": "DALnet"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale rete ha raccolto la diaspora di freenode nel 2021?",
+   "a": "Libera",
+   "alt": [
+    "Libera.Chat",
+    "liberachat"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Durante quale golpe del 1991 IRC racconto' in diretta cosa succedeva a Mosca?",
+   "a": "agosto",
+   "alt": [
+    "golpe di agosto",
+    "putsch di agosto"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Chi ha scritto mIRC?",
+   "a": "Mardam-Bey",
+   "alt": [
+    "Khaled Mardam-Bey",
+    "Khaled"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Chi ha scritto irssi, prima di dedicarsi a Dovecot?",
+   "a": "Sirainen",
+   "alt": [
+    "Timo Sirainen",
+    "Timo"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Da quale client storico discende BitchX?",
+   "a": "ircII",
+   "alt": [
+    "irc2",
+    "ircii"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale bot in Tcl e' il guardiano storico dei canali?",
+   "a": "eggdrop"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiamavano i services scritti da vjt per Azzurra?",
+   "a": "suxserv"
+  },
+  {
+   "cat": "irc",
+   "q": "Quanti byte al massimo una riga del protocollo IRC, CRLF compreso?",
+   "a": "512",
+   "alt": [
+    "cinquecentododici"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quanti caratteri al massimo un nick secondo la RFC 1459?",
+   "a": "9",
+   "alt": [
+    "nove"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale numerico annuncia le caratteristiche del server, tipo PREFIX e CHANTYPES?",
+   "a": "005",
+   "alt": [
+    "5",
+    "ISUPPORT",
+    "RPL_ISUPPORT"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale numerico risponde quando il nick e' gia' in uso?",
+   "a": "433",
+   "alt": [
+    "ERR_NICKNAMEINUSE"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale numerico chiude il MOTD?",
+   "a": "376",
+   "alt": [
+    "RPL_ENDOFMOTD"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale numerico porta la lista dei NAMES di un canale?",
+   "a": "353",
+   "alt": [
+    "RPL_NAMREPLY"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale numerico ti dice che sei bannato dal canale?",
+   "a": "474",
+   "alt": [
+    "ERR_BANNEDFROMCHAN"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale numerico ti dice che il canale e' solo su invito?",
+   "a": "473",
+   "alt": [
+    "ERR_INVITEONLYCHAN"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale numerico ti dice che il canale e' pieno?",
+   "a": "471",
+   "alt": [
+    "ERR_CHANNELISFULL"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale modo di canale mette la password per entrare?",
+   "a": "k",
+   "alt": [
+    "+k",
+    "key"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale modo di canale fissa il numero massimo di utenti?",
+   "a": "l",
+   "alt": [
+    "+l",
+    "limit"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale modo di canale fa parlare solo op e voice?",
+   "a": "m",
+   "alt": [
+    "+m",
+    "moderato",
+    "moderated"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando trasforma un utente in operatore IRC?",
+   "a": "OPER"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama il ban di un singolo server su user@host?",
+   "a": "K-line",
+   "alt": [
+    "kline",
+    "k line"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama, nei services, il ban di rete impostato da OperServ?",
+   "a": "AKILL",
+   "alt": [
+    "autokill"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale servizio recapita i messaggi a chi e' offline?",
+   "a": "MemoServ"
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiama il furto di un canale approfittando di un netsplit?",
+   "a": "takeover",
+   "alt": [
+    "split riding",
+    "riding"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Cosa manda il server quando due utenti con lo stesso nick si scontrano dopo uno split?",
+   "a": "KILL",
+   "alt": [
+    "nick collision",
+    "collision"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Con quale motivo di quit ti butta fuori il server se scrivi troppo in fretta?",
+   "a": "Excess Flood",
+   "alt": [
+    "flood"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale motivo di quit appare quando il client smette di rispondere ai PING?",
+   "a": "Ping timeout"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale sigla indica il trasferimento file diretto tra due client IRC?",
+   "a": "DCC",
+   "alt": [
+    "direct client to client"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale sistema dei bot di file sharing si basa su DCC e comandi tipo SEND #1?",
+   "a": "XDCC"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale byte racchiude un messaggio CTCP?",
+   "a": "0x01",
+   "alt": [
+    "01",
+    "1",
+    "ctrl-a",
+    "control a",
+    "\\001"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale byte apre i colori stile mIRC?",
+   "a": "0x03",
+   "alt": [
+    "03",
+    "3",
+    "ctrl-k",
+    "control k",
+    "\\003"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale richiesta CTCP chiede che client usa qualcuno?",
+   "a": "VERSION"
+  },
+  {
+   "cat": "irc",
+   "q": "Con quale meccanismo IRCv3 ci si autentica prima di finire la registrazione?",
+   "a": "SASL"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRCv3 negozia le capability col server?",
+   "a": "CAP",
+   "alt": [
+    "cap ls",
+    "cap req"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale capability IRCv3 timbra ogni messaggio con l'ora del server?",
+   "a": "server-time",
+   "alt": [
+    "server time",
+    "servertime"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Quale comando IRCv3 chiede al server la storia di un canale?",
+   "a": "CHATHISTORY"
+  },
+  {
+   "cat": "irc",
+   "q": "Quale sito raccoglieva le citazioni piu' idiote dai log IRC?",
+   "a": "bash.org",
+   "alt": [
+    "bash",
+    "qdb"
+   ]
+  },
+  {
+   "cat": "irc",
+   "q": "Come si chiamava il bouncer storico con il prefisso psy?",
+   "a": "psyBNC"
   }
  ]
 }
