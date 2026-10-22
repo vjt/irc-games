@@ -107,6 +107,15 @@ def test_xdcc_pattern():
     assert listgag.XDCC_PAT.match("XDCC  #42  grazie").group(1) == "42"
 
 
+def test_list_pattern():
+    assert listgag.LIST_PAT.match("!list")
+    assert listgag.LIST_PAT.match("! List?!")
+    # parole dopo ignorate (Sythos 2026-10-22)
+    assert listgag.LIST_PAT.match("!list così Sythos è contento")
+    assert listgag.LIST_PAT.match("!listone") is None
+    assert listgag.LIST_PAT.match("whitelist !list") is None
+
+
 # l'offer name: stessa regola di bot.py DCC_OFFER_NAME_PAT, limite 120.
 DCC_OFFER = re.compile(r"[A-Za-z0-9._-]{1,120}\Z")
 
@@ -345,6 +354,7 @@ if __name__ == "__main__":
     test_privmsg_pat_captures_channel_and_query()
     print("ok: PRIVMSG_PAT cattura target canale e query")
     test_xdcc_pattern()
+    test_list_pattern()
     print("ok: XDCC_PAT ancorato, # opzionale, junk in coda tollerato")
     test_dispatch_channel_offers_under_pack_title()
     print("ok: xdcc #N in canale -> DCC offerto col titolo del pack")

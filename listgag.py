@@ -89,7 +89,9 @@ PRIVMSG_PAT = re.compile(
 
 # `!list`, `!List`, `! list`, trailing punctuation — the bait is typed by
 # people who are not being careful. Anchored so `whitelist` never matches.
-LIST_PAT = re.compile(r"^\s*!\s*list\b[\s.!?]*$", re.IGNORECASE)
+# Trailing words are ignored (Sythos 2026-10-22: `!list così X è contento`
+# must still dump), but `!listone` is not `!list`.
+LIST_PAT = re.compile(r"^\s*!\s*list\b", re.IGNORECASE)
 
 # The follow-through: a victim who bites types `xdcc send #N`. Real XDCC
 # leechers send it in a private query to the bot; humans watching the gag send
