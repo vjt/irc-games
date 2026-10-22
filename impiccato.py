@@ -669,7 +669,7 @@ class Impiccato:
         traguardo, il set esaurito e' un catalogo troppo corto per il limite
         chiesto. Chi gioca deve capire quale dei due gli e' capitato.
 
-        `lead` sono le parti che precedono la domanda sulla STESSA riga —
+        `lead` sono le parti che precedono la domanda, su una riga loro —
         l'esito della risposta appena indovinata. Va passato fin dentro
         `end_game`, sennò l'ultima vittoria della partita si perde per strada.
         """
@@ -696,8 +696,13 @@ class Impiccato:
         # La memoria lunga resta troncata al catalogo: e' varieta' fra partite,
         # non un archivio.
         self.state["asked"] = (self.state.get("asked", []) + [d["q"]])[-len(self.domande):]
-        self.emit(chan, lead + [f"❓ [{g['count']}/{limit}] {d['q']}",
-                                mask_of(d["a"], set())])
+        # L'esito sta su una riga sua e la domanda apre sempre la successiva:
+        # accodata all'esito si perdeva (Mezmerize, #it-opers 2026-10-22
+        # 10:26). Due PRIVMSG restano sotto il flood; il kick era a tre.
+        if lead:
+            self.emit(chan, lead)
+        self.emit(chan, [f"❓ [{g['count']}/{limit}] {d['q']}",
+                         mask_of(d["a"], set())])
 
     def end_game(self, chan, reason="limite", lead=()):
         """Chiude la partita e stampa il punteggio DI QUESTA partita.
@@ -1098,11 +1103,12 @@ def selftest():
         g = Impiccato("test", "/dev/null", "", st, {"#t"}, dom, talk=False)
 
         g.handle("a", "#t", "!trivial t")
-        # Apertura, domanda e maschera viaggiano sulla stessa riga: UN PRIVMSG,
-        # non tre. E' il fix del kick per flood — vedi MAX_LINE.
-        assert len(g.sent) == 1, g.sent
+        # Apertura su una riga, domanda e maschera sulla successiva: DUE
+        # PRIVMSG, mai tre — il kick per flood era a tre, vedi MAX_LINE. La
+        # domanda apre sempre la riga sua, sennò chi gioca se la perde.
+        assert len(g.sent) == 2, g.sent
         assert g.sent[0][1].startswith("🎲 Trivial, set t:"), g.sent[0]
-        assert g.sent[0][1].endswith("❓ [1/10] Domanda di prova?  ·  ----- ---"), g.sent[0]
+        assert g.sent[1][1] == "❓ [1/10] Domanda di prova?  ·  ----- ---", g.sent[1]
 
         g.sent.clear()
         g.handle("a", "#t", "z")            # lettera assente -> silenzio
@@ -1159,6 +1165,19 @@ def selftest():
         assert not g8.handle("e", "#t", "secondo me non e' la rete")
         g8.handle("e", "#t", "lo strato rete")
         assert "✅ Esatto e, la risposta era: rete!!!" in g8.sent[-1][1], g8.sent
+
+        # A meta' partita esito e domanda nuova vanno su due righe: la domanda
+        # accodata all'esito se la perdeva chi gioca (Mezmerize, #it-opers
+        # 2026-10-22 10:26).
+        due = [{"q": "q1", "a": "uno", "cat": "t"}, {"q": "q2", "a": "due", "cat": "t"}]
+        g9 = Impiccato("test", "/dev/null", "", st, {"#t"}, due, talk=False)
+        g9.handle("a", "#t", "!trivial t")
+        g9.sent.clear()
+        g9.handle("f", "#t", g9.game("#t")["a"])
+        assert len(g9.sent) == 2, g9.sent
+        assert g9.sent[0][1].startswith("✅ Esatto f"), g9.sent[0]
+        assert "❓" not in g9.sent[0][1], g9.sent[0]
+        assert g9.sent[1][1].startswith("❓ [2/10] q"), g9.sent[1]
 
         # L'accorpamento taglia SOLO fra le parti, mai dentro una: una domanda
         # lunga resta intera anche a costo di una riga sua.
@@ -1447,8 +1466,9 @@ def selftest():
         gs.sent.clear()
         assert gs.handle("voce", "#t", "!skip") is False and gs.sent == []
         assert gs.handle("op", "#t", "!skip") is True
-        line = gs.sent[-1][1]
+        line = gs.sent[-2][1]
         assert f"Saltata da op, la risposta era: {first}." in line, line
+        assert gs.sent[-1][1].startswith("❓ [2/10] q"), gs.sent[-1]
         assert gs.game("#t")["count"] == 2 and gs.game("#t")["a"] != first
         # MODE a piu' argomenti, NICK, PART: gli @ si spostano con la gente.
         gs.track("12:00:01 < :X!x@h MODE #t +bo-o *!*@h voce Op")
