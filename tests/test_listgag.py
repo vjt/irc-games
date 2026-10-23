@@ -81,6 +81,21 @@ def test_find_hint_closes_the_dump():
     assert listgag.FIND_PAT.match("@find il robot selvaggio")
 
 
+def test_find_software_gets_software_tags():
+    # Sythos 2026-10-23: un Photoshop in 1080p fa ridere.
+    rng = random.Random(5)
+    video = re.compile(r"\b(1080p|2160p|720p|BluRay|WEB-DL)\b")
+    for query in ("photoshop 2024", "autocad", "Windows 11 pro", "office crack"):
+        for _ in range(50):
+            name, size = listgag.build_find(rng, listgag.find_title(query))
+            assert not video.search(name), name
+            assert DCC_NAME.match(name), name
+            assert float(size[:-1]) < 7, (name, size)
+    for _ in range(50):
+        name, _size = listgag.build_find(rng, listgag.find_title("il robot selvaggio"))
+        assert video.search(name), name
+
+
 def test_payload_is_a_valid_dcc_name():
     # se il nome non passa DCC_NAME_PAT, bot.py rifiuta ogni transfer.
     assert DCC_NAME.match(listgag.PAYLOAD_FILE), listgag.PAYLOAD_FILE

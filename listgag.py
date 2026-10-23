@@ -294,6 +294,23 @@ FIND_RELEASES = [
     ("iTA.ENG.2160p.UHD.BluRay.x265", (18.0, 39.5)),
     ("iTA.720p.WEB-DL.x264", (1.4, 3.9)),
 ]
+# Chi cerca software non deve vedersi offrire un "Photoshop.1080p.BluRay"
+# (Sythos, #sbiffo 2026-10-23): se uno dei termini sa di programma, la release
+# prende tag e taglie da warez applicativo invece che da film.
+FIND_SOFTWARE_PAT = re.compile(
+    r"^(?:windows|win(?:7|8|10|11|xp)|office|word|excel|powerpoint|outlook|"
+    r"photoshop|illustrator|indesign|premiere|lightroom|acrobat|adobe|"
+    r"autocad|solidworks|revit|sketchup|coreldraw|maya|3dsmax|matlab|"
+    r"visual|vmware|winrar|winzip|nero|norton|kaspersky|avast|ccleaner|idm|"
+    r"macos|linux|ubuntu|debian|android|ableton|cubase|flstudio|"
+    r"crack|keygen|serial|patch|antivirus|driver|software|setup|exe|iso|apk)$",
+    re.IGNORECASE)
+FIND_SOFTWARE_RELEASES = [
+    ("x64.MULTi.Incl.Keygen", (0.3, 4.8)),
+    ("x64.Retail.ISO.Incl.Crack", (2.1, 6.4)),
+    ("Win.x64.Incl.Patch", (0.2, 2.9)),
+    ("MacOS.Incl.Serial", (0.4, 3.6)),
+]
 FIND_EMPTY_LINE = "{nick}: @find di cosa, porco dio? Scrivi cosa cerchi."
 
 
@@ -319,7 +336,8 @@ def build_find(rng, title):
     L'anno NON si inventa: "Amici.Miei.2020" e' sgamato al primo sguardo (Lucy,
     #sbiffo 2026-10-08). Se chi cerca l'ha scritto, va in coda al titolo come
     nelle release vere; se no la release esce senza anno."""
-    tags, (lo, hi) = rng.choice(FIND_RELEASES)
+    software = any(FIND_SOFTWARE_PAT.match(w) for w in title.split("."))
+    tags, (lo, hi) = rng.choice(FIND_SOFTWARE_RELEASES if software else FIND_RELEASES)
     m = FIND_YEAR_PAT.search(title)
     if m:
         title = (title[:m.start()] + title[m.end():]).strip(".") or title
