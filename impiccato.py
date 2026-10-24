@@ -144,8 +144,9 @@ def load_nets():
 
 NETS = load_nets()
 
-# Silenzio in canale dopo il quale la partita si chiude da sola.
-IDLE_STOP = 600
+# Silenzio in canale dopo il quale la partita si chiude da sola. Due minuti
+# su richiesta di Hypnotize (#it-opers 2026-10-25 00:53): dieci erano troppi.
+IDLE_STOP = 120
 # Ogni quanto il loop si sveglia comunque, per poter far scadere l'idle anche
 # quando sul log non passa piu' niente.
 TICK = 20
