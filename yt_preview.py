@@ -40,6 +40,20 @@ Two sources, in this order.
 Both degrade field by field (a missing one prints `-`); a source we cannot read
 at all prints nothing rather than a wrong line.
 
+Any OTHER link gets the page title and description (vjt, #sbiffo 2026-10-24
+21:47: "il fetch di title e meta description o og:description per i link
+pubblicati? in modo safe, no js at all"; 21:48 on redirects: "followarli ma
+con un limite", "3 o 4"). Safe means, see `page_fetch`:
+
+  * http/https on 80/443 only, and every address the name resolves to must
+    be global — no loopback, RFC1918, link-local (cloud metadata), ULA;
+  * the socket connects to the address we checked, not to a second lookup,
+    so a name that resolves public then private (DNS rebinding) gets nowhere;
+  * at most MAX_REDIRECTS hops, each re-checked from scratch;
+  * text/html only, LINK_MAX_BYTES read, one wall-clock deadline overall;
+  * the HTML is parsed, never run, and every control byte is stripped from
+    what goes back out, so a title cannot smuggle a newline into the FIFO.
+
 Shape is the house sidecar shape (chanstats_sidecar.py, next_counter.py): tail
 bot.log, match, write verbs into the bot.send FIFO, non-blocking, so a dead bot
 costs a skipped line and not a wedged daemon.
@@ -48,6 +62,7 @@ Usage:
   yt_preview.py                      # daemon (tail bot.log)
   yt_preview.py --once <url|id>      # print the line, send nothing
   yt_preview.py --search <keywords>  # print the !yt line, send nothing
+  yt_preview.py --link <url>         # print a generic link's line, send nothing
 
 Env:
   YT_LOG           bot.log to tail       (default: the vjt-claude repo one)
@@ -57,9 +72,14 @@ Env:
   YT_API_KEY_FILE  a file holding it (default /usr/local/etc/convento/yt_api_key)
 """
 
+import html.parser
+import http.client
+import ipaddress
 import json
 import os
 import re
+import socket
+import ssl
 import subprocess
 import sys
 import time
@@ -125,6 +145,19 @@ LINK_PAT = re.compile(
 C = "\x03"
 RESET = "\x0f"
 BADGE = f"{C}00,04 ► {RESET}{C}01,00 YouTube {RESET}"
+LINK_BADGE = f"{C}00,02 ► {RESET}"
+
+# Any link at all; trailing punctuation is the sentence's, not the URL's.
+ANY_LINK_PAT = re.compile(r'https?://[^\s<>"\x00-\x1f]+', re.I)
+TRAILING = ".,;:!?)]}'»\""
+MAX_REDIRECTS = 4
+LINK_PORTS = {"http": 80, "https": 443}
+LINK_TIMEOUT = 6          # per socket operation
+LINK_DEADLINE = 10        # the whole thing, redirects included
+LINK_MAX_BYTES = 256 * 1024
+TITLE_MAX = 120
+DESC_MAX = 220
+CONTROL_PAT = re.compile(r'[\x00-\x1f\x7f-\x9f]')
 
 
 def fetch(url):
@@ -329,6 +362,181 @@ def render(info, link=False):
     return line
 
 
+class LinkRefused(Exception):
+    """The link is not one we fetch: wrong scheme/port, private address,
+    too many redirects, not HTML, out of time."""
+
+
+def public_addresses(host, port):
+    """Every address `host` resolves to, if ALL of them are global.
+
+    All, not any: a name with one public and one private record is refused,
+    or the connect would be a coin toss on which one it picks."""
+    try:
+        infos = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+    except (socket.gaierror, UnicodeError):
+        raise LinkRefused("unresolvable")
+    addrs = []
+    for *_, sockaddr in infos:
+        ip = ipaddress.ip_address(sockaddr[0].split("%")[0])
+        if getattr(ip, "ipv4_mapped", None):
+            ip = ip.ipv4_mapped
+        if not ip.is_global or ip.is_multicast:
+            raise LinkRefused(f"not global: {ip}")
+        addrs.append(str(ip))
+    if not addrs:
+        raise LinkRefused("no address")
+    return addrs
+
+
+class _PinnedHTTP(http.client.HTTPConnection):
+    """Connects to the address we vetted, whatever DNS says a second time."""
+
+    def __init__(self, host, ip, port, timeout):
+        super().__init__(host, port, timeout=timeout)
+        self._ip = ip
+
+    def connect(self):
+        self.sock = socket.create_connection((self._ip, self.port), self.timeout)
+
+
+class _PinnedHTTPS(http.client.HTTPSConnection):
+    def __init__(self, host, ip, port, timeout):
+        super().__init__(host, port, timeout=timeout,
+                         context=ssl.create_default_context())
+        self._ip = ip
+
+    def connect(self):
+        sock = socket.create_connection((self._ip, self.port), self.timeout)
+        # SNI and certificate checked against the NAME, socket on the IP.
+        self.sock = self._context.wrap_socket(sock, server_hostname=self.host)
+
+
+def page_fetch(url, resolve=public_addresses):
+    """(final_url, html) for a public text/html page, or LinkRefused.
+
+    `resolve` is the vetting step, injectable so the tests can point it at a
+    local server without teaching the real one to trust loopback."""
+    deadline = time.monotonic() + LINK_DEADLINE
+    for _ in range(MAX_REDIRECTS + 1):
+        u = urllib.parse.urlsplit(url)
+        scheme = (u.scheme or "").lower()
+        if scheme not in LINK_PORTS or not u.hostname:
+            raise LinkRefused(f"scheme {scheme!r}")
+        port = u.port or LINK_PORTS[scheme]
+        if port != LINK_PORTS[scheme]:
+            raise LinkRefused(f"port {port}")
+        ip = resolve(u.hostname, port)[0]
+        cls = _PinnedHTTPS if scheme == "https" else _PinnedHTTP
+        conn = cls(u.hostname, ip, port, LINK_TIMEOUT)
+        try:
+            path = (u.path or "/") + (f"?{u.query}" if u.query else "")
+            conn.request("GET", path, headers={
+                **HEADERS, "Accept": "text/html,application/xhtml+xml",
+                "Accept-Encoding": "identity", "Connection": "close"})
+            r = conn.getresponse()
+            if r.status in (301, 302, 303, 307, 308):
+                loc = r.getheader("Location")
+                if not loc:
+                    raise LinkRefused("redirect without Location")
+                url = urllib.parse.urljoin(url, loc.strip())
+                continue
+            if r.status != 200:
+                raise LinkRefused(f"HTTP {r.status}")
+            ctype = (r.getheader("Content-Type") or "").lower()
+            if "text/html" not in ctype and "xhtml" not in ctype:
+                raise LinkRefused(f"type {ctype!r}")
+            body = b""
+            while len(body) < LINK_MAX_BYTES:
+                if time.monotonic() > deadline:
+                    break  # what we have is usually the <head>, good enough
+                chunk = r.read(min(16384, LINK_MAX_BYTES - len(body)))
+                if not chunk:
+                    break
+                body += chunk
+            m = re.search(r'charset=["\']?([\w-]+)', ctype) or re.search(
+                rb'<meta[^>]+charset=["\']?([\w-]+)', body[:4096], re.I)
+            charset = m.group(1) if m else "utf-8"
+            if isinstance(charset, bytes):
+                charset = charset.decode("ascii", "replace")
+            try:
+                return url, body.decode(charset, "replace")
+            except LookupError:
+                return url, body.decode("utf-8", "replace")
+        finally:
+            conn.close()
+        if time.monotonic() > deadline:
+            raise LinkRefused("deadline")
+    raise LinkRefused("too many redirects")
+
+
+class _HeadParser(html.parser.HTMLParser):
+    """<title> and the description metas. Parsed, never executed."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.meta = {}
+        self.title = ""
+        self._in_title = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "title":
+            self._in_title = True
+        elif tag == "meta":
+            a = dict(attrs)
+            key = (a.get("property") or a.get("name") or "").lower()
+            if key and a.get("content") and key not in self.meta:
+                self.meta[key] = a["content"]
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self._in_title = False
+
+    def handle_data(self, data):
+        if self._in_title:
+            self.title += data
+
+
+def clean(s, limit):
+    """One line, no control bytes (CR/LF, mIRC colours), at most `limit`."""
+    s = " ".join(CONTROL_PAT.sub(" ", s or "").split())
+    return s if len(s) <= limit else s[:limit - 1].rstrip() + "…"
+
+
+def page_info(page):
+    p = _HeadParser()
+    try:
+        p.feed(page)
+    except Exception:
+        pass  # half a page parses into half a result, which is fine
+    title = clean(p.meta.get("og:title") or p.title, TITLE_MAX)
+    desc = clean(p.meta.get("og:description") or p.meta.get("description")
+                 or p.meta.get("twitter:description"), DESC_MAX)
+    return title, desc
+
+
+def link_preview(url, resolve=public_addresses):
+    """The preview line for a generic link, or None."""
+    final, page = page_fetch(url, resolve=resolve)
+    title, desc = page_info(page)
+    if not title and not desc:
+        return None
+    host = clean(urllib.parse.urlsplit(final).hostname or "", 60)
+    if host.startswith("www."):
+        host = host[4:]
+    parts = [f"{LINK_BADGE}{host}"] + [x for x in (title, desc) if x]
+    return " :: ".join(parts)
+
+
+def first_link(text):
+    """First non-YouTube link in a line, trailing punctuation trimmed."""
+    for m in ANY_LINK_PAT.finditer(text):
+        url = m.group(0).rstrip(TRAILING)
+        if not LINK_PAT.match(url):
+            return url
+    return None
+
+
 def say(chan, text):
     """One line to the bot FIFO. Non-blocking open: no reader means ENXIO and a
     skipped line, not a daemon wedged forever on a dead bot."""
@@ -345,6 +553,23 @@ def say(chan, text):
         pass
     finally:
         os.close(fd)
+
+
+def generic(chan, link, last_chan, last_seen):
+    """Same flood rules as the YouTube line, keyed on the URL."""
+    now = time.time()
+    if now - last_chan.get(chan, 0) < COOLDOWN_SEC:
+        return
+    if now - last_seen.get((chan, link), 0) < REPEAT_SEC:
+        return
+    last_chan[chan] = now
+    last_seen[(chan, link)] = now
+    try:
+        line = link_preview(link)
+    except Exception:
+        line = None  # refused, unreachable, garbage: say nothing
+    if line:
+        say(chan, line)
 
 
 def daemon():
@@ -376,6 +601,9 @@ def daemon():
         else:
             hit = LINK_PAT.search(text)
             if not hit:
+                link = first_link(text)
+                if link:
+                    generic(chan, link, last_chan, last_video)
                 continue
             video_id = hit.group("id")
 
@@ -400,6 +628,14 @@ def daemon():
 
 def main():
     argv = sys.argv[1:]
+    if argv[:1] == ["--link"] and len(argv) > 1:
+        try:
+            line = link_preview(argv[1])
+        except LinkRefused as e:
+            print(f"refused: {e}")
+            return 1
+        print(line or "nothing to show")
+        return 0 if line else 1
     if argv[:1] == ["--once"] and len(argv) > 1:
         arg = argv[1]
         hit = LINK_PAT.search(arg)
