@@ -886,7 +886,7 @@ function board(cls, ico, titolo, unita, righe) {
 
 // Stese e convertite sono due partite diverse (e due tabelle diverse), quindi
 // due classifiche e non una sola ordinata a caso.
-function renderTop(scope, d) {
+function renderTop(scope, d, auto) {
   const s = d.scopes[scope], cl = s.classifica || [];
   const bang = cl.filter(r => r.kills > 0).sort((a, b) => b.kills - a.kills)
     .slice(0, TOP_N).map(r => ({nick: r.nick, v: r.kills,
@@ -903,7 +903,9 @@ function renderTop(scope, d) {
   note.textContent = "";
   note.appendChild(document.createTextNode(
     "Quelle dipinte sul cover qui sopra sono finte, nomi inventati dal "
-    + "generatore. Queste sono le vere di " + scope + ", e il badge ⭐ "
+    + "generatore. Queste sono le vere di " + scope
+    + (auto ? " (il canale più giocato: gli altri dal menu qui sopra)" : "")
+    + ", e il badge ⭐ "
     + "accanto al nick sono le dorate stese: in questo canale ne sono "
     + "cadute "));
   note.appendChild(el("b", null, String(s.totali.golden || 0)));
@@ -1079,6 +1081,7 @@ function renderDorate(scopes, d) {
     st.appendChild(stellaStorta(puntiStella(r.nick, r.ts, ranghi)));
     st.style.setProperty("--r", ((caso(i * 7919 + 13)() - .5) * 34).toFixed(1) + "deg");
     st.title = racconto(r);
+    st.dataset.scope = r.scope;
     st.setAttribute("role", "img");
     st.setAttribute("aria-label", st.title);
     st.onclick = () => {
@@ -1094,12 +1097,14 @@ function renderDorate(scopes, d) {
   // ognuna. La misura segue il passo, fra 14 e 42 px (puppy: «stelle piu'
   // imponenti»): con molte piu' dorate di oggi si stringono, e sotto i 14
   // si accavallano — allora servira' un secondo giro.
+  // Col filtro del canale si girano solo le stelle rimaste.
   const cornice = () => {
-    const W = wall.clientWidth, H = wall.clientHeight, n = stelle.length;
-    if (!W || !H) return;
+    const viste = stelle.filter(st => st.style.display !== "none");
+    const W = wall.clientWidth, H = wall.clientHeight, n = viste.length;
+    if (!W || !H || !n) return;
     const passo = 2 * (W + H) / n;
     wall.style.setProperty("--s", Math.max(14, Math.min(42, passo * .86)).toFixed(1) + "px");
-    stelle.forEach((st, i) => {
+    viste.forEach((st, i) => {
       let q = (i + .5) * passo, x, y;
       if (q < W) { x = q; y = 0; }
       else if ((q -= W) < H) { x = W; y = q; }
@@ -1116,6 +1121,7 @@ function renderDorate(scopes, d) {
   box.righe = righe;                       // la demo le rigioca come battute
   box.ranghi = ranghi;                     // e fa le aureole con le stesse stelle
   box.giocatori = giocatori(righe, d);     // e ci fa i titoli di coda
+  box.cornice = cornice;                   // il filtro del canale la rifa' 
   box.hidden = false;
   new ResizeObserver(cornice).observe(wall);
 }
@@ -1359,25 +1365,75 @@ function render(d) {
   const G = {primo: tuttiG[0], ultimo: tuttiG[tuttiG.length - 1],
     max: Math.max(1, ...scopes.map(k => Object.values(d.scopes[k].per_giorno)
       .reduce((a, g) => a + g.bang, 0)))};
-  scopes.forEach(k => box.appendChild(renderScope(k, d.scopes[k], G)));
+  scopes.forEach(k => {
+    const b = renderScope(k, d.scopes[k], G);
+    b.dataset.scope = k;
+    box.appendChild(b);
+  });
   if (G.primo) renderTotale(scopes, d, G);
   renderDorate(scopes, d);
 
-  // Il canale di partenza e' quello piu' giocato, non uno scritto qui dentro:
-  // i canali vanno e vengono, e una preferenza fissa invecchia male.
+  // Il selettore comanda tutta la pagina (peluche, #sbiffo 24/10): senza
+  // scelta si vede tutto di seguito, scelto un canale restano le sue
+  // classifiche, la sua scheda e le sue dorate. Il canale sta nell'URL
+  // (`#sbiffo`, o `#azzurra/sbiffo` se il nome c'e' su due reti), da
+  // mettere nel topic. Senza scelta la top10 e' del canale piu' giocato,
+  // non di uno scritto qui dentro: i canali vanno e vengono, e una
+  // preferenza fissa invecchia male. Le classifiche di canali diversi non
+  // si sommano: sono partite diverse.
   if (scopes.length) {
     const peso = k => d.scopes[k].totali.kills + d.scopes[k].totali.friends;
+    const piuGiocato = scopes.slice().sort((a, b) => peso(b) - peso(a))[0];
     const sel = document.getElementById("topscope");
+    const tutti = document.createElement("option");
+    tutti.value = "";
+    tutti.textContent = "tutti i canali";
+    sel.appendChild(tutti);
     scopes.forEach(k => {
       const o = document.createElement("option");
       o.value = k;
       o.textContent = k;
       sel.appendChild(o);
     });
-    sel.value = scopes.slice().sort((a, b) => peso(b) - peso(a))[0];
-    sel.onchange = () => renderTop(sel.value, d);
+    const norma = x => x.toLowerCase().replace(/#/g, "");
+    const dalHash = () => {
+      let h = location.hash.slice(1);
+      try { h = decodeURIComponent(h); } catch (e) { return ""; }
+      if (!h || h.includes("=")) return "";       // #forma=, #viaggio= della demo
+      h = norma(h);
+      const pieni = scopes.filter(k => norma(k) === h);
+      const corti = scopes.filter(k => norma(k.split("/")[1]) === h);
+      return pieni[0] || (corti.length === 1 ? corti[0] : "");
+    };
+    const filtra = scope => {
+      sel.value = scope;
+      document.querySelectorAll("#scopes > .scope").forEach(b =>
+        b.hidden = !!scope && b.dataset.scope !== scope);
+      const tot = document.getElementById("totale");
+      if (tot.querySelector(".chart")) tot.hidden = !!scope;
+      const dor = document.getElementById("dorate");
+      if (dor.cornice) {
+        let n = 0;
+        dor.querySelectorAll(".stelle > span").forEach(st => {
+          const via = !!scope && st.dataset.scope !== scope;
+          st.style.display = via ? "none" : "";
+          if (!via) n++;
+        });
+        dor.hidden = !n;
+        dor.cornice();
+      }
+      renderTop(scope || piuGiocato, d, !scope);
+    };
+    sel.onchange = () => {
+      const k = sel.value, corto = k && norma(k.split("/")[1]);
+      const doppio = scopes.filter(x => norma(x.split("/")[1]) === corto).length > 1;
+      history.replaceState(null, "", !k ? location.pathname + location.search
+        : "#" + (doppio ? norma(k) : corto));
+      filtra(k);
+    };
+    window.addEventListener("hashchange", () => { const k = dalHash(); if (k || !location.hash) filtra(k); });
     document.getElementById("tops").hidden = false;
-    renderTop(sel.value, d);
+    filtra(dalHash());
   }
 
   const primo = d.primo_evento ? new Date(d.primo_evento * 1000) : null;
