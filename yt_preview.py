@@ -563,6 +563,11 @@ _languorino_deck = []
 # would turn Ambrogio into a resolver for whoever asks.
 IP_BADGE = f"{C}00,03 IP {RESET}"
 IP_SEC = 3
+# Another bot already answering !ip (TOOLS on IRCnet): where it sits, Ambrogio
+# keeps quiet. Presence is followed from the log (NAMES/JOIN/PART/KICK/QUIT/NICK).
+IP_DEFER_TO = os.environ.get("YT_IP_DEFER_TO", "TOOLS").lower()
+GEO_URL = ("http://ip-api.com/json/{ip}?fields=status,country,"
+           "regionName,city,timezone,isp,mobile,proxy,hosting")
 
 
 def reverse_dns(ip, timeout=3):
@@ -597,6 +602,18 @@ def cymru(ip, timeout=5):
     return cols if len(cols) >= 7 and cols[0] not in ("", "NA") else None
 
 
+def geo(ip, timeout=4):
+    """ip-api.com (free tier: plain HTTP, 45 req/min) or None."""
+    req = urllib.request.Request(GEO_URL.format(ip=ip), headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        d = json.loads(r.read(65536))
+    return d if d.get("status") == "success" else None
+
+
+def yes_no(v):
+    return "sì" if v else "no"
+
+
 def ip_info(arg):
     try:
         ip = ipaddress.ip_address(arg.strip("[]"))
@@ -618,7 +635,75 @@ def ip_info(arg):
                      f"{clean(reg, 12)} {clean(alloc, 12)}".rstrip())
     else:
         parts.append(":: AS sconosciuto")
+    try:
+        g = geo(str(ip))
+    except (OSError, ValueError):
+        g = None
+    if g:
+        where = ", ".join(clean(g.get(k), 40) for k in
+                          ("city", "regionName", "country") if g.get(k))
+        tz = clean(g.get("timezone"), 40)
+        parts.append(f":: {where}" + (f" ({tz})" if tz else ""))
+        if g.get("isp"):
+            parts.append(f":: ISP {clean(g['isp'], 60)}")
+        parts.append(f":: proxy {yes_no(g.get('proxy'))}, mobile "
+                     f"{yes_no(g.get('mobile'))}, hosting {yes_no(g.get('hosting'))}")
     return f"{IP_BADGE} " + " ".join(parts)
+
+
+NAMES_PAT = re.compile(r'^\S+ < :\S+ 353 \S+ [=*@] (?P<chan>#\S+) :(?P<names>.*)$')
+ENDNAMES_PAT = re.compile(r'^\S+ < :\S+ 366 \S+ (?P<chan>#\S+) ')
+EVENT_PAT = re.compile(
+    r'^\S+ < :(?P<nick>[^!@\s]+)!\S+ (?P<verb>JOIN|PART|QUIT|NICK|KICK)'
+    r'(?: :?(?P<arg>\S+))?(?: (?P<victim>\S+))?')
+
+
+class Presence:
+    """Which channels `nick` sits in, followed from the bot log."""
+
+    def __init__(self, nick):
+        self.nick = nick
+        self.chans = set()
+        self._names = {}
+
+    def feed(self, line):
+        if m := NAMES_PAT.match(line):
+            names = {n.lstrip("@+%&~").lower() for n in m["names"].split()}
+            self._names.setdefault(m["chan"].lower(), set()).update(names)
+            return
+        if m := ENDNAMES_PAT.match(line):
+            chan = m["chan"].lower()
+            if self.nick in self._names.pop(chan, set()):
+                self.chans.add(chan)
+            else:
+                self.chans.discard(chan)
+            return
+        m = EVENT_PAT.match(line)
+        if not m:
+            return
+        who, verb = m["nick"].lower(), m["verb"]
+        arg = (m["arg"] or "").lower()
+        if verb == "KICK":
+            if (m["victim"] or "").lower() == self.nick:
+                self.chans.discard(arg)
+        elif verb == "NICK":
+            if who == self.nick:
+                self.chans.clear()
+        elif who == self.nick:
+            if verb == "JOIN":
+                self.chans.add(arg)
+            elif verb == "PART":
+                self.chans.discard(arg)
+            elif verb == "QUIT":
+                self.chans.clear()
+
+    def seed(self, path):
+        try:
+            with open(path, errors="replace") as f:
+                for line in f:
+                    self.feed(line.rstrip("\n"))
+        except OSError:
+            pass
 
 
 def next_languorino():
@@ -678,9 +763,12 @@ def daemon():
     last_video = {}
     last_languorino = {}
     last_ip = {}
+    deferred = Presence(IP_DEFER_TO)
+    deferred.seed(LOG)
     p = subprocess.Popen(["tail", "-F", "-n", "0", LOG],
                          stdout=subprocess.PIPE, text=True, errors="replace")
     for line in p.stdout:
+        deferred.feed(line.rstrip("\n"))
         m = PRIVMSG_PAT.search(line)
         if not m:
             continue
@@ -697,6 +785,8 @@ def daemon():
 
         ipcmd = IP_CMD_PAT.match(text)
         if ipcmd:
+            if chan.lower() in deferred.chans:
+                continue
             now = time.time()
             if now - last_ip.get(chan, 0) >= IP_SEC:
                 last_ip[chan] = now
