@@ -1,4 +1,5 @@
-// Chi si prende la fetta (peluche, #sbiffo 16/10): per i primi sei della
+// La corsa in vetta (peluche, #sbiffo 16/10; era "Chi si prende la fetta",
+// rimasuglio della quota %, rinominata 24/10): per i primi sei della
 // classifica di un canale, le stese cumulate giorno per giorno normalizzate su
 // chi era in cima quel giorno ("vs capo": il capo e' un segmento piatto in
 // alto finche' comanda, gli altri sotto a distanza di distacco), e in
@@ -91,8 +92,9 @@
     let scelto = null;
 
     const box = h("div", "quote");
+    box.dataset.ancora = "corsa";          // #corsa: la prima visibile
     const hd = h("div", "qhd");
-    hd.appendChild(h("h2", null, "Chi si prende la fetta"));
+    hd.appendChild(h("h2", null, "La corsa in vetta"));
     const modi = h("div", "modi");
     const bottoni = {};
     const TITOLI = {capo: "in proporzione a chi era in cima quel giorno",

@@ -150,6 +150,10 @@
     box-shadow: 0 0 0 2px #3a1400, 0 0 0 5px #f0c75a, 0 0 0 7px #7a4a10, 0 0 0 9px #3a1400,
       0 0 26px 6px rgba(217, 164, 65, .35), inset 0 0 0 2px #3a1400;
   }
+  /* demo spenta (vjt 24/10): palco basso, il link in mezzo */
+  .dorate.spenta .palco { height: clamp(10rem, 30vh, 16rem); }
+  .palco .napoli { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    z-index: 2; color: var(--gold); font-style: italic; text-decoration: underline; }
   .palco canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; border-radius: 4px; }
   /* niente velo del CRT ne' vignettatura sopra la demo (round 6, puppy: «nitido, fotoreale») */
   .stelle { position: absolute; inset: calc(var(--b) / -2); z-index: 3; pointer-events: none; --s: clamp(22px, 2.5vw, 34px); }
@@ -349,7 +353,7 @@
        il verde su nero sbava) e `-define webp:use-sharp-yuv=true`. Insieme
        tolgono un terzo dell'errore per un 7% di byte: RMSE 1.45% contro
        2.15% del 4:2:0 alla stessa q. -->
-  <img class="cover" src="cover.webp" width="1254" height="1254" decoding="async"
+  <img class="cover" src="/suore/cover.webp" width="1254" height="1254" decoding="async"
        alt="Pixel art: la Madre Superiora appare in un cimitero, cinque suore intorno e una canna di fucile in primo piano.">
 
   <section class="tops" id="tops" hidden>
@@ -362,15 +366,11 @@
 
   <h2>Come si gioca</h2>
   <section class="howto">
+    <!-- Corto (peluche, #sbiffo 24/10: «l'unica cosa che serve sapere di
+         partenza e' !bang, il resto e' intuitivo»). -->
     <ul>
-      <li>Ogni tanto, a caso, passa una suora: una riga di arte ASCII col suo richiamo. <b>Non scappa</b> &mdash; resta lì finché qualcuno non se la prende, che sia un minuto o tre ore.</li>
-      <li><b>.bang</b> le spara, <b>.bef</b> ci fa amicizia (va bene anche <b>!bang</b> e <b>!bef</b>). Il primo che arriva se la prende, gli altri trovano il canale vuoto.</li>
-      <li>Il colpo può fallire: fucile inceppato o suora schizzinosa. La suora <b>resta</b>, e chi ha sbagliato sta zitto per sette secondi &mdash; in quei sette secondi i suoi tentativi vengono ignorati in silenzio.</li>
-      <li>Circa una suora su dodici è <b>dorata</b>: regge da tre a sei colpi, e di solito serve il canale intero per portarla giù. Chi tira quello finale se la mette in bacheca, e le dorate hanno una colonna tutta loro.</li>
-      <li>Stese e convertite sono <b>due partite diverse</b>: chi spara scala i killer, chi fa amicizia scala i marpioni. <b>.classifica</b> le stampa tutte e due in canale.</li>
-      <li>Ogni canale ha la sua suora, il suo timer e i suoi punteggi. Due canali sono due partite, e non si mescolano.</li>
-      <li><b>.suore</b> dice come sta il canale: quante ne sono passate, i tempi, quando è stata presa l'ultima e più o meno quando arriva la prossima. <b>.chiestato</b> dice chi si è preso l'ultima e cosa le ha fatto. Nessuno dei due gioca: guardano e basta.</li>
-      <li>Copiare e incollare la riga della suora non serve a niente, e chi la spara con uno script prima o poi finisce fuori dal gioco. Come lo becchiamo non si dice.</li>
+      <li>Quando in canale passa una suora: <b>.bang</b> la spara, <b>.bef</b> ci fa amicizia (anche <b>!bang</b>, <b>!bef</b>). Il primo se la prende.</li>
+      <li>Le <b>dorate</b> reggono più colpi: di solito serve il canale intero. <b>.classifica</b> per i punteggi.</li>
     </ul>
     <div class="irc">
       <div><span class="t">21:04</span> <span class="bot">&lt;Convento&gt;</span> ◦◦•◦◦•◦◦\_✝&lt; ORA PRO NOBIS!</div>
@@ -398,7 +398,7 @@
   <footer id="foot"></footer>
 </div>
 
-<script src="quote.js"></script>
+<script src="/suore/quote.js"></script>
 <script>
 const MEDALS = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
 
@@ -1396,14 +1396,29 @@ function render(d) {
       sel.appendChild(o);
     });
     const norma = x => x.toLowerCase().replace(/#/g, "");
-    const dalHash = () => {
-      let h = location.hash.slice(1);
-      try { h = decodeURIComponent(h); } catch (e) { return ""; }
-      if (!h || h.includes("=")) return "";       // #forma=, #viaggio= della demo
-      h = norma(h);
-      const pieni = scopes.filter(k => norma(k) === h);
-      const corti = scopes.filter(k => norma(k.split("/")[1]) === h);
+    // Il canale sta nella query, senza # (peluche, #sbiffo 24/10): ?sbiffo,
+    // o ?azzurra/sbiffo se il nome corto e' doppio. Il # resta alle ancore
+    // delle sezioni (#tops, #totale, #corsa, #dorate) e alla demo (#forma=).
+    const scopeDi = x => {
+      try { x = decodeURIComponent(x); } catch (e) { return ""; }
+      if (!x || x.includes("=")) return "";
+      x = norma(x);
+      const pieni = scopes.filter(k => norma(k) === x);
+      const corti = scopes.filter(k => norma(k.split("/")[1]) === x);
       return pieni[0] || (corti.length === 1 ? corti[0] : "");
+    };
+    const query = k => {
+      if (!k) return "";
+      const corto = norma(k.split("/")[1]);
+      return "?" + (scopes.filter(x => norma(x.split("/")[1]) === corto).length > 1 ? norma(k) : corto);
+    };
+    const ancora = () => {
+      let h = location.hash.slice(1);
+      try { h = decodeURIComponent(h); } catch (e) { return; }
+      if (!h || h.includes("=")) return;
+      const el = document.getElementById(h) || Array.from(document.querySelectorAll("[data-ancora]"))
+        .find(x => x.dataset.ancora === h && x.offsetParent);
+      if (el) el.scrollIntoView();
     };
     const filtra = scope => {
       sel.value = scope;
@@ -1425,15 +1440,20 @@ function render(d) {
       renderTop(scope || piuGiocato, d, !scope);
     };
     sel.onchange = () => {
-      const k = sel.value, corto = k && norma(k.split("/")[1]);
-      const doppio = scopes.filter(x => norma(x.split("/")[1]) === corto).length > 1;
-      history.replaceState(null, "", !k ? location.pathname + location.search
-        : "#" + (doppio ? norma(k) : corto));
-      filtra(k);
+      history.replaceState(null, "", "/suore/" + query(sel.value) + location.hash);
+      filtra(sel.value);
     };
-    window.addEventListener("hashchange", () => { const k = dalHash(); if (k || !location.hash) filtra(k); });
+    // i link vecchi col canale nel # (#sbiffo, 24/10) passano alla query
+    const dalPath = location.pathname.replace(/^\/suore\/?/, "").replace(/\/$/, "");
+    let k = scopeDi(dalPath) || scopeDi(location.search.slice(1));
+    const vecchio = !k && scopeDi(location.hash.slice(1));
+    if (vecchio) {
+      k = vecchio;
+      history.replaceState(null, "", "/suore/" + query(k));
+    }
     document.getElementById("tops").hidden = false;
-    filtra(dalHash());
+    filtra(k);
+    ancora();
   }
 
   const primo = d.primo_evento ? new Date(d.primo_evento * 1000) : null;
@@ -1459,7 +1479,7 @@ function conta(d) {
   return [k, f];
 }
 let viste = null;
-fetch("data.json?_=" + Date.now(), { cache: "no-store" })
+fetch("/suore/data.json?_=" + Date.now(), { cache: "no-store" })
   .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
   .then(d => { viste = conta(d); render(d); })
   .catch(e => {
@@ -1472,7 +1492,7 @@ fetch("data.json?_=" + Date.now(), { cache: "no-store" })
 // ridisegna: tabelle e bacheca restano quelle del caricamento.
 setInterval(() => {
   if (document.hidden || !viste) return;
-  fetch("data.json?_=" + Date.now(), { cache: "no-store" })
+  fetch("/suore/data.json?_=" + Date.now(), { cache: "no-store" })
     .then(r => r.ok ? r.json() : null)
     .then(d => {
       if (!d) return;
@@ -2774,7 +2794,7 @@ setInterval(() => {
         try { fatto({d: x.getImageData(0, 0, c.width, c.height).data, w: c.width, h: c.height, x0, y0, z}); } catch (e) { fatto(null); }
       };
       im.onerror = () => fatto(null);
-      im.src = "sat" + z + ".webp";
+      im.src = "/suore/sat" + z + ".webp";
     });
   }
   function satelliti() {
@@ -3734,12 +3754,27 @@ setInterval(() => {
   const prima = new IntersectionObserver(v => {
     if (!v[v.length - 1].isIntersecting) return;
     prima.disconnect();
-    import("./three.module.min.js").then(m => {
+    import("/suore/three.module.min.js").then(m => {
       THREE = m;
       if (!avvia()) { renderer = null; box.classList.remove("demo"); if (cv) cv.remove(); }
     }).catch(e => { if (window.console) console.error(e); });
   }, {rootMargin: "400px 0px"});
-  prima.observe(box);
+  // Spenta di default (vjt, #sbiffo 24/10: «si puo' levare di default e
+  // nascondere dietro un link»): il palco resta basso con la cornice, e la
+  // demo parte solo col click. `#forma=`/`#viaggio=` la accendono da soli.
+  const accendi = () => { box.classList.remove("spenta"); prima.observe(box); };
+  if (/[#&](forma|viaggio)=/.test(location.hash)) accendi();
+  else {
+    box.classList.add("spenta");
+    const a = document.createElement("a");
+    a.className = "napoli";
+    a.href = "#dorate";
+    a.textContent = "se sei di napoli allora clicca qui";
+    a.onclick = e => { e.preventDefault(); a.remove(); accendi(); };
+    let giri = 0;
+    const dove = () => { const p = box.querySelector(".palco"); if (p) p.appendChild(a); else if (++giri < 150) setTimeout(dove, 200); };
+    dove();
+  }
 })();
 
 </script>
