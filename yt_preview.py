@@ -63,6 +63,7 @@ Usage:
   yt_preview.py --once <url|id>      # print the line, send nothing
   yt_preview.py --search <keywords>  # print the !yt line, send nothing
   yt_preview.py --link <url>         # print a generic link's line, send nothing
+  yt_preview.py --ip <address>       # print the !ip line, send nothing
 
 Env:
   YT_LOG           bot.log to tail       (default: the vjt-claude repo one)
@@ -83,6 +84,7 @@ import socket
 import ssl
 import subprocess
 import sys
+import threading
 import time
 import urllib.parse
 import urllib.request
@@ -136,6 +138,7 @@ HEADERS = {"User-Agent": UA, "Accept-Language": "it-IT,it;q=0.9,en;q=0.6"}
 PRIVMSG_PAT = re.compile(
     r'< :(?P<nick>[^!@\s]+)!\S+\s+PRIVMSG\s+(?P<chan>#\S+)\s+:(?P<text>.*?)$')
 CMD_PAT = re.compile(r'^\s*!yt\s+(?P<q>\S.*?)\s*$', re.I)
+IP_CMD_PAT = re.compile(r'^\s*!ip\s+(?P<ip>\S+)\s*$', re.I)
 # youtu.be/<id>, /watch?v=<id>, /shorts/<id>, /embed/<id>, /live/<id>.
 LINK_PAT = re.compile(
     r'https?://(?:[\w-]+\.)*(?:youtube\.com|youtube-nocookie\.com|youtu\.be)/'
@@ -555,6 +558,69 @@ def link_preview(url, resolve=public_addresses):
 _languorino_deck = []
 
 
+# !ip <address>: reverse DNS plus the origin AS from Team Cymru's whois
+# (one TCP line, no key, no dependency). Only literal addresses: a hostname
+# would turn Ambrogio into a resolver for whoever asks.
+IP_BADGE = f"{C}00,03 IP {RESET}"
+IP_SEC = 3
+
+
+def reverse_dns(ip, timeout=3):
+    out = []
+    t = threading.Thread(target=lambda: out.append(_ptr(ip)), daemon=True)
+    t.start()
+    t.join(timeout)
+    return out[0] if out else None
+
+
+def _ptr(ip):
+    try:
+        return socket.gethostbyaddr(ip)[0]
+    except OSError:
+        return None
+
+
+def cymru(ip, timeout=5):
+    """[AS, IP, prefix, CC, registry, allocated, AS name] or None."""
+    with socket.create_connection(("whois.cymru.com", 43), timeout) as s:
+        s.sendall(f" -v {ip}\r\n".encode())
+        buf = b""
+        while chunk := s.recv(4096):
+            buf += chunk
+            if len(buf) > 16384:
+                break
+    rows = [r for r in buf.decode(errors="replace").splitlines()
+            if "|" in r and not r.startswith("AS ")]
+    if not rows:
+        return None
+    cols = [c.strip() for c in rows[0].split("|")]
+    return cols if len(cols) >= 7 and cols[0] not in ("", "NA") else None
+
+
+def ip_info(arg):
+    try:
+        ip = ipaddress.ip_address(arg.strip("[]"))
+    except ValueError:
+        return f"{IP_BADGE} :: «{clean(arg, 60)}» non è un indirizzo IP."
+    if not ip.is_global:
+        return f"{IP_BADGE} {ip} :: indirizzo privato o riservato, niente AS."
+    parts = [str(ip)]
+    ptr = reverse_dns(str(ip))
+    parts.append(f"→ {clean(ptr, 120)}" if ptr else "→ niente reverse")
+    try:
+        row = cymru(str(ip))
+    except OSError:
+        row = None
+    if row:
+        asn, _, prefix, cc, reg, alloc, name = row[:7]
+        parts.append(f":: AS{clean(asn, 20)} {clean(name, 80)}")
+        parts.append(f":: {clean(prefix, 50)} {clean(cc, 4)} "
+                     f"{clean(reg, 12)} {clean(alloc, 12)}".rstrip())
+    else:
+        parts.append(":: AS sconosciuto")
+    return f"{IP_BADGE} " + " ".join(parts)
+
+
 def next_languorino():
     """A shuffled deck, not random.choice: no line comes back before every
     other one has had its turn."""
@@ -611,6 +677,7 @@ def daemon():
     last_chan = {}
     last_video = {}
     last_languorino = {}
+    last_ip = {}
     p = subprocess.Popen(["tail", "-F", "-n", "0", LOG],
                          stdout=subprocess.PIPE, text=True, errors="replace")
     for line in p.stdout:
@@ -626,6 +693,14 @@ def daemon():
             if now - last_languorino.get(chan, 0) >= LANGUORINO_SEC:
                 last_languorino[chan] = now
                 say(chan, next_languorino())
+            continue
+
+        ipcmd = IP_CMD_PAT.match(text)
+        if ipcmd:
+            now = time.time()
+            if now - last_ip.get(chan, 0) >= IP_SEC:
+                last_ip[chan] = now
+                say(chan, ip_info(ipcmd.group("ip")))
             continue
 
         if chan not in CHANNELS:
@@ -681,6 +756,9 @@ def main():
             return 1
         print(line or "nothing to show")
         return 0 if line else 1
+    if argv[:1] == ["--ip"] and len(argv) > 1:
+        print(ip_info(argv[1]))
+        return 0
     if argv[:1] == ["--once"] and len(argv) > 1:
         arg = argv[1]
         hit = LINK_PAT.search(arg)
