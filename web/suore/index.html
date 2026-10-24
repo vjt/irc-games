@@ -268,8 +268,9 @@
   .howto b { color: var(--gold); font-weight: 600; }
   /* Il finto log e' l'unico posto della pagina che deve reggere righe lunghe
      senza mandare in scroll il body: scorre da solo, come le tabelle. */
-  .irc { overflow-x: auto; background: #0b0c0e; border: 1px solid var(--line); border-radius: 4px; padding: .8rem .9rem; font-size: .8rem; line-height: 1.5; }
-  .irc div { white-space: pre; }
+  .irc { background: #0b0c0e; border: 1px solid var(--line); border-radius: 4px; padding: .8rem .9rem; font-size: .8rem; line-height: 1.5; }
+  /* va a capo invece di scrollare, col rientro sotto l'ora (vjt, #sbiffo 24/10) */
+  .irc div { white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 2.6em; text-indent: -2.6em; }
   .irc .t { color: #55565c; }
   .irc .n { color: var(--dim); }
   .irc .me { color: var(--friend); }
