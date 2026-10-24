@@ -135,8 +135,10 @@ NETS = load_nets()
 # Quanto dura una manche, e la pausa fra una e l'altra.
 MANCHE_S = 60
 PAUSA_S = 10
-# Manche di fila senza nessuna parola dopo le quali la partita si chiude.
-IDLE_MANCHE = 2
+# Manche di fila senza nessuna parola dopo le quali la partita si chiude: tre
+# da 60s, i tre minuti di silenzio che valgono per tutti i giochi (Hypnotize,
+# #it-opers 2026-10-25 00:56).
+IDLE_MANCHE = 3
 # Quante manche dura una partita se nessuno chiede altro, e il tetto a quello
 # che si puo' chiedere: `!sillabah 500` e' un'ora e mezza di canale occupato.
 DEFAULT_MANCHE = 10
