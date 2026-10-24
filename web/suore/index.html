@@ -886,8 +886,25 @@ function board(cls, ico, titolo, unita, righe) {
 
 // Stese e convertite sono due partite diverse (e due tabelle diverse), quindi
 // due classifiche e non una sola ordinata a caso.
-function renderTop(scope, d, auto) {
-  const s = d.scopes[scope], cl = s.classifica || [];
+// Senza canale la top10 somma tutti i canali per nick, minuscolo come in
+// giocatori() (vjt, #sbiffo 24/10).
+function renderTop(scope, d) {
+  const s = scope ? d.scopes[scope] : {totali: {golden: 0}};
+  let cl = s.classifica || [];
+  if (!scope) {
+    const S = new Map();
+    Object.values(d.scopes).forEach(sc => {
+      s.totali.golden += sc.totali.golden || 0;
+      (sc.classifica || []).forEach(r => {
+        const k = r.nick.toLowerCase();
+        if (!S.has(k)) S.set(k, {nick: r.nick, kills: 0, friends: 0, golden: 0, golden_friends: 0});
+        const t = S.get(k);
+        t.kills += r.kills || 0; t.friends += r.friends || 0;
+        t.golden += r.golden || 0; t.golden_friends += r.golden_friends || 0;
+      });
+    });
+    cl = [...S.values()];
+  }
   const bang = cl.filter(r => r.kills > 0).sort((a, b) => b.kills - a.kills)
     .slice(0, TOP_N).map(r => ({nick: r.nick, v: r.kills,
       gold: (r.golden || 0) - (r.golden_friends || 0)}));
@@ -903,11 +920,11 @@ function renderTop(scope, d, auto) {
   note.textContent = "";
   note.appendChild(document.createTextNode(
     "Quelle dipinte sul cover qui sopra sono finte, nomi inventati dal "
-    + "generatore. Queste sono le vere di " + scope
-    + (auto ? " (il canale più giocato: gli altri dal menu qui sopra)" : "")
+    + "generatore. Queste sono le vere "
+    + (scope ? "di " + scope : "di tutti i canali sommati, nick per nick")
     + ", e il badge ⭐ "
-    + "accanto al nick sono le dorate stese: in questo canale ne sono "
-    + "cadute "));
+    + "accanto al nick sono le dorate stese: "
+    + (scope ? "in questo canale" : "in tutto") + " ne sono cadute "));
   note.appendChild(el("b", null, String(s.totali.golden || 0)));
   note.appendChild(document.createTextNode("."));
 }
@@ -1377,13 +1394,8 @@ function render(d) {
   // scelta si vede tutto di seguito, scelto un canale restano le sue
   // classifiche, la sua scheda e le sue dorate. Il canale sta nell'URL
   // (`#sbiffo`, o `#azzurra/sbiffo` se il nome c'e' su due reti), da
-  // mettere nel topic. Senza scelta la top10 e' del canale piu' giocato,
-  // non di uno scritto qui dentro: i canali vanno e vengono, e una
-  // preferenza fissa invecchia male. Le classifiche di canali diversi non
-  // si sommano: sono partite diverse.
+  // mettere nel topic. Senza scelta la top10 somma tutti i canali.
   if (scopes.length) {
-    const peso = k => d.scopes[k].totali.kills + d.scopes[k].totali.friends;
-    const piuGiocato = scopes.slice().sort((a, b) => peso(b) - peso(a))[0];
     const sel = document.getElementById("topscope");
     const tutti = document.createElement("option");
     tutti.value = "";
@@ -1437,7 +1449,7 @@ function render(d) {
         dor.hidden = !n;
         dor.cornice();
       }
-      renderTop(scope || piuGiocato, d, !scope);
+      renderTop(scope, d);
     };
     sel.onchange = () => {
       history.replaceState(null, "", "/suore/" + query(sel.value) + location.hash);
