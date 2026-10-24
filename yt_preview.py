@@ -618,15 +618,17 @@ def daemon():
         if not m:
             continue
         chan = m.group("chan")
-        if chan not in CHANNELS:
-            continue
         text = m.group("text")
 
+        # Ambrogio is a butler everywhere he sits, not only where previews run.
         if LANGUORINO_PAT.search(text):
             now = time.time()
             if now - last_languorino.get(chan, 0) >= LANGUORINO_SEC:
                 last_languorino[chan] = now
                 say(chan, next_languorino())
+            continue
+
+        if chan not in CHANNELS:
             continue
 
         cmd = CMD_PAT.match(text)
