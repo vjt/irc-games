@@ -559,8 +559,8 @@ _languorino_deck = []
 
 
 # !ip <address>: reverse DNS plus the origin AS from Team Cymru's whois
-# (one TCP line, no key, no dependency). Only literal addresses: a hostname
-# would turn Ambrogio into a resolver for whoever asks.
+# (one TCP line, no key, no dependency), plus geo from ip-api.com. A hostname
+# is resolved (first IPv4 + first IPv6) and each address gets its line.
 IP_BADGE = f"{C}00,03 IP {RESET}"
 IP_SEC = 3
 # Another bot already answering !ip (TOOLS on IRCnet): where it sits, Ambrogio
@@ -614,11 +614,50 @@ def yes_no(v):
     return "sì" if v else "no"
 
 
-def ip_info(arg):
+HOST_PAT = re.compile(r'^(?=.{1,253}$)(?!-)[a-z0-9-]{1,63}(?<!-)'
+                      r'(?:\.(?!-)[a-z0-9-]{1,63}(?<!-))+\.?$', re.I)
+
+
+def resolve(host, timeout=3):
+    """First IPv4 and first IPv6 of `host`, at most two, [] if none."""
+    out = []
+
+    def lookup():
+        try:
+            out.extend(socket.getaddrinfo(host, None, type=socket.SOCK_STREAM))
+        except OSError:
+            pass
+
+    t = threading.Thread(target=lookup, daemon=True)
+    t.start()
+    t.join(timeout)
+    picked = {}
+    for family, *_, addr in list(out):
+        picked.setdefault(family, addr[0])
+    return [picked[f] for f in (socket.AF_INET, socket.AF_INET6) if f in picked]
+
+
+def ip_lines(arg):
+    """!ip answer, one line per address: a literal IP, or a hostname's
+    first IPv4 and first IPv6."""
+    arg = arg.strip("[]")
     try:
-        ip = ipaddress.ip_address(arg.strip("[]"))
+        ipaddress.ip_address(arg)
+        return [ip_info(arg)]
     except ValueError:
-        return f"{IP_BADGE} :: «{clean(arg, 60)}» non è un indirizzo IP."
+        pass
+    if not HOST_PAT.match(arg):
+        return [f"{IP_BADGE} :: «{clean(arg, 60)}» non è né un IP né un hostname."]
+    addrs = resolve(arg)
+    if not addrs:
+        return [f"{IP_BADGE} {clean(arg, 80)} :: non risolve."]
+    return [ip_info(a, host=arg) for a in addrs]
+
+
+def ip_info(arg, host=None):
+    ip = ipaddress.ip_address(arg)
+    if host:
+        return ip_info(arg).replace(f"{IP_BADGE} ", f"{IP_BADGE} {clean(host, 80)} = ", 1)
     if not ip.is_global:
         return f"{IP_BADGE} {ip} :: indirizzo privato o riservato, niente AS."
     parts = [str(ip)]
@@ -790,7 +829,8 @@ def daemon():
             now = time.time()
             if now - last_ip.get(chan, 0) >= IP_SEC:
                 last_ip[chan] = now
-                say(chan, ip_info(ipcmd.group("ip")))
+                for out in ip_lines(ipcmd.group("ip")):
+                    say(chan, out)
             continue
 
         if chan not in CHANNELS:
@@ -847,7 +887,7 @@ def main():
         print(line or "nothing to show")
         return 0 if line else 1
     if argv[:1] == ["--ip"] and len(argv) > 1:
-        print(ip_info(argv[1]))
+        print("\n".join(ip_lines(argv[1])))
         return 0
     if argv[:1] == ["--once"] and len(argv) > 1:
         arg = argv[1]
