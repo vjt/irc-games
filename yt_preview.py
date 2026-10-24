@@ -551,13 +551,41 @@ def page_info(page):
     return title, desc
 
 
+# Instagram's og:description of a post or reel: counts, author, date, caption,
+# where og:title repeats the caption. The hashtags are noise on IRC.
+IG_DESC_PAT = re.compile(
+    r'^(?P<likes>[\d.,]+[KM]?) likes?, (?P<comments>[\d.,]+[KM]?) comments?'
+    r' - (?P<author>\S+) \S+ [^:]+: [\"“](?P<caption>.*)[\"”]\.?\s*$',
+    re.S)
+HASHTAG_PAT = re.compile(r'#\w+')
+
+
+def instagram_info(page):
+    """(title, desc) for an Instagram post, or None when it is not one."""
+    p = _HeadParser()
+    try:
+        p.feed(page)
+    except Exception:
+        pass
+    m = IG_DESC_PAT.match(p.meta.get("og:description") or "")
+    if not m:
+        return None
+    count = lambda s: s.replace(",", ".")
+    title = clean(f"@{m['author']} · {count(m['likes'])} like · "
+                  f"{count(m['comments'])} commenti", TITLE_MAX)
+    caption = clean(HASHTAG_PAT.sub(" ", m["caption"]), DESC_MAX)
+    return title, caption
+
+
 def link_preview(url, resolve=public_addresses):
     """The preview line for a generic link, or None."""
     final, page = page_fetch(url, resolve=resolve)
-    title, desc = page_info(page)
+    host = (urllib.parse.urlsplit(final).hostname or "").lower()
+    ig = host == "instagram.com" or host.endswith(".instagram.com")
+    title, desc = (ig and instagram_info(page)) or page_info(page)
     if not title and not desc:
         return None
-    host = clean(urllib.parse.urlsplit(final).hostname or "", 60)
+    host = clean(host, 60)
     if host.startswith("www."):
         host = host[4:]
     parts = [f"{LINK_BADGE}{host}"] + [x for x in (title, desc) if x]
