@@ -133,3 +133,9 @@ def test_languorino_matches_the_word_not_its_neighbours():
     assert yp.LANGUORINO_PAT.search("che languorini stasera")
     assert not yp.LANGUORINO_PAT.search("languore")
     assert all(not yp.CONTROL_PAT.search(x) for x in yp.LANGUORINO)
+
+
+def test_languorino_deck_says_every_line_before_repeating():
+    yp._languorino_deck.clear()
+    first = [yp.next_languorino() for _ in yp.LANGUORINO]
+    assert sorted(first) == sorted(yp.LANGUORINO)

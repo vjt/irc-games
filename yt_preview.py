@@ -163,7 +163,7 @@ CONTROL_PAT = re.compile(r'[\x00-\x1f\x7f-\x9f]')
 # "Ambrogio, avverto un leggero languorino" (spot Ferrero Rocher, anni '90):
 # la signora lo dice, Ambrogio provvede. vjt, #sbiffo 2026-10-24 21:57.
 LANGUORINO_PAT = re.compile(r'\blanguorin[oi]\b', re.I)
-LANGUORINO_SEC = 60
+LANGUORINO_SEC = 5
 LANGUORINO = [
     "Ci pensa Ambrogio.",
     "Ambrogio porge il vassoio d'argento. Sopra, la piramide dorata.",
@@ -552,6 +552,16 @@ def link_preview(url, resolve=public_addresses):
     parts = [f"{LINK_BADGE}{host}"] + [x for x in (title, desc) if x]
     return " :: ".join(parts)
 
+_languorino_deck = []
+
+
+def next_languorino():
+    """A shuffled deck, not random.choice: no line comes back before every
+    other one has had its turn."""
+    if not _languorino_deck:
+        _languorino_deck.extend(random.sample(LANGUORINO, len(LANGUORINO)))
+    return _languorino_deck.pop()
+
 
 def first_link(text):
     """First non-YouTube link in a line, trailing punctuation trimmed."""
@@ -616,7 +626,7 @@ def daemon():
             now = time.time()
             if now - last_languorino.get(chan, 0) >= LANGUORINO_SEC:
                 last_languorino[chan] = now
-                say(chan, random.choice(LANGUORINO))
+                say(chan, next_languorino())
             continue
 
         cmd = CMD_PAT.match(text)
