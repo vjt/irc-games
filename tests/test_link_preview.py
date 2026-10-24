@@ -126,3 +126,10 @@ def test_first_link_skips_youtube_and_trims_punctuation():
     assert yp.first_link(text) == "https://example.com/a?b=1"
     assert yp.first_link("solo https://www.youtube.com/watch?v=dQw4w9WgXcQ") is None
     assert yp.first_link("niente link qui") is None
+
+
+def test_languorino_matches_the_word_not_its_neighbours():
+    assert yp.LANGUORINO_PAT.search("Ambrogio, avverto un leggero Languorino")
+    assert yp.LANGUORINO_PAT.search("che languorini stasera")
+    assert not yp.LANGUORINO_PAT.search("languore")
+    assert all(not yp.CONTROL_PAT.search(x) for x in yp.LANGUORINO)

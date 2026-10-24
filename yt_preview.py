@@ -77,6 +77,7 @@ import http.client
 import ipaddress
 import json
 import os
+import random
 import re
 import socket
 import ssl
@@ -158,6 +159,30 @@ LINK_MAX_BYTES = 256 * 1024
 TITLE_MAX = 120
 DESC_MAX = 220
 CONTROL_PAT = re.compile(r'[\x00-\x1f\x7f-\x9f]')
+
+# "Ambrogio, avverto un leggero languorino" (spot Ferrero Rocher, anni '90):
+# la signora lo dice, Ambrogio provvede. vjt, #sbiffo 2026-10-24 21:57.
+LANGUORINO_PAT = re.compile(r'\blanguorin[oi]\b', re.I)
+LANGUORINO_SEC = 60
+LANGUORINO = [
+    "Ci pensa Ambrogio.",
+    "Ambrogio porge il vassoio d'argento. Sopra, la piramide dorata.",
+    "Un leggero languorino, signora? Ho già fermato la Rolls in doppia fila "
+    "davanti alla pasticceria.",
+    "Signora, i Rocher sono in macchina da stamattina, a temperatura di "
+    "caviale.",
+    "Quarantotto Rocher in piramide, signora: carta dorata coordinata al "
+    "suo tailleur giallo.",
+    "Mi permetto di suggerire un Rocher, signora. Anzi, trentadue.",
+    "Il languorino della signora è un ordine, per Ambrogio.",
+    "Ho lucidato ogni incarto col vapore delle mie lacrime di gioia, signora.",
+    "All'ambasciata hanno finito i Rocher, signora. I miei no.",
+    "Signora, ho fatto svuotare il guardaroba: adesso lì ci sono solo Rocher.",
+    "Avverto anch'io qualcosa, signora: è il suo languorino che riempie "
+    "l'abitacolo.",
+    "Ambrogio si inginocchia sul tappeto persiano e apre lo scrigno. Dentro, "
+    "naturalmente, Rocher.",
+]
 
 
 def fetch(url):
@@ -575,6 +600,7 @@ def generic(chan, link, last_chan, last_seen):
 def daemon():
     last_chan = {}
     last_video = {}
+    last_languorino = {}
     p = subprocess.Popen(["tail", "-F", "-n", "0", LOG],
                          stdout=subprocess.PIPE, text=True, errors="replace")
     for line in p.stdout:
@@ -585,6 +611,13 @@ def daemon():
         if chan not in CHANNELS:
             continue
         text = m.group("text")
+
+        if LANGUORINO_PAT.search(text):
+            now = time.time()
+            if now - last_languorino.get(chan, 0) >= LANGUORINO_SEC:
+                last_languorino[chan] = now
+                say(chan, random.choice(LANGUORINO))
+            continue
 
         cmd = CMD_PAT.match(text)
         video_id, with_link = None, False
