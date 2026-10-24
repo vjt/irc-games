@@ -159,6 +159,10 @@ LINK_PORTS = {"http": 80, "https": 443}
 LINK_TIMEOUT = 6          # per socket operation
 LINK_DEADLINE = 10        # the whole thing, redirects included
 LINK_MAX_BYTES = 256 * 1024
+# Hosts that give the og: metas only to link-preview crawlers: with a browser
+# UA instagram.com serves an empty shell whose only text is <title>Instagram.
+CRAWLER_UA = "facebookexternalhit/1.1"
+CRAWLER_HOSTS = ("instagram.com",)
 TITLE_MAX = 120
 DESC_MAX = 220
 CONTROL_PAT = re.compile(r'[\x00-\x1f\x7f-\x9f]')
@@ -459,8 +463,12 @@ def page_fetch(url, resolve=public_addresses):
         conn = cls(u.hostname, ip, port, LINK_TIMEOUT)
         try:
             path = (u.path or "/") + (f"?{u.query}" if u.query else "")
+            host = u.hostname.lower()
+            crawler = any(host == h or host.endswith("." + h)
+                          for h in CRAWLER_HOSTS)
             conn.request("GET", path, headers={
                 **HEADERS, "Accept": "text/html,application/xhtml+xml",
+                **({"User-Agent": CRAWLER_UA} if crawler else {}),
                 "Accept-Encoding": "identity", "Connection": "close"})
             r = conn.getresponse()
             if r.status in (301, 302, 303, 307, 308):
