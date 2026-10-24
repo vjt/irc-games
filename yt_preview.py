@@ -145,7 +145,7 @@ LINK_PAT = re.compile(
 C = "\x03"
 RESET = "\x0f"
 BADGE = f"{C}00,04 ► {RESET}{C}01,00 YouTube {RESET}"
-LINK_BADGE = f"{C}00,02 ► {RESET}"
+LINK_BADGE = f"{C}00,02 🌐 {RESET}"
 
 # Any link at all; trailing punctuation is the sentence's, not the URL's.
 ANY_LINK_PAT = re.compile(r'https?://[^\s<>"\x00-\x1f]+', re.I)
