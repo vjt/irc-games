@@ -444,8 +444,16 @@ function perma(dove, nome, scope) {
   a.setAttribute("aria-label", a.title);
   a.dataset.nome = nome;
   if (scope) a.dataset.scope = scope;
+  // dentro una sezione che ha uno stato (la corsa: modo e serie) il link
+  // se lo porta dietro, `#corsa=posto,stese`
+  const aggiorna = () => {
+    const st = a.closest("[data-stato]");
+    a.href = (a.dataset.base || "#" + nome) + (st ? "=" + st.dataset.stato : "");
+  };
+  a.onpointerenter = a.onfocus = aggiorna;
   a.onclick = e => {
     e.preventDefault();
+    aggiorna();
     const fatto = () => {
       a.classList.add("ok");
       a.textContent = "✓";
@@ -1470,7 +1478,11 @@ function render(d) {
     const ancora = () => {
       let h = location.hash.slice(1);
       try { h = decodeURIComponent(h); } catch (e) { return; }
-      if (!h || h.includes("=")) return;
+      if (!h) return;
+      if (h.includes("=")) {                // #corsa=modo,serie si', #forma= no
+        if (!h.startsWith("corsa=")) return;
+        h = "corsa";
+      }
       const el = document.getElementById(h) || Array.from(document.querySelectorAll("[data-ancora]"))
         .find(x => x.dataset.ancora === h && x.offsetParent);
       if (el) el.scrollIntoView();
@@ -1515,7 +1527,7 @@ function render(d) {
     perma(document.querySelector("#totale > h2"), "totale");
     perma(document.getElementById("per-canale"), "per-canale");
     document.querySelectorAll("a.perma[data-scope]").forEach(a =>
-      a.href = "/suore/" + query(a.dataset.scope) + "#" + a.dataset.nome);
+      a.href = a.dataset.base = "/suore/" + query(a.dataset.scope) + "#" + a.dataset.nome);
     filtra(k);
     ancora();
     addEventListener("hashchange", ancora);

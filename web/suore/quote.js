@@ -90,6 +90,10 @@
     let q, righe, n, parole;
     let modo = "capo";
     let scelto = null;
+    // `#corsa=posto,stese` apre gia' su quel modo e quella serie (peluche,
+    // #sbiffo 25/10): il 🔗 del titolo copia quello che si sta guardando.
+    const voluto = /^#corsa=([a-z]+)(?:,([a-z]+))?$/.exec(location.hash) || [];
+    if (["capo", "colpi", "posto"].includes(voluto[1])) modo = voluto[1];
 
     const box = h("div", "quote");
     box.dataset.ancora = "corsa";          // #corsa: la prima visibile
@@ -182,9 +186,10 @@
       Object.keys(bserie).forEach(x => bserie[x].classList.toggle("on", x === k));
       legenda();
     }
-    usa(serie[0][0]);
+    usa((serie.find(x => x[0] === voluto[2]) || serie[0])[0]);
 
     function disegna() {
+      box.dataset.stato = modo + "," + parole[0];
       spiega();
       W = Math.max(svg.clientWidth || plot.clientWidth || 0, 260);
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);
