@@ -1,8 +1,8 @@
 # irc-games
 
 I giochi da canale che girano su Azzurra e IRCnet: la caccia alle suore e
-l'impiccato. Repo privato, ordine di vjt (#sbiffo 2026-09-09 23:36: «per il
-codice crea un nuovo repo privato irc-games»).
+l'impiccato. Nato privato il 2026-09-09 per ordine di vjt, pubblico dal
+2026-10-21 con la storia ripulita.
 
 Prima stavano come sidecar dentro il repo del bot `vjt-claude`. Ora sono
 **bot a sé stanti**: nick loro, vhost loro, processo loro. Il bridge IRC
