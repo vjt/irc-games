@@ -752,4 +752,17 @@ assert [r["nick"] for r in qt["nick"]] == ["Caio", "TiZio", "Sempronio", "solo_l
 assert qb["quote_amiche"] == qa and qb["quote_tutte"] == qt
 print("ok: stese cumulate, posto e capo per giorno")
 
+# --- .stat: il link alla pagina del canale (Sythos, #sbiffo 2026-10-25) -------
+sent.clear()
+assert not suore.handle(suore.empty(), "azzurra/#sbiffo", "Sythos", "stat", 0.0)
+assert sent[-1][2] == "Sythos: classifica di #sbiffo su https://dioschifoso.it/suore/?sbiffo", sent
+assert suore.CMD_PAT.match("!stats").group("cmd") == "stats"
+assert suore.CMD_PAT.match(".stat").group("cmd") == "stat"
+assert not suore.CMD_PAT.match("!statico")
+# Nome corto doppio fra le reti: serve rete/canale, come scrive la pagina.
+suore.SCOPES["ircnet/#sbiffo"] = suore.SCOPES["ircnet/#cybernet"]
+assert suore.stat_url("azzurra/#sbiffo").endswith("?azzurra/sbiffo")
+del suore.SCOPES["ircnet/#sbiffo"]
+print("ok: .stat da' il link del canale")
+
 print("\nTUTTO VERDE, porco dio")

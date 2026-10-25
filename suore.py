@@ -139,6 +139,18 @@ class Net:
         return f"<Net {self.name} {sorted(self.chans)}>"
 
 
+STAT_BASE = "https://dioschifoso.it/suore/"
+
+
+def stat_url(scope):
+    """Il link che la pagina stessa scrive (query() in web/suore/index.html):
+    il canale nudo senza #, `rete/canale` solo se il nome corto e' doppio."""
+    corto = lambda k: k.split("/", 1)[1].lstrip("#").lower()
+    doppio = sum(corto(k) == corto(scope) for k in SCOPES) > 1
+    return STAT_BASE + "?" + (scope.replace("#", "").lower() if doppio
+                              else corto(scope))
+
+
 def _parse_chan(spec):
     """`#chan` oppure `#chan:90-240` (minuti). Torna (nome, (min, max))."""
     chan, _, gaps = spec.strip().partition(":")
@@ -325,7 +337,7 @@ PRIVMSG_PAT = re.compile(
 # allineato. `pewpew` sta prima di `pew` nell'alternanza solo per leggibilita':
 # il separatore obbligato fa gia' fallire `pew` su `.pewpew`.
 CMD_PAT = re.compile(
-    r'^\s*[.!](?P<cmd>bang|pewpew|pew|bef|suore|killers|chiestato|chiesato)'
+    r'^\s*[.!](?P<cmd>bang|pewpew|pew|bef|suore|killers|chiestato|chiesato|stats|stat)'
     r'(?:\s.*)?$',
     re.IGNORECASE)
 ALIAS = {"pew": "bang", "pewpew": "bang"}
@@ -888,6 +900,12 @@ def handle(data, scope, nick, cmd, now):
                        f"{grado(s['friends'], 'friends')}. "
                        f"{when_line(data, scope, now, nick)}")
         return True  # score_for puo' aver creato la riga del nick
+
+    if cmd in ("stat", "stats"):
+        # Sola lettura come `.chiestato` (Sythos, #sbiffo 2026-10-25 17:14):
+        # il link alla pagina del canale in cui lo chiedi.
+        say(net, chan, f"{nick}: classifica di {chan} su {stat_url(scope)}")
+        return False
 
     if cmd in ("chiestato", "chiesato"):
         # Sola lettura: non tocca punteggi, non consuma la suora in giro, e non
