@@ -111,6 +111,7 @@
         modo = k;
         Object.keys(bottoni).forEach(x => bottoni[x].classList.toggle("on", x === modo));
         disegna();
+        segna();
       };
       bottoni[k] = b;
       modi.appendChild(b);
@@ -122,7 +123,7 @@
     serie.forEach(([k, , label]) => {
       const b = h("button", null, label);
       b.type = "button";
-      b.onclick = () => { usa(k); disegna(); };
+      b.onclick = () => { usa(k); disegna(); segna(); };
       bserie[k] = b;
       sel.appendChild(b);
     });
@@ -187,6 +188,14 @@
       legenda();
     }
     usa((serie.find(x => x[0] === voluto[2]) || serie[0])[0]);
+
+    // Un clic su modo o serie scrive lo stato nell'URL (peluche, #sbiffo
+    // 25/10), col canale che ha messo il 🔗 del titolo: si copia dalla barra.
+    function segna() {
+      const a = box.querySelector("a.perma[data-base]");
+      const base = a ? a.dataset.base : location.pathname + location.search + "#corsa";
+      history.replaceState(null, "", base + "=" + box.dataset.stato);
+    }
 
     function disegna() {
       box.dataset.stato = modo + "," + parole[0];
