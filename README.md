@@ -188,13 +188,21 @@ passivi (le suore, il love) non aprono partite e non c'entrano.
 
 ## Deployment
 
-Jail `convento` su m42, `/opt/convento`. Un vhost per bot, via AAAA + PTR:
+Jail `convento` su m42: codice in `/opt/irc-games`, config dei bot
+(`.env.*`, `bot.startup.*`, `bot.trust.*`) in `/opt/convento`, stato in
+`/var/db/convento`, rc.d in `deploy/`. Un vhost per bot, via AAAA + PTR:
 
-| bot            | rete           | canali                      | vhost                                  |
-|----------------|----------------|-----------------------------|----------------------------------------|
-| `Convento`     | IRCnet         | `#cybernet`                 | `sparo.alle.suore.dioschifoso.it`      |
-| `Convento`     | Azzurra        | `#sniffo`, `#sbiffo`        | idem                                   |
-| `MikeBongiorno`| Azzurra        | `#sniffo`, `#italia`, `#sbiffo`, `#bot` | `ti.faccio.le.domande.mentre.sniffo.org` |
+| bot             | rete    | canali                                            | vhost                                    |
+|-----------------|---------|---------------------------------------------------|------------------------------------------|
+| `Convento`      | IRCnet  | `#cybernet`                                       | `sparo.alle.suore.dioschifoso.it`        |
+| `Convento`      | Azzurra | `#sniffo`, `#sbiffo`, `#porcodio`, `#altrove`     | idem                                     |
+| `MikeBongiorno` | Azzurra | `#sniffo`, `#sbiffo`, `#italia`                   | `ti.faccio.le.domande.mentre.sniffo.org` |
+| `Ambrogio`      | Azzurra | `#sniffo`, `#sbiffo`, `#it-opers`, `#grappa`, `#italia`, `#ai`, `#altrove`, `#pranzi-nerd` | `ci.pensa.ambrogio.con.la.grappa.chat` |
+| `Ambrogio`      | IRCnet  | `#cybernet`, `#italia`, `#gosub`, `#amici`, `#grappa`, `#disagio`, `#ritardo` | idem                   |
+| `EliteWarez`    | Azzurra | `#sniffo`, `#sbiffo`                              | `ti.prendo.per.il.culo.diostronzo.org`   |
+
+I canali sono quelli dei `bot.startup.*`; quali sidecar parlano dove lo dice
+`rc.conf` della jail (`*_chans`, `SUORE_NETS`, `IMPICCATO_NETS`).
 
 Su Azzurra il vhost è l'rDNS vero, non un grant NickServ: basta AAAA + PTR
 coerenti (vjt, #sbiffo 23:38 «non serve nickserv basta che fai un cazzo di AAAA
