@@ -92,8 +92,8 @@
     let scelto = null;
     // `#corsa=posto,stese` apre gia' su quel modo e quella serie (peluche,
     // #sbiffo 25/10): il 🔗 del titolo copia quello che si sta guardando.
-    const voluto = /^#corsa=([a-z]+)(?:,([a-z]+))?$/.exec(location.hash) || [];
-    if (["capo", "colpi", "posto"].includes(voluto[1])) modo = voluto[1];
+    const voluto = window.suoreStato ? window.suoreStato.voluto("corsa") : [];
+    if (["capo", "colpi", "posto"].includes(voluto[0])) modo = voluto[0];
 
     const box = h("div", "quote");
     box.dataset.ancora = "corsa";          // #corsa: la prima visibile
@@ -154,6 +154,7 @@
           leg.querySelectorAll("button").forEach((x, j) =>
             x.classList.toggle("off", scelto !== null && righe[j].nick !== scelto));
           disegna();
+          segna();
         };
         leg.appendChild(b);
       });
@@ -187,18 +188,20 @@
       Object.keys(bserie).forEach(x => bserie[x].classList.toggle("on", x === k));
       legenda();
     }
-    usa((serie.find(x => x[0] === voluto[2]) || serie[0])[0]);
+    usa((serie.find(x => x[0] === voluto[1]) || serie[0])[0]);
+    if (righe.some(r => r.nick === voluto[2])) {
+      scelto = voluto[2];
+      leg.querySelectorAll("button").forEach((x, j) => x.classList.toggle("off", righe[j].nick !== scelto));
+    }
 
     // Un clic su modo o serie scrive lo stato nell'URL (peluche, #sbiffo
     // 25/10), col canale che ha messo il 🔗 del titolo: si copia dalla barra.
     function segna() {
-      const a = box.querySelector("a.perma[data-base]");
-      const base = a ? a.dataset.base : location.pathname + location.search + "#corsa";
-      history.replaceState(null, "", base + "=" + box.dataset.stato);
+      if (window.suoreStato) window.suoreStato.scrivi(box, "corsa", [modo, parole[0], scelto], true);
     }
 
     function disegna() {
-      box.dataset.stato = modo + "," + parole[0];
+      if (window.suoreStato) window.suoreStato.scrivi(box, "corsa", [modo, parole[0], scelto]);
       spiega();
       W = Math.max(svg.clientWidth || plot.clientWidth || 0, 260);
       svg.setAttribute("viewBox", "0 0 " + W + " " + H);

@@ -447,8 +447,9 @@ function perma(dove, nome, scope) {
   // dentro una sezione che ha uno stato (la corsa: modo e serie) il link
   // se lo porta dietro, `#corsa=posto,stese`
   const aggiorna = () => {
-    const st = a.closest("[data-stato]");
-    a.href = (a.dataset.base || "#" + nome) + (st ? "=" + st.dataset.stato : "");
+    const sez = a.closest('[data-ancora="' + nome + '"]') || document.getElementById(nome);
+    const st = sez && sez.dataset.stato;
+    a.href = (a.dataset.base || "#" + nome) + (st ? "=" + st : "");
   };
   a.onpointerenter = a.onfocus = aggiorna;
   a.onclick = e => {
@@ -465,6 +466,27 @@ function perma(dove, nome, scope) {
   dove.appendChild(a);
   return a;
 }
+
+// Lo stato di una sezione sta nell'URL (peluche, #sbiffo 25/10):
+// `#corsa=posto,stese`, `#quando=peluche`, `#canale=kills`. voluto() lo
+// legge all'apertura, scrivi() lo segna sulla sezione per il 🔗 e, dopo un
+// clic, anche nella barra, col canale del 🔗 se la sezione e' di un canale.
+const suoreStato = window.suoreStato = {
+  voluto(nome) {
+    const m = new RegExp("^#" + nome + "=(.*)$").exec(location.hash);
+    try { return m ? m[1].split(",").map(decodeURIComponent) : []; } catch (e) { return []; }
+  },
+  scrivi(box, nome, parti, barra) {
+    parti = parti.slice();
+    while (parti.length && !parti[parti.length - 1]) parti.pop();
+    const st = parti.map(x => encodeURIComponent(x || "")).join(",");
+    if (st) box.dataset.stato = st; else delete box.dataset.stato;
+    if (!barra) return;
+    const a = box.querySelector('a.perma[data-nome="' + nome + '"]');
+    const base = (a && a.dataset.base) || location.pathname + location.search + "#" + nome;
+    history.replaceState(null, "", base + (st ? "=" + st : ""));
+  },
+};
 
 function card(n, k) {
   const c = el("div", "card");
@@ -653,7 +675,7 @@ function renderScope(scope, s, G) {
     const th = el("th", "sort", ICONS[k] ? "" : label);
     if (ICONS[k]) th.innerHTML = ICONS[k];
     th.title = ICONS[k] ? label + " — ordina" : "ordina per " + label;
-    th.onclick = () => fill(k);
+    th.onclick = () => { fill(k); suoreStato.scrivi(box, "canale", [k === "tot" ? "" : k], true); };
     hr.appendChild(th);
   });
   thead.appendChild(hr);
@@ -724,7 +746,9 @@ function renderScope(scope, s, G) {
       cil === null ? "—" : med(r, "cilecca_pct") + cil + "%"));
     tb.appendChild(tr);
   }
-  fill("tot");
+  const ord = suoreStato.voluto("canale")[0];
+  fill(COLS.some(c => c[0] === ord && c[0] !== "nick") ? ord : "tot");
+  if (ord && ord !== "tot") suoreStato.scrivi(box, "canale", [ord]);
   t.appendChild(tb);
   scroll.appendChild(t);
   box.appendChild(scroll);
@@ -837,12 +861,18 @@ function renderScope(scope, s, G) {
       const b = el("button", null, n);
       b.type = "button";
       b.onclick = () => {
-        scelto = scelto === n ? null : n;
-        chips.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.textContent === scelto));
-        pinta(scelto);
+        scegli(scelto === n ? null : n);
+        suoreStato.scrivi(heat, "quando", [scelto], true);
       };
       chips.appendChild(b);
     });
+    function scegli(n) {
+      scelto = n;
+      chips.querySelectorAll("button").forEach(x => x.classList.toggle("on", x.textContent === scelto));
+      pinta(scelto);
+    }
+    const chi = suoreStato.voluto("quando")[0];
+    if (chi && tot[chi]) { scegli(chi); suoreStato.scrivi(heat, "quando", [chi]); }
     heat.appendChild(chips);
     duo.appendChild(heat);
   }
@@ -1479,9 +1509,9 @@ function render(d) {
       let h = location.hash.slice(1);
       try { h = decodeURIComponent(h); } catch (e) { return; }
       if (!h) return;
-      if (h.includes("=")) {                // #corsa=modo,serie si', #forma= no
-        if (!h.startsWith("corsa=")) return;
-        h = "corsa";
+      if (h.includes("=")) {                // #corsa=posto,stese si', #forma= no
+        h = h.split("=")[0];
+        if (["forma", "viaggio"].includes(h)) return;
       }
       const el = document.getElementById(h) || Array.from(document.querySelectorAll("[data-ancora]"))
         .find(x => x.dataset.ancora === h && x.offsetParent);
