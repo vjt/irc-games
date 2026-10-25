@@ -76,6 +76,16 @@
   .scope h3 a { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--line); }
   .scope h3 a:hover { color: var(--gold); border-bottom-color: var(--gold); }
   .scope .net { color: var(--dim); font-size: .78rem; text-transform: uppercase; letter-spacing: .1em; }
+  /* Il link diretto a ogni sezione (peluche, #sbiffo 25/10): compare al
+     passaggio sul titolo, e sul telefono, dove il passaggio non c'e', resta
+     sempre li' sbiadito. Il clic copia l'URL col canale dentro. */
+  .perma {
+    margin-left: .45em; text-decoration: none; font-size: .85em;
+    opacity: 0; transition: opacity .15s; text-transform: none; letter-spacing: 0;
+  }
+  :hover > .perma, .perma:focus { opacity: .75; }
+  .perma.ok { opacity: 1; color: var(--gold); }
+  @media (hover: none) { .perma { opacity: .45; } }
   .scope .quando { margin: -.5rem 0 1rem; color: var(--dim); font-size: .82rem; }
   .tot { color: var(--dim); font-size: .8rem; margin-left: auto; }
   .tot b { color: var(--ink); font-weight: 600; }
@@ -365,7 +375,7 @@
 
   <p class="join">Si gioca in canale: <a href="https://irc.sniffo.org/?go=azzurra/sniffo">apri #sniffo con grappa</a>, aspetta che passi una suora e spara.</p>
 
-  <h2>Come si gioca</h2>
+  <h2 id="come-si-gioca">Come si gioca</h2>
   <section class="howto">
     <!-- Corto (peluche, #sbiffo 24/10: «l'unica cosa che serve sapere di
          partenza e' !bang, il resto e' intuitivo»). -->
@@ -391,7 +401,7 @@
 
   <section class="scope" id="totale" hidden><h2>Tutti i canali, giorno per giorno</h2></section>
 
-  <h2>Per canale</h2>
+  <h2 id="per-canale">Per canale</h2>
   <div id="scopes"></div>
 
   <section class="dorate" id="dorate" hidden></section>
@@ -421,6 +431,31 @@ function el(tag, cls, txt) {
   if (cls) n.className = cls;
   if (txt !== undefined) n.textContent = txt;
   return n;
+}
+
+// Il 🔗 accanto a un titolo (peluche, #sbiffo 25/10): un link vero alla
+// sezione, che il clic copia. Senza canale l'ancora vale per la selezione
+// corrente; con il canale, render() gli mette la query (?sbiffo) quando
+// la conosce.
+function perma(dove, nome, scope) {
+  const a = el("a", "perma", "🔗");
+  a.href = "#" + nome;
+  a.title = "copia il link a questa sezione";
+  a.setAttribute("aria-label", a.title);
+  a.dataset.nome = nome;
+  if (scope) a.dataset.scope = scope;
+  a.onclick = e => {
+    e.preventDefault();
+    const fatto = () => {
+      a.classList.add("ok");
+      a.textContent = "✓";
+      setTimeout(() => { a.classList.remove("ok"); a.textContent = "🔗"; }, 1200);
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(a.href).then(fatto, () => location.href = a.href);
+    else location.href = a.href;
+  };
+  dove.appendChild(a);
+  return a;
 }
 
 function card(n, k) {
@@ -570,6 +605,8 @@ function renderScope(scope, s, G) {
   // La cumulata sta subito a sinistra dei totali (puppy, 13/10).
   if (G.primo) head.appendChild(cumulata(s, G));
   head.appendChild(tot);
+  perma(head, "canale", scope);
+  box.dataset.ancora = "canale";
   box.appendChild(head);
   box.appendChild(el("p", "quando", quandoLine(s)));
 
@@ -742,7 +779,8 @@ function renderScope(scope, s, G) {
     const GG = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"];
     const hmax = Math.max(1, ...s.heatmap.map(r => Math.max(...r)));
     const heat = el("div", "heat");
-    heat.appendChild(el("h2", null, "Quando si spara"));
+    heat.dataset.ancora = "quando";
+    perma(heat.appendChild(el("h2", null, "Quando si spara")), "quando", scope);
     const grid = el("div", "grid");
     grid.appendChild(el("span"));
     for (let h = 0; h < 24; h++) grid.appendChild(el("span", "h", h % 6 ? "" : String(h)));
@@ -802,9 +840,10 @@ function renderScope(scope, s, G) {
   }
 
   const lato = el("div", "lato");
-  function lista(titolo, righe) {
+  function lista(titolo, righe, nome) {
     const blk = el("div", "blk");
-    blk.appendChild(el("h2", null, titolo));
+    blk.dataset.ancora = nome;
+    perma(blk.appendChild(el("h2", null, titolo)), nome, scope);
     const ol = el("ol");
     righe.forEach(([chi, n]) => {
       const li = el("li");
@@ -816,7 +855,7 @@ function renderScope(scope, s, G) {
     lato.appendChild(blk);
   }
   if (s.nottambuli && s.nottambuli.length)
-    lista("🦉 Nottambulə 0–6", s.nottambuli.map(x => [el("b", null, x[0]), x[1]]));
+    lista("🦉 Nottambulə 0–6", s.nottambuli.map(x => [el("b", null, x[0]), x[1]]), "nottambuli");
   // Chi l'ha soffiata a chi, arrivando prima per un soffio: entro 3 secondi.
   if (s.rivalita && s.rivalita.length)
     lista("⚔️ Soffiate", s.rivalita.map(r => {
@@ -827,13 +866,16 @@ function renderScope(scope, s, G) {
       if (r.secs !== undefined)
         sp.appendChild(el("span", "nowt", " Ø " + r.secs.toFixed(1) + "s"));
       return [sp, r.n];
-    }));
+    }), "soffiate");
   if (lato.children.length) duo.appendChild(lato);
   if (duo.children.length) box.appendChild(duo);
 
   // Quota cumulata e posto per giorno (peluche, 16/10): sta in quote.js.
   const fetta = window.suoreQuote && window.suoreQuote(s);
-  if (fetta) box.appendChild(fetta);
+  if (fetta) {
+    perma(fetta.querySelector(".qhd h2"), "corsa", scope);
+    box.appendChild(fetta);
+  }
 
   if (s.discrepanza) {
     const w = el("div", "warn");
@@ -1133,7 +1175,7 @@ function renderDorate(scopes, d) {
     });
   };
   palco.appendChild(wall);
-  box.appendChild(wordart("Le dorate", "insegna"));
+  box.appendChild(perma(wordart("Le dorate", "insegna"), "dorate").parentNode);
   box.appendChild(palco);
   box.appendChild(storia);
   box.righe = righe;                       // la demo le rigioca come battute
@@ -1465,8 +1507,18 @@ function render(d) {
       history.replaceState(null, "", "/suore/" + query(k));
     }
     document.getElementById("tops").hidden = false;
+    // i 🔗 delle sezioni: quelli di tutta la pagina qui, quelli di un
+    // canale prendono adesso la sua query
+    const hd = document.querySelector(".tops-hd");
+    hd.insertBefore(perma(hd, "tops"), sel);
+    perma(document.getElementById("come-si-gioca"), "come-si-gioca");
+    perma(document.querySelector("#totale > h2"), "totale");
+    perma(document.getElementById("per-canale"), "per-canale");
+    document.querySelectorAll("a.perma[data-scope]").forEach(a =>
+      a.href = "/suore/" + query(a.dataset.scope) + "#" + a.dataset.nome);
     filtra(k);
     ancora();
+    addEventListener("hashchange", ancora);
   }
 
   const primo = d.primo_evento ? new Date(d.primo_evento * 1000) : null;
