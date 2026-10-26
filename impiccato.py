@@ -442,6 +442,26 @@ def half_shown(answer, revealed):
 MEDAGLIE = ("🥇", "🥈", "🥉")
 ZWSP = "​"
 
+# Colori mIRC in gioco (Hypnotize, #it-opers 2026-10-26 14:18). Il codice
+# colore va sempre a due cifre: una risposta che comincia con una cifra
+# ("2001") attaccata a `\x033` diventerebbe il colore 32. Il grassetto sta
+# DENTRO il colore, cosi' la chiusura `\x03` non incontra mai una virgola.
+VERDE, GIALLO = 3, 8
+FORMAT_RE = re.compile(r"\x03(\d{1,2}(,\d{1,2})?)?|[\x02\x0f\x16\x1d\x1f]")
+
+
+def bold(s):
+    return f"\x02{s}\x02"
+
+
+def color(n, s):
+    return f"\x03{n:02d}\x02{s}\x02\x03"
+
+
+def strip_format(s):
+    """Il testo come lo legge chi gioca, senza i byte di formattazione."""
+    return FORMAT_RE.sub("", s)
+
 
 def sprinkle(s, n=3):
     """Infila n spazi a larghezza zero in posizioni casuali.
@@ -464,7 +484,7 @@ def podio(rows, top=10):
     vjt, #sbiffo 16:25) — una funzione sola, cosi' non divergono al prossimo
     ritocco."""
     return " · ".join(
-        f"{MEDAGLIE[i] if i < len(MEDAGLIE) else '·'} {sprinkle(r['nick'])} {r['points']}"
+        f"{MEDAGLIE[i] if i < len(MEDAGLIE) else '·'} {bold(sprinkle(r['nick']))} {r['points']}"
         for i, r in enumerate(rows[:top]))
 
 
@@ -508,7 +528,8 @@ class Impiccato:
         self.domande = domande
         self.talk = talk
         self.state = load_state(state_path)
-        self.sent = []          # solo per il selftest
+        self.sent = []          # solo per il selftest, senza formattazione
+        self.wire = []          # idem, coi byte di colore come escono
         self.help_seen = {}     # canale casefold -> ultimo help mandato
         self.ops = {}           # canale casefold -> nick casefold con @
         self._names = set()     # canali con un NAMES a meta' (fra 353 e 366)
@@ -520,7 +541,8 @@ class Impiccato:
     # --- uscita ---------------------------------------------------------
 
     def say(self, chan, text):
-        self.sent.append((chan, text))
+        self.sent.append((chan, strip_format(text)))
+        self.wire.append((chan, text))
         self._fifo("SAY", chan, text)
 
     def _fifo(self, verb, target, text):
@@ -702,8 +724,9 @@ class Impiccato:
         # 10:26). Due PRIVMSG restano sotto il flood; il kick era a tre.
         if lead:
             self.emit(chan, lead)
-        self.emit(chan, [f"❓ [{g['count']}/{limit}] {d['q']}",
-                         mask_of(d["a"], set())])
+        tag = bold(f"[{g['count']}/{limit}]")
+        self.emit(chan, [f"❓ {tag} {d['q']}",
+                         color(GIALLO, mask_of(d["a"], set()))])
 
     def end_game(self, chan, reason="limite", lead=()):
         """Chiude la partita e stampa il punteggio DI QUESTA partita.
@@ -738,7 +761,7 @@ class Impiccato:
         if not g or reason == "quiet":
             return
         head = ("💤 Nessuno risponde piu'." if reason == "idle" else "🛑 Chiuso.")
-        self.say(chan, f"{head} La risposta era: {g['a']}. "
+        self.say(chan, f"{head} La risposta era: {color(VERDE, g['a'])}. "
                        f"`!trivial <set> [n]` per ripartire.")
 
     def win(self, chan, nick, now=None):
@@ -761,7 +784,8 @@ class Impiccato:
         # nel tema scelto all'inizio, che vive dentro `g`.
         self.next_question(
             chan, now=now,
-            lead=[f"✅ Esatto {canon_nick(nick)}, la risposta era: {answer}!!!"])
+            lead=[f"✅ Esatto {bold(canon_nick(nick))}, la risposta era: "
+                  f"{color(VERDE, answer)}!!!"])
 
     def reveal(self, chan, letters):
         """Scopre un insieme di lettere. True se almeno una era coperta."""
@@ -782,7 +806,7 @@ class Impiccato:
         if solved(g["a"], set(g["revealed"])):
             self.win(chan, nick, now=now)
         else:
-            self.say(chan, mask_of(g["a"], set(g["revealed"])))
+            self.say(chan, color(GIALLO, mask_of(g["a"], set(g["revealed"]))))
 
     def capped(self, chan):
         """True se gli aiuti di questa domanda sono finiti. Lo dice una volta
@@ -891,7 +915,8 @@ class Impiccato:
         g = self.state["games"][chan]
         self.next_question(
             chan, now=now,
-            lead=[f"⏭️ Saltata da {canon_nick(nick)}, la risposta era: {g['a']}."])
+            lead=[f"⏭️ Saltata da {canon_nick(nick)}, la risposta era: "
+                  f"{color(VERDE, g['a'])}."])
 
     # --- ingresso --------------------------------------------------------
 
@@ -1110,6 +1135,10 @@ def selftest():
         assert len(g.sent) == 2, g.sent
         assert g.sent[0][1].startswith("🎲 Trivial, set t:"), g.sent[0]
         assert g.sent[1][1] == "❓ [1/10] Domanda di prova?  ·  ----- ---", g.sent[1]
+        # In gioco esce colorato: tag in grassetto, maschera gialla.
+        assert g.wire[1][1] == ("❓ \x02[1/10]\x02 Domanda di prova?  ·  "
+                                "\x0308\x02----- ---\x02\x03"), g.wire[1]
+        assert color(VERDE, "2001") == "\x0303\x022001\x02\x03"
 
         g.sent.clear()
         g.handle("a", "#t", "z")            # lettera assente -> silenzio
@@ -1418,7 +1447,7 @@ def selftest():
         # `!help` / `!giochi`: in canale, cooldown per canale.
         gh = Impiccato("test", "/dev/null", "", st, {"#t"}, dom, talk=False)
         assert gh.handle("Pippo", "#t", "!help", now=1000) is False
-        assert gh.sent == [("#t", t) for t in HELP_LINES]
+        assert gh.wire == [("#t", t) for t in HELP_LINES]
         gh.handle("Pluto", "#t", "!giochi", now=1000 + HELP_COOLDOWN - 1)
         assert len(gh.sent) == len(HELP_LINES)
         gh.handle("Pippo", "#t", "!giochi", now=1000 + HELP_COOLDOWN)
