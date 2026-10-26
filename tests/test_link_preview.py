@@ -121,6 +121,14 @@ def test_wrong_scheme_or_port_is_refused_before_any_lookup(monkeypatch, url):
         yp.page_fetch(url)
 
 
+def test_crawler_ua_per_host():
+    # reddit da' 429 a facebookexternalhit: ognuno il suo (Hypnotize 26/10).
+    assert yp.crawler_ua("www.Reddit.com") == "Twitterbot/1.0"
+    assert yp.crawler_ua("instagram.com") == "facebookexternalhit/1.1"
+    assert yp.crawler_ua("notreddit.com") is None
+    assert yp.crawler_ua("example.com") is None
+
+
 def test_first_link_skips_youtube_and_trims_punctuation():
     text = "guarda https://youtu.be/dQw4w9WgXcQ e poi https://example.com/a?b=1)."
     assert yp.first_link(text) == "https://example.com/a?b=1"
