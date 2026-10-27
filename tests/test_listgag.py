@@ -128,6 +128,9 @@ def test_list_pattern():
     # parole dopo ignorate (Sythos 2026-10-22)
     assert listgag.LIST_PAT.match("!list così Sythos è contento")
     assert listgag.LIST_PAT.match("!listone") is None
+    assert listgag.LIST_PAT.match("!lista")
+    assert listgag.LIST_PAT.match("! Lista per favore")
+    assert listgag.LIST_PAT.match("!listaccia") is None
     assert listgag.LIST_PAT.match("whitelist !list") is None
 
 
