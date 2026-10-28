@@ -47,7 +47,7 @@ sys.path.insert(0, str(HERE))
 import ingest  # noqa: E402  (classification canon — never duplicated here)
 import metrics  # noqa: E402
 
-# Default location inside the `grappa-new` jail on m42, where this daemon runs:
+# Default location inside the `grappa` jail on m42, where this daemon runs:
 # a WAL reader has to be able to write the -shm sidecar, so it must live on the
 # same filesystem as the database, i.e. inside that jail and not across a
 # nullfs mount from another one.

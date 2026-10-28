@@ -27,7 +27,7 @@ from zoneinfo import ZoneInfo
 
 # roll_counter lives in the repo root next to this file (once deployed) — pin
 # the path so the import works from tmp/ during the build phase too. The daemon
-# also runs inside the `grappa-new` jail on m42, where the bot repo does not
+# also runs inside the `grappa` jail on m42, where the bot repo does not
 # exist at all: there a copy sits next to this file, so the local directory is
 # searched FIRST and the pinned repo path is only the fallback.
 REPO = os.environ.get("SNIFFO_STATS_REPO", "/home/vjt/code/IRC/vjt-claude")

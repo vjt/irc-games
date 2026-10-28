@@ -9,7 +9,7 @@ timestamp**, che e' esattamente il pezzo che al `bot.log` manca (li' c'e' solo
 
 Uso, in due tempi, perche' il DB sta su m42 e questo gira dove ti pare:
 
-    ssh -A root@m42 "jexec grappa-new sqlite3 -readonly \\
+    ssh -A root@m42 "jexec grappa sqlite3 -readonly \\
         /home/grappa/grappa/runtime/grappa_prod.db" < tools/backfill_suore.sql \\
         > suore_raw.json
 

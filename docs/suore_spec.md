@@ -13,7 +13,7 @@ delle papere di rex, la fauna è un'altra.
 ## Provenienza dei dati
 
 Non è dedotto dalla documentazione di nessun plugin: è **misurato** sullo scrollback di
-`grappa` prod (`grappa-new:/home/grappa/grappa/runtime/grappa_prod.db`, rete `efnet`,
+`grappa` prod (`grappa:/home/grappa/grappa/runtime/grappa_prod.db`, rete `efnet`,
 canale `#2600`), 1034 righe di `rex` fra il 2026-08-22 e oggi. Le righe citate qui sotto
 sono verbatim dal db.
 

@@ -17,7 +17,7 @@ frega di molti canali».
 | chi lo scrive | il mio bridge, con i suoi buchi di riavvio | il server, per ogni riga che riceve |
 | data/ora | ricostruita contando i cambi di mezzanotte | `server_time` in ms, dal server |
 | cursore | offset in byte + inode, si rompe alla rotazione | `messages.id`, monotono |
-| dove gira | solo il Pi, dove stanno i file | dentro la jail `grappa-new` di m42 |
+| dove gira | solo il Pi, dove stanno i file | dentro la jail `grappa` di m42 |
 
 Verificato prima di fidarsi: agosto 2026, quattro canali in comune, le due
 sorgenti concordano entro lo **0.25%** (#sniffo 21191 vs 21196, #it-opers 15104
@@ -82,6 +82,6 @@ privata, quindi e' una credenziale e si deploya a mano.
 | `GRAPPA_DB` | `/home/grappa/grappa/runtime/grappa_prod.db` | l'archivio |
 | `GRAPPA_USER` | `vjt` | di chi e' lo scrollback che si legge |
 
-Il daemon gira **dentro** la jail `grappa-new`: un lettore WAL deve poter
+Il daemon gira **dentro** la jail `grappa`: un lettore WAL deve poter
 scrivere il file `-shm`, quindi deve stare sullo stesso filesystem del db e non
 di la' da un nullfs.

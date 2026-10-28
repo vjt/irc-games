@@ -4,7 +4,7 @@
 # KEYWORD: shutdown
 #
 # `!chanstats` dietro ad Ambrogio. Legge in SOLA LETTURA lo stats.db che scrive
-# grappa_stats nella jail grappa-new: /var/db/grappa-stats e' /srv/stats
+# grappa_stats nella jail grappa: /var/db/grappa-stats e' /srv/stats
 # dell'host, montato in nullfs **ro** qui e rw di la'. Il db e' in journal_mode
 # DELETE apposta — un lettore su WAL vorrebbe scrivere lo -shm, e da un mount
 # read-only non potrebbe.

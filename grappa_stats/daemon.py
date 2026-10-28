@@ -44,7 +44,7 @@ DB = os.environ.get("SNIFFO_STATS_DB", str(HERE / "stats.db"))
 SALT = (HERE / "slug.salt").read_text().strip()
 PARENT = "st-" + hashlib.sha256((SALT + "|PARENT").encode()).hexdigest()[:12]
 # The renderer's output dir IS the published dir: on the Pi that was the
-# Syncthing folder that mirrors to m42; in the `grappa-new` jail it is the
+# Syncthing folder that mirrors to m42; in the `grappa` jail it is the
 # shared directory nginx aliases straight out of the jail. Either way nothing
 # is staged and nothing is copied afterwards.
 OUTDIR = os.environ.get("SNIFFO_STATS_OUT", f"/srv/www-static/t/.x/{PARENT}")
