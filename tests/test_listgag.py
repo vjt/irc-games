@@ -405,3 +405,50 @@ if __name__ == "__main__":
     test_pending_entries_expire()
     print("ok: le richieste pendenti scadono")
     print("\nTUTTO VERDE, porco dio")
+
+
+def test_dcc_fail_pat_reads_timeout_and_error():
+    t = listgag.DCC_FAIL_PAT.search(
+        "22:41:03 * DCC_TIMEOUT TO=mario FILE=Wicked.2024.iTA.mp4 TimeoutError('timed out')")
+    assert t and t["kind"] == "TIMEOUT" and t["nick"] == "mario" and t["sent"] is None, t
+    e = listgag.DCC_FAIL_PAT.search(
+        "22:41:03 * DCC_ERROR TO=mario FILE=Wicked.2024.iTA.mp4 SENT=2097152 ConnectionResetError()")
+    assert e and e["kind"] == "ERROR" and e["sent"] == "2097152", e
+    assert listgag.DCC_FAIL_PAT.search(
+        "22:41:03 < :tizio!~t@host PRIVMSG #sbiffo :DCC_TIMEOUT TO=mario FILE=x") is None
+
+
+def test_timeout_announced_where_the_pack_was_asked_with_signalos():
+    calls = _recording()
+    rng = random.Random(4)
+    lf, ld, pending = {}, {}, {}
+    listgag.dispatch("mario", "#sbiffo", "!list", rng, lf, ld, pending)
+    listgag.dispatch("mario", "#sbiffo", "xdcc send #2", rng, lf, ld, pending)
+    offer = calls["dcc"][0][2]
+    calls["say"].clear()
+    listgag.announce_fail("mario", offer, "TIMEOUT", None, rng, pending)
+    assert len(calls["say"]) == 1, calls
+    chan, msg = calls["say"][0]
+    assert chan == "#sbiffo" and "mario" in msg and offer in msg, calls
+    assert "SignalOS" in msg, msg
+    assert "mario" not in pending, pending
+
+
+def test_error_announces_bytes_sent_and_signalos():
+    calls = _recording()
+    rng = random.Random(1)
+    listgag.last_seen.clear()
+    listgag.last_dump_chan = None
+    listgag.dispatch("mario", "#sniffo", "oh", rng, {}, {}, None)
+    listgag.announce_fail("mario", "Wicked.2024.iTA.mp4", "ERROR", 2 * 1024 * 1024, rng, {})
+    assert len(calls["say"]) == 1, calls
+    chan, msg = calls["say"][0]
+    assert chan == "#sniffo" and "2.0MB" in msg and "SignalOS" in msg, calls
+
+
+def test_fail_with_no_channel_is_silent():
+    calls = _recording()
+    listgag.last_seen.clear()
+    listgag.last_dump_chan = None
+    listgag.announce_fail("nessuno", "x.mp4", "TIMEOUT", None, random.Random(0), {})
+    assert calls["say"] == [], calls

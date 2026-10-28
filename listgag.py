@@ -420,6 +420,17 @@ DCC_DONE_PAT = re.compile(
     r"\*\s+DCC_DONE\s+TO=(?P<nick>\S+)\s+FILE=(?P<file>\S+)\s+BYTES=(?P<bytes>\d+)\b"
 )
 
+# The failures land in bot.log the same way (vjt 2026-10-28: "bisogna riportare
+# anche le failure da elitewarez, in chan"): DCC_TIMEOUT when the victim never
+# connects back (refused the offer, or his client cannot reach us), DCC_ERROR
+# when the transfer dies halfway, with SENT= the bytes that made it.
+# Shapes: `* DCC_TIMEOUT TO=<nick> FILE=<offer> <repr>`,
+#         `* DCC_ERROR TO=<nick> FILE=<offer> SENT=<n> <repr>`.
+DCC_FAIL_PAT = re.compile(
+    r"\*\s+DCC_(?P<kind>TIMEOUT|ERROR)\s+TO=(?P<nick>\S+)\s+FILE=(?P<file>\S+)"
+    r"(?:\s+SENT=(?P<sent>\d+))?"
+)
+
 # Request announced in channel when it arrives in a private query; completion
 # announced when the transfer actually lands. The whole point is that the crew
 # sees who is leeching (vjt 2026-09-14: "essi senno non sappiamo").
@@ -432,6 +443,17 @@ DONE_LINES = [
     "{nick} ha scaricato {pack} ({size}). Buona visione.",
     "{nick} ha ricevuto {pack}, {size} di roba. Se la merita tutta.",
     "transfer completo: {pack} -> {nick} ({size}).",
+]
+# A failed transfer gets announced too, and the remedy is always SignalOS
+# (vjt 2026-10-28: "magari appunto suggerire di installare signalos").
+TIMEOUT_LINES = [
+    "{nick} non ha mai aperto la DCC di {pack}. Client rotto: installa SignalOS e riprova.",
+    "timeout su {pack} per {nick}, porco dio. Con SignalOS queste cose non succedono.",
+    "{nick} ha rifiutato {pack} o il suo client non ci arriva. Serve SignalOS.",
+]
+ERROR_LINES = [
+    "transfer di {pack} a {nick} morto a {size}. Su SignalOS non si sarebbe piantato.",
+    "{nick} ha mollato {pack} a {size}, madonna. Reinstalla tutto, meglio se SignalOS.",
 ]
 
 # How long an offer stays pending before we forget which channel it came from.
@@ -500,6 +522,19 @@ def announce_done(nick, fname, nbytes, rng, pending):
         return
     say(chan, rng.choice(DONE_LINES).format(
         nick=nick, pack=pack, size=human_size(nbytes)))
+
+
+def announce_fail(nick, fname, kind, sent, rng, pending):
+    """Announce a failed DCC in the same single channel a completion would use.
+    `kind` is TIMEOUT or ERROR; `sent` is the byte count of an ERROR, else None."""
+    entry = (pending or {}).pop(nick.lower(), None)
+    pack = entry[0] if entry else fname
+    chan = (entry[1] if entry else None) or resolve_channel(nick)
+    if chan is None:
+        return
+    lines = ERROR_LINES if kind == "ERROR" else TIMEOUT_LINES
+    say(chan, rng.choice(lines).format(
+        nick=nick, pack=pack, size=human_size(sent or 0)))
 
 
 def offer_name(scene):
@@ -624,6 +659,15 @@ def main():
         if done:
             try:
                 announce_done(done["nick"], done["file"], int(done["bytes"]),
+                              rng, pending)
+            except OSError as exc:
+                print(f"list_sidecar: FIFO write failed: {exc}", file=sys.stderr, flush=True)
+            continue
+        fail = DCC_FAIL_PAT.search(line)
+        if fail:
+            try:
+                announce_fail(fail["nick"], fail["file"], fail["kind"],
+                              int(fail["sent"]) if fail["sent"] else None,
                               rng, pending)
             except OSError as exc:
                 print(f"list_sidecar: FIFO write failed: {exc}", file=sys.stderr, flush=True)
