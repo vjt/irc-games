@@ -263,7 +263,11 @@ print("ok: la finestra sta sulla griglia, e tace se la suora e' gia' li'")
 stato = {"nuns": {}, "next_spawn": {"x/#y": 7200.0},
          "last_taken": {"x/#y": {"at": 0.0, "nick": "Tizio"}}}
 riga = suore.when_line(stato, "x/#y", 3600.0)
-assert "Tizio" in riga and "1h 00m 00s fa" in riga, riga
+assert "Tizio" in riga and "Ultima suora un'ora fa" in riga, riga
+assert suore.quanto_fa(0) == "meno di mezz'ora fa"
+assert suore.quanto_fa(899) == "meno di mezz'ora fa"
+assert suore.quanto_fa(3600 * 2 + 518) == "due ore fa"     # il 2h 08m 38s di vjt
+assert suore.quanto_fa(3600 * 7 + 1800) == "7 ore e mezza fa"
 assert "tra un'ora" in riga, riga
 mia = suore.when_line(stato, "x/#y", 3600.0, "TIZIO")
 assert "te la sei presa tu" in mia and "Tizio" not in mia, mia

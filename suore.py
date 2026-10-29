@@ -594,10 +594,29 @@ def fra_quanto(da, now):
     n = int(round((da - now) / BUCKET))
     if n <= 0:
         return "entro mezz'ora"
+    return f"tra {mezzore(n)}"
+
+
+def mezzore(n):
+    """`n` mezz'ore a parole: «due ore», «7 ore e mezza». `n` >= 1."""
     if n in MEZZORE:
-        return f"tra {MEZZORE[n]}"
+        return MEZZORE[n]
     ore, resto = divmod(n, 2)
-    return f"tra {ore} ore e mezza" if resto else f"tra {ore} ore"
+    return f"{ore} ore e mezza" if resto else f"{ore} ore"
+
+
+def quanto_fa(gap):
+    """«due ore fa», «meno di mezz'ora fa»: l'ultima suora alla grana della
+    prossima.
+
+    Ordine di vjt (#sbiffo 2026-10-29 21:05): «leva quel counter cosi'
+    preciso e sostituiscilo con quello fuzzy» — `.suore` diceva «Ultima suora
+    2h 08m 38s fa» accanto a «La prossima tra mezz'ora». Stessa mezz'ora di
+    `fra_quanto`, all'indietro."""
+    n = int(round(gap / BUCKET))
+    if n <= 0:
+        return "meno di mezz'ora fa"
+    return f"{mezzore(n)} fa"
 
 
 def next_tail(data, scope, now):
@@ -632,7 +651,7 @@ def when_line(data, scope, now, nick=None):
         chi = last.get("nick", "qualcuno")
         presa = ("te la sei presa tu" if nick and canon(chi) == canon(nick)
                  else f"se l'e' presa {chi}")
-        pezzi = [f"Ultima suora {human_time(now - at)} fa, {presa}."]
+        pezzi = [f"Ultima suora {quanto_fa(now - at)}, {presa}."]
     else:
         pezzi = ["Ultima suora: nessuna, in questo canale non e' ancora"
                  " successo niente."]
