@@ -81,6 +81,7 @@ ACCEPT_S = 60        # per !accetto o !rifiuto
 TURN_S = 60          # per tirare l'insulto, e per parare
 WIN = 3              # scambi per vincere il duello
 START_N = 3          # insulti e risposte di un esordiente
+IMPARA_P = 0.5       # parata sbagliata: probabilita' di segnarsi quella giusta
 MIN_COPPIE = 20
 STORIA = 50          # duelli recenti tenuti per canale, per la pagina
 TICK = 5
@@ -372,8 +373,14 @@ class Duello:
                 f"✅ Parata! Lo scambio è di \x02{g['nicks'][key]}\x02, che passa all'attacco."])
         else:
             att = g["att"]
-            self.scambio(chan, g, att, now, lead + [
-                f"❌ Non c'entra niente: lo scambio è di \x02{g['nicks'][att]}\x02."])
+            lead.append(f"❌ Non c'entra niente: lo scambio è di \x02{g['nicks'][att]}\x02.")
+            # Come in Monkey Island si impara anche sbagliando, ma non sempre:
+            # vjt (#sbiffo 2026-10-30) «non ogni volta, altrimenti è troppo facile».
+            if (giusta not in self.rep(g, key)["risposte"]
+                    and self.rng.random() < IMPARA_P):
+                self.impara(chan, g["rep"][key], "risposte", giusta)
+                lead.append(f"📖 \x02{g['nicks'][key]}\x02 si segna la risposta giusta.")
+            self.scambio(chan, g, att, now, lead)
 
     def scambio(self, chan, g, winner, now, lead):
         """Lo scambio a `winner`, che (vinto o no il duello) attacca il prossimo."""

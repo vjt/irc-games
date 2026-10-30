@@ -188,7 +188,8 @@ def test_risposta_giusta_passa_l_attacco_e_si_impara(tmp_path):
     assert "«risposta 1»" in out and "Parata" in out
 
 
-def test_risposta_sbagliata_attaccante_continua(tmp_path):
+def test_risposta_sbagliata_attaccante_continua(tmp_path, monkeypatch):
+    monkeypatch.setattr(D, "IMPARA_P", 0)
     g, st = duello(tmp_path)
     truccato(g, "a", ["c1", "c2"], [])
     truccato(g, "b", [], ["c7"])
@@ -197,6 +198,20 @@ def test_risposta_sbagliata_attaccante_continua(tmp_path):
     assert st["score"] == {"a": 1, "b": 0} and st["att"] == "a"
     assert "c7" not in rep(g, "a")["risposte"]     # la risposta sbagliata non si impara
     assert "c1" not in rep(g, "b")["risposte"]     # e quella giusta nemmeno, se non giocata
+
+
+def test_risposta_sbagliata_a_volte_si_impara(tmp_path, monkeypatch):
+    monkeypatch.setattr(D, "IMPARA_P", 1)
+    g, st = duello(tmp_path)
+    truccato(g, "a", ["c1", "c2"], [])
+    truccato(g, "b", [], ["c7"])
+    g.handle("a", "#t", "!i 1", now=2)
+    g.handle("b", "#t", "!i 1", now=3)
+    assert st["score"] == {"a": 1, "b": 0} and st["att"] == "a"
+    assert "c1" in rep(g, "b")["risposte"]          # chi ha sbagliato se la segna
+    assert "c1" not in rep(g, "a")["risposte"]
+    out = " ".join(chan_lines(g))
+    assert "si segna la risposta giusta" in out and "risposta 1" not in out
 
 
 def test_numero_fuori_repertorio(tmp_path):
