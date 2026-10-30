@@ -94,6 +94,7 @@ START_N = 3          # insulti e risposte di un esordiente
 MANO = 5             # insulti e risposte pescati a ogni duello
 MAESTRO_VINTI = 5    # duelli vinti nel canale per tirare gli insulti del Maestro
 MAESTRO_PREFIX = "carla-"   # gli id delle coppie del Maestro di Spada nel copione
+MAESTRO_P = 0.2      # a ogni duello, al veterano: un insulto del Maestro a caso in mano
 IMPARA_P = 0.5       # parata sbagliata: probabilita' di segnarsi quella giusta
 MIN_COPPIE = 20
 STORIA = 50          # duelli recenti tenuti per canale, per la pagina
@@ -296,7 +297,13 @@ class Duello:
 
     def pesca(self, g, key, r, kind):
         pool = [c for c in r[kind] if self.in_mano(g, key, kind, c)]
-        return self.rng.sample(pool, min(MANO, len(pool)))
+        mano = self.rng.sample(pool, min(MANO, len(pool)))
+        if kind == "insulti":
+            maestro = [c for c in self.ids if c.startswith(MAESTRO_PREFIX)
+                       and c not in mano and self.in_mano(g, key, kind, c)]
+            if maestro and self.rng.random() < MAESTRO_P:
+                mano.append(self.rng.choice(maestro))
+        return mano
 
     def impara_in_duello(self, g, key, kind, cid):
         """Impara per sempre, e se e' nuovo (e ammesso) lo mette subito in mano."""

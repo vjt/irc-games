@@ -254,6 +254,23 @@ def test_maestro_solo_ai_veterani(tmp_path):
     assert "carla-x" in rep(g, "a")["insulti"]      # ma lo conosce
 
 
+def test_maestro_a_caso_al_veterano(tmp_path, monkeypatch):
+    monkeypatch.setattr(D, "MAESTRO_P", 1.0)
+    coppie = COPPIE + [{"id": "carla-x", "insulto": "insulto maestro", "risposta": "risposta 1"}]
+    g = nuovo(tmp_path, coppie=coppie)
+    g.handle("a", "#t", "!duello b", now=0)
+    g.repertorio("#t", "a", "a")
+    g.repertorio("#t", "b", "b")
+    truccato(g, "a", ["c1"], [])
+    truccato(g, "b", ["c3"], [])
+    g.scope("#t")["vinti"]["b"] = {"nick": "b", "vinti": D.MAESTRO_VINTI}
+    g.handle("b", "#t", "!accetto", now=1)
+    st = g.games["#t"]
+    assert st["mano"]["a"]["insulti"] == ["c1"]             # l'esordiente no
+    assert st["mano"]["b"]["insulti"] == ["c3", "carla-x"]  # il veterano si'
+    assert "carla-x" not in rep(g, "b")["insulti"]          # senza saperlo
+
+
 def test_numero_fuori_repertorio(tmp_path):
     g, st = duello(tmp_path)
     g.handle("a", "#t", "!i 9", now=2)

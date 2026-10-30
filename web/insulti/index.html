@@ -117,8 +117,12 @@ const esc = s => String(s).replace(/[&<>"']/g, c =>
 const when = ts => new Date(ts * 1000).toLocaleString("it-IT", {
   timeZone: "Europe/Rome", day: "2-digit", month: "2-digit",
   hour: "2-digit", minute: "2-digit"});
-const bar = (n, tot) => `${n}/${tot}<span class="bar"><i style="width:${
-  tot ? Math.min(100, Math.round(100 * n / tot)) : 0}%"></i></span>`;
+// Da rosso (niente) a verde (tutto il copione).
+const bar = (n, tot) => {
+  const f = tot ? Math.min(1, n / tot) : 0;
+  return `${n}/${tot}<span class="bar"><i style="width:${Math.round(100 * f)}%;` +
+    `background:hsl(${Math.round(120 * f)} 70% 45%)"></i></span>`;
+};
 
 let data = null;
 // Il canale nel frammento (#sbiffo), cosi' il link si condivide gia' puntato.
