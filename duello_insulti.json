@@ -1,0 +1,170 @@
+{
+  "_nota": "Coppie insulto -> risposta per duello.py. Testi italiani originali di The Secret of Monkey Island (LucasArts): sostituiscono le 25 coppie sintetiche del branch duello, su ordine di vjt (#sbiffo 2026-10-30). Le risposte sono condivise fra piu insulti per disegno: nel gioco originale piu insulti hanno la stessa risposta. L'id e quello che finisce nei repertori su disco: i repertori che citano i vecchi id sintetici vengono filtrati via da duello.py.",
+  "coppie": [
+    {
+      "id": "contadino",
+      "insulto": "Combatti come un contadino.",
+      "risposta": "Molto appropriato. Tu combatti come una mucca."
+    },
+    {
+      "id": "spiedino",
+      "insulto": "Adesso t'infilzerò con la mia spada come uno spiedino!",
+      "risposta": "Prima dovresti smettere di agitarla come un piumino."
+    },
+    {
+      "id": "poteri",
+      "insulto": "Non puoi competere con i miei poteri, povero cretino.",
+      "risposta": "Sarei proprio nei guai se mai tu li usassi."
+    },
+    {
+      "id": "sangue",
+      "insulto": "Nessuno mi ha mai colpito a sangue e non succederà mai!",
+      "risposta": "Riesci a correre COSÌ veloce?"
+    },
+    {
+      "id": "cane",
+      "insulto": "Una volta avevo un cane più intelligente di te.",
+      "risposta": "Ti avrà insegnato tutto quello che sai."
+    },
+    {
+      "id": "vomitare",
+      "insulto": "Mi fai vomitare.",
+      "risposta": "Mi fai pensare che qualcuno l'abbia già fatto."
+    },
+    {
+      "id": "pannolini",
+      "insulto": "Non hai ancora smesso di portare i pannolini?",
+      "risposta": "Perché, ne volevi uno?"
+    },
+    {
+      "id": "impertinenza",
+      "insulto": "Non accetterò la tua impertinenza restando seduto!",
+      "risposta": "Le tue emorroidi ti danno di nuovo fastidio, eh?"
+    },
+    {
+      "id": "piedi",
+      "insulto": "La gente cade ai miei piedi quando mi vede arrivare.",
+      "risposta": "Ancor PRIMA che ti sentano l'alito?"
+    },
+    {
+      "id": "fogna",
+      "insulto": "Questa è la FINE per te, topo di fogna!",
+      "risposta": "Ed anch'io ho una piccola PUNTA per te. Capito?"
+    },
+    {
+      "id": "mendicante",
+      "insulto": "Hai le maniere d'un mendicante.",
+      "risposta": "Volevo essere sicuro che tu fossi a tuo agio con me."
+    },
+    {
+      "id": "sfregio",
+      "insulto": "Ho avuto questo sfregio in faccia in una dura battaglia!",
+      "risposta": "Spero tu abbia imparato a non mettere le dita nel naso."
+    },
+    {
+      "id": "disgustoso",
+      "insulto": "Non ci sono parole per descrivere quanto sei disgustoso.",
+      "risposta": "Sì ci sono. Ma non le hai mai imparate."
+    },
+    {
+      "id": "codardo",
+      "insulto": "Ho sentito dire che sei uno spregevole codardo.",
+      "risposta": "Che peccato che nessuno abbia MAI sentito parlare di te."
+    },
+    {
+      "id": "fazzoletto",
+      "insulto": "Pulirò il tuo sangue col mio fazzoletto!",
+      "risposta": "Dunque hai avuto quel lavoro di custode, eh."
+    },
+    {
+      "id": "scimmie",
+      "insulto": "Ho parlato con scimmie più educate di te.",
+      "risposta": "Sono contento che tu sia andato alla riunione di famiglia."
+    },
+    {
+      "id": "carla-mungere",
+      "insulto": "Ti mungerò fino all'ultima goccia del tuo sangue!",
+      "risposta": "Molto appropriato. Tu combatti come una mucca."
+    },
+    {
+      "id": "carla-lingua",
+      "insulto": "La mia lingua è più tagliente di qualsiasi spada.",
+      "risposta": "Prima dovresti smettere di agitarla come un piumino."
+    },
+    {
+      "id": "carla-coraggio",
+      "insulto": "Ho il coraggio e l'abilità di un gran spadaccino!",
+      "risposta": "Sarei proprio nei guai se mai tu li usassi."
+    },
+    {
+      "id": "carla-male",
+      "insulto": "NESSUNO mi vedrà combattere così male come te.",
+      "risposta": "Riesci a correre COSÌ veloce?"
+    },
+    {
+      "id": "carla-codardo",
+      "insulto": "Solo una volta incontrai un tale codardo!",
+      "risposta": "Ti avrà insegnato tutto quello che sai."
+    },
+    {
+      "id": "carla-fratello",
+      "insulto": "Se tuo fratello ti assomiglia, meglio sposare un maiale.",
+      "risposta": "Mi fai pensare che qualcuno l'abbia già fatto."
+    },
+    {
+      "id": "carla-battello",
+      "insulto": "Spero tu abbia un battello pronto per una fuga veloce.",
+      "risposta": "Perché, ne volevi uno?"
+    },
+    {
+      "id": "carla-scatole",
+      "insulto": "Sei una rottura di scatole, signore!",
+      "risposta": "Le tue emorroidi ti danno di nuovo fastidio, eh?"
+    },
+    {
+      "id": "carla-taverne",
+      "insulto": "Di solito vedo persone come te svenute nelle taverne.",
+      "risposta": "Ancor PRIMA che ti sentano l'alito?"
+    },
+    {
+      "id": "carla-lezione",
+      "insulto": "Oggi devo darti una lunga lezione tagliente.",
+      "risposta": "Ed anch'io ho una piccola PUNTA per te. Capito?"
+    },
+    {
+      "id": "carla-stupida",
+      "insulto": "Ogni parola che mi dici è stupida.",
+      "risposta": "Volevo essere sicuro che tu fossi a tuo agio con me."
+    },
+    {
+      "id": "carla-insanguinate",
+      "insulto": "Nel mio ultimo combattimento avevo le mani insanguinate.",
+      "risposta": "Spero tu abbia imparato a non mettere le dita nel naso."
+    },
+    {
+      "id": "carla-strategiche",
+      "insulto": "Non ci sono mosse strategiche che possono aiutarti ora.",
+      "risposta": "Sì ci sono. Ma non le hai mai imparate."
+    },
+    {
+      "id": "carla-famosa",
+      "insulto": "La mia spada è famosa ovunque nei Caraibi!",
+      "risposta": "Che peccato che nessuno abbia MAI sentito parlare di te."
+    },
+    {
+      "id": "carla-nome",
+      "insulto": "Il mio nome fa paura in ogni sporco angolo di quest'isola.",
+      "risposta": "Dunque hai avuto quel lavoro di custode, eh."
+    },
+    {
+      "id": "carla-saggi",
+      "insulto": "I miei nemici più saggi scappano via appena mi vedono!",
+      "risposta": "Ancor PRIMA che ti sentano l'alito?"
+    },
+    {
+      "id": "carla-sporcizia",
+      "insulto": "Adesso capisco cosa significhino la sporcizia e la stupidità.",
+      "risposta": "Sono contento che tu sia andato alla riunione di famiglia."
+    }
+  ]
+}
