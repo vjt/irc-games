@@ -202,6 +202,27 @@ LANGUORINO = [
     "naturalmente, Rocher.",
 ]
 
+# E se la signora il Rocher lo nomina e basta, Ambrogio c'e' lo stesso: battute
+# sue, non quelle del languorino. vjt, #sbiffo 2026-10-30 15:02.
+ROCHER_PAT = re.compile(r'\brocher\b', re.I)
+ROCHER = [
+    "Rocher, signora? Ambrogio l'ha già scartato, senza toccarlo.",
+    "La piramide è pronta, signora: trentasei piani, ascensore escluso.",
+    "Signora, il Rocher non si chiede. Si riceve.",
+    "Ho fatto rifare gli incarti in oro zecchino, signora. Quelli di serie "
+    "erano un filo pacchiani.",
+    "Rocher alla destra della signora, nocciola intera rivolta a nord-est.",
+    "Ambrogio ne tiene sempre uno nel guanto sinistro, signora. Per le emergenze.",
+    "Il Rocher è servito, signora. All'ambasciatore uno solo, come concordato.",
+    "Signora, li ho contati due volte e ne manca uno: l'ho assaggiato per "
+    "sicurezza.",
+    "Ambrogio dispone i Rocher sul cruscotto della Rolls, in ordine di luccichio.",
+    "Rocher in arrivo, signora: il pirottino l'ho stirato io.",
+    "La signora ha detto Rocher. Ambrogio ha già inchiodato in mezzo alla "
+    "tangenziale.",
+    "Lo scarto io, signora, o preferisce sentire il fruscio?",
+]
+
 
 def fetch(url):
     req = urllib.request.Request(url, headers=HEADERS)
@@ -601,6 +622,7 @@ def link_preview(url, resolve=public_addresses):
     return " :: ".join(parts)
 
 _languorino_deck = []
+_rocher_deck = []
 
 
 # !ip <address>: reverse DNS plus the origin AS from Team Cymru's whois
@@ -790,12 +812,25 @@ class Presence:
             pass
 
 
-def next_languorino():
+def _deal(deck, lines):
     """A shuffled deck, not random.choice: no line comes back before every
     other one has had its turn."""
-    if not _languorino_deck:
-        _languorino_deck.extend(random.sample(LANGUORINO, len(LANGUORINO)))
-    return _languorino_deck.pop()
+    if not deck:
+        deck.extend(random.sample(lines, len(lines)))
+    return deck.pop()
+
+
+def next_languorino():
+    return _deal(_languorino_deck, LANGUORINO)
+
+
+def next_rocher():
+    return _deal(_rocher_deck, ROCHER)
+
+
+# Languorino first: «un languorino da Rocher» gets the languorino answer, and
+# one line only — the two share the cooldown.
+BUTLER = ((LANGUORINO_PAT, next_languorino), (ROCHER_PAT, next_rocher))
 
 
 def first_link(text):
@@ -860,11 +895,12 @@ def daemon():
         text = m.group("text")
 
         # Ambrogio is a butler everywhere he sits, not only where previews run.
-        if LANGUORINO_PAT.search(text):
+        butler = next((line for pat, line in BUTLER if pat.search(text)), None)
+        if butler:
             now = time.time()
             if now - last_languorino.get(chan, 0) >= LANGUORINO_SEC:
                 last_languorino[chan] = now
-                say(chan, next_languorino())
+                say(chan, butler())
             continue
 
         ipcmd = IP_CMD_PAT.match(text)

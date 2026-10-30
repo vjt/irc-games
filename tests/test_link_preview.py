@@ -147,3 +147,22 @@ def test_languorino_deck_says_every_line_before_repeating():
     yp._languorino_deck.clear()
     first = [yp.next_languorino() for _ in yp.LANGUORINO]
     assert sorted(first) == sorted(yp.LANGUORINO)
+
+
+def test_rocher_matches_the_word_and_has_its_own_lines():
+    assert yp.ROCHER_PAT.search("passami un Rocher")
+    assert yp.ROCHER_PAT.search("ROCHER!")
+    assert not yp.ROCHER_PAT.search("rochefort")
+    assert all(not yp.CONTROL_PAT.search(x) for x in yp.ROCHER)
+    assert not set(yp.ROCHER) & set(yp.LANGUORINO)
+
+
+def test_rocher_deck_says_every_line_before_repeating():
+    yp._rocher_deck.clear()
+    first = [yp.next_rocher() for _ in yp.ROCHER]
+    assert sorted(first) == sorted(yp.ROCHER)
+
+
+def test_languorino_wins_over_rocher():
+    [line] = [l for pat, l in yp.BUTLER if pat.search("un languorino da Rocher")][:1]
+    assert line is yp.next_languorino
