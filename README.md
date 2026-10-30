@@ -166,10 +166,38 @@ Su disco solo la classifica (`scopa_state.json`). Canali: `#sbiffo`, `#bot`.
 python3 -m pytest tests/test_scopa.py
 ```
 
+## Duello
+
+`duello.py`, duello a insulti fra due giocatori, dietro a MikeBongiorno
+(richiesta di vjt, #sbiffo 2026-10-30, idea di bitflesh; issue #7). Sopra
+`ircgame.py` come CaH; config in `DUELLO_NETS` (formato di `SILLABAH_NETS`),
+rc.d in `deploy/mikebongiorno_duello`. Canale: `#sbiffo`.
+
+`!duello <nick>` sfida, lo sfidato ha 60s per `!accetto` o `!rifiuto`. Si gioca
+a scambi: chi attacca tira un insulto (`!i N`), chi difende para con una
+risposta (`!r N`), in canale o in query; il repertorio numerato arriva in query
+a ogni turno. Risposta giusta: scambio al difensore, che passa all'attacco;
+sbagliata o niente entro 60s: scambio all'attaccante. Chi non attacca entro
+60s perde lo scambio. Vince chi arriva a 3. Si impara duellando: l'insulto
+subito lo impari, la risposta giusta giocata la imparano tutti e due; un
+esordiente parte con 3 insulti e 3 risposte a caso. Chi se ne va (PART, KICK,
+QUIT) perde il duello. `!repertorio` (in query) mostra cosa conosci,
+`!classifica duello` i duelli vinti. Su disco (`duello_state.json`, per rete e
+per canale) i repertori e le vittorie.
+
+Le battute stanno in `duello_insulti.json`: scritte apposta, **niente Monkey
+Island** (sono di LucasArts). Ogni risposta rigira il suo insulto, cosi' la si
+indovina ragionando; gli `id` sono quelli salvati nei repertori, non si cambiano.
+
+```
+python3 -m pytest tests/test_duello.py
+python3 duello.py insulti
+```
+
 ## Una partita per canale
 
 Ordine di Malekith (2026-10-15): in un canale gira un gioco per volta, fra
-tutti i giochi, che sono processi diversi. CaH, Briscola, Scopa, Trivial e Sillabah, prima di
+tutti i giochi, che sono processi diversi. CaH, Briscola, Scopa, Duello, Trivial e Sillabah, prima di
 aprire una partita, chiamano `ircgame.start_refusal()`:
 
 - un **lucchetto per rete+canale** (`ircgame.ChannelLock`): un file
