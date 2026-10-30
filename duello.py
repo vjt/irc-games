@@ -34,6 +34,9 @@ Regole (issue #7):
   * Si impara duellando: chi subisce un insulto lo impara; una risposta
     giusta giocata la imparano tutti e due. Un esordiente parte con START_N
     insulti e START_N risposte a caso (non per forza della stessa coppia).
+  * Un insulto tirato vale una volta per duello (vjt, #sbiffo 2026-10-30):
+    sparisce dalla lista di chi l'ha tirato fino al duello dopo. Chi deve
+    attaccare e non ha piu' insulti perde lo scambio.
   * Chi difende vede tutte le risposte che conosce, comprese quelle che non
     c'entrano: gli insulti imparati senza risposta sono esche.
 
@@ -265,9 +268,20 @@ class Duello:
     def punteggio(self, g):
         return " – ".join(f"{g['nicks'][k]} {g['score'][k]}" for k in (g["a"], g["b"]))
 
-    def send_attack(self, g):
+    def disponibili(self, g, key):
+        """Gli insulti di `key` non ancora tirati in questo duello."""
+        usati = g["usati"].get(key, ())
+        return [c for c in self.rep(g, key)["insulti"] if c not in usati]
+
+    def send_attack(self, g, now):
         key = g["att"]
-        ins = self.rep(g, key)["insulti"]
+        ins = self.disponibili(g, key)
+        if not ins:
+            other = self.other(g, key)
+            self.scambio(g["chan"], g, other, now, [
+                f"🫥 {g['nicks'][key]} ha finito gli insulti: lo scambio è di "
+                f"\x02{g['nicks'][other]}\x02, che passa all'attacco."])
+            return
         self.emit(g["chan"],
                   [f"⚔️ \x02{g['nicks'][key]}\x02 attacca ({self.punteggio(g)}), {TURN_S}s — !i N:"]
                   + [f"\x02{i})\x02 {self.coppie[c]['insulto']}" for i, c in enumerate(ins, 1)])
@@ -308,6 +322,7 @@ class Duello:
             "phase": "sfida", "chan": chan, "a": key, "b": tkey,
             "nicks": {key: nick, tkey: target}, "rep": {key: key, tkey: tkey},
             "score": {key: 0, tkey: 0}, "att": key, "def": tkey, "insulto": None,
+            "usati": {key: [], tkey: []},
             "deadline": now + ACCEPT_S,
         }
         self.say(chan, f"⚔️ {nick} sfida {target} a duello di insulti! {target}: "
@@ -320,17 +335,18 @@ class Duello:
         g["deadline"] = now + TURN_S
         self.say(chan, f"⚔️ {g['nicks'][g['b']]} accetta! Vince chi arriva a {WIN} scambi. "
                        f"Attacca {g['nicks'][g['att']]}.")
-        self.send_attack(g)
+        self.send_attack(g, now)
 
     def insulta(self, chan, g, key, n, now):
         if g["phase"] != "attacco" or key != g["att"]:
             return
-        ins = self.rep(g, key)["insulti"]
+        ins = self.disponibili(g, key)
         if not 1 <= n <= len(ins):
             self.say(chan, f"{g['nicks'][key]}: un numero fra 1 e {len(ins)}: !i N.")
             return
         cid = ins[n - 1]
         g["insulto"] = cid
+        g["usati"][key].append(cid)
         g["phase"] = "difesa"
         g["deadline"] = now + TURN_S
         self.impara(chan, g["rep"][g["def"]], "insulti", cid)
@@ -370,7 +386,7 @@ class Duello:
         g["phase"] = "attacco"
         g["deadline"] = now + TURN_S
         self.emit(chan, lead + [f"({self.punteggio(g)})"])
-        self.send_attack(g)
+        self.send_attack(g, now)
 
     def vittoria(self, chan, g, winner, lead=(), abbandono=False):
         loser = self.other(g, winner)
@@ -536,7 +552,7 @@ class Duello:
         for f in ("a", "b", "att", "def"):
             if g[f] == old:
                 g[f] = new
-        for d in (g["nicks"], g["rep"], g["score"]):
+        for d in (g["nicks"], g["rep"], g["score"], g["usati"]):
             d[new] = d.pop(old)
         g["nicks"][new] = new_nick
 

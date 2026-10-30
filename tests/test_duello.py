@@ -190,7 +190,7 @@ def test_risposta_giusta_passa_l_attacco_e_si_impara(tmp_path):
 
 def test_risposta_sbagliata_attaccante_continua(tmp_path):
     g, st = duello(tmp_path)
-    truccato(g, "a", ["c1"], [])
+    truccato(g, "a", ["c1", "c2"], [])
     truccato(g, "b", [], ["c7"])
     g.handle("a", "#t", "!i 1", now=2)
     g.handle("b", "#t", "!r 1", now=3)
@@ -228,7 +228,7 @@ def test_timeout_difesa_e_attacco(tmp_path):
 
 def test_vince_a_tre_e_si_salva(tmp_path):
     g, st = duello(tmp_path)
-    truccato(g, "a", ["c1"], [])
+    truccato(g, "a", ["c1", "c2", "c3"], [])
     truccato(g, "b", [], ["c9"])
     for i in range(D.WIN):
         g.handle("a", "#t", "!i 1", now=2 + i)
@@ -424,7 +424,7 @@ def test_doppioni_su_disco_si_puliscono(tmp_path):
 
 def test_stats_per_la_pagina(tmp_path):
     g, st = duello(tmp_path)
-    truccato(g, "a", ["c1"], [])
+    truccato(g, "a", ["c1", "c2", "c3"], [])
     truccato(g, "b", [], ["c9"])
     for i in range(D.WIN):
         g.handle("a", "#t", "!i 1", now=2 + i)
@@ -448,3 +448,36 @@ def test_stats_path_col_nome_vero(tmp_path):
     g = D.Duello("ircnet", "/dev/null", "", tmp_path / "duello_state.ircnet.json",
                  {"#t"}, COPPIE, rng=random.Random(1))
     assert g.stats_path.name == "duello_stats.ircnet.json"
+
+
+def test_insulto_monouso_per_duello(tmp_path):
+    g, st = duello(tmp_path)
+    truccato(g, "a", ["c1", "c2"], [])
+    truccato(g, "b", ["c5"], ["c9"])
+    g.handle("a", "#t", "!i 1", now=2)            # c1, poi non c'e' piu'
+    g.handle("b", "#t", "!r 1", now=3)
+    assert "insulto 1" not in chan_lines(g)[-1] and "insulto 2" in chan_lines(g)[-1]
+    g.handle("a", "#t", "!i 2", now=4)            # ne resta uno solo
+    assert st["phase"] == "attacco" and "fra 1 e 1" in chan_lines(g)[-1]
+    g.handle("a", "#t", "!i 1", now=5)            # c2
+    g.handle("b", "#t", "!r 1", now=6)
+    # a e' a secco: lo scambio va a b, che attacca
+    assert st["score"] == {"a": 3, "b": 0} or (st["score"] == {"a": 2, "b": 1}
+                                                and st["att"] == "b")
+    assert any("finito gli insulti" in l for l in chan_lines(g))
+    # nel repertorio restano, valgono al duello dopo
+    assert rep(g, "a")["insulti"] == ["c1", "c2"]
+
+
+def test_entrambi_a_secco_finisce(tmp_path):
+    g, st = duello(tmp_path)
+    truccato(g, "a", ["c1"], [])
+    truccato(g, "b", [], ["c9"])
+    g.handle("a", "#t", "!i 1", now=2)
+    g.handle("b", "#t", "!r 1", now=3)            # a 1, a secco: scambio a b
+    assert st["score"] == {"a": 1, "b": 1} and st["att"] == "b"
+    g.handle("b", "#t", "!i 1", now=4)            # c1, imparato subendolo
+    g.tick(now=4 + D.TURN_S)                      # a non para: b 2, e b e' a secco
+    # da qui nessuno ha insulti: i giri a vuoto chiudono il duello, non lo bloccano
+    assert "#t" not in g.games
+    assert "vince il duello" in chan_lines(g)[-1]

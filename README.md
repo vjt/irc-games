@@ -178,7 +178,8 @@ a scambi: chi attacca tira un insulto (`!i N`), chi difende para con una
 risposta (`!r N`), in canale o in query; il repertorio numerato arriva in query
 a ogni turno. Risposta giusta: scambio al difensore, che passa all'attacco;
 sbagliata o niente entro 60s: scambio all'attaccante. Chi non attacca entro
-60s perde lo scambio. Vince chi arriva a 3. Si impara duellando: l'insulto
+60s perde lo scambio. Un insulto tirato vale una volta per duello: chi deve
+attaccare e li ha finiti perde lo scambio. Vince chi arriva a 3. Si impara duellando: l'insulto
 subito lo impari, la risposta giusta giocata la imparano tutti e due; un
 esordiente parte con 3 insulti e 3 risposte a caso. Chi se ne va (PART, KICK,
 QUIT) perde il duello. `!repertorio` (in query) mostra cosa conosci,
