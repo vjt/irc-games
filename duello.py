@@ -19,6 +19,10 @@ The Secret of Monkey Island (LucasArts), su ordine di vjt (#sbiffo
   !repertorio      in query: cosa conosci (in canale: risposta in query)
   !classifica [duello]   duelli vinti nel canale
 
+La pagina (ordine di vjt, #sbiffo 2026-10-30): a ogni salvataggio lo stato
+diventa anche `duello_stats[.rete].json`, accanto allo stato, che nginx serve
+come dioschifoso.it/insulti/data.json. Solo numeri: le battute non escono.
+
 Regole (issue #7):
   * Si gioca a scambi: chi attacca sceglie un insulto, chi difende una
     risposta. Giusta: lo scambio e' del difensore, che passa all'attacco.
@@ -40,8 +44,8 @@ Cambio nick: il duello continua col nick nuovo, e il repertorio resta quello
 del nick con cui si e' cominciato. Al timeout di un turno un ISON: su +u i
 QUIT non arrivano, chi e' offline ha abbandonato.
 
-Su disco (stato per rete, dentro per canale): il repertorio di ogni nick e i
-duelli vinti. Il duello in corso sta in memoria: un riavvio lo perde.
+Su disco (stato per rete, dentro per canale): il repertorio di ogni nick, i
+duelli vinti e persi, gli ultimi STORIA duelli. Il duello in corso sta in memoria: un riavvio lo perde.
 
 CLI:
   duello.py --net azzurra daemon   il daemon
@@ -75,6 +79,7 @@ TURN_S = 60          # per tirare l'insulto, e per parare
 WIN = 3              # scambi per vincere il duello
 START_N = 3          # insulti e risposte di un esordiente
 MIN_COPPIE = 20
+STORIA = 50          # duelli recenti tenuti per canale, per la pagina
 TICK = 5
 HELP = ("⚔️ Duello a insulti: !duello <nick> sfida, !accetto o !rifiuto · in gioco "
         "!i N insulta, !r N para, tutto in canale · !repertorio in query · !classifica duello")
@@ -157,9 +162,43 @@ class Duello:
                     r[kind] = keep
         return d
 
-    def save(self):
+    def save(self, now=None):
         ircgame.save_json(self.state_path, self.state)
+        ircgame.save_json(self.stats_path, self.stats(now))
         self.dirty = False
+
+    @property
+    def stats_path(self):
+        """duello_state[.rete].json -> duello_stats[.rete].json, accanto; mai
+        lo stesso file, anche se lo stato si chiama in un altro modo."""
+        p = self.state_path
+        if "duello_state" in p.name:
+            return p.with_name(p.name.replace("duello_state", "duello_stats", 1))
+        return p.with_name(f"{p.stem}_stats{p.suffix}")
+
+    def stats(self, now=None):
+        """Quello che mangia la pagina: per canale giocatori e duelli recenti.
+        Dei repertori si danno i conteggi, non i testi."""
+        canali = {}
+        for chan, sc in sorted(self.state["canali"].items()):
+            rows = {}
+            for k, r in sc.get("repertori", {}).items():
+                rows[k] = {"nick": r["nick"], "vinti": 0, "persi": 0,
+                           "insulti": sum(c in self.coppie for c in r["insulti"]),
+                           "risposte": sum(c in self.coppie for c in r["risposte"])}
+            for k, v in sc.get("vinti", {}).items():
+                row = rows.setdefault(k, {"nick": v["nick"], "vinti": 0, "persi": 0,
+                                          "insulti": 0, "risposte": 0})
+                row["vinti"] = v.get("vinti", 0)
+                row["persi"] = v.get("persi", 0)
+            giocatori = sorted(rows.values(),
+                               key=lambda r: (-r["vinti"], r["persi"], r["nick"].casefold()))
+            canali[chan] = {"giocatori": giocatori,
+                            "duelli": list(reversed(sc.get("duelli", [])))}
+        return {"rete": self.net, "generato": int(now or time.time()),
+                "insulti": len({c["insulto"] for c in self.coppie.values()}),
+                "risposte": len({c["risposta"] for c in self.coppie.values()}),
+                "canali": canali}
 
     def scope(self, chan):
         return self.state["canali"].setdefault(chan, {"repertori": {}, "vinti": {}})
@@ -188,7 +227,7 @@ class Duello:
             self.dirty = True
 
     def classifica(self, chan, n=10):
-        rows = sorted(self.scope(chan)["vinti"].values(),
+        rows = sorted((r for r in self.scope(chan)["vinti"].values() if r["vinti"]),
                       key=lambda r: (-r["vinti"], r["nick"].casefold()))
         return " · ".join(f"{r['nick']} {r['vinti']}" for r in rows[:n])
 
@@ -333,12 +372,18 @@ class Duello:
         self.emit(chan, lead + [f"({self.punteggio(g)})"])
         self.send_attack(g)
 
-    def vittoria(self, chan, g, winner, lead=()):
+    def vittoria(self, chan, g, winner, lead=(), abbandono=False):
+        loser = self.other(g, winner)
+        sc = self.scope(chan)
+        for key, field in ((winner, "vinti"), (loser, "persi")):
+            row = sc["vinti"].setdefault(g["rep"][key], {"nick": g["nicks"][key], "vinti": 0})
+            row["nick"] = g["nicks"][key]
+            row[field] = row.get(field, 0) + 1
+        sc.setdefault("duelli", []).append({
+            "ts": int(time.time()), "vince": g["nicks"][winner], "perde": g["nicks"][loser],
+            "punti": f"{g['score'][winner]}-{g['score'][loser]}", "abbandono": abbandono})
+        del sc["duelli"][:-STORIA]
         nick = g["nicks"][winner]
-        rkey = g["rep"][winner]
-        row = self.scope(chan)["vinti"].setdefault(rkey, {"nick": nick, "vinti": 0})
-        row["nick"] = nick
-        row["vinti"] += 1
         self.dirty = True
         self.games.pop(chan, None)
         self.emit(chan, list(lead) + [f"🏆 \x02{nick}\x02 vince il duello! "
@@ -351,7 +396,8 @@ class Duello:
             self.games.pop(chan, None)
             self.say(chan, f"⚔️ {nick} se ne va{why}: sfida annullata.")
             return
-        self.vittoria(chan, g, self.other(g, key), [f"🏳️ {nick} abbandona{why}."])
+        self.vittoria(chan, g, self.other(g, key), [f"🏳️ {nick} abbandona{why}."],
+                      abbandono=True)
 
     def stato(self, chan, g, now):
         left = max(0, int(g["deadline"] - now))
@@ -523,6 +569,7 @@ class Duello:
         p = subprocess.Popen(["tail", "-F", "-n", "0", self.log],
                              stdout=subprocess.PIPE, text=True, errors="replace")
         time.sleep(1)
+        self.save()                         # la pagina ha i numeri da subito
         for chan in sorted(self.chans):     # la fotografia di presenti e modi
             self.out.raw(f"NAMES {chan}")
             self.out.raw(f"MODE {chan}")

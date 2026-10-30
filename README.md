@@ -183,7 +183,10 @@ subito lo impari, la risposta giusta giocata la imparano tutti e due; un
 esordiente parte con 3 insulti e 3 risposte a caso. Chi se ne va (PART, KICK,
 QUIT) perde il duello. `!repertorio` (in query) mostra cosa conosci,
 `!classifica duello` i duelli vinti. Su disco (`duello_state.json`, per rete e
-per canale) i repertori e le vittorie.
+per canale) i repertori, i duelli vinti e persi, gli ultimi 50 duelli. A ogni
+salvataggio anche `duello_stats.json`, accanto: solo numeri, niente battute, e
+nginx lo serve come `https://dioschifoso.it/insulti/data.json` alla pagina in
+`web/insulti/`.
 
 Le battute stanno in `duello_insulti.json`: scritte apposta, **niente Monkey
 Island** (sono di LucasArts). Ogni risposta rigira il suo insulto, cosi' la si

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Duello a insulti</title>
+<link rel="icon" href="data:,">
+<meta name="description" content="Classifica del duello a insulti sui canali IRC: duelli vinti e persi, repertori, ultimi scontri.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="dioschifoso.it">
+<meta property="og:title" content="Duello a insulti">
+<meta property="og:description" content="Si vince a colpi di insulti, e gli insulti si imparano subendoli. Classifica e ultimi duelli dai canali IRC.">
+<meta property="og:url" content="https://dioschifoso.it/insulti/">
+<!-- Stessa tavolozza della pagina delle suore: e' lo stesso sito. -->
+<style>
+  :root {
+    --bg: #0f1012;
+    --panel: #17181c;
+    --line: #26272d;
+    --ink: #e6e4df;
+    --dim: #8d8b86;
+    --gold: #d9a441;
+    --hit: #b7543f;
+    --friend: #4f7a6a;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.55 var(--mono);
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 60rem; margin: 0 auto; padding: 2rem 1.1rem 4rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .2rem; letter-spacing: .02em; }
+  h1 .sword { color: var(--gold); }
+  h2 { font-size: 1.05rem; margin: 2rem 0 .6rem; color: var(--gold); }
+  .sub { color: var(--dim); margin: 0 0 .6rem; font-size: .88rem; }
+  .how {
+    margin: 0 0 1.5rem; font-size: .84rem; color: var(--dim);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    padding: .7rem .9rem;
+  }
+  .how code { color: var(--ink); }
+  .chans { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 1rem; }
+  .chans button {
+    font: inherit; font-size: .85rem; color: var(--dim); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 4px; padding: .25rem .6rem; cursor: pointer;
+  }
+  .chans button[aria-pressed="true"] { color: var(--ink); border-color: var(--gold); }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { padding: .35rem .5rem; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th { color: var(--dim); font-weight: normal; }
+  th:nth-child(2), td:nth-child(2) { text-align: left; }
+  td.pos { color: var(--dim); }
+  tr.top1 td:nth-child(2) { color: var(--gold); }
+  .won { color: var(--friend); }
+  .lost { color: var(--hit); }
+  .bar {
+    display: inline-block; width: 4rem; height: .5rem; vertical-align: middle;
+    background: var(--line); border-radius: 2px; margin-left: .4rem; overflow: hidden;
+  }
+  .bar i { display: block; height: 100%; background: var(--gold); }
+  ul.duels { list-style: none; margin: 0; padding: 0; font-size: .88rem; }
+  ul.duels li { padding: .3rem 0; border-bottom: 1px solid var(--line); }
+  ul.duels .when { color: var(--dim); display: inline-block; min-width: 7.5rem; }
+  .empty { color: var(--dim); font-size: .88rem; }
+  footer { margin-top: 3rem; color: var(--dim); font-size: .8rem; }
+  footer a { color: var(--dim); }
+</style>
+</head>
+<body>
+<!--# include virtual="/_ring.html" -->
+<div class="wrap">
+  <h1><span class="sword">&#9876;</span> Duello a insulti</h1>
+  <p class="sub" id="sub">caricamento&hellip;</p>
+
+  <div class="how">
+    <code>!duello &lt;nick&gt;</code> sfida, <code>!accetto</code> o <code>!rifiuto</code>.
+    Chi attacca tira un insulto con <code>!i N</code>, chi difende para con <code>!r N</code>.
+    Vince chi arriva a 3 scambi. Si parte con tre insulti e tre risposte a caso:
+    l'insulto subito lo impari, la risposta giusta la imparano tutti e due.
+    All'inizio si perde, poi si impara.
+  </div>
+
+  <div class="chans" id="chans"></div>
+
+  <h2>Classifica</h2>
+  <div class="scroll"><table>
+    <thead><tr>
+      <th>#</th><th>nick</th><th>vinti</th><th>persi</th><th>%</th>
+      <th>insulti</th><th>risposte</th>
+    </tr></thead>
+    <tbody id="rank"></tbody>
+  </table></div>
+  <p class="empty" id="rank-empty" hidden>Nessun duello ancora. Sfida qualcuno.</p>
+
+  <h2>Ultimi duelli</h2>
+  <ul class="duels" id="duels"></ul>
+  <p class="empty" id="duels-empty" hidden>Nessun duello ancora.</p>
+
+  <footer>
+    Il gioco lo fa MikeBongiorno; codice su
+    <a href="https://github.com/vjt/irc-games">github.com/vjt/irc-games</a>.
+    &middot; <a href="/suore/">Sparasuore</a>
+  </footer>
+</div>
+
+<script>
+// Il JSON lo riscrive duello.py a ogni duello chiuso (duello_stats.json,
+// servito da nginx come /insulti/data.json). Dentro solo numeri: le battute
+// restano nel gioco.
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c =>
+  ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[c]);
+const when = ts => new Date(ts * 1000).toLocaleString("it-IT", {
+  timeZone: "Europe/Rome", day: "2-digit", month: "2-digit",
+  hour: "2-digit", minute: "2-digit"});
+const bar = (n, tot) => `${n}/${tot}<span class="bar"><i style="width:${
+  tot ? Math.min(100, Math.round(100 * n / tot)) : 0}%"></i></span>`;
+
+let data = null;
+// Il canale nel frammento (#sbiffo), cosi' il link si condivide gia' puntato.
+let chan = decodeURIComponent(location.hash.slice(1)) || null;
+
+function render() {
+  const canali = data.canali || {};
+  const names = Object.keys(canali);
+  if (!names.length) {
+    $("sub").textContent = "Nessun duello ancora.";
+    $("rank-empty").hidden = $("duels-empty").hidden = false;
+    return;
+  }
+  if (!canali[chan]) chan = names.includes("#sbiffo") ? "#sbiffo" : names[0];
+
+  $("chans").innerHTML = names.length < 2 ? "" : names.map(n =>
+    `<button aria-pressed="${n === chan}" data-chan="${esc(n)}">${esc(n)}</button>`).join("");
+  $("chans").querySelectorAll("button").forEach(b => b.onclick = () => {
+    chan = b.dataset.chan;
+    history.replaceState(null, "", "#" + encodeURIComponent(chan));
+    render();
+  });
+
+  const sc = canali[chan];
+  const giocatori = sc.giocatori || [];
+  const tot = giocatori.reduce((s, r) => s + r.vinti, 0);
+  $("sub").textContent = `${chan} · ${tot} duell${tot === 1 ? "o" : "i"} · ` +
+    `${data.insulti} insulti da imparare · aggiornato ${when(data.generato)}`;
+
+  $("rank").innerHTML = giocatori.map((r, i) => {
+    const giocati = r.vinti + r.persi;
+    const pct = giocati ? Math.round(100 * r.vinti / giocati) + "%" : "–";
+    return `<tr class="${i === 0 && r.vinti ? "top1" : ""}">
+      <td class="pos">${i + 1}</td><td>${esc(r.nick)}</td>
+      <td class="won">${r.vinti}</td><td class="lost">${r.persi}</td><td>${pct}</td>
+      <td>${bar(r.insulti, data.insulti)}</td><td>${bar(r.risposte, data.risposte)}</td></tr>`;
+  }).join("");
+  $("rank-empty").hidden = giocatori.length > 0;
+
+  const duelli = sc.duelli || [];
+  $("duels").innerHTML = duelli.map(d =>
+    `<li><span class="when">${when(d.ts)}</span> <span class="won">${esc(d.vince)}</span>
+     batte <span class="lost">${esc(d.perde)}</span> ${esc(d.punti)}${
+     d.abbandono ? " <span class=\"empty\">(abbandono)</span>" : ""}</li>`).join("");
+  $("duels-empty").hidden = duelli.length > 0;
+}
+
+function load() {
+  return fetch("/insulti/data.json?_=" + Date.now(), { cache: "no-store" })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(d => { data = d; render(); });
+}
+load().catch(e => { $("sub").textContent = "Dati non disponibili (" + e.message + ")."; });
+// Ogni minuto, a scheda visibile, come la pagina delle suore.
+setInterval(() => { if (!document.hidden) load().catch(() => {}); }, 60000);
+</script>
+</body>
+</html>

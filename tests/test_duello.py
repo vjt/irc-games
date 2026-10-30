@@ -239,6 +239,9 @@ def test_vince_a_tre_e_si_salva(tmp_path):
     g.save()
     d = json.loads((tmp_path / "s.json").read_text())
     assert d["canali"]["#t"]["vinti"]["a"] == {"nick": "a", "vinti": 1}
+    assert d["canali"]["#t"]["vinti"]["b"] == {"nick": "b", "vinti": 0, "persi": 1}
+    [duel] = d["canali"]["#t"]["duelli"]
+    assert (duel["vince"], duel["perde"], duel["punti"], duel["abbandono"]) == ("a", "b", "3-0", False)
     assert "c1" in d["canali"]["#t"]["repertori"]["b"]["insulti"]
     # riletto da disco, il repertorio torna
     h = nuovo(tmp_path)
@@ -417,3 +420,31 @@ def test_doppioni_su_disco_si_puliscono(tmp_path):
         "a": {"insulti": ["c1"], "risposte": ["c1", "c9", "c2"]}}, "vinti": {}}}}))
     g = D.Duello("test", "/dev/null", "", path, {"#t"}, coppie, rng=random.Random(1))
     assert g.state["canali"]["#t"]["repertori"]["a"]["risposte"] == ["c1", "c2"]
+
+
+def test_stats_per_la_pagina(tmp_path):
+    g, st = duello(tmp_path)
+    truccato(g, "a", ["c1"], [])
+    truccato(g, "b", [], ["c9"])
+    for i in range(D.WIN):
+        g.handle("a", "#t", "!i 1", now=2 + i)
+        g.handle("b", "#t", "!r 1", now=2 + i)
+    g.save(now=100)
+    # accanto allo stato, mai sopra
+    assert json.loads((tmp_path / "s.json").read_text())["canali"]
+    d = json.loads((tmp_path / "s_stats.json").read_text())
+    assert d["generato"] == 100 and d["rete"] == "test"
+    gioc = d["canali"]["#t"]["giocatori"]
+    assert [(r["nick"], r["vinti"], r["persi"]) for r in gioc] == [("a", 1, 0), ("b", 0, 1)]
+    assert gioc[1]["insulti"] >= 1                  # b ha imparato c1
+    assert d["canali"]["#t"]["duelli"][0]["vince"] == "a"
+    # le battute non escono, solo i conteggi
+    assert all(c["insulto"] not in json.dumps(d) for c in COPPIE)
+    # il perdente non entra nella classifica in canale con zero vinti
+    assert g.classifica("#t") == "a 1"
+
+
+def test_stats_path_col_nome_vero(tmp_path):
+    g = D.Duello("ircnet", "/dev/null", "", tmp_path / "duello_state.ircnet.json",
+                 {"#t"}, COPPIE, rng=random.Random(1))
+    assert g.stats_path.name == "duello_stats.ircnet.json"
