@@ -5,8 +5,9 @@ Richiesta di vjt (#sbiffo, 2026-10-30, idea di bitflesh), issue #7.
 Stessa forma di cah.py: tail del bot.log, match dei PRIVMSG, risposte sulla
 FIFO del bot, l'idraulica in ircgame.py. `bot.py` NON si tocca.
 
-Le battute sono in duello_insulti.json, tutte originali: niente Monkey Island,
-quelle sono di LucasArts.
+Le battute sono in duello_insulti.json: testi italiani originali di
+The Secret of Monkey Island (LucasArts), su ordine di vjt (#sbiffo
+2026-10-30) — sostituiscono le coppie sintetiche del primo branch.
 
   !duello <nick>   sfida <nick>; lui ha ACCEPT_S secondi per !accetto o !rifiuto
                    (lo sfidante ritira la sfida con !rifiuto)

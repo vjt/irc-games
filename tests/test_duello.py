@@ -3,7 +3,6 @@ IRC: fifo vuota, `sent` raccoglie quello che sarebbe uscito; i log sono finti.""
 import json
 import os
 import random
-import re
 import sys
 
 import pytest
@@ -55,17 +54,17 @@ def truccato(g, nick, insulti, risposte):
 
 # --- contenuto ---------------------------------------------------------------------
 
-def test_insulti_veri_almeno_venti_e_originali():
+def test_insulti_veri_almeno_venti():
     coppie = D.load_coppie()
     assert len(coppie) >= D.MIN_COPPIE
     assert len({c["id"] for c in coppie}) == len(coppie)
-    testi = [c["insulto"] for c in coppie] + [c["risposta"] for c in coppie]
-    assert len(set(testi)) == len(testi)
-    # Le firme di Monkey Island non ci sono, ne' in inglese ne' tradotte.
-    vietate = r"(?i)(dairy farmer|shish kebab|family reunion|feather.?duster|" \
-              r"mungitor|vacca|vaccaro|riunione di famiglia|monkey island|lucasarts|guybrush)"
-    for t in testi:
-        assert not re.search(vietate, t), t
+    # Gli insulti sono tutti distinti; le risposte NO, per disegno: nel gioco
+    # originale piu insulti condividono la stessa risposta (es. la stessa
+    # battuta para sia il contadino sia la mungitura di Carla). Il vecchio
+    # divieto sulle firme Monkey Island e l'unicita su tutti i testi
+    # appartenevano alla politica "testo originale" del primo branch,
+    # sostituita dai testi MI veri su ordine di vjt (#sbiffo 2026-10-30).
+    assert len({c["insulto"] for c in coppie}) == len(coppie)
 
 
 def test_ogni_riga_sta_in_una_riga_irc():
