@@ -94,7 +94,7 @@ def test_sfida_e_accetto(tmp_path):
         assert len(rep(g, n)["risposte"]) == D.START_N
     # il repertorio dell'attaccante arriva in canale, numerato; niente query
     q = " ".join(chan_lines(g)[2:])
-    assert "\x02a\x02 attacca" in q and "!i N" in q and "1) insulto" in q and "3) insulto" in q
+    assert "\x02a\x02 attacca" in q and "!i N" in q and "\x021)\x02 insulto" in q and "\x023)\x02 insulto" in q
     assert query(g, "a") == [] and query(g, "b") == []
 
 
@@ -176,7 +176,7 @@ def test_risposta_giusta_passa_l_attacco_e_si_impara(tmp_path):
     lines = chan_lines(g)
     i = lines.index("🗡️ \x02a\x02: «insulto 1»")
     qb = " ".join(lines[i + 1:])
-    assert "\x02b\x02 para" in qb and "1) risposta 7" in qb and "2) risposta 1" in qb
+    assert "\x02b\x02 para" in qb and "\x021)\x02 risposta 7" in qb and "\x022)\x02 risposta 1" in qb
     assert query(g, "b") == []
     g.handle("b", BOT, "!r 2", now=3)               # in query non conta
     assert st["phase"] == "difesa"

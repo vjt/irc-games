@@ -210,14 +210,14 @@ class Duello:
         ins = self.rep(g, key)["insulti"]
         self.emit(g["chan"],
                   [f"⚔️ \x02{g['nicks'][key]}\x02 attacca ({self.punteggio(g)}), {TURN_S}s — !i N:"]
-                  + [f"{i}) {self.coppie[c]['insulto']}" for i, c in enumerate(ins, 1)])
+                  + [f"\x02{i})\x02 {self.coppie[c]['insulto']}" for i, c in enumerate(ins, 1)])
 
     def send_defense(self, g):
         key = g["def"]
         ris = self.rep(g, key)["risposte"]
         self.emit(g["chan"],
                   [f"🛡️ \x02{g['nicks'][key]}\x02 para con !r N, {TURN_S}s:"]
-                  + [f"{i}) {self.coppie[c]['risposta']}" for i, c in enumerate(ris, 1)])
+                  + [f"\x02{i})\x02 {self.coppie[c]['risposta']}" for i, c in enumerate(ris, 1)])
 
     def sfida(self, chan, nick, target, now):
         key, tkey = nick.casefold(), target.casefold()
