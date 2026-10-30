@@ -383,3 +383,18 @@ def test_righe_corte(tmp_path):
     assert len(g.sent) > 5
     for to, text in g.sent:
         assert len(f"PRIVMSG {to} :{text}".encode()) < 400, text
+
+
+def test_risposta_uguale_di_un_altra_coppia_para(tmp_path):
+    coppie = COPPIE[:9] + [{"id": "c9", "insulto": "insulto 9", "risposta": "risposta 1"}]
+    g = D.Duello("test", "/dev/null", "", tmp_path / "s.json", {"#t"}, coppie,
+                 rng=random.Random(1))
+    g.handle("a", "#t", "!duello b", now=0)
+    g.handle("b", "#t", "!accetto", now=1)
+    st = g.games["#t"]
+    truccato(g, "a", ["c1"], [])
+    truccato(g, "b", [], ["c9"])
+    g.handle("a", "#t", "!i 1", now=2)
+    g.handle("b", "#t", "!r 1", now=3)
+    assert st["score"] == {"a": 0, "b": 1}
+    assert "c1" in rep(g, "b")["risposte"]

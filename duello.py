@@ -284,9 +284,12 @@ class Duello:
             return
         cid = ris[n - 1]
         lead = [f"🛡️ \x02{g['nicks'][key]}\x02: «{self.coppie[cid]['risposta']}»"]
-        if cid == g["insulto"]:
+        # Si confronta il testo, non l'id: nel copione MI le coppie di Carla
+        # riusano le risposte delle altre, e la stessa battuta para entrambe.
+        giusta = g["insulto"]
+        if self.coppie[cid]["risposta"] == self.coppie[giusta]["risposta"]:
             for k in (g["a"], g["b"]):
-                self.impara(chan, g["rep"][k], "risposte", cid)
+                self.impara(chan, g["rep"][k], "risposte", giusta)
             self.scambio(chan, g, key, now, lead + [
                 f"✅ Parata! Lo scambio è di \x02{g['nicks'][key]}\x02, che passa all'attacco."])
         else:
