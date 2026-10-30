@@ -168,7 +168,9 @@ class Duello:
 
     def impara(self, chan, rkey, kind, cid):
         r = self.scope(chan)["repertori"][rkey]
-        if cid not in r[kind]:
+        field = "insulto" if kind == "insulti" else "risposta"
+        if self.coppie[cid][field] not in {self.coppie[c][field] for c in r[kind]
+                                           if c in self.coppie}:
             r[kind].append(cid)
             self.dirty = True
 

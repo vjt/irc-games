@@ -397,4 +397,4 @@ def test_risposta_uguale_di_un_altra_coppia_para(tmp_path):
     g.handle("a", "#t", "!i 1", now=2)
     g.handle("b", "#t", "!r 1", now=3)
     assert st["score"] == {"a": 0, "b": 1}
-    assert "c1" in rep(g, "b")["risposte"]
+    assert rep(g, "b")["risposte"] == ["c9"]       # stessa battuta: non si impara due volte
