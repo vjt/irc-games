@@ -92,10 +92,10 @@ def test_sfida_e_accetto(tmp_path):
     for n in ("a", "b"):
         assert len(rep(g, n)["insulti"]) == D.START_N
         assert len(rep(g, n)["risposte"]) == D.START_N
-    # il repertorio dell'attaccante arriva in query, numerato
-    q = " ".join(query(g, "a"))
-    assert "!i N" in q and "1) insulto" in q and "3) insulto" in q
-    assert query(g, "b") == []
+    # il repertorio dell'attaccante arriva in canale, numerato; niente query
+    q = " ".join(chan_lines(g)[2:])
+    assert "\x02a\x02 attacca" in q and "!i N" in q and "1) insulto" in q and "3) insulto" in q
+    assert query(g, "a") == [] and query(g, "b") == []
 
 
 def test_solo_lo_sfidato_accetta(tmp_path):
@@ -173,10 +173,14 @@ def test_risposta_giusta_passa_l_attacco_e_si_impara(tmp_path):
     g.handle("a", "#t", "!i 1", now=2)
     assert st["phase"] == "difesa"
     assert "c1" in rep(g, "b")["insulti"]          # chi subisce, impara
-    assert chan_lines(g)[-1] == "🗡️ \x02a\x02: «insulto 1»"
-    qb = " ".join(query(g, "b"))
-    assert "«insulto 1»" in qb and "1) risposta 7" in qb and "2) risposta 1" in qb
-    g.handle("b", BOT, "!r 2", now=3)               # anche in query
+    lines = chan_lines(g)
+    i = lines.index("🗡️ \x02a\x02: «insulto 1»")
+    qb = " ".join(lines[i + 1:])
+    assert "\x02b\x02 para" in qb and "1) risposta 7" in qb and "2) risposta 1" in qb
+    assert query(g, "b") == []
+    g.handle("b", BOT, "!r 2", now=3)               # in query non conta
+    assert st["phase"] == "difesa"
+    g.handle("b", "#t", "!r 2", now=3)
     assert st["score"] == {"a": 0, "b": 1}
     assert st["att"] == "b" and st["phase"] == "attacco"
     assert "c1" in rep(g, "a")["risposte"] and "c1" in rep(g, "b")["risposte"]
@@ -198,7 +202,7 @@ def test_risposta_sbagliata_attaccante_continua(tmp_path):
 def test_numero_fuori_repertorio(tmp_path):
     g, st = duello(tmp_path)
     g.handle("a", "#t", "!i 9", now=2)
-    assert st["phase"] == "attacco" and "fra 1 e 3" in query(g, "a")[-1]
+    assert st["phase"] == "attacco" and "a: un numero fra 1 e 3" in chan_lines(g)[-1]
 
 
 def test_fuori_turno_non_conta(tmp_path):
@@ -316,7 +320,7 @@ def test_cambio_nick(tmp_path):
     truccato(g, "b", [], ["c1"])
     g.track(L(":a!u@h NICK :Alfa"), now=2)
     assert st["att"] == "alfa" and st["nicks"]["alfa"] == "Alfa"
-    g.handle("Alfa", BOT, "!i 1", now=3)
+    g.handle("Alfa", "#t", "!i 1", now=3)
     g.handle("b", "#t", "!r 1", now=4)
     assert st["score"] == {"alfa": 0, "b": 1}
     # il repertorio resta quello del nick con cui si e' cominciato

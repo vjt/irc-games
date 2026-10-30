@@ -14,7 +14,8 @@ The Secret of Monkey Island (LucasArts), su ordine di vjt (#sbiffo
   !duello          una riga d'aiuto, o lo stato del duello in corso
   !i N             chi attacca tira l'insulto N del suo repertorio
   !r N             chi difende para con la risposta N del suo repertorio
-                   (tutti e due in canale o in query al bot)
+                   (si gioca in canale: le opzioni numerate le stampa li' il bot,
+                   ordine di vjt #sbiffo 2026-10-30 — in query non le leggeva nessuno)
   !repertorio      in query: cosa conosci (in canale: risposta in query)
   !classifica [duello]   duelli vinti nel canale
 
@@ -76,7 +77,7 @@ START_N = 3          # insulti e risposte di un esordiente
 MIN_COPPIE = 20
 TICK = 5
 HELP = ("⚔️ Duello a insulti: !duello <nick> sfida, !accetto o !rifiuto · in gioco "
-        "!i N insulta, !r N para · !repertorio in query · !classifica duello")
+        "!i N insulta, !r N para, tutto in canale · !repertorio in query · !classifica duello")
 
 CMD_PAT = re.compile(r'^!\s*duello(?:\s+(?P<arg>\S+))?\s*$', re.I)
 ACCETTO_PAT = re.compile(r'^!\s*accetto\s*$', re.I)
@@ -205,16 +206,15 @@ class Duello:
     def send_attack(self, g):
         key = g["att"]
         ins = self.rep(g, key)["insulti"]
-        self.emit(g["nicks"][key],
-                  [f"⚔️ {g['chan']}: attacchi tu ({self.punteggio(g)}), {TURN_S}s — !i N:"]
+        self.emit(g["chan"],
+                  [f"⚔️ \x02{g['nicks'][key]}\x02 attacca ({self.punteggio(g)}), {TURN_S}s — !i N:"]
                   + [f"{i}) {self.coppie[c]['insulto']}" for i, c in enumerate(ins, 1)])
 
     def send_defense(self, g):
         key = g["def"]
         ris = self.rep(g, key)["risposte"]
-        self.emit(g["nicks"][key],
-                  [f"🛡️ {g['chan']}: «{self.coppie[g['insulto']]['insulto']}» — "
-                   f"para con !r N, {TURN_S}s:"]
+        self.emit(g["chan"],
+                  [f"🛡️ \x02{g['nicks'][key]}\x02 para con !r N, {TURN_S}s:"]
                   + [f"{i}) {self.coppie[c]['risposta']}" for i, c in enumerate(ris, 1)])
 
     def sfida(self, chan, nick, target, now):
@@ -257,7 +257,7 @@ class Duello:
         g["phase"] = "attacco"
         g["deadline"] = now + TURN_S
         self.say(chan, f"⚔️ {g['nicks'][g['b']]} accetta! Vince chi arriva a {WIN} scambi. "
-                       f"Attacca {g['nicks'][g['att']]}: il repertorio è in query.")
+                       f"Attacca {g['nicks'][g['att']]}.")
         self.send_attack(g)
 
     def insulta(self, chan, g, key, n, now):
@@ -265,7 +265,7 @@ class Duello:
             return
         ins = self.rep(g, key)["insulti"]
         if not 1 <= n <= len(ins):
-            self.say(g["nicks"][key], f"Un numero fra 1 e {len(ins)}: !i N.")
+            self.say(chan, f"{g['nicks'][key]}: un numero fra 1 e {len(ins)}: !i N.")
             return
         cid = ins[n - 1]
         g["insulto"] = cid
@@ -280,7 +280,7 @@ class Duello:
             return
         ris = self.rep(g, key)["risposte"]
         if not 1 <= n <= len(ris):
-            self.say(g["nicks"][key], f"Un numero fra 1 e {len(ris)}: !r N.")
+            self.say(chan, f"{g['nicks'][key]}: un numero fra 1 e {len(ris)}: !r N.")
             return
         cid = ris[n - 1]
         lead = [f"🛡️ \x02{g['nicks'][key]}\x02: «{self.coppie[cid]['risposta']}»"]
@@ -370,10 +370,6 @@ class Duello:
         if not is_chan(target):
             if REPERTORIO_PAT.match(text):
                 self.mostra_repertorio(nick)
-            elif m:
-                chan, g = self.player_game(key)
-                if g:
-                    self.gioca(chan, g, key, m, now)
             return
         chan = target.lower()
         if chan not in self.chans:
