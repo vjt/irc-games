@@ -1,29 +1,30 @@
 #!/bin/sh
-# PROVIDE: ambrogio_duello_ircnet
-# REQUIRE: ambrogio_bot_ircnet
+# PROVIDE: mikebongiorno_duello_ircnet
+# REQUIRE: mikebongiorno_bot_ircnet
 # KEYWORD: shutdown
 #
-# Duello a insulti su IRCnet, dietro ad Ambrogio (Mike su IRCnet non c'e'):
-# stesso codice e stesso copione del duello di Azzurra, stato a parte
-# (duello_state.ircnet.json). Ordine di vjt (#sbiffo 2026-10-30 15:08):
-# duello anche su #cybernet e #italia di IRCnet.
+# Duello a insulti su IRCnet, dietro a MikeBongiorno: stesso codice e stesso
+# copione del duello di Azzurra, stato a parte (duello_state.ircnet.json).
+# Ordine di vjt (#sbiffo 2026-10-30 15:08): duello anche su #cybernet e #italia
+# di IRCnet. Prima girava dietro ad Ambrogio; vjt (15:12): i giochi li fa Mike,
+# Ambrogio resta il maggiordomo.
 #
 . /etc/rc.subr
-name="ambrogio_duello_ircnet"
-rcvar="ambrogio_duello_ircnet_enable"
+name="mikebongiorno_duello_ircnet"
+rcvar="mikebongiorno_duello_ircnet_enable"
 load_rc_config "$name"
-: ${ambrogio_duello_ircnet_enable:="NO"}
+: ${mikebongiorno_duello_ircnet_enable:="NO"}
 pidfile="/var/run/convento/duello.ircnet.pid"
 # Vedi mikebongiorno_bot: daemon(8) scrive il pid del figlio.
 procname="/usr/local/bin/python3.11"
 command="/usr/sbin/daemon"
 daemon_pidfile="${pidfile%.pid}.daemon.pid"
-command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/duello.ircnet.log -t ambrogio-duello-ircnet \
+command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/duello.ircnet.log -t mike-duello-ircnet \
   /usr/bin/env DUELLO_HOME=/var/db/convento \
   IRCGAME_LOCKS=/var/run/convento/ircgame \
   DUELLO_INSULTI=/opt/irc-games/duello_insulti.json \
-  DUELLO_NICK=Ambrogio \
-  'DUELLO_NETS=ircnet|/var/log/convento/ambrogio.ircnet.log|/var/run/convento/ambrogio.ircnet.send|#cybernet,#italia' \
+  DUELLO_NICK=MikeBongiorno \
+  'DUELLO_NETS=ircnet|/var/log/convento/mike.ircnet.log|/var/run/convento/mike.ircnet.send|#cybernet,#italia' \
   /usr/local/bin/python3.11 -u /opt/irc-games/duello.py --net ircnet daemon"
 # daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
 # stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
