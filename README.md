@@ -174,9 +174,9 @@ python3 -m pytest tests/test_scopa.py
 rc.d in `deploy/mikebongiorno_duello`. Canale: `#sbiffo`.
 
 `!duello <nick>` sfida, lo sfidato ha 60s per `!accetto` o `!rifiuto`. Si gioca
-a scambi: chi attacca tira un insulto (`!i N`), chi difende para con una
-risposta (`!r N`), in canale o in query; il repertorio numerato arriva in query
-a ogni turno. Risposta giusta: scambio al difensore, che passa all'attacco;
+a scambi, tutto in canale, con un comando solo: `!i N` (`!r N` resta buono).
+Chi attacca tira l'insulto N, chi difende para con la risposta N; le opzioni
+numerate le stampa il bot a ogni turno. Risposta giusta: scambio al difensore, che passa all'attacco;
 sbagliata o niente entro 60s: scambio all'attaccante. Chi non attacca entro
 60s perde lo scambio. Un insulto tirato vale una volta per duello: chi deve
 attaccare e li ha finiti perde lo scambio. Vince chi arriva a 3. Si impara duellando: l'insulto

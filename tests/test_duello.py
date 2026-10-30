@@ -208,9 +208,17 @@ def test_numero_fuori_repertorio(tmp_path):
 def test_fuori_turno_non_conta(tmp_path):
     g, st = duello(tmp_path)
     g.handle("b", "#t", "!i 1", now=2)
-    g.handle("a", "#t", "!r 1", now=2)
     g.handle("c", "#t", "!i 1", now=2)
     assert st["phase"] == "attacco" and st["score"] == {"a": 0, "b": 0}
+
+
+def test_un_comando_solo_decide_la_fase(tmp_path):
+    g, st = duello(tmp_path)
+    g.handle("a", "#t", "!r 1", now=2)            # in attacco anche !r attacca
+    assert st["phase"] == "difesa"
+    g.handle("b", "#t", "!i 1", now=3)            # in difesa anche !i para
+    assert st["phase"] == "attacco" and sum(st["score"].values()) == 1
+    assert "para con !i N" in "".join(chan_lines(g))
 
 
 def test_timeout_difesa_e_attacco(tmp_path):

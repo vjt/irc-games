@@ -12,8 +12,8 @@ The Secret of Monkey Island (LucasArts), su ordine di vjt (#sbiffo
   !duello <nick>   sfida <nick>; lui ha ACCEPT_S secondi per !accetto o !rifiuto
                    (lo sfidante ritira la sfida con !rifiuto)
   !duello          una riga d'aiuto, o lo stato del duello in corso
-  !i N             chi attacca tira l'insulto N del suo repertorio
-  !r N             chi difende para con la risposta N del suo repertorio
+  !i N             tocca a te: in attacco l'insulto N, in difesa la risposta N
+                   (un comando solo, vjt #sbiffo 2026-10-30; !r N resta buono)
                    (si gioca in canale: le opzioni numerate le stampa li' il bot,
                    ordine di vjt #sbiffo 2026-10-30 — in query non le leggeva nessuno)
   !repertorio      in query: cosa conosci (in canale: risposta in query)
@@ -85,7 +85,7 @@ MIN_COPPIE = 20
 STORIA = 50          # duelli recenti tenuti per canale, per la pagina
 TICK = 5
 HELP = ("⚔️ Duello a insulti: !duello <nick> sfida, !accetto o !rifiuto · in gioco "
-        "!i N insulta, !r N para, tutto in canale · !repertorio in query · !classifica duello")
+        "!i N insulta o para, tutto in canale · !repertorio in query · !classifica duello")
 
 CMD_PAT = re.compile(r'^!\s*duello(?:\s+(?P<arg>\S+))?\s*$', re.I)
 ACCETTO_PAT = re.compile(r'^!\s*accetto\s*$', re.I)
@@ -290,7 +290,7 @@ class Duello:
         key = g["def"]
         ris = self.rep(g, key)["risposte"]
         self.emit(g["chan"],
-                  [f"🛡️ \x02{g['nicks'][key]}\x02 para con !r N, {TURN_S}s:"]
+                  [f"🛡️ \x02{g['nicks'][key]}\x02 para con !i N, {TURN_S}s:"]
                   + [f"\x02{i})\x02 {self.coppie[c]['risposta']}" for i, c in enumerate(ris, 1)])
 
     def sfida(self, chan, nick, target, now):
@@ -358,7 +358,7 @@ class Duello:
             return
         ris = self.rep(g, key)["risposte"]
         if not 1 <= n <= len(ris):
-            self.say(chan, f"{g['nicks'][key]}: un numero fra 1 e {len(ris)}: !r N.")
+            self.say(chan, f"{g['nicks'][key]}: un numero fra 1 e {len(ris)}: !i N.")
             return
         cid = ris[n - 1]
         lead = [f"🛡️ \x02{g['nicks'][key]}\x02: «{self.coppie[cid]['risposta']}»"]
@@ -501,8 +501,9 @@ class Duello:
             self.say(chan, HELP)
 
     def gioca(self, chan, g, key, m, now):
+        """!i e !r sono lo stesso comando: decide la fase."""
         n = int(m.group("n"))
-        if m.group("verb").lower() == "i":
+        if g["phase"] == "attacco":
             self.insulta(chan, g, key, n, now)
         else:
             self.para(chan, g, key, n, now)
