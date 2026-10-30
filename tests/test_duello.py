@@ -50,6 +50,9 @@ def rep(g, nick, chan="#t"):
 def truccato(g, nick, insulti, risposte):
     r = rep(g, nick)
     r["insulti"], r["risposte"] = list(insulti), list(risposte)
+    for st in g.games.values():                     # a duello accettato, anche la mano
+        if nick in st.get("mano", {}):
+            st["mano"][nick] = {"insulti": list(insulti), "risposte": list(risposte)}
 
 
 # --- contenuto ---------------------------------------------------------------------
@@ -212,6 +215,43 @@ def test_risposta_sbagliata_a_volte_si_impara(tmp_path, monkeypatch):
     assert "c1" not in rep(g, "a")["risposte"]
     out = " ".join(chan_lines(g))
     assert "si segna la risposta giusta" in out and "risposta 1" not in out
+
+
+def test_mano_a_caso(tmp_path):
+    g = nuovo(tmp_path)
+    g.handle("a", "#t", "!duello b", now=0)
+    g.repertorio("#t", "a", "a")
+    truccato(g, "a", [f"c{i}" for i in range(10)], [f"c{i}" for i in range(10)])
+    g.handle("b", "#t", "!accetto", now=1)
+    st = g.games["#t"]
+    mano = st["mano"]["a"]
+    assert len(mano["insulti"]) == D.MANO and len(mano["risposte"]) == D.MANO
+    assert len(rep(g, "a")["insulti"]) == 10       # il repertorio resta intero
+    assert len(g.disponibili(st, "a")) == D.MANO
+
+
+def test_imparato_in_duello_entra_in_mano(tmp_path):
+    g, st = duello(tmp_path)
+    truccato(g, "a", ["c1"], [])
+    truccato(g, "b", ["c3"], ["c7"])
+    g.handle("a", "#t", "!i 1", now=2)
+    assert "c1" in st["mano"]["b"]["insulti"]
+
+
+def test_maestro_solo_ai_veterani(tmp_path):
+    coppie = COPPIE + [{"id": "carla-x", "insulto": "insulto maestro", "risposta": "risposta 1"}]
+    g = nuovo(tmp_path, coppie=coppie)
+    g.handle("a", "#t", "!duello b", now=0)
+    g.repertorio("#t", "a", "a")
+    g.repertorio("#t", "b", "b")
+    truccato(g, "a", ["c1", "carla-x"], [])
+    truccato(g, "b", ["carla-x"], [])
+    g.scope("#t")["vinti"]["b"] = {"nick": "b", "vinti": D.MAESTRO_VINTI}
+    g.handle("b", "#t", "!accetto", now=1)
+    st = g.games["#t"]
+    assert st["mano"]["a"]["insulti"] == ["c1"]     # l'esordiente non lo tira
+    assert st["mano"]["b"]["insulti"] == ["carla-x"]
+    assert "carla-x" in rep(g, "a")["insulti"]      # ma lo conosce
 
 
 def test_numero_fuori_repertorio(tmp_path):

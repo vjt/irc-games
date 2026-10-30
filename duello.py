@@ -37,6 +37,16 @@ Regole (issue #7):
   * Un insulto tirato vale una volta per duello (vjt, #sbiffo 2026-10-30):
     sparisce dalla lista di chi l'ha tirato fino al duello dopo. Chi deve
     attaccare e non ha piu' insulti perde lo scambio.
+  * Mano a caso (bitflesh/vjt, #sbiffo 2026-10-30): a ogni duello si
+    pescano al massimo MANO insulti e MANO risposte fra quelli che si
+    conoscono, cosi' il veterano non li ha mai tutti in mano. Quello che si
+    impara durante il duello entra subito in mano.
+  * Maestro di Spada (vjt, stessa sera: «vanno appresi dopo»): gli insulti
+    con id MAESTRO_PREFIX si imparano subendoli come gli altri, ma in mano
+    ci vanno solo a chi ha vinto MAESTRO_VINTI duelli in quel canale.
+  * Parata sbagliata: con probabilita' IMPARA_P chi ha sbagliato si segna
+    la risposta giusta, senza che il canale la legga (vjt, #sbiffo
+    2026-10-30: «non ogni volta, altrimenti è troppo facile»).
   * Chi difende vede tutte le risposte che conosce, comprese quelle che non
     c'entrano: gli insulti imparati senza risposta sono esche.
 
@@ -81,6 +91,9 @@ ACCEPT_S = 60        # per !accetto o !rifiuto
 TURN_S = 60          # per tirare l'insulto, e per parare
 WIN = 3              # scambi per vincere il duello
 START_N = 3          # insulti e risposte di un esordiente
+MANO = 5             # insulti e risposte pescati a ogni duello
+MAESTRO_VINTI = 5    # duelli vinti nel canale per tirare gli insulti del Maestro
+MAESTRO_PREFIX = "carla-"   # gli id delle coppie del Maestro di Spada nel copione
 IMPARA_P = 0.5       # parata sbagliata: probabilita' di segnarsi quella giusta
 MIN_COPPIE = 20
 STORIA = 50          # duelli recenti tenuti per canale, per la pagina
@@ -272,7 +285,26 @@ class Duello:
     def disponibili(self, g, key):
         """Gli insulti di `key` non ancora tirati in questo duello."""
         usati = g["usati"].get(key, ())
-        return [c for c in self.rep(g, key)["insulti"] if c not in usati]
+        return [c for c in g["mano"][key]["insulti"] if c not in usati]
+
+    def in_mano(self, g, key, kind, cid):
+        """Gli insulti del Maestro solo a chi ha vinto abbastanza."""
+        if kind != "insulti" or not cid.startswith(MAESTRO_PREFIX):
+            return True
+        row = self.scope(g["chan"])["vinti"].get(g["rep"][key], {})
+        return row.get("vinti", 0) >= MAESTRO_VINTI
+
+    def pesca(self, g, key, r, kind):
+        pool = [c for c in r[kind] if self.in_mano(g, key, kind, c)]
+        return self.rng.sample(pool, min(MANO, len(pool)))
+
+    def impara_in_duello(self, g, key, kind, cid):
+        """Impara per sempre, e se e' nuovo (e ammesso) lo mette subito in mano."""
+        self.impara(g["chan"], g["rep"][key], kind, cid)
+        mano = g["mano"][key][kind]
+        if (cid in self.rep(g, key)[kind] and cid not in mano
+                and self.in_mano(g, key, kind, cid)):
+            mano.append(cid)
 
     def send_attack(self, g, now):
         key = g["att"]
@@ -289,7 +321,7 @@ class Duello:
 
     def send_defense(self, g):
         key = g["def"]
-        ris = self.rep(g, key)["risposte"]
+        ris = g["mano"][key]["risposte"]
         self.emit(g["chan"],
                   [f"🛡️ \x02{g['nicks'][key]}\x02 para con !i N, {TURN_S}s:"]
                   + [f"\x02{i})\x02 {self.coppie[c]['risposta']}" for i, c in enumerate(ris, 1)])
@@ -323,7 +355,7 @@ class Duello:
             "phase": "sfida", "chan": chan, "a": key, "b": tkey,
             "nicks": {key: nick, tkey: target}, "rep": {key: key, tkey: tkey},
             "score": {key: 0, tkey: 0}, "att": key, "def": tkey, "insulto": None,
-            "usati": {key: [], tkey: []},
+            "usati": {key: [], tkey: []}, "mano": {},
             "deadline": now + ACCEPT_S,
         }
         self.say(chan, f"⚔️ {nick} sfida {target} a duello di insulti! {target}: "
@@ -331,7 +363,9 @@ class Duello:
 
     def accetta(self, chan, g, now):
         for k in (g["a"], g["b"]):
-            self.repertorio(chan, g["rep"][k], g["nicks"][k])
+            r = self.repertorio(chan, g["rep"][k], g["nicks"][k])
+            g["mano"][k] = {kind: self.pesca(g, k, r, kind)
+                            for kind in ("insulti", "risposte")}
         g["phase"] = "attacco"
         g["deadline"] = now + TURN_S
         self.say(chan, f"⚔️ {g['nicks'][g['b']]} accetta! Vince chi arriva a {WIN} scambi. "
@@ -350,14 +384,14 @@ class Duello:
         g["usati"][key].append(cid)
         g["phase"] = "difesa"
         g["deadline"] = now + TURN_S
-        self.impara(chan, g["rep"][g["def"]], "insulti", cid)
+        self.impara_in_duello(g, g["def"], "insulti", cid)
         self.say(chan, f"🗡️ \x02{g['nicks'][key]}\x02: «{self.coppie[cid]['insulto']}»")
         self.send_defense(g)
 
     def para(self, chan, g, key, n, now):
         if g["phase"] != "difesa" or key != g["def"]:
             return
-        ris = self.rep(g, key)["risposte"]
+        ris = g["mano"][key]["risposte"]
         if not 1 <= n <= len(ris):
             self.say(chan, f"{g['nicks'][key]}: un numero fra 1 e {len(ris)}: !i N.")
             return
@@ -368,7 +402,7 @@ class Duello:
         giusta = g["insulto"]
         if self.coppie[cid]["risposta"] == self.coppie[giusta]["risposta"]:
             for k in (g["a"], g["b"]):
-                self.impara(chan, g["rep"][k], "risposte", giusta)
+                self.impara_in_duello(g, k, "risposte", giusta)
             self.scambio(chan, g, key, now, lead + [
                 f"✅ Parata! Lo scambio è di \x02{g['nicks'][key]}\x02, che passa all'attacco."])
         else:
@@ -378,7 +412,7 @@ class Duello:
             # vjt (#sbiffo 2026-10-30) «non ogni volta, altrimenti è troppo facile».
             if (giusta not in self.rep(g, key)["risposte"]
                     and self.rng.random() < IMPARA_P):
-                self.impara(chan, g["rep"][key], "risposte", giusta)
+                self.impara_in_duello(g, key, "risposte", giusta)
                 lead.append(f"📖 \x02{g['nicks'][key]}\x02 si segna la risposta giusta.")
             self.scambio(chan, g, att, now, lead)
 
@@ -560,7 +594,7 @@ class Duello:
         for f in ("a", "b", "att", "def"):
             if g[f] == old:
                 g[f] = new
-        for d in (g["nicks"], g["rep"], g["score"], g["usati"]):
+        for d in (g["nicks"], g["rep"], g["score"], g["usati"], g["mano"]):
             d[new] = d.pop(old)
         g["nicks"][new] = new_nick
 
