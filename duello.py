@@ -142,7 +142,20 @@ class Duello:
 
     def load(self):
         d = ircgame.load_json(self.state_path, {})
-        return d if isinstance(d.get("canali"), dict) else {"canali": {}}
+        if not isinstance(d.get("canali"), dict):
+            return {"canali": {}}
+        # I doppioni per testo imparati prima che impara() li scartasse.
+        for sc in d["canali"].values():
+            for r in sc.get("repertori", {}).values():
+                for kind, field in (("insulti", "insulto"), ("risposte", "risposta")):
+                    seen, keep = set(), []
+                    for c in r.get(kind, []):
+                        t = self.coppie[c][field] if c in self.coppie else c
+                        if t not in seen:
+                            seen.add(t)
+                            keep.append(c)
+                    r[kind] = keep
+        return d
 
     def save(self):
         ircgame.save_json(self.state_path, self.state)
@@ -185,7 +198,15 @@ class Duello:
         self.out.say(target, text)
 
     def emit(self, target, parts):
-        for line in joined_lines(parts):
+        """Come joined_lines, ma con le righe pareggiate: una lista che sfora
+        di poco non lascia una coda orfana con l'ultima opzione da sola."""
+        lines = joined_lines(parts)
+        if len(lines) > 1:
+            limit = sum(len(x.encode("utf-8")) for x in lines) // len(lines)
+            while len(even := joined_lines(parts, limit=limit)) > len(lines):
+                limit += 10
+            lines = even
+        for line in lines:
             self.say(target, line)
 
     # --- duello --------------------------------------------------------------

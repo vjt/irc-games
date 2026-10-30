@@ -398,3 +398,22 @@ def test_risposta_uguale_di_un_altra_coppia_para(tmp_path):
     g.handle("b", "#t", "!r 1", now=3)
     assert st["score"] == {"a": 0, "b": 1}
     assert rep(g, "b")["risposte"] == ["c9"]       # stessa battuta: non si impara due volte
+
+
+def test_lista_lunga_niente_coda_orfana(tmp_path):
+    g, st = duello(tmp_path)
+    g.sent
+    g.out.sent.clear()
+    g.emit("#t", ["testa"] + [f"{i}) " + "x" * 60 for i in range(1, 7)])
+    lines = [t for (_, t) in g.sent]
+    assert len(lines) == 2
+    assert all(t.count(")") >= 3 for t in lines)
+
+
+def test_doppioni_su_disco_si_puliscono(tmp_path):
+    coppie = COPPIE[:9] + [{"id": "c9", "insulto": "insulto 9", "risposta": "risposta 1"}]
+    path = tmp_path / "s.json"
+    path.write_text(json.dumps({"canali": {"#t": {"repertori": {
+        "a": {"insulti": ["c1"], "risposte": ["c1", "c9", "c2"]}}, "vinti": {}}}}))
+    g = D.Duello("test", "/dev/null", "", path, {"#t"}, coppie, rng=random.Random(1))
+    assert g.state["canali"]["#t"]["repertori"]["a"]["risposte"] == ["c1", "c2"]
