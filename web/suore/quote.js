@@ -10,7 +10,7 @@
 // serve»): i numeri veri, stese e distacco, stanno nel tooltip. I dati sono `s.quote` del data.json, fatti
 // da `suore_stats._quote()`: serie dal LOG, che parte dal 6 settembre.
 //
-// Tre serie dietro un selettore (puppy, #sbiffo 19/10): tutte le prese
+// Tre serie dietro un selettore: tutte le prese
 // (.bang + .bef, come contano nottambuli e soffiate, e di suo si parte da qui),
 // le sole stese (com'era, peluche 16/10) e le sole amiche. Stessa forma, dal
 // data.json `s.quote_tutte`, `s.quote`, `s.quote_amiche`.

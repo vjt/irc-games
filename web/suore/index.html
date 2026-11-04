@@ -97,7 +97,7 @@
   th.sort:hover, th.on { color: var(--ink); }
   th.on::after { content: " ▾"; }
   th .ico { width: 1.35em; height: 1.35em; vertical-align: -.3em; overflow: visible; }
-  /* Una riga fra colonna e colonna (puppy, #sbiffo 14/10). */
+  /* Una riga fra colonna e colonna. */
   th + th, td + td { border-left: 1px solid var(--line); }
   td.nick, th.nick { text-align: left; width: 40%; }
   tr:last-child td { border-bottom: 0; }
@@ -107,7 +107,7 @@
   .nowt { color: var(--dim); }
   .record { margin-top: 1rem; font-size: .87rem; color: var(--dim); }
   .record b { color: var(--gold); }
-  /* Barre impilate per giorno (puppy, #sbiffo 13/10): rosso le stese, blu
+  /* Barre impilate per giorno: rosso le stese, blu
      le convertite. Il verde di --friend accanto al rosso non si distingue
      per chi non vede i colori, il blu si'. I giorni a zero ci sono come
      buchi veri, cosi' l'asse e' il tempo e non l'elenco dei giorni giocati. */
@@ -119,11 +119,11 @@
   .bars .bef { background: #3a8fc0; }
   .bars .col > .seg:last-of-type { border-radius: 2px 2px 0 0; }
   .bars .col { position: relative; }
-  /* Il lunedi' apre la settimana con una riga verticale (puppy, 13/10). */
+  /* Il lunedi' apre la settimana con una riga verticale. */
   .bars .col.lun::before { content: ""; position: absolute; left: -2px; top: -.9rem; bottom: -1.3rem; width: 1px; background: #55565c; }
   .bars .n { position: absolute; left: 50%; transform: translateX(-50%); color: var(--dim); font-size: .58rem; line-height: 1; padding-bottom: 1px; white-space: nowrap; }
   .bars { margin-top: .9rem; position: relative; }
-  /* Giorno record in oro, oggi sbiadito perche' ancora a meta' (puppy, 13/10). */
+  /* Giorno record in oro, oggi sbiadito perche' ancora a meta'. */
   .bars .col.rec > .seg:last-of-type { box-shadow: 0 -2px 0 var(--gold); }
   .bars .col.rec .n { color: var(--gold); font-weight: 700; }
   .bars .col.oggi .seg { opacity: .45; }
@@ -139,60 +139,13 @@
   .legend { color: var(--dim); font-size: .75rem; margin-top: .8rem; }
   .legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px; margin-right: .25rem; vertical-align: baseline; font-style: normal; }
   .warn { color: var(--gold); font-size: .78rem; margin-top: .8rem; }
-  /* Bacheca delle dorate (puppy, 13/10): una stella per dorata, chi/dove/
-     quando nel title di ognuna. Dal 14/10 non sono una griglia ma la
-     cornice del palco: in fila sul bordo, in senso orario dall'angolo in
-     alto a sinistra, in ordine di data. Le mette in posto `renderDorate`,
-     che le ridistribuisce a ogni cambio di misura del palco. */
-  .dorate { margin: 2.4rem 0 1.5rem; text-align: center; }
-  /* Il palco esce dalla colonna del testo: largo fino a 80rem, sempre con
-     un rem d'aria per lato, cosi' il perimetro tiene tutte le stelle. */
-  .dorate { width: min(calc(100vw - 2rem), 80rem); margin-left: 50%; transform: translateX(-50%); }
-  /* La cornice (puppy, 14/10): bordo d'oro a rilievo, filetti scuri e
-     chiari a fare la modanatura. Le stelle ci camminano sopra: il loro
-     contenitore sporge di mezzo bordo, cosi' stanno sulla mezzeria. */
-  .palco {
-    --b: 16px; position: relative; height: clamp(10rem, 30vh, 16rem); margin: 1.8rem 1.3rem 0;
-    background: #08090b; border-radius: 10px; isolation: isolate;
-    border: var(--b) ridge #c9972f;
-    box-shadow: 0 0 0 2px #3a1400, 0 0 0 5px #f0c75a, 0 0 0 7px #7a4a10, 0 0 0 9px #3a1400,
-      0 0 26px 6px rgba(217, 164, 65, .35), inset 0 0 0 2px #3a1400;
-  }
-  .stelle { position: absolute; inset: calc(var(--b) / -2); z-index: 3; pointer-events: none; --s: clamp(22px, 2.5vw, 34px); }
-  /* Stelle imperfette (puppy, 14/10): ognuna e' un tracciato storto suo,
-     disegnato da `stellaStorta`, e pure un po' girata. Ripiene di giallo,
-     il bordo dice com'e' finita: rosso stesa, rosa convertita, grigio se
-     il dato manca. */
-  .stelle span {
-    position: absolute; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
-    cursor: pointer; pointer-events: auto; transform: rotate(var(--r, 0deg));
-    transition: transform .12s, filter .12s; filter: drop-shadow(0 0 2px #000);
-  }
-  .stelle svg { display: block; width: 100%; height: 100%; overflow: visible; }
-  .stelle path { fill: #f5cf3d; stroke: #8d8b86; stroke-width: .2; stroke-linejoin: round; paint-order: stroke fill; }
-  .stelle .kill path { stroke: #c4583f; }
-  .stelle .amica path { stroke: #e87ba4; }
-  .stelle span:hover, .stelle span.on { transform: rotate(var(--r, 0deg)) scale(1.35); filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 6px #f5cf3d); }
-  /* La storia della stella toccata: il title non esiste sui telefoni. */
-  .dorate .storia { margin: 1.6rem auto 0; max-width: 22rem; text-align: left; font-size: .8rem; line-height: 1.45; color: var(--dim); white-space: pre-line; background: rgba(15, 16, 18, .85); border: 1px solid var(--line); border-radius: 4px; padding: .5rem .7rem; }
-  .dorate .storia:empty { display: none; }
-  /* WordArt (puppy, 14/10: «più wordart»): riempimento a gradiente, bordo
-     grosso, estrusione fatta di drop-shadow in fila. */
-  .wordart {
-    display: inline-block; font: 900 2.3rem/1 Impact, Haettenschweiler, "Arial Black", sans-serif; text-transform: uppercase;
-    background: linear-gradient(180deg, #fff6b0 0%, #f5cf3d 38%, #e07a1f 68%, #c4583f 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    -webkit-text-stroke: 1.5px #3a1400;
-    filter: drop-shadow(1px 1px 0 #8a3a00) drop-shadow(1px 1px 0 #7a3000) drop-shadow(1px 1px 0 #5a2000) drop-shadow(2px 3px 2px rgba(0, 0, 0, .7));
-  }
-  .insegna { white-space: nowrap; }
-  /* Heatmap settimana x ora (puppy, #sbiffo 13/10): una tinta sola, piu'
+  /* Heatmap settimana x ora: una tinta sola, piu'
      carica dove si spara di piu'; le celle vuote restano il fondo. Accanto,
-     nottambuli e soffiate (puppy: «2 column»). */
+     nottambuli e soffiate («2 column»). */
   .duo { display: grid; grid-template-columns: minmax(0, 30rem) minmax(0, 1fr); gap: 1.6rem; margin-top: 1.4rem; align-items: start; }
   @media (max-width: 40rem) { .duo { grid-template-columns: minmax(0, 1fr); } }
   .heat .grid { display: grid; grid-template-columns: 1.8rem repeat(24, minmax(0, 1fr)); gap: 1px; font-size: .58rem; color: var(--dim); }
-  /* Nella cella il numero di suore (puppy, 13/10): i primi tre tiratori
+  /* Nella cella il numero di suore: i primi tre tiratori
      per intero nel title. */
   .heat .c { aspect-ratio: 1; border-radius: 2px; background: var(--line); display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, .85); font-size: .5rem; line-height: 1; overflow: hidden; cursor: default; }
   .heat .c:hover { outline: 1px solid var(--gold); }
@@ -329,8 +282,6 @@
       <div><span class="t">22:31</span> <span class="bot">&lt;Convento&gt;</span> <span class="g">◦◦•◦◦•◦◦\_✝&lt; FRU FRU!</span></div>
       <div><span class="t">22:31</span> <span class="n">&lt;bitflesh&gt;</span> .bang</div>
       <div><span class="t">22:31</span> <span class="bot">&lt;Convento&gt;</span> <span class="g">bitflesh: Il colpo l'ha presa in pieno, ma la suora dorata regge ancora: le restano 2 vite.</span></div>
-      <div><span class="t">22:32</span> <span class="n">&lt;katia&gt;</span> .bef</div>
-      <div><span class="t">22:32</span> <span class="bot">&lt;Convento&gt;</span> katia: La suora ti ha guardato male e ha tirato dritto. Riprova fra 7 secondi.</div>
     </div>
   </section>
 
@@ -341,7 +292,6 @@
   <h2 id="per-canale">Per canale</h2>
   <div id="scopes"></div>
 
-  <section class="dorate" id="dorate" hidden></section>
 
   <footer id="foot"></footer>
 </div>
@@ -512,7 +462,7 @@ function cumulata(s, G) {
   let acc = 0;
   const punti = giorni.map(d => (acc += (s.per_giorno[d] || {bang: 0}).bang));
   const W = 1000, H = 100, n = Math.max(giorni.length - 1, 1);
-  // Lineare: in log (provata, puppy 13/10) una cumulata schizza su il primo
+  // Lineare: in log (provata) una cumulata schizza su il primo
   // giorno e poi e' una riga piatta in cima, tutti i canali uguali. Il canale
   // piu' giocato arriva all'80% del box, gli altri in proporzione.
   const x = i => i / n * W, y = v => H - .8 * v / G.max * H;
@@ -533,7 +483,7 @@ function cumulata(s, G) {
   svg.appendChild(area);
   svg.appendChild(line);
   const wrap = el("div", "cum");
-  // Piccola, larga quanto i giorni: 3px l'uno (puppy, 13/10).
+  // Piccola, larga quanto i giorni: 3px l'uno.
   wrap.style.width = (giorni.length * 3) + "px";
   wrap.title = "suore stese in totale, stessa scala per tutti i canali";
   wrap.appendChild(svg);
@@ -563,13 +513,13 @@ function renderScope(scope, s, G) {
   head.appendChild(h3);
   head.appendChild(el("span", "net", net));
   const tot = el("div", "tot");
-  // Il totale in testa (puppy, 13/10): stese + convertite. Le dorate sono
+  // Il totale in testa: stese + convertite. Le dorate sono
   // gia' dentro l'una o l'altra, sommarle le conterebbe due volte.
   tot.innerHTML = "<b>" + (s.totali.kills + s.totali.friends) + "</b> suore: <b>"
     + s.totali.kills + "</b> stese · <b>"
     + s.totali.friends + "</b> convertite"
     + (s.totali.golden ? " · <b class='star'>" + s.totali.golden + "</b> dorate" : "");
-  // La cumulata sta subito a sinistra dei totali (puppy, 13/10).
+  // La cumulata sta subito a sinistra dei totali.
   if (G.primo) head.appendChild(cumulata(s, G));
   head.appendChild(tot);
   perma(head, "canale", scope);
@@ -579,21 +529,21 @@ function renderScope(scope, s, G) {
 
   const scroll = el("div", "scroll");
   const t = el("table");
-  // Le colonne si ordinano col clic (puppy, #sbiffo 13/10): l'ordine del
+  // Le colonne si ordinano col clic: l'ordine del
   // JSON e' quello dei killer, e chi gioca solo a .bef finiva in fondo dietro
   // a chi ne ha stese due. I conteggi vanno dal piu' alto, i tempi dal piu'
   // basso, e chi un tempo non ce l'ha sta sempre in coda. Medaglie a chi e'
   // sul podio della colonna scelta, e solo se ci e' arrivato con un numero.
-  // Di default si ordina sul totale, stese piu' convertite (puppy, 13/10):
+  // Di default si ordina sul totale, stese piu' convertite:
   // le due partite contano uguale finche' non si clicca una colonna.
   const COLS = [["nick", "chi"], ["tot", "totale"], ["kills", "stese"],
     ["friends", "convertite"], ["golden", "dorate"], ["mediana", "mediana"], ["media", "media"],
     ["record", "record"], ["cilecca_pct", "cilecca %"]];
   const ASC = {mediana: 1, media: 1, record: 1};
   // Le intestazioni dei conteggi sono icone, la parola resta nell'hover
-  // (puppy, #sbiffo 14/10: «stese e convertite son lunghe, un pugno
-  // all'occhio»). Colorate, chiare e con un filo di bordo bianco (puppy,
-  // stessa sera): il colore e' quello della loro partita, schiarito.
+  // («stese e convertite son lunghe, un pugno
+  // all'occhio»). Colorate, chiare e con un filo di bordo bianco
+  // (stessa sera): il colore e' quello della loro partita, schiarito.
   const svg = (fill, d) => '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'
     + '<path fill="' + fill + '" stroke="#fff" stroke-width="1.2"'
     + ' stroke-linejoin="round" d="' + d + '"/></svg>';
@@ -619,8 +569,8 @@ function renderScope(scope, s, G) {
   t.appendChild(thead);
   const val = (r, k) => (k === "tot" ? r.kills + r.friends
     : r[k] === undefined ? null : r[k]);
-  // Medaglie fisse sulle colonne dei tempi e della cilecca (puppy, #sbiffo
-  // 13/10): il podio di OGNI colonna, a prescindere da quella ordinata, nella
+  // Medaglie fisse sulle colonne dei tempi e della cilecca:
+  // il podio di OGNI colonna, a prescindere da quella ordinata, nella
   // stessa direzione in cui la colonna si ordina. Parimerito = stessa
   // medaglia, e chi ne ha davanti due va a bronzo, come le classifiche in
   // canale. Chi un valore non ce l'ha, medaglia niente.
@@ -676,7 +626,7 @@ function renderScope(scope, s, G) {
       && Math.round(mio * 100) === Math.round(s.record.secs * 100);
     tr.appendChild(el("td", mio === null ? "nowt" : (top ? "best" : null),
       med(r, "record") + secs(mio)));
-    // Cilecca sui tentativi (puppy, 13/10): fucile inceppato e suora che
+    // Cilecca sui tentativi: fucile inceppato e suora che
     // tira dritto insieme.
     const cil = r.cilecca_pct === undefined ? null : r.cilecca_pct;
     tr.appendChild(el("td", cil === null ? "nowt" : null,
@@ -721,7 +671,7 @@ function renderScope(scope, s, G) {
         seg.style.height = (v / max * 100) + "%";
         col.appendChild(seg);
       });
-      // Il totale del giorno sopra la barra (puppy, 13/10).
+      // Il totale del giorno sopra la barra.
       if (c.bang + c.bef) {
         const num = el("span", "n", c.bang + c.bef);
         num.style.bottom = ((c.bang + c.bef) / max * 100) + "%";
@@ -741,7 +691,7 @@ function renderScope(scope, s, G) {
     box.appendChild(leg);
   }
 
-  // Due colonne (puppy, 13/10): a sinistra quando si spara, a destra
+  // Due colonne: a sinistra quando si spara, a destra
   // nottambuli, soffiate e dorate. Sotto i 40rem si impilano.
   const duo = el("div", "duo");
   if (s.heatmap && s.heatmap.some(r => r.some(v => v))) {
@@ -765,14 +715,14 @@ function renderScope(scope, s, G) {
         grid.appendChild(c);
       });
     });
-    // Filtro per nick (puppy, 13/10): tocchi un nick e restano accese solo le
+    // Filtro per nick: tocchi un nick e restano accese solo le
     // sue celle, scalate sul suo massimo; ritocchi e torna la mappa di tutti.
     function pinta(chi) {
       const conta = x => chi ? ((x.chi.find(y => y[0] === chi) || [])[1] || 0) : x.v;
       const max = Math.max(1, ...celle.map(conta));
       celle.forEach(x => {
         const n = conta(x);
-        // Una tinta sola (puppy, 13/10: la rampa a piu' colori «pare
+        // Una tinta sola (la rampa a piu' colori «pare
         // arlecchino», non si capisce quale vale di piu'). Radice quadrata e
         // pavimento basso: le celle con poco si staccano dal fondo, quelle
         // piene arrivano al rosso pieno. Testo bianco dappertutto: misurato,
@@ -837,7 +787,7 @@ function renderScope(scope, s, G) {
       const sp = el("span");
       sp.appendChild(el("b", null, r.chi));
       sp.appendChild(document.createTextNode(" → " + r.vittima));
-      // lo scarto medio, in decimi come lo dice il gioco (puppy, 13/10)
+      // lo scarto medio, in decimi come lo dice il gioco
       if (r.secs !== undefined)
         sp.appendChild(el("span", "nowt", " Ø " + r.secs.toFixed(1) + "s"));
       return [sp, r.n];
@@ -891,7 +841,7 @@ function board(cls, ico, titolo, unita, righe) {
     const nk = el("td", "nk");
     nk.appendChild(document.createTextNode(r.nick));
     // Ogni classifica ha le sue dorate: `golden_friends` sono le convertite,
-    // il resto di `golden` le stese (puppy, #sbiffo 13/10).
+    // il resto di `golden` le stese.
     if (r.gold) nk.appendChild(el("span", "star", " ⭐" + r.gold));
     tr.appendChild(nk);
     tr.appendChild(el("td", "vl", r.v));
@@ -951,7 +901,7 @@ function renderTop(scope, d) {
 // arancio, acqua, ocra. Validati sul fondo scuro della pagina (dataviz).
 const COLORI = ["#3987e5", "#d95926", "#199e70", "#c98500"];
 
-// Il totale di tutti i canali, barre impilate per canale (puppy, 13/10).
+// Il totale di tutti i canali, barre impilate per canale.
 function renderTotale(scopes, d, G) {
   const tutti = giorniFra(G.primo, G.ultimo);
   const conta = (k, g) => { const c = d.scopes[k].per_giorno[g]; return c ? c.bang + c.bef : 0; };
@@ -1004,161 +954,8 @@ function renderTotale(scopes, d, G) {
   box.hidden = false;
 }
 
-// Una stella per ogni dorata, di tutti i canali (puppy, 13/10). Ognuna
-// racconta la sua (puppy, 13/10): dove e quando, ogni colpo con le vite che
-// le restavano, le cilecche, chi le ha tolto l'ultima vita e se l'ha
-// soffiata a chi ci aveva gia' sparato. Sul title per il mouse, e al tocco
-// sotto il palco per i telefoni.
-const ESITI = {
-  bang: v => "🔫 → " + v + (v === 1 ? " vita" : " vite"),
-  bef: v => "🤝 → " + v + (v === 1 ? " vita" : " vite"),
-  jam: () => "✗ fucile inceppato",
-  nope: () => "✗ la suora ha tirato dritto",
-  boom: () => "💥 RPG esploso in faccia",
-};
-function racconto(r) {
-  const amica = r.verbo === "bef";
-  const righe = [r.scope.split("/")[1] + " · " + new Date(r.ts * 1000).toLocaleString("it-IT",
-    {timeZone: "Europe/Rome", dateStyle: "medium", timeStyle: "short"})];
-  if (r.storia) r.storia.forEach(([n, e, v]) => righe.push(n + " " + (ESITI[e] ? ESITI[e](v) : e)));
-  righe.push(r.nick + " ★ ultima vita: " + (amica ? "convertita" : "stesa")
-    + (r.rpg ? " con l'RPG" : ""));
-  if (r.storia) {
-    const io = r.nick.toLowerCase();
-    const altri = [...new Set(r.storia.filter(x => x[1] === "bang" || x[1] === "bef")
-      .map(x => x[0]).filter(n => n.toLowerCase() !== io))];
-    if (altri.length) righe.push("soffiata a " + altri.join(", "));
-  } else {
-    righe.push("(i colpi di prima non sono nel log)");
-  }
-  return righe.join("\n");
-}
-// Una parola in WordArt ad arco: ogni lettera e' un pezzo a se', ruotato e
-// alzato sulla sua parabola (il gradiente sul genitore non segue i figli
-// trasformati, quindi la classe va su ogni lettera).
-function wordart(testo, cls) {
-  const w = el("div", cls), n = testo.length;
-  [...testo].forEach((c, i) => {
-    const s = el("span", "wordart", c === " " ? " " : c), x = (i - (n - 1) / 2) / n;
-    s.style.transform = `translateY(${(x * x * 2.2).toFixed(2)}em) rotate(${(x * 38).toFixed(1)}deg)`;
-    w.appendChild(s);
-  });
-  return w;
-}
-
-// Una stella storta (puppy, 14/10: «imperfette»): dieci punte con raggio e
-// angolo un po' a caso, e ogni lato spezzato in tre con uno scarto, come
-// fatta a mano. Il caso e' un generatore col seme, cosi' la stella di una
-// dorata resta la stessa a ogni caricamento.
-function caso(seme) {
-  let a = seme >>> 0 || 1;
-  return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
-}
-// Le stelle delle dorate (round 6, puppy): ognuna diversa, ma nick simili
-// fanno stelle simili. La forma viene dal nick: il suo posto fra tutti i
-// nick in ordine alfabetico (quante punte, quanto girate) e le prime due
-// lettere come numeri continui (quanto tonde, quanto profonde, quanto
-// storte); poi un ritocco piccolo dall'hash di nick+ora della presa, cosi'
-// ogni presa ha la sua. Stesso nick e stessa ora, stessa stella, sempre.
-function hashStr(s) {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
-  return h >>> 0;
-}
-function ranghiNick(righe) {
-  const u = [...new Set(righe.map(r => r.nick.toLowerCase()))].sort(), m = new Map();
-  u.forEach((n, i) => m.set(n, u.length > 1 ? i / (u.length - 1) : .5));
-  return m;
-}
-function puntiStella(nick, ts, ranghi) {
-  const k = String(nick).toLowerCase(), r = ranghi && ranghi.has(k) ? ranghi.get(k) : .5;
-  const lettera = i => { const c = k.charCodeAt(i); return c >= 97 && c <= 122 ? (c - 97) / 25 : c >= 48 && c <= 57 ? (c - 48) / 9 : .5; };
-  const c1 = lettera(0), c2 = lettera(1);
-  const punte = 5 + Math.min(3, Math.floor(r * 4)), dentro = .34 + .26 * c2, giro = (r - .5) * .7;
-  const tondo = c1 * .24, storto = (c2 - .5) * .3, R = caso(hashStr(k + "@" + Math.floor(ts || 0)));
-  const n = punte * 2, q = [];
-  for (let i = 0; i < n; i++) {
-    const punta = i % 2 === 0;
-    const a = -Math.PI / 2 + i * Math.PI / punte + (punta ? 0 : giro * Math.PI / punte) + (R() - .5) * .1;
-    const rr = (punta ? 1 : dentro) * (1 + (R() - .5) * .12);
-    q.push([Math.cos(a) * rr * (1 + storto * .5), Math.sin(a) * rr * (1 - storto * .5)]);
-  }
-  const out = [];
-  q.forEach((a, i) => {
-    const b = q[(i + 1) % n];
-    out.push(a);
-    for (const f of [.33, .66]) {
-      const mx = a[0] + (b[0] - a[0]) * f, my = a[1] + (b[1] - a[1]) * f, l = Math.hypot(mx, my) || 1;
-      const g = tondo * Math.sin(f * Math.PI) + (R() - .5) * .04;
-      out.push([mx + mx / l * g, my + my / l * g]);
-    }
-  });
-  return out;
-}
-function stellaStorta(q) {
-  const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg"), path = document.createElementNS(ns, "path");
-  svg.setAttribute("viewBox", "-1.25 -1.25 2.5 2.5");
-  svg.setAttribute("aria-hidden", "true");
-  path.setAttribute("d", "M" + q.map(([x, y]) => x.toFixed(3) + " " + y.toFixed(3)).join("L") + "Z");
-  svg.appendChild(path);
-  return svg;
-}
-function renderDorate(scopes, d) {
-  const righe = (d.dorate || []).filter(r => scopes.includes(r.scope))
-    .sort((x, y) => x.ts - y.ts);
-  if (!righe.length) return;
-  const box = document.getElementById("dorate"), ranghi = ranghiNick(righe);
-  const palco = el("div", "palco"), wall = el("div", "stelle"), storia = el("p", "storia");
-  const stelle = righe.map((r, i) => {
-    const st = el("span", r.verbo === "bef" ? "amica" : r.verbo === "bang" ? "kill" : null);
-    st.appendChild(stellaStorta(puntiStella(r.nick, r.ts, ranghi)));
-    st.style.setProperty("--r", ((caso(i * 7919 + 13)() - .5) * 34).toFixed(1) + "deg");
-    st.title = racconto(r);
-    st.dataset.scope = r.scope;
-    st.setAttribute("role", "img");
-    st.setAttribute("aria-label", st.title);
-    st.onclick = () => {
-      const era = st.classList.contains("on");
-      wall.querySelectorAll(".on").forEach(x => x.classList.remove("on"));
-      st.classList.toggle("on", !era);
-      storia.textContent = era ? "" : st.title;
-    };
-    wall.appendChild(st);
-    return st;
-  });
-  // La cornice: perimetro diviso in parti uguali, la stella a meta' di
-  // ognuna. La misura segue il passo, fra 14 e 42 px (puppy: «stelle piu'
-  // imponenti»): con molte piu' dorate di oggi si stringono, e sotto i 14
-  // si accavallano — allora servira' un secondo giro.
-  // Col filtro del canale si girano solo le stelle rimaste.
-  const cornice = () => {
-    const viste = stelle.filter(st => st.style.display !== "none");
-    const W = wall.clientWidth, H = wall.clientHeight, n = viste.length;
-    if (!W || !H || !n) return;
-    const passo = 2 * (W + H) / n;
-    wall.style.setProperty("--s", Math.max(14, Math.min(42, passo * .86)).toFixed(1) + "px");
-    viste.forEach((st, i) => {
-      let q = (i + .5) * passo, x, y;
-      if (q < W) { x = q; y = 0; }
-      else if ((q -= W) < H) { x = W; y = q; }
-      else if ((q -= H) < W) { x = W - q; y = H; }
-      else { x = 0; y = H - (q - W); }
-      st.style.left = x.toFixed(1) + "px";
-      st.style.top = y.toFixed(1) + "px";
-    });
-  };
-  palco.appendChild(wall);
-  box.appendChild(perma(wordart("Le dorate", "insegna"), "dorate").parentNode);
-  box.appendChild(palco);
-  box.appendChild(storia);
-  box.cornice = cornice;                   // il filtro del canale la rifa'
-  box.hidden = false;
-  new ResizeObserver(cornice).observe(wall);
-}
-
 function render(d) {
-  // Canali dal piu' sanguinoso, per suore stese (puppy, #sbiffo 13/10);
+  // Canali dal piu' sanguinoso, per suore stese;
   // a pari stese decide il nome, cosi' l'ordine non balla fra un refresh e l'altro.
   const scopes = Object.keys(d.scopes).sort((a, b) =>
     d.scopes[b].totali.kills - d.scopes[a].totali.kills || a.localeCompare(b));
@@ -1178,7 +975,7 @@ function render(d) {
 
   const box = document.getElementById("scopes");
   // Stessa finestra e stessa scala per la cumulata di tutti i canali
-  // (puppy, 13/10): il confronto e' il punto.
+  // il confronto e' il punto.
   const tuttiG = [].concat(...scopes.map(k => Object.keys(d.scopes[k].per_giorno))).sort();
   const G = {primo: tuttiG[0], ultimo: tuttiG[tuttiG.length - 1],
     max: Math.max(1, ...scopes.map(k => Object.values(d.scopes[k].per_giorno)
@@ -1189,11 +986,10 @@ function render(d) {
     box.appendChild(b);
   });
   if (G.primo) renderTotale(scopes, d, G);
-  renderDorate(scopes, d);
 
   // Il selettore comanda tutta la pagina (peluche, #sbiffo 24/10): senza
   // scelta si vede tutto di seguito, scelto un canale restano le sue
-  // classifiche, la sua scheda e le sue dorate. Il canale sta nell'URL
+  // classifiche e la sua scheda. Il canale sta nell'URL
   // (`#sbiffo`, o `#azzurra/sbiffo` se il nome c'e' su due reti), da
   // mettere nel topic. Senza scelta la top10 somma tutti i canali.
   if (scopes.length) {
@@ -1211,7 +1007,7 @@ function render(d) {
     const norma = x => x.toLowerCase().replace(/#/g, "");
     // Il canale sta nella query, senza # (peluche, #sbiffo 24/10): ?sbiffo,
     // o ?azzurra/sbiffo se il nome corto e' doppio. Il # resta alle ancore
-    // delle sezioni (#tops, #totale, #corsa, #dorate).
+    // delle sezioni (#tops, #totale, #corsa).
     const scopeDi = x => {
       try { x = decodeURIComponent(x); } catch (e) { return ""; }
       if (!x || x.includes("=")) return "";
@@ -1240,17 +1036,6 @@ function render(d) {
         b.hidden = !!scope && b.dataset.scope !== scope);
       const tot = document.getElementById("totale");
       if (tot.querySelector(".chart")) tot.hidden = !!scope;
-      const dor = document.getElementById("dorate");
-      if (dor.cornice) {
-        let n = 0;
-        dor.querySelectorAll(".stelle > span").forEach(st => {
-          const via = !!scope && st.dataset.scope !== scope;
-          st.style.display = via ? "none" : "";
-          if (!via) n++;
-        });
-        dor.hidden = !n;
-        dor.cornice();
-      }
       renderTop(scope, d);
     };
     sel.onchange = () => {
