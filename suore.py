@@ -247,6 +247,10 @@ BANS = {
     # ircnet», «e levagli i punti». Nessuna scadenza data: per sempre. Tolti
     # anche la riga in `scores` di ircnet/#cybernet e i suoi due `.bef`.
     "vertex": float("inf"),
+    # 2026-11-04 20:46 Rome, vjt: «banna katia e puppy dal gioco delle suore».
+    # Nessuna scadenza: per sempre. I punti restano, non e' stato chiesto.
+    "katia": float("inf"),
+    "puppy": float("inf"),
 }
 
 ZWSP = "​"
