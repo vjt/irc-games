@@ -487,17 +487,6 @@ r = st["scopes"]["t/#x"]["classifica"][0]
 assert r["cilecca_pct"] == 25, r
 print("ok: percentuali delle figuracce")
 
-# gradi: due scale, stesse soglie, la promozione si annuncia sul colpo che la fa
-assert suore.grado(0, "kills") == "chierichetto"
-assert suore.grado(4, "kills") == "chierichetto"
-assert suore.grado(5, "kills") == "sagrestano"
-assert suore.grado(20, "kills") == "diacono"
-assert suore.grado(9999, "kills") == "antipapa"
-assert suore.grado(15, "friends") == "corteggiante"
-assert suore.promosso(4, 5, "kills") == " Nuovo grado: sagrestano!"
-assert suore.promosso(5, 6, "kills") == ""
-print("ok: gradi e promozioni")
-
 # L'RPG non c'e' piu' (vjt, #sbiffo 2026-10-21), ma gli stati vecchi hanno
 # ancora `rpg_lost`: le stese perse per l'esplosione stanno nel log e non nello
 # stato, e la discrepanza della storia deve continuare a tornare.

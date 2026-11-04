@@ -799,37 +799,6 @@ NOPES = [
 ]
 
 
-# I gradi: sola facciata, nessun vantaggio in gioco (Malekith + puppy, #sbiffo
-# 2026-10-13 17:10-17:13, soglie «per ora si»). Un'arma che scala con la
-# classifica farebbe vincere sempre chi vince gia'. Due scale, una per partita,
-# con le stesse soglie: i killer contano le stese, i marpioni le amiche, dorate
-# comprese in entrambe.
-SOGLIE = (0, 5, 15, 30, 60, 100, 200, 350, 500)
-GRADI = {
-    "kills": ("chierichetto", "sagrestano", "diacono", "parroco", "monsignore",
-              "vescovo", "inquisitore", "cardinale", "antipapa"),
-    # Parole invariabili, niente genere da marcare: la prima versione era
-    # tutta maschile (dongiovanni, casanova…) e puppy l'ha rimandata indietro
-    # («che maschilismo»); la seconda aveva la schwa, e Malekith ha fatto
-    # notare che cascamortə & co. il genere lo segnano comunque.
-    "friends": ("spasimante", "rubacuori", "corteggiante", "seducente",
-                "ammaliante", "latin lover", "irresistibile", "serpente dell'Eden",
-                "Lilith"),
-}
-
-
-def grado(n, field):
-    """Il titolo per `n` prese nella partita `field`."""
-    i = sum(1 for soglia in SOGLIE if n >= soglia) - 1
-    return GRADI[field][i]
-
-
-def promosso(prima, dopo, field):
-    """La coda « Nuovo grado: X!» quando il punto appena fatto passa una soglia."""
-    g = grado(dopo, field)
-    return f" Nuovo grado: {g}!" if g != grado(prima, field) else ""
-
-
 LATE_WINDOW = 120.0
 
 
@@ -914,9 +883,7 @@ def handle(data, scope, nick, cmd, now):
         # e due righe a testa allagano il canale ([[feedback_no_orphan_line_tails]]).
         say(net, chan, f"{nick} ha fatto fuori {s['kills']} "
                        f"{plural(s['kills'], 'suora', 'suore')}{di_cui} e ne ha "
-                       f"fatte amiche {s['friends']} in {chan}: "
-                       f"{grado(s['kills'], 'kills')} e "
-                       f"{grado(s['friends'], 'friends')}. "
+                       f"fatte amiche {s['friends']} in {chan}. "
                        f"{when_line(data, scope, now, nick)}")
         return True  # score_for puo' aver creato la riga del nick
 
@@ -1032,12 +999,7 @@ def handle(data, scope, nick, cmd, now):
     now_above = {canon(x["nick"]) for x in above(data, scope, nick, field)}
     jumped = was_above - now_above
     passed = [x for x in board(data, scope, field) if canon(x["nick"]) in jumped]
-    # Il grado sta in CODA, dopo il punto che chiude la formula: la
-    # testa dell'annuncio la rilegge il parser del backfill (suore_events), e
-    # un titolo davanti al nick la renderebbe irriconoscibile.
-    tail = (standing(data, scope, nick, passed, field)
-            + (promosso(s[field] - 1, s[field], field)
-               or f" Grado: {grado(s[field], field)}."))
+    tail = standing(data, scope, nick, passed, field)
     # La reazione qui e' il numero grezzo, non la stringa di human_time(): il
     # testo in canale arrotonda, il log no, e le due cose non devono confondersi.
     suore_events.append(EVENTS, now, scope, nick, cmd,
