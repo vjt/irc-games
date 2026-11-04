@@ -12,3 +12,6 @@ payload/rickroll.mp4
 payload/*.mp4
 /sillabah_parole.db
 /sillabah_parole.tmp
+
+# suore: i ban stanno solo nel deploy, mai su GitHub
+*_bans.json

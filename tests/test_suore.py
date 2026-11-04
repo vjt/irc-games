@@ -76,12 +76,12 @@ print("ok: ogni canale usa la sua finestra")
 old = {"scores": {"#sniffo": {"vjt": {"kills": 7, "friends": 2, "nick": "vjt"}}},
        "nun": {"chan": "#sniffo", "at": now, "golden": False, "hp": 1},
        "next_spawn": now + 100, "penalty": {"vjt": now + 3},
-       "last_taken": {"#sniffo": {"at": now, "nick": "katia"}}}
+       "last_taken": {"#sniffo": {"at": now, "nick": "mira"}}}
 open(os.environ["SUORE_STATE"], "w").write(json.dumps(old))
 migrated = suore.load()
 assert migrated["scores"]["azzurra/#sniffo"]["vjt"]["kills"] == 7
 assert migrated["nuns"]["azzurra/#sniffo"]["chan"] == "#sniffo"
-assert migrated["last_taken"]["azzurra/#sniffo"]["nick"] == "katia"
+assert migrated["last_taken"]["azzurra/#sniffo"]["nick"] == "mira"
 assert migrated["next_spawn"] == {} and migrated["penalty"] == {}
 assert "nun" not in migrated
 again = suore.migrate(json.loads(json.dumps(migrated)))   # idempotente
@@ -118,15 +118,15 @@ assert not any(m in msg for m in suore.MEDALS.values()), msg
 print("ok: niente medaglia fuori dal podio, niente sorpasso inventato")
 
 # il .bef ha la coda sua: scala i MARPIONI, non i killer (ordine di vjt 13:17)
-data["scores"][scope]["katia"] = {"kills": 0, "friends": 4, "nick": "katia"}
+data["scores"][scope]["mira"] = {"kills": 0, "friends": 4, "nick": "mira"}
 data["scores"][scope]["morph"]["friends"] = 4   # pari merito, ma morph ha piu' kills
 suore.spawn(data, scope, now + 40)
 sent.clear()
-assert suore.handle(data, scope, "katia", "bef", now + 50)
+assert suore.handle(data, scope, "mira", "bef", now + 50)
 msg = sent[0][2]
 assert "🥇 1º, supera morph." in msg, msg
-# e non e' la classifica dei killer: katia li' non c'e' proprio (0 kills)
-assert "katia" not in [s["nick"] for s in suore.board(data, scope, "kills")]
+# e non e' la classifica dei killer: mira li' non c'e' proprio (0 kills)
+assert "mira" not in [s["nick"] for s in suore.board(data, scope, "kills")]
 print("ok: il .bef annuncia la posizione fra i marpioni, non fra i killer")
 
 # --- event log ---------------------------------------------------------------
@@ -356,11 +356,11 @@ assert "l'ha fatta fuori Peluche" in riga and "1m 00s fa" in riga, riga
 
 # Il bef ha il suo verbo, e la dorata si dichiara.
 d3["nuns"][sc] = {"chan": "#sniffo", "at": 100.0, "golden": True, "hp": 1}
-assert suore.handle(d3, sc, "katia", "bef", 110.0)
+assert suore.handle(d3, sc, "mira", "bef", 110.0)
 sent.clear()
 assert not suore.handle(d3, sc, "tizio", "chiestato", 110.0)
 riga = sent[-1][2]
-assert "se l'e' fatta amica katia" in riga and "(era dorata)" in riga, riga
+assert "se l'e' fatta amica mira" in riga and "(era dorata)" in riga, riga
 
 # Stato vecchio, salvato prima che last_taken imparasse il verbo: si dice chi
 # l'ha presa e si tace su cosa, invece di indovinare.
@@ -445,9 +445,9 @@ riga = sent[-1][2]
 assert "L'hai mancata per 30 secondi: se l'e' presa vjt." in riga, riga
 
 # Col `.bef` il verbo cambia, e vale anche per il ramo «suora inesistente».
-d5["last_taken"][sc] = {"at": 200.0, "nick": "katia", "cmd": "bef", "golden": False}
+d5["last_taken"][sc] = {"at": 200.0, "nick": "mira", "cmd": "bef", "golden": False}
 sent.clear()
-assert not suore.handle(d5, sc, "katia", "bef", 210.0)
+assert not suore.handle(d5, sc, "mira", "bef", 210.0)
 assert "Te la sei fatta amica tu 10 secondi fa." in sent[-1][2], sent[-1][2]
 
 # Stato vecchio senza verbo: si dice che e' roba tua, non si inventa il come.

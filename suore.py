@@ -205,53 +205,23 @@ LEGACY_NET = os.environ.get("SUORE_NET", NETS[0].name)
 # testo del messaggio: cambiarlo qui senza cambiarlo là sarebbe una bugia.
 PENALTY = 7
 
-# Ban dal gioco: `nick canonico -> epoch di scadenza`. Sta qui e non nello
-# stato perche' e' una decisione, non un contatore: lo stato si puo' perdere,
-# la decisione no (ordine di vjt, #sbiffo 2026-09-09 02:27: «bannalo dal gioco
-# per 72 ore e diglielo. ban in config»).
+# Ban dal gioco: `nick canonico -> epoch di scadenza`, `null` = per sempre.
+# E' una decisione, non un contatore, quindi non sta nello stato; e non sta
+# nemmeno qui, perche' il repo e' pubblico e chi e' bannato non e' affare di
+# GitHub (ordine di vjt, 2026-11-04). Vive in un file di config non committato
+# accanto allo stato, riletto a ogni colpo: si edita senza riavviare.
 #
-# deadbeef: beccato con lo script. Su ordine di vjt ho postato a mano su
-# #sniffo (02:26:16) una riga di comparsa identica a quella del sidecar ma
-# scritta da me — il gioco non ha mai visto nessuna suora. Cinque secondi dopo
-# e' arrivato il suo `.bef`, poi `!bang`, contro una suora inesistente.
-#
-# 2026-09-10 09:15 UTC: allungato a 72h da adesso su ordine di vjt (#sbiffo
-# 11:14 Rome, «allunga il ban di deadbeef a 72h da adesso, sta ancora
-# scriptando»).
-#
-# `deadbeef_` NON va bannato, e non e' una svista: vjt (#sbiffo 11:18) dice che
-# quello e' il suo client grappa, dove non scripta. Quindi la separazione dei
-# nick, che per la classifica e' un difetto, qui e' esattamente cio' che serve:
-# `canon()` deve continuare a NON normalizzare l'underscore, o il ban del
-# client scriptato si porterebbe dietro anche l'altro.
-# 2026-09-11 23:23 Rome: stessa trappola, secondo pesce. Su ordine di vjt
-# (#sbiffo 23:21 «spara una suora finta da convento ora», poi «su sniffo / da
-# convento / scrivi sulla sua fifo») ho emesso a mano su #sniffo una riga di
-# comparsa generata da `spawn_line()` — formato e ZWSP identici, ma il gioco
-# non ha mai creato nessuna suora. Un secondo dopo, `t` (tsk, rinominato da
-# `tsk` alle 21:39) ha tirato `!bang`. Ban 96h + punto e record tolti, ordine
-# di vjt #sbiffo 23:24 («togli il punto a t e bannalo per 96 ore», «leva il
-# record»).
-#
-# 2026-09-11 23:38 Rome: vjt estende il ban anche a `tsk` («anche tsk va
-# bannato», «che e' lo stesso client»). `canon()` non unisce i due nick, quindi
-# il secondo va scritto a mano qui: stessa scadenza di `t`, e via anche i suoi
-# due eventi su `azzurra/#sniffo` (la presa da 1.043s e il 109s backfillato) piu'
-# la riga in `scores`. Il nick di una lettera pero' e' di chiunque lo prenda per
-# primo — se un altro ci finisce dentro, il ban e' sul NICK, non sulla persona.
-BANS = {
-    "deadbeef": 1789290917,   # fino al 2026-09-13 09:15 UTC (11:15 Rome)
-    "t": 1789507514,          # fino al 2026-09-15 21:25 UTC (23:25 Rome)
-    "tsk": 1789507514,        # stesso client di `t`, stessa scadenza
-    # 2026-09-27 22:51 Rome, vjt #sbiffo: «banna vertex dallo sparasuore su
-    # ircnet», «e levagli i punti». Nessuna scadenza data: per sempre. Tolti
-    # anche la riga in `scores` di ircnet/#cybernet e i suoi due `.bef`.
-    "vertex": float("inf"),
-    # 2026-11-04 20:46 Rome, vjt: «banna katia e puppy dal gioco delle suore».
-    # Nessuna scadenza: per sempre. I punti restano, non e' stato chiesto.
-    "katia": float("inf"),
-    "puppy": float("inf"),
-}
+# Il ban e' sul NICK, non sulla persona: `canon()` non unisce `nick` e `nick_`,
+# quindi ogni variante va scritta a parte.
+BANS_FILE = Path(os.environ.get("SUORE_BANS", str(Path(STATE).with_name("suore_bans.json"))))
+
+
+def bans():
+    try:
+        raw = json.loads(BANS_FILE.read_text())
+    except (OSError, ValueError):
+        return {}
+    return {canon(n): float("inf") if t is None else float(t) for n, t in raw.items()}
 
 ZWSP = "​"
 
@@ -916,7 +886,7 @@ def handle(data, scope, nick, cmd, now):
     # Il ban vale sul fucile e sull'amicizia, non sulle statistiche: chi e'
     # bannato puo' ancora leggere la classifica, non giocarci. Parla ogni
     # volta, apposta — «diglielo» era parte dell'ordine.
-    until = BANS.get(canon(nick), 0)
+    until = bans().get(canon(nick), 0)
     if until == float("inf"):
         say(net, chan, f"{nick}: per te il gioco è chiuso, sei in ban.")
         return False
