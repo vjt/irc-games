@@ -1,0 +1,65 @@
+#!/bin/sh
+# PROVIDE: ambrogio_guardiani
+# REQUIRE: ambrogio_bot_ircnet mikebongiorno_bot_ircnet
+# KEYWORD: shutdown
+#
+# I guardiani di vjt su IRCnet (vjt, 2026-11-05 03:30): Ambrogio e Mike oppano
+# vjt dove sono op e kickano chi deoppa o kicka vjt o loro due. Un processo,
+# due bot: ognuno agisce solo dalla sua FIFO su quello che vede il suo log.
+# Identita' = user@host (GUARD_MASKS in guardiani.py), mai il nick.
+. /etc/rc.subr
+name="ambrogio_guardiani"
+rcvar="ambrogio_guardiani_enable"
+load_rc_config "$name"
+: ${ambrogio_guardiani_enable:="NO"}
+pidfile="/var/run/convento/guardiani.pid"
+procname="/usr/local/bin/python3.11"
+command="/usr/sbin/daemon"
+daemon_pidfile="${pidfile%.pid}.daemon.pid"
+command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/guardiani.log -t ambrogio-guardiani \
+  /usr/bin/env GUARD_LOG=/var/log/convento/ambrogio.ircnet.log,/var/log/convento/mike.ircnet.log \
+  GUARD_FIFO=/var/run/convento/ambrogio.ircnet.send,/var/run/convento/mike.ircnet.send \
+  /usr/local/bin/python3.11 -u /opt/irc-games/guardiani.py"
+# Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr
+# insegue il FIGLIO (procname), quindi uno stop che trova il python gia' morto
+# lascia vivo il supervisore col suo pidfile e lo start dopo muore con
+# «process already running». Vedi ambrogio_next per la storia (2026-09-11).
+start_precmd="convento_reap_supervisor"
+stop_postcmd="convento_reap_supervisor"
+convento_reap_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	rm -f "${daemon_pidfile}"; return 0 ;;
+	esac
+	if kill -0 "${_dpid}" 2>/dev/null; then
+		if [ -r "${pidfile}" ] && kill -0 "$(cat ${pidfile} 2>/dev/null)" 2>/dev/null; then
+			return 0
+		fi
+		kill -TERM "${_dpid}" 2>/dev/null
+		sleep 1
+		kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	fi
+	rm -f "${daemon_pidfile}" "${pidfile}"
+}
+
+# Con -R il supervisore rigenera il figlio dopo 5s, quindi uno stop che
+# ammazza solo il python non ferma niente: il supervisore muore PRIMA
+# (daemon(8) inoltra il TERM al figlio e se ne va), e rc.subr trova il
+# campo gia sgombro. Ordine di vjt 2026-09-19: "rendilo resilient convento".
+stop_precmd="convento_kill_supervisor"
+convento_kill_supervisor()
+{
+	[ -r "${daemon_pidfile}" ] || return 0
+	_dpid=$(cat "${daemon_pidfile}" 2>/dev/null)
+	case "${_dpid}" in
+	''|*[!0-9]*)	return 0 ;;
+	esac
+	kill -TERM "${_dpid}" 2>/dev/null
+	sleep 2
+	kill -0 "${_dpid}" 2>/dev/null && kill -KILL "${_dpid}" 2>/dev/null
+	return 0
+}
+
+run_rc_command "$1"
