@@ -159,7 +159,7 @@ CATALOG = [
     ("Il.Robot.Selvaggio.2024.iTA.ENG.1080p.WEB-DL.x264", ["5.4G", "7.8G"]),
     ("Alien.Romulus.2024.iTA.ENG.2160p.UHD.BluRay.x265", ["22.1G", "34.7G"]),
     ("Venom.The.Last.Dance.2024.iTA.1080p.WEB-DL.H264", ["6.6G", "9.2G"]),
-    ("Sonic.3.Il.Film.2024.iTA.1080p.WEB-DL.DDP5.1.H264", ["5.1G", "7.4G"]),
+    ("Kung.Fu.Panda.4.2024.iTA.1080p.WEB-DL.DDP5.1.H264", ["4.6G", "6.8G"]),
     ("Mufasa.Il.Re.Leone.2024.iTA.1080p.WEB-DL.x264", ["6.9G", "10.1G"]),
 ]
 
