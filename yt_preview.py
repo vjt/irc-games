@@ -833,6 +833,13 @@ def next_rocher():
 BUTLER = ((LANGUORINO_PAT, next_languorino), (ROCHER_PAT, next_rocher))
 
 
+def reply_part(text):
+    """The reply half of a quote-reply («<nick> quoted << reply»). Links in the
+    quoted half got their preview when first said (Hypnotize, #it-opers
+    2026-11-08): only links in the reply count."""
+    return text.rsplit("<<", 1)[-1]
+
+
 def first_link(text):
     """First non-YouTube link in a line, trailing punctuation trimmed."""
     for m in ANY_LINK_PAT.finditer(text):
@@ -930,9 +937,10 @@ def daemon():
                           f"tira fuori un video.")
                 continue
         else:
-            hit = LINK_PAT.search(text)
+            reply = reply_part(text)
+            hit = LINK_PAT.search(reply)
             if not hit:
-                link = first_link(text)
+                link = first_link(reply)
                 if link:
                     generic(chan, link, last_chan, last_video)
                 continue

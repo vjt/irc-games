@@ -166,3 +166,26 @@ def test_rocher_deck_says_every_line_before_repeating():
 def test_languorino_wins_over_rocher():
     [line] = [l for pat, l in yp.BUTLER if pat.search("un languorino da Rocher")][:1]
     assert line is yp.next_languorino
+
+
+# Hypnotize, #it-opers 2026-11-08 17:48: un messaggio citato («<nick> testo <<
+# risposta») non deve ritirare fuori l'anteprima del link che sta nella
+# citazione: quella l'ha gia' avuta quando e' stato detto la prima volta.
+def test_quoted_link_gets_no_preview():
+    line = "<Sythos> 📸 https://irc.sythos.dev/uploads/x.png (24h) << io non so"
+    assert yp.first_link(yp.reply_part(line)) is None
+
+
+def test_quoted_youtube_link_gets_no_preview():
+    line = "<alice> https://youtu.be/dQw4w9WgXcQ << ancora questa"
+    assert yp.LINK_PAT.search(yp.reply_part(line)) is None
+
+
+def test_link_in_the_reply_half_still_previews():
+    line = "<bob> guarda qui https://a.example/x << meglio https://b.example/y"
+    assert yp.first_link(yp.reply_part(line)) == "https://b.example/y"
+
+
+def test_unquoted_line_is_untouched():
+    line = "guarda https://a.example/x"
+    assert yp.reply_part(line) == line
