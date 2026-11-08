@@ -20,6 +20,8 @@ Semantics (vjt's brief, #grappa 2026-08-19 12:52-12:58):
   * Bare `!next` asks for the standings and gets ONE line back in channel.
     A cast vote is SILENT — same reasoning as !cena: the page is the
     feedback surface, and an ack per vote spams the channel.
+  * Not a poll command, but lives here: `!list` / `!lista` in #grappa gets
+    one throttled line pointing at #sbiffo (see LIST_PAT).
 
 Two files, split by write pattern (same reasoning as cena_counter):
 
@@ -117,6 +119,25 @@ TYPO_PAT = re.compile(r'^!\s*next\S', re.IGNORECASE)
 # what an option IS is not casting a vote for it (vjt, 13:25).
 WAT_PAT = re.compile(r'^!\s*wat(?:\s+(?P<args>.*\S))?\s*$', re.IGNORECASE)
 WAT_TYPO_PAT = re.compile(r'^!\s*wat\S', re.IGNORECASE)
+
+# `!list` / `!lista` in #grappa (vjt, #grappa 2026-11-08 22:16-22:17): people
+# walk in asking for the warez gag, which lives on #sbiffo behind EliteWarez.
+# Ambrogio points them there, in channel, one line, clean register: #grappa is
+# the public project channel. This sidecar because it is the only one of
+# Ambrogio's already listening on #grappa. Read-only like `!wat`, and
+# throttled per nick AND per channel, so neither one lister nor several can
+# turn the pointer into a flood.
+LIST_PAT = re.compile(r'^!\s*lista?(?:\s.*)?$', re.IGNORECASE)
+LIST_CHAN = "#grappa"
+LIST_LINE = "{nick}: il warez sta su #sbiffo"
+LIST_NICK_SEC = 600
+LIST_CHAN_SEC = 60
+# Ourselves and the other bots, same list as listgag: a bot firing `!list`
+# must not get an answer from another bot.
+LIST_IGNORE = {"ambrogio", "vjt-claude", "cristobot", "trillian", "gazzurbo",
+               "ottavia", "convento", "mikebongiorno", "elitewarez"}
+_list_by_nick = {}
+_list_by_chan = {}
 
 SLUG_MAX = 24
 
@@ -259,6 +280,19 @@ def say(chan, text):
         os.close(fd)
 
 
+def list_pointer(nick, chan, now):
+    """Point a `!list` at #sbiffo, unless the nick is a bot or a throttle
+    window is still open."""
+    key = nick.casefold()
+    if key in LIST_IGNORE:
+        return
+    if (now - _list_by_chan.get(chan, float("-inf")) < LIST_CHAN_SEC
+            or now - _list_by_nick.get(key, float("-inf")) < LIST_NICK_SEC):
+        return
+    _list_by_chan[chan] = _list_by_nick[key] = now
+    say(chan, LIST_LINE.format(nick=nick))
+
+
 def process(line, data, ts=None, talk=False):
     """Returns True when state changed (caller saves). Channel replies are
     only emitted with talk=True, so backfill over history stays mute."""
@@ -269,6 +303,11 @@ def process(line, data, ts=None, talk=False):
     if chan not in POLL_CHANS:
         return False
     text = text.strip()
+
+    if chan == LIST_CHAN and LIST_PAT.match(text):
+        if talk:
+            list_pointer(nick, chan, ts if ts is not None else time.time())
+        return False
 
     # `!wat` is read-only: it answers and returns False, so no path through it
     # can ever write a vote.
