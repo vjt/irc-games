@@ -33,7 +33,8 @@ def sill(tmp_path, chans=("#t",)):
 def test_help_va_in_canale(tmp_path, cmd):
     g = quiz(tmp_path)
     assert g.handle("Pippo", "#t", cmd, now=100) is False
-    assert g.sent == [("#t", line) for line in I.HELP_LINES]
+    # `sent` is stripped of IRC formatting; `wire` is what goes out.
+    assert g.wire == [("#t", line) for line in I.HELP_LINES]
 
 
 def test_help_solo_nei_canali_configurati(tmp_path):

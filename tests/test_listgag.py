@@ -98,7 +98,9 @@ def test_find_software_gets_software_tags():
 
 def test_payload_is_a_valid_dcc_name():
     # se il nome non passa DCC_NAME_PAT, bot.py rifiuta ogni transfer.
-    assert DCC_NAME.match(listgag.PAYLOAD_FILE), listgag.PAYLOAD_FILE
+    assert listgag.PAYLOAD_FILES
+    for name in listgag.PAYLOAD_FILES:
+        assert DCC_NAME.match(name), name
 
 
 def test_privmsg_pat_captures_channel_and_query():
@@ -160,7 +162,7 @@ def test_dispatch_channel_offers_under_pack_title():
     listgag.dispatch("mario", "#sbiffo", "xdcc send #2", rng, lf, ld)
     assert len(calls["dcc"]) == 1, calls
     nick, fname, offer = calls["dcc"][0]
-    assert nick == "mario" and fname == listgag.PAYLOAD_FILE, calls
+    assert nick == "mario" and fname in listgag.PAYLOAD_FILES, calls
     assert offer == f"{titles[1]}.mp4", (offer, titles)
     assert DCC_OFFER.match(offer), offer
 
@@ -185,7 +187,7 @@ def test_dispatch_query_offers_random_title():
     listgag.dispatch("mario", "EliteWarez", "xdcc send #1", rng, lf, ld)
     assert len(calls["dcc"]) == 1, calls
     nick, fname, offer = calls["dcc"][0]
-    assert nick == "mario" and fname == listgag.PAYLOAD_FILE, calls
+    assert nick == "mario" and fname in listgag.PAYLOAD_FILES, calls
     assert offer.endswith(".mp4") and DCC_OFFER.match(offer), offer
 
 
@@ -368,7 +370,7 @@ if __name__ == "__main__":
     test_invite_line()
     print("ok: riga invito senza /msg hard-coded")
     test_payload_is_a_valid_dcc_name()
-    print("ok: PAYLOAD_FILE passa DCC_NAME_PAT di bot.py")
+    print("ok: PAYLOAD_FILES passano DCC_NAME_PAT di bot.py")
     test_privmsg_pat_captures_channel_and_query()
     print("ok: PRIVMSG_PAT cattura target canale e query")
     test_xdcc_pattern()
