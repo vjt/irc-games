@@ -230,7 +230,7 @@ Jail `convento` su m42: codice in `/opt/irc-games`, config dei bot
 | `Convento`      | Azzurra | `#sniffo`, `#sbiffo`, `#porcodio`, `#altrove`     | idem                                     |
 | `MikeBongiorno` | Azzurra | `#sniffo`, `#sbiffo`, `#italia`                   | `ti.faccio.le.domande.mentre.sniffo.org` |
 | `Ambrogio`      | Azzurra | `#sniffo`, `#sbiffo`, `#it-opers`, `#grappa`, `#italia`, `#ai`, `#altrove`, `#pranzi-nerd` | `ci.pensa.ambrogio.con.la.grappa.chat` |
-| `Ambrogio`      | IRCnet  | `#cybernet`, `#italia`, `#gosub`, `#amici`, `#grappa`, `#disagio`, `#ritardo` | idem                   |
+| `Ambrogio`      | IRCnet  | `#cybernet`, `#italia`, `#gosub`, `#amici`, `#grappa`, `#ritardo` | idem                   |
 | `EliteWarez`    | Azzurra | `#sniffo`, `#sbiffo`                              | `ti.prendo.per.il.culo.diostronzo.org`   |
 
 I canali sono quelli dei `bot.startup.*`; quali sidecar parlano dove lo dice

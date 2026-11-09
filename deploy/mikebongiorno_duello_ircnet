@@ -24,7 +24,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   IRCGAME_LOCKS=/var/run/convento/ircgame \
   DUELLO_INSULTI=/opt/irc-games/duello_insulti.json \
   DUELLO_NICK=MikeBongiorno \
-  'DUELLO_NETS=ircnet|/var/log/convento/mike.ircnet.log|/var/run/convento/mike.ircnet.send|#cybernet,#italia,#disagio' \
+  'DUELLO_NETS=ircnet|/var/log/convento/mike.ircnet.log|/var/run/convento/mike.ircnet.send|#cybernet,#italia' \
   /usr/local/bin/python3.11 -u /opt/irc-games/duello.py --net ircnet daemon"
 # daemon(8) fa da supervisore e rc.subr insegue il FIGLIO (procname), quindi uno
 # stop che trova il python gia' morto lascia vivo il supervisore col suo pidfile:
