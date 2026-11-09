@@ -15,10 +15,23 @@ position, and each bot acts only through its own FIFO on what its own log
 shows (its ops, its channels). Both bots seeing the same deop both react;
 the second kick finds nobody and the server drops it. Harmless.
 
+Bitch mode (vjt, 2026-11-09, after #disagio was taken over): on the channels
+in GUARD_BITCH, an op handed out by anyone but a protected mask to anyone but
+a protected mask is taken back, and so is the op of whoever handed it out. Ops
+are transitive on IRCnet: one outsider with @ gives the channel to whoever HE
+trusts (tom -> ig0r -> gruG -> a Psotnic botnet that kicked everybody in the
+same second). Kicking back after a mass-kick is too late; refusing the first
+foreign op is not. Server-granted ops (netsplit riding) are taken back too.
+Ops vjt hands out stay: who gets them is his call. The +R list (IRCnet's
+reop-when-opless) can be changed only by a protected mask: anyone else's
+edit is reverted, since the first thing a taker does is wipe it.
+Ops found already in place when a bot joins are left alone: no mass deop.
+
 Env:
   GUARD_LOG    comma list of bot logs
   GUARD_FIFO   comma list of bot FIFOs ('' = mute, for dry runs)
   GUARD_MASKS  comma list of protected user@host (vjt + the guardians)
+  GUARD_BITCH  comma list of channels where bitch mode is on (default none)
 """
 import os, random, re, subprocess
 
@@ -29,6 +42,11 @@ MASKS = {m.strip().lstrip("~").casefold() for m in os.environ.get(
     "antani@due.dita.di.grappa.chat,"
     "ambrogio@ci.pensa.ambrogio.con.la.grappa.chat,"
     "mike@ti.faccio.le.domande.mentre.sniffo.org").split(",") if m.strip()}
+
+BITCH = {c.strip().casefold() for c in os.environ.get("GUARD_BITCH", "").split(",")
+         if c.strip()}
+# IRCnet takes at most three parameterised modes per MODE line.
+MODES_PER_LINE = 3
 
 KICK_MSGS = ["ao?!", "ao?! ma che fai", "ao?! giù le mani", "ao?! e mo' esci"]
 
@@ -75,6 +93,28 @@ class Guard:
             if not is_op and self.world.trusted(n) and n != self.me.casefold():
                 self.send(f"RAW:guard MODE {chan} +o {self.world.nicks[n]}", out)
 
+    def modes(self, chan, sign, letter, args, out):
+        """Send `sign letter*n args` in batches the server accepts."""
+        for i in range(0, len(args), MODES_PER_LINE):
+            batch = args[i:i + MODES_PER_LINE]
+            self.send(f"RAW:guard MODE {chan} {sign}{letter * len(batch)} {' '.join(batch)}", out)
+
+    def bitch(self, chan, nick, user_actor, server_actor, foreign_ops, r_changes, out):
+        """Take back ops and +R edits that did not come from a protected mask."""
+        if chan not in BITCH or not self.op(chan):
+            return
+        if not (user_actor or server_actor):
+            return
+        deop = list(dict.fromkeys(foreign_ops))
+        if deop and user_actor and nick.casefold() in self.chans.get(chan, {}) \
+                and nick not in deop:
+            deop.append(nick)
+        if deop:
+            self.modes(chan, "-", "o", deop, out)
+        if r_changes and user_actor:
+            for sign, mask in r_changes:
+                self.send(f"RAW:guard MODE {chan} {'-' if sign == '+' else '+'}R {mask}", out)
+
     def punish(self, chan, actor, out):
         if self.op(chan) and actor.casefold() in self.chans.get(chan, {}):
             self.send(f"RAW:guard KICK {chan} {actor} :{random.choice(KICK_MSGS)}", out)
@@ -83,6 +123,8 @@ class Guard:
         nick, bang, mask = src.partition("!")
         cf = nick.casefold()
         user_actor = bool(bang) and not self.world.trusted_mask(mask)
+        # A server: no `!`, but a dot (or a `*.it` mask) in the name.
+        server_actor = not bang and "." in nick
 
         if cmd == "001" and a:
             self.me, self.chans = a[0], {}
@@ -127,6 +169,7 @@ class Guard:
             chan = a[0].casefold()
             members = self.chans.setdefault(chan, {})
             sign, args, deopped, opped_me = "+", a[2:], [], False
+            foreign_ops, r_changes = [], []
             for c in a[1]:
                 if c in "+-":
                     sign = c
@@ -134,6 +177,9 @@ class Guard:
                 if c not in ARG_MODES and not (c == "l" and sign == "+"):
                     continue
                 arg = args.pop(0) if args else None
+                if c == "R" and arg is not None:
+                    r_changes.append((sign, arg))
+                    continue
                 if c != "o" or arg is None:
                     continue
                 members[arg.casefold()] = sign == "+"
@@ -141,11 +187,14 @@ class Guard:
                     deopped.append(arg)
                 if sign == "+" and self.me and arg.casefold() == self.me.casefold():
                     opped_me = True
+                elif sign == "+" and not self.world.trusted(arg.casefold()):
+                    foreign_ops.append(arg)
             # vjt deopping himself (or a guardian doing it) stays deopped.
             if deopped and user_actor:
                 self.punish(chan, nick, out)
             if (deopped and user_actor) or opped_me:
                 self.op_vjt(chan, out)
+            self.bitch(chan, nick, user_actor, server_actor, foreign_ops, r_changes, out)
 
 
 class World:

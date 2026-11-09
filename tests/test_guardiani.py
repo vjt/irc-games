@@ -118,3 +118,76 @@ def test_server_mode_is_not_punished():
     run(w, gd, L(VJT, "JOIN #c"))
     run(w, gd, L(AMB, "MODE #c +o vjt"))
     assert run(w, gd, L("irc.example", "MODE #c -o vjt")) == []
+
+
+# Bitch mode (vjt 2026-11-09, dopo il takeover di #disagio): op dati da fuori
+# a gente di fuori si riprendono, insieme all'op di chi li ha dati.
+
+def bitch_setup(monkeypatch, names="@Ambrogio @pippo tizio caio sempronio"):
+    monkeypatch.setattr(g, "BITCH", {"#c"})
+    return setup(names=names)
+
+
+def test_bitch_foreign_op_reverted_with_opper(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    assert run(w, gd, L(EVIL, "MODE #c +o tizio")) == ["RAW:guard MODE #c -oo tizio pippo"]
+
+
+def test_bitch_inert_off_list(monkeypatch):
+    monkeypatch.setattr(g, "BITCH", {"#altro"})
+    w, gd = setup(names="@Ambrogio @pippo tizio")
+    assert run(w, gd, L(EVIL, "MODE #c +o tizio")) == []
+
+
+def test_bitch_inert_without_ops(monkeypatch):
+    w, gd = bitch_setup(monkeypatch, names="Ambrogio @pippo tizio")
+    assert run(w, gd, L(EVIL, "MODE #c +o tizio")) == []
+
+
+def test_bitch_vjt_ops_stay(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    run(w, gd, L(VJT, "JOIN #c"))
+    run(w, gd, L(AMB, "MODE #c +o vjt"))
+    assert run(w, gd, L(VJT, "MODE #c +o tizio")) == []
+
+
+def test_bitch_outsider_opping_vjt_is_fine(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    run(w, gd, L(VJT, "JOIN #c"))
+    assert run(w, gd, L(EVIL, "MODE #c +o vjt")) == []
+
+
+def test_bitch_server_op_reverted(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    assert run(w, gd, L("irc.example", "MODE #c +o tizio")) == ["RAW:guard MODE #c -o tizio"]
+
+
+def test_bitch_server_op_of_vjt_stays(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    run(w, gd, L(VJT, "JOIN #c"))
+    assert run(w, gd, L("irc.example", "MODE #c +o vjt")) == []
+
+
+def test_bitch_batches_three_per_line(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    out = run(w, gd, L(EVIL, "MODE #c +ooo tizio caio sempronio"))
+    assert out == ["RAW:guard MODE #c -ooo tizio caio sempronio",
+                   "RAW:guard MODE #c -o pippo"]
+
+
+def test_bitch_r_edit_reverted(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    out = run(w, gd, L(EVIL, "MODE #c -R+R *!*@buono *!*@cattivo"))
+    assert out == ["RAW:guard MODE #c +R *!*@buono", "RAW:guard MODE #c -R *!*@cattivo"]
+
+
+def test_bitch_r_edit_by_vjt_stays(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    run(w, gd, L(VJT, "JOIN #c"))
+    assert run(w, gd, L(VJT, "MODE #c +R *!*@amico")) == []
+
+
+def test_bitch_guardian_own_deop_does_not_loop(monkeypatch):
+    w, gd = bitch_setup(monkeypatch)
+    run(w, gd, L(EVIL, "MODE #c +o tizio"))
+    assert run(w, gd, L(AMB, "MODE #c -oo tizio pippo")) == []
