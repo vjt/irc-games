@@ -19,6 +19,7 @@ daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/guardiani.log -t ambrogio-guardiani \
   /usr/bin/env GUARD_LOG=/var/log/convento/ambrogio.ircnet.log,/var/log/convento/mike.ircnet.log \
   GUARD_FIFO=/var/run/convento/ambrogio.ircnet.send,/var/run/convento/mike.ircnet.send \
+  GUARD_BITCH=#ritardo \
   /usr/local/bin/python3.11 -u /opt/irc-games/guardiani.py"
 # Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr
 # insegue il FIGLIO (procname), quindi uno stop che trova il python gia' morto
