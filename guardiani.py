@@ -16,21 +16,23 @@ shows (its ops, its channels). Both bots seeing the same deop both react;
 the second kick finds nobody and the server drops it. Harmless.
 
 Bitch mode (vjt, 2026-11-09, after #disagio was taken over): on the channels
-in GUARD_BITCH, an op handed out by anyone but a protected mask to anyone but
-a protected mask is taken back, and so is the op of whoever handed it out. Ops
+in GUARD_BITCH, an op handed to anyone but a protected mask is taken back. Ops
 are transitive on IRCnet: one outsider with @ gives the channel to whoever HE
 trusts (tom -> ig0r -> gruG -> a Psotnic botnet that kicked everybody in the
 same second). Kicking back after a mass-kick is too late; refusing the first
 foreign op is not. Server-granted ops (netsplit riding) are taken back too.
-Ops vjt hands out stay: who gets them is his call. The +R list (IRCnet's
-reop-when-opless) can be changed only by a protected mask: anyone else's
-edit is reverted, since the first thing a taker does is wipe it.
+Who handed it out decides the rest (vjt, 2026-11-11): an outsider is deopped
+and kicked; a protected mask keeps its own op, and that includes vjt, since
+tom handing @ to ig0r is exactly how the channel was lost. To op someone new,
+put their mask in GUARD_MASKS. The +R list (IRCnet's reop-when-opless) can
+be changed only by a protected mask: anyone else's edit is reverted, since
+the first thing a taker does is wipe it.
 Ops found already in place when a bot joins are left alone: no mass deop.
 
 Env:
   GUARD_LOG    comma list of bot logs
   GUARD_FIFO   comma list of bot FIFOs ('' = mute, for dry runs)
-  GUARD_MASKS  comma list of protected user@host (vjt + the guardians)
+  GUARD_MASKS  comma list of protected user@host (vjt, his friends, the guardians)
   GUARD_BITCH  comma list of channels where bitch mode is on (default none)
 """
 import os, random, re, subprocess
@@ -40,6 +42,10 @@ FIFOS = os.environ.get("GUARD_FIFO", "").split(",")
 MASKS = {m.strip().lstrip("~").casefold() for m in os.environ.get(
     "GUARD_MASKS",
     "antani@due.dita.di.grappa.chat,"
+    # The friends vjt trusts on #disagio (2026-11-11): tom, S~ (shinobi), gosub.
+    "tom@tom.dev.irc.it,"
+    "uid702845@id-702845.ilkley.irccloud.com,"
+    "_gosub@stop.endsub.it,"
     "ambrogio@ci.pensa.ambrogio.con.la.grappa.chat,"
     "mike@ti.faccio.le.domande.mentre.sniffo.org").split(",") if m.strip()}
 
@@ -99,11 +105,10 @@ class Guard:
             batch = args[i:i + MODES_PER_LINE]
             self.send(f"RAW:guard MODE {chan} {sign}{letter * len(batch)} {' '.join(batch)}", out)
 
-    def bitch(self, chan, nick, user_actor, server_actor, foreign_ops, r_changes, out):
-        """Take back ops and +R edits that did not come from a protected mask."""
+    def bitch(self, chan, nick, user_actor, foreign_ops, r_changes, out):
+        """Take back every op given to an outsider, the op of an outsider who
+        gave it, and +R edits that did not come from a protected mask."""
         if chan not in BITCH or not self.op(chan):
-            return
-        if not (user_actor or server_actor):
             return
         deop = list(dict.fromkeys(foreign_ops))
         if deop and user_actor and nick.casefold() in self.chans.get(chan, {}) \
@@ -111,6 +116,8 @@ class Guard:
             deop.append(nick)
         if deop:
             self.modes(chan, "-", "o", deop, out)
+            if user_actor:
+                self.punish(chan, nick, out)
         if r_changes and user_actor:
             for sign, mask in r_changes:
                 self.send(f"RAW:guard MODE {chan} {'-' if sign == '+' else '+'}R {mask}", out)
@@ -123,8 +130,6 @@ class Guard:
         nick, bang, mask = src.partition("!")
         cf = nick.casefold()
         user_actor = bool(bang) and not self.world.trusted_mask(mask)
-        # A server: no `!`, but a dot (or a `*.it` mask) in the name.
-        server_actor = not bang and "." in nick
 
         if cmd == "001" and a:
             self.me, self.chans = a[0], {}
@@ -194,7 +199,7 @@ class Guard:
                 self.punish(chan, nick, out)
             if (deopped and user_actor) or opped_me:
                 self.op_vjt(chan, out)
-            self.bitch(chan, nick, user_actor, server_actor, foreign_ops, r_changes, out)
+            self.bitch(chan, nick, user_actor, foreign_ops, r_changes, out)
 
 
 class World:

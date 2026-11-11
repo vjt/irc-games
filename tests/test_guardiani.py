@@ -12,6 +12,9 @@ VJT = "vjt!antani@due.dita.di.grappa.chat"
 AMB = "Ambrogio!~ambrogio@ci.pensa.ambrogio.con.la.grappa.chat"
 EVIL = "pippo!~pippo@evil.example"
 FAKE = "vjt!~antani@evil.example"
+TOM = "tom!tom@tom.dev.irc.it"
+SHINOBI = "S~!uid702845@id-702845.ilkley.irccloud.com"
+GOSUB = "gosub!_gosub@stop.endsub.it"
 
 
 def L(src, rest):
@@ -128,9 +131,12 @@ def bitch_setup(monkeypatch, names="@Ambrogio @pippo tizio caio sempronio"):
     return setup(names=names)
 
 
-def test_bitch_foreign_op_reverted_with_opper(monkeypatch):
+def test_bitch_foreign_op_reverted_opper_deopped_and_kicked(monkeypatch):
     w, gd = bitch_setup(monkeypatch)
-    assert run(w, gd, L(EVIL, "MODE #c +o tizio")) == ["RAW:guard MODE #c -oo tizio pippo"]
+    out = run(w, gd, L(EVIL, "MODE #c +o tizio"))
+    assert out[0] == "RAW:guard MODE #c -oo tizio pippo"
+    assert out[1].startswith("RAW:guard KICK #c pippo :ao?!")
+    assert len(out) == 2
 
 
 def test_bitch_inert_off_list(monkeypatch):
@@ -144,11 +150,36 @@ def test_bitch_inert_without_ops(monkeypatch):
     assert run(w, gd, L(EVIL, "MODE #c +o tizio")) == []
 
 
-def test_bitch_vjt_ops_stay(monkeypatch):
+def test_bitch_outsider_opped_by_vjt_is_reverted_vjt_untouched(monkeypatch):
     w, gd = bitch_setup(monkeypatch)
     run(w, gd, L(VJT, "JOIN #c"))
     run(w, gd, L(AMB, "MODE #c +o vjt"))
-    assert run(w, gd, L(VJT, "MODE #c +o tizio")) == []
+    assert run(w, gd, L(VJT, "MODE #c +o tizio")) == ["RAW:guard MODE #c -o tizio"]
+
+
+def test_bitch_outsider_opped_by_friend_is_reverted_friend_untouched(monkeypatch):
+    w, gd = bitch_setup(monkeypatch, names="@Ambrogio @tom tizio")
+    g.feed(w, gd, L(TOM, "PRIVMSG #c :x"), None)
+    assert run(w, gd, L(TOM, "MODE #c +o tizio")) == ["RAW:guard MODE #c -o tizio"]
+
+
+def test_bitch_friend_opping_friend_stays(monkeypatch):
+    w, gd = bitch_setup(monkeypatch, names="@Ambrogio @tom gosub")
+    g.feed(w, gd, L(TOM, "PRIVMSG #c :x"), None)
+    g.feed(w, gd, L(GOSUB, "PRIVMSG #c :x"), None)
+    assert run(w, gd, L(TOM, "MODE #c +o gosub")) == []
+
+
+def test_friends_are_opped_on_join():
+    for src in (TOM, SHINOBI, GOSUB):
+        w, gd = setup()
+        nick = src.partition("!")[0]
+        assert run(w, gd, L(src, "JOIN #c")) == [f"RAW:guard MODE #c +o {nick}"]
+
+
+def test_friend_from_another_host_is_an_outsider():
+    w, gd = setup()
+    assert run(w, gd, L("tom!~tom@2a01-239-2fa.example", "JOIN #c")) == []
 
 
 def test_bitch_outsider_opping_vjt_is_fine(monkeypatch):
@@ -171,8 +202,9 @@ def test_bitch_server_op_of_vjt_stays(monkeypatch):
 def test_bitch_batches_three_per_line(monkeypatch):
     w, gd = bitch_setup(monkeypatch)
     out = run(w, gd, L(EVIL, "MODE #c +ooo tizio caio sempronio"))
-    assert out == ["RAW:guard MODE #c -ooo tizio caio sempronio",
-                   "RAW:guard MODE #c -o pippo"]
+    assert out[:2] == ["RAW:guard MODE #c -ooo tizio caio sempronio",
+                       "RAW:guard MODE #c -o pippo"]
+    assert out[2].startswith("RAW:guard KICK #c pippo :")
 
 
 def test_bitch_r_edit_reverted(monkeypatch):
