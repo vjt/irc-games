@@ -333,6 +333,27 @@ assert "inceppato" in sent[-1][2] and "La prossima" not in sent[-1][2], sent
 suore.P_JAM = 0.0
 print("ok: bang e bef dicono la prossima, e tacciono se la suora e' li'")
 
+# Inceppato, la suora la stende un altro, e tu rispari dentro i 7 secondi
+# (Hypnotize, #sbiffo 2026-11-16 00:28): niente silenzio, l'inceppo si
+# dimentica e prendi la riga del colpo a vuoto con «l'hai mancata».
+# Finche' la suora e' li', invece, il silenzio resta.
+sent.clear()
+d2["nuns"][sc] = {"chan": "#sniffo", "at": 70.0}
+suore.P_JAM = 1.0
+assert suore.handle(d2, sc, "caio", "bang", 71.0)
+assert "inceppato" in sent[-1][2], sent
+suore.P_JAM = 0.0
+sent.clear()
+assert not suore.handle(d2, sc, "caio", "bang", 72.0)
+assert sent == [], sent                       # suora ancora li': silenzio
+assert suore.handle(d2, sc, "tizio", "bang", 73.0)
+sent.clear()
+assert not suore.handle(d2, sc, "caio", "bang", 74.0)
+riga = sent[-1][2]
+assert "Non c'e' nessuna suora!" in riga and "se l'e' presa tizio" in riga, riga
+assert not suore.on_penalty(d2, sc, "caio", 74.5)
+print("ok: inceppato e suora presa da un altro, il colpo dopo dice 'mancata'")
+
 # --- .chiestato: chi ha fatto l'ultima cosa all'ultima suora -----------------
 # Ordine di vjt (#sbiffo 2026-09-10 23:36): «il comando .chiestato !chiestato
 # che mostra l'ultimo attore» / «dell'ultima operazione sull'ultima suora».

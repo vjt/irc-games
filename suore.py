@@ -897,8 +897,14 @@ def handle(data, scope, nick, cmd, now):
         return False
 
     if on_penalty(data, scope, nick, now):
-        # Silenzio voluto: vedi il commento in testa al file.
-        return False
+        if here:
+            # Silenzio voluto: vedi il commento in testa al file.
+            return False
+        # La suora se l'e' presa un altro mentre avevi il fucile inceppato:
+        # l'inceppo non ha piu' niente da proteggere, si dimentica e il colpo
+        # prende la riga del colpo a vuoto, «l'hai mancata» compreso
+        # (Hypnotize, #sbiffo 2026-11-16 00:28).
+        data["penalty"][scope].pop(canon(nick), None)
 
     if not here:
         # La previsione va in coda al buco: e' proprio qui che serve a chi ha
