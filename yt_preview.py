@@ -630,9 +630,11 @@ _rocher_deck = []
 # is resolved (first IPv4 + first IPv6) and each address gets its line.
 IP_BADGE = f"{C}00,03 IP {RESET}"
 IP_SEC = 3
-# Another bot already answering !ip (TOOLS on IRCnet): where it sits, Ambrogio
-# keeps quiet. Presence is followed from the log (NAMES/JOIN/PART/KICK/QUIT/NICK).
-IP_DEFER_TO = os.environ.get("YT_IP_DEFER_TO", "TOOLS").lower()
+# Another bot already answering !ip and YouTube (TOOLS on IRCnet): where it
+# sits, Ambrogio keeps quiet on both and previews only the other links (vjt TG
+# 2026-11-19, #cybernet got two lines per video). Presence is followed from the
+# log (NAMES/JOIN/PART/KICK/QUIT/NICK).
+DEFER_TO = os.environ.get("YT_DEFER_TO", "TOOLS").lower()
 GEO_URL = ("http://ip-api.com/json/{ip}?fields=status,country,"
            "regionName,city,timezone,isp,mobile,proxy,hosting")
 
@@ -889,7 +891,7 @@ def daemon():
     last_video = {}
     last_languorino = {}
     last_ip = {}
-    deferred = Presence(IP_DEFER_TO)
+    deferred = Presence(DEFER_TO)
     deferred.seed(LOG)
     p = subprocess.Popen(["tail", "-F", "-n", "0", LOG],
                          stdout=subprocess.PIPE, text=True, errors="replace")
@@ -926,6 +928,8 @@ def daemon():
 
         cmd = CMD_PAT.match(text)
         video_id, with_link = None, False
+        if cmd and chan.lower() in deferred.chans:
+            continue
         if cmd:
             with_link = True
             try:
@@ -943,6 +947,8 @@ def daemon():
                 link = first_link(reply)
                 if link:
                     generic(chan, link, last_chan, last_video)
+                continue
+            if chan.lower() in deferred.chans:
                 continue
             video_id = hit.group("id")
 

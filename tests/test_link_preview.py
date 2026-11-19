@@ -189,3 +189,40 @@ def test_link_in_the_reply_half_still_previews():
 def test_unquoted_line_is_untouched():
     line = "guarda https://a.example/x"
     assert yp.reply_part(line) == line
+
+
+def run_daemon(monkeypatch, tmp_path, lines):
+    """Drive daemon() over a fake log: TOOLS sits on #cybernet, not on #italia."""
+    log = tmp_path / "bot.log"
+    log.write_text(
+        "00:00:00 < :irc.x 353 Ambrogio = #cybernet :@Ambrogio TOOLS\n"
+        "00:00:00 < :irc.x 366 Ambrogio #cybernet :End of /NAMES list.\n")
+
+    class Tail:
+        stdout = iter(lines)
+
+    said, previewed = [], []
+    monkeypatch.setattr(yp, "LOG", str(log))
+    monkeypatch.setattr(yp, "CHANNELS", {"#cybernet", "#italia"})
+    monkeypatch.setattr(yp.subprocess, "Popen", lambda *a, **k: Tail)
+    monkeypatch.setattr(yp, "say", lambda chan, text: said.append(chan))
+    monkeypatch.setattr(yp, "generic", lambda chan, *a: previewed.append(chan))
+    monkeypatch.setattr(yp, "video_info", lambda vid: {"id": vid})
+    monkeypatch.setattr(yp, "search_first", lambda q: "dQw4w9WgXcQ")
+    monkeypatch.setattr(yp, "render", lambda info, link=False: "yt")
+    yp.daemon()
+    return said, previewed
+
+
+def test_youtube_is_left_to_tools_where_it_sits(monkeypatch, tmp_path):
+    """vjt TG 2026-11-19: TOOLS already does YouTube on #cybernet, two lines
+    per link is spam. Links and !yt stay quiet there, everything else not."""
+    url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    said, previewed = run_daemon(monkeypatch, tmp_path, [
+        f"00:00:01 < :a!u@h PRIVMSG #cybernet :{url}\n",
+        "00:00:02 < :a!u@h PRIVMSG #cybernet :!yt rick\n",
+        "00:00:03 < :a!u@h PRIVMSG #cybernet :https://example.org/x\n",
+        f"00:00:04 < :a!u@h PRIVMSG #italia :{url}\n",
+    ])
+    assert said == ["#italia"]
+    assert previewed == ["#cybernet"]
