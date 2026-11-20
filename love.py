@@ -47,6 +47,8 @@ Env:
   LOVE_NICK      the bot's own nick     (default: Ambrogio)
   LOVE_SKIP      commands off per channel, `#chan:cmd,cmd;#chan2:cmd`
                  (default none; IRCnet #cybernet has TOOLS for love/slap)
+  LOVE_ONLY      commands confined to some channels, `cmd:#chan,#chan2;cmd2:#c`
+                 (default `disagio:#disagio`)
 """
 
 import os
@@ -82,6 +84,10 @@ def parse_skip(spec):
 # On IRCnet #cybernet TOOLS already answers !love and !slap (vjt, #sbiffo
 # 2026-10-10 13:57): Ambrogio keeps only the commands TOOLS lacks there.
 SKIP = parse_skip(os.environ.get("LOVE_SKIP", ""))
+# The other way round: commands that live ONLY on some channels,
+# `cmd:#a,#b;cmd2:#c`. !disagio is #disagio's (vjt 2026-11-20: «attivo
+# possibilmente solo su #disagio»), on every network, so it is the default.
+ONLY = parse_skip(os.environ.get("LOVE_ONLY", "disagio:#disagio"))
 
 # A target is echoed back into the channel: cap it so a 400-byte "nick" does
 # not wrap the line into two.
@@ -1084,6 +1090,132 @@ VOMITO_PHRASES = [
     "{from} vomita su {to}. Poi su se stesso. Poi di nuovo su {to}",
 ]
 
+# vjt, query cifrata 2026-11-20 22:45: «!disagio [target] con un centinaio di
+# frasi disagiate». Only the disagiato is on stage: a bare `!disagio` aims at
+# whoever typed it, so a {from} would print the same nick twice.
+DISAGIO_PHRASES = [
+    "{to} scalda la pizza di ieri e la mangia in piedi, alla luce del frigo aperto",
+    "{to} ha 34 schede aperte nel browser e una e' un tutorial su come chiudere le schede",
+    "{to} si fa i complimenti allo specchio. Lo specchio si appanna per non rispondere",
+    "{to} mette like alle proprie story dal profilo secondario",
+    "{to} ha la playlist «motivazione palestra» con zero ascolti e l'abbonamento che scade domani",
+    "{to} risponde «anche a te» al cameriere che dice buon appetito, poi cambia ristorante per sempre",
+    "{to} cena coi cereali alle 23:40, nella ciotola del gatto perche' le altre sono sporche",
+    "{to} ha il backup del backup e non ricorda la password di nessuno dei due",
+    "{to} risponde al saluto di uno che salutava quello dietro, e finge di sistemarsi i capelli",
+    "{to} spinge la porta con scritto TIRARE, tre volte, davanti a tutta la fila",
+    "{to} ha la tessera fedelta' del kebab sotto casa: 47 timbri su 10",
+    "{to} mangia le patatine col cucchiaio per non ungere la tastiera",
+    "{to} ha comprato un tapis roulant: ora ci stende i calzini",
+    "{to} dice «inizio lunedi'» dal 2019",
+    "{to} ha un gruppo WhatsApp con se stesso per ricordarsi le cose. Silenziato",
+    "{to} ascolta i vocali degli altri a 2x e risponde con vocali da 9 minuti",
+    "{to} passa 40 minuti a scegliere cosa guardare su Netflix e poi riguarda The Office",
+    "{to} fa la doccia, si rimette il pigiama, ed e' martedi' alle quattro del pomeriggio",
+    "{to} ha la sedia piena di vestiti: la sedia-armadio e' ormai l'unico mobile di casa",
+    "{to} chiama la mamma per sapere quanto deve cuocere la pasta. Ha 38 anni",
+    "{to} ha 1.247 mail non lette e un'unica cartella chiamata «dopo»",
+    "{to} mette la sveglia alle 7:00, 7:05, 7:07, 7:09, 7:10, 7:11 e si alza alle 8:40",
+    "{to} parla al gatto del suo stipendio. Il gatto se ne va",
+    "{to} va al sushi all-you-can-eat e prende solo riso in bianco",
+    "{to} va in palestra solo per la doccia calda: a casa hanno staccato il gas",
+    "{to} risponde al citofono «chi e'?» e poi non apre, nemmeno al corriere col suo pacco",
+    "{to} ha installato Duolingo nel 2021. Il gufo ha mandato le condoglianze",
+    "{to} prepara in doccia il discorso per litigare e vince sempre. Fuori dalla doccia perde",
+    "{to} rilegge il messaggio quattordici volte prima di inviarlo, poi lo manda nella chat sbagliata",
+    "{to} dice «poi ti scrivo» dal 2016",
+    "{to} prenota un tavolo per uno e il cameriere toglie l'altra sedia con pieta'",
+    "{to} tiene i cavi di telefoni che non esistono piu'. Non si sa mai",
+    "{to} apre Tinder e matcha con l'ex. Due volte",
+    "{to} ha la stampante che va solo se le parli con dolcezza. Non succede da mesi",
+    "{to} si siede in fondo al bus per stare in pace. Sale una gita delle medie",
+    "{to} fa un corso di mindfulness online e lo guarda tutto a 2x",
+    "{to} mangia il tonno direttamente dalla scatoletta. Con la linguetta",
+    "{to} paga la bolletta della luce col bancomat della mamma",
+    "{to} si addormenta su Zoom con la telecamera accesa e russa in riunione col cliente",
+    "{to} lascia il microfono aperto in call mentre litiga col router",
+    "{to} dice «con l'ex siamo rimasti amici». L'ex ha cambiato numero, citta' e nome",
+    "{to} compra il pancarre' e mangia solo le croste",
+    "{to} ha visto tutte le stagioni di Masterchef e non sa fare l'uovo sodo",
+    "{to} vive col telefono all'1% da tre giorni, in apnea",
+    "{to} prenota il medico e poi non ci va perche' e' passato tutto. Tutto tranne il disagio",
+    "{to} ha fatto morire di sete le piante grasse. Le piante grasse",
+    "{to} ha in frigo solo una senape del 2020 e una birra analcolica",
+    "{to} si fa i selfie col filtro cane, la sera in cameretta, a 41 anni",
+    "{to} si mette le cuffie senza musica perche' nessuno attacchi bottone",
+    "{to} finge di parlare al telefono in ascensore. Il telefono squilla",
+    "{to} ruba il Wi-Fi al vicino. La rete si chiama «ti vedo»",
+    "{to} si commuove agli spot del Mulino Bianco e poi mangia i biscotti del discount",
+    "{to} vince una flame su Reddit alle 4 del mattino e festeggia con una Fanta calda",
+    "{to} guarda video di gente che lava tappeti per rilassarsi. Il suo tappeto e' un reperto archeologico",
+    "{to} ha la password del Wi-Fi scritta sotto il router e sbaglia comunque a copiarla",
+    "{to} sbaglia il PIN tre volte e si blocca la carta mentre paga la pizza al rider",
+    "{to} da' del lei al chatbot dell'assistenza e lo ringrazia per la pazienza",
+    "{to} chiede scusa alla porta dopo averci sbattuto contro",
+    "{to} compra un Kindle per leggere di piu': ci legge i termini e condizioni",
+    "{to} mangia l'insalata in macchina nel parcheggio dell'ufficio per non parlare coi colleghi",
+    "{to} si allaccia le scarpe quando passa un conoscente. Ha i mocassini",
+    "{to} dice «ti amo» al rider di Glovo per sbaglio. Il rider lascia cinque stelle",
+    "{to} litiga con Alexa e perde ai punti",
+    "{to} ha ancora nel portafoglio la tessera di Blockbuster",
+    "{to} conta i passi: 312 oggi, compreso il bagno",
+    "{to} paga quattro abbonamenti streaming e guarda video di YouTube da tre minuti",
+    "{to} prende il caffe' alla macchinetta dell'ufficio. La macchinetta gli tiene il resto dal 2019",
+    "{to} ha prestato un caricatore nel 2017 e ne parla ancora a ogni cena",
+    "{to} ha la maglietta al rovescio e se ne accorge alle 18, in riunione",
+    "{to} gira mezz'ora il supermercato col carrello e compra un'arancia",
+    "{to} ha il curriculum in Word 97 con la foto della comunione",
+    "{to} tiene la cyclette in camera dal 2015 come appendiabiti motivazionale",
+    "{to} scrive «AHAHAHAH» senza muovere un muscolo della faccia",
+    "{to} usa ancora la mail del liceo: xX_darkangel_Xx_84@libero.it",
+    "{to} giura «non bevo piu'» e si sveglia abbracciando il water di uno sconosciuto",
+    "{to} chiede il conto e il cameriere porta un amaro offerto. «Ne ha bisogno»",
+    "{to} tiene un barattolo di monetine da un centesimo per le emergenze",
+    "{to} posta la foto dei piedi «al mare». E' il balcone, con la bacinella",
+    "{to} riscalda il caffe' del mattino al microonde alle cinque del pomeriggio",
+    "{to} ha ricevuto un «ciao» tre giorni fa e sta ancora scrivendo la risposta",
+    "{to} al karaoke sceglie Gigi D'Alessio e lo canta sul serio, piangendo",
+    "{to} paga ancora a rate l'iPhone 8",
+    "{to} ha 12 follower su Instagram: 9 bot, la mamma, l'ex e una panetteria",
+    "{to} rimanda la sveglia, poi rimanda la vita",
+    "{to} scrive la lista delle cose da fare. Punto uno: scrivere la lista",
+    "{to} mangia la Nutella col dito alle 3:12, col frigo aperto che giudica con la lucina",
+    "{to} sbaglia il nome di chi ha davanti al primo appuntamento. E al secondo. Il terzo non c'e' stato",
+    "{to} ha cambiato casa nel 2018 e vive ancora dentro gli scatoloni",
+    "{to} al giapponese chiede forchetta, coltello e se fanno la margherita",
+    "{to} manda il curriculum alla ditta che l'anno scorso gli ha dato il benservito. Stesso ruolo",
+    "{to} ha 23.000 foto nella cartella «da sistemare»: 11 sono screenshot di ricette mai fatte",
+    "{to} ha il conto in rosso e la wishlist di Amazon piena",
+    "{to} si lava i denti in doccia per risparmiare tempo, poi passa 40 minuti su TikTok in accappatoio",
+    "{to} si regala i fiori a San Valentino e firma pure il biglietto",
+    "{to} dice al parrucchiere «faccia lei» e ne esce come Lupin",
+    "{to} e' fuoricorso dal 2008. Manca un esame. Quello del primo anno",
+    "{to} segue 47 pagine di ricette fit e cena col Big Mac in macchina",
+    "{to} scrive al bot dell'assistenza «voglio parlare con un umano». Il bot: «anche io»",
+    "{to} sta su IRC alle tre di notte a disagiare con sconosciuti. Come tutti voi",
+    "{to} gioca al fantacalcio in otto e arriva nono",
+    "{to} perde a briscola contro un bot e dice che il bot bara",
+    "{to} vive con tre coinquilini e mette un post-it su ogni yogurt",
+    "{to} pubblica la foto della pasta in bianco con #foodporn",
+    "{to} aspetta ancora il rimborso del concerto annullato nel 2020",
+    "{to} ha il sacchetto dei sacchetti. Dentro, altri sacchetti dei sacchetti",
+    "{to} compra il monopattino elettrico per andare al lavoro. Lavora da casa",
+    "{to} esce dal gruppo WhatsApp del liceo. Quattro minuti dopo: «Marco ha aggiunto {to}»",
+    "{to} usa un monitor da 34 pollici per tenere IRC a schermo intero",
+    "{to} stende i panni in casa e la casa sa di cane bagnato. Il cane non c'e'",
+    "{to} fa la spesa a stomaco vuoto e torna con sei tipi di patatine e niente cena",
+    "{to} si iscrive in palestra a gennaio. A febbraio paga, a marzo non ricorda dov'e'",
+    "{to} fa le storie al concerto e non sente una nota",
+    "{to} chiede a ChatGPT come rispondere al messaggio della mamma",
+    "{to} ha la friggitrice ad aria e ci fa tutto, anche il caffe'",
+    "{to} cerca i sintomi su Google e scopre di avere tre giorni di vita. E' raffreddore",
+    "{to} non risponde al telefono ma visualizza subito su WhatsApp. Lo sanno tutti",
+    "{to} ha lo stendino in salotto da talmente tanto che ormai e' arredamento",
+    "{to} salta la fermata del bus guardando le storie di chi e' alle Maldive",
+    "{to} ha la suoneria della sveglia del 2009. E il telefono pure",
+    "{to} da' cinque stelle all'autista che sbaglia indirizzo, per non creare imbarazzo",
+]
+
 # command -> phrase pool. All of them share the target rule and the cooldown.
 POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES,
          # vjt, #sbiffo 2026-10-10 13:51, on katia's ask.
@@ -1093,7 +1225,12 @@ POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES
          # vjt, #sbiffo 2026-10-15 23:12.
          "prot": PROT_PHRASES,
          # vjt, #sbiffo 2026-10-16 12:32, on kazam's ask.
-         "vomito": VOMITO_PHRASES}
+         "vomito": VOMITO_PHRASES,
+         # vjt, query cifrata 2026-11-20 22:45.
+         "disagio": DISAGIO_PHRASES}
+# Commands that a bare call aims at the caller (vjt 2026-11-20: «con !disagio
+# il target è chi manda il comando»). Everything else stays silent when bare.
+SELF_TARGET = {"disagio"}
 # alias -> command (vjt, #sbiffo 2026-10-10 13:40): people type the feminine.
 ALIASES = {"pernacchia": "pernacchio", "prrr": "pernacchio",
            # vjt, #sbiffo 2026-10-10 14:09.
@@ -1118,13 +1255,17 @@ CTRL = re.compile(r'[\x00-\x1f\x7f]')
 
 
 def parse(text):
-    """`!<cmd> <who> [...]` -> (cmd, who), or None (not a command, or bare)."""
+    """`!<cmd> <who> [...]` -> (cmd, who), or None (not a command, or bare).
+    A bare SELF_TARGET command -> (cmd, None): the caller is the target."""
     m = CMD_PAT.match(text)
-    if not m or not m.group("to"):
+    if not m:
         return None
-    to = CTRL.sub("", COLOR.sub("", m.group("to")))[:TARGET_MAX]
     cmd = m.group("cmd").lower()
-    return (ALIASES.get(cmd, cmd), to) if to else None
+    cmd = ALIASES.get(cmd, cmd)
+    to = CTRL.sub("", COLOR.sub("", m.group("to") or ""))[:TARGET_MAX]
+    if to:
+        return cmd, to
+    return (cmd, None) if cmd in SELF_TARGET else None
 
 
 def target_of(text):
@@ -1194,11 +1335,13 @@ class Love:
     command. In RAM only — a restart reshuffles, and nothing about that is
     worth a file."""
 
-    def __init__(self, rng=None, cooldown=COOLDOWN_SEC, chans=None, skip=None):
+    def __init__(self, rng=None, cooldown=COOLDOWN_SEC, chans=None, skip=None,
+                 only=None):
         self.rng = rng or random.Random()
         self.cooldown = cooldown
         self.chans = CHANNELS if chans is None else chans
         self.skip = SKIP if skip is None else skip
+        self.only = ONLY if only is None else only
         self.last_at = {}
         self.last_phrase = {}
         self.decks = {}
@@ -1217,8 +1360,10 @@ class Love:
         cmd, to = cmd
         if cmd in self.skip.get(chan.lower(), ()):
             return None
+        if cmd in self.only and chan.lower() not in self.only[cmd]:
+            return None
         frm = m.group("nick")
-        if to.lower() == BOT_NICK.lower():
+        if to is None or to.lower() == BOT_NICK.lower():
             to = frm
         key = chan.lower()
         now = time.time() if now is None else now

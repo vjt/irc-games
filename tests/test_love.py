@@ -255,11 +255,12 @@ def test_deck_says_the_whole_pool_before_repeating():
     # vjt, #sbiffo 2026-10-12: «sempre le stesse frasi». One deck per
     # (channel, command): N calls say N different lines, then it reshuffles.
     for cmd, pool in love.POOLS.items():
-        lv = fresh(cooldown=0)
-        seen = [lv.handle(line("a", "#sniffo", f"!{cmd} b"), now=i)[1]
+        # !disagio vive solo su #disagio; gli altri comandi girano anche li'.
+        lv = love.Love(rng=random.Random(1), cooldown=0, chans={"#disagio"})
+        seen = [lv.handle(line("a", "#disagio", f"!{cmd} b"), now=i)[1]
                 for i in range(len(pool))]
         assert len(set(seen)) == len(pool), cmd
-        nxt = lv.handle(line("a", "#sniffo", f"!{cmd} b"), now=len(pool))[1]
+        nxt = lv.handle(line("a", "#disagio", f"!{cmd} b"), now=len(pool))[1]
         assert nxt != seen[-1], cmd
 
 
@@ -307,3 +308,44 @@ def test_vomito_pool_and_alias():
         assert love.parse(t) == ("vomito", "vjt"), t
     for t in ("!vomito", "!vomitare vjt"):
         assert love.parse(t) is None, t
+
+
+def test_disagio_pool():
+    # vjt, query cifrata 2026-11-20 22:45: «un centinaio di frasi disagiate».
+    # Solo il disagiato in scena: col !disagio nudo mittente e target coincidono.
+    pool = love.POOLS["disagio"]
+    assert len(pool) == len(set(pool)) >= 100
+    for p in pool:
+        assert "{to}" in p and "{from}" not in p and not p.startswith("/me "), p
+        out = love.render(p, "vjt", "tom")
+        assert "{" not in out and "}" not in out, p
+
+
+def test_disagio_bare_targets_the_caller():
+    # «con !disagio il target è chi manda il comando».
+    assert love.parse("!disagio") == ("disagio", None)
+    assert love.parse("!DISAGIO   ") == ("disagio", None)
+    assert love.parse("!disagio tom pure") == ("disagio", "tom")
+    for t in ("!disagiato tom", "ciao !disagio"):
+        assert love.parse(t) is None, t
+    lv = love.Love(rng=random.Random(1), cooldown=0, chans={"#disagio"})
+    _, text = lv.handle(line("vjt", "#disagio", "!disagio"), now=0)
+    assert "\x02vjt\x02" in text
+    _, text = lv.handle(line("vjt", "#disagio", "!disagio tom"), now=1)
+    assert "\x02tom\x02" in text and "vjt" not in text
+
+
+def test_disagio_only_on_disagio():
+    # «attivo possibilmente solo su #disagio»: gli altri canali tacciono,
+    # e gli altri comandi restano dove sono.
+    lv = love.Love(rng=random.Random(1), cooldown=0,
+                   chans={"#disagio", "#cybernet", "#sbiffo"})
+    assert lv.handle(line("a", "#cybernet", "!disagio b"), now=0) is None
+    assert lv.handle(line("a", "#sbiffo", "!disagio"), now=1) is None
+    assert lv.handle(line("a", "#cybernet", "!prrr b"), now=2)
+    assert lv.handle(line("a", "#DISAGIO", "!disagio b"), now=3)
+
+
+def test_bare_stays_silent_for_the_others():
+    for cmd in ("love", "slap", "pernacchio", "prot", "vomito"):
+        assert love.parse(f"!{cmd}") is None, cmd
