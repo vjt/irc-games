@@ -32,16 +32,18 @@ Ops found already in place when a bot joins are left alone: no mass deop.
 Env:
   GUARD_LOG    comma list of bot logs
   GUARD_FIFO   comma list of bot FIFOs ('' = mute, for dry runs)
-  GUARD_MASKS  comma list of protected user@host (vjt, his friends, the guardians)
+  GUARD_MASKS  comma list of protected user@host globs (vjt, his friends, the guardians)
   GUARD_BITCH  comma list of channels where bitch mode is on (default none)
 """
-import os, random, re, subprocess
+import fnmatch, os, random, re, subprocess
 
 LOGS = os.environ.get("GUARD_LOG", "").split(",")
 FIFOS = os.environ.get("GUARD_FIFO", "").split(",")
 MASKS = {m.strip().lstrip("~").casefold() for m in os.environ.get(
     "GUARD_MASKS",
-    "antani@due.dita.di.grappa.chat,"
+    # vjt (2026-11-20): any ident under grappa.chat. Its PTRs are vjt's own
+    # vhosts (the guardians' included); grappa's pool has no rDNS there.
+    "*@*.grappa.chat,"
     # The friends vjt trusts on #disagio (2026-11-11): tom, S~ (shinobi), gosub,
     # nano.
     "tom@tom.dev.irc.it,"
@@ -66,6 +68,11 @@ ARG_MODES = set("ovbeIRk")
 def norm(mask):
     user, _, host = mask.partition("@")
     return f"{user.lstrip('~')}@{host}".casefold()
+
+
+def protected(mask):
+    """A GUARD_MASKS entry may be a glob (`*@*.grappa.chat`)."""
+    return mask is not None and any(fnmatch.fnmatchcase(mask, m) for m in MASKS)
 
 
 def split_args(args):
@@ -212,10 +219,10 @@ class World:
         self.nicks = {}         # nick_cf -> nick as spelled
 
     def trusted_mask(self, mask):
-        return norm(mask) in MASKS
+        return protected(norm(mask))
 
     def trusted(self, nick_cf):
-        return self.masks.get(nick_cf) in MASKS
+        return protected(self.masks.get(nick_cf))
 
     def learn(self, src, cmd, a):
         nick, bang, mask = src.partition("!")

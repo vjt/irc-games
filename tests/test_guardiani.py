@@ -182,6 +182,20 @@ def test_friend_from_another_host_is_an_outsider():
     assert run(w, gd, L("tom!~tom@2a01-239-2fa.example", "JOIN #c")) == []
 
 
+def test_vjt_any_ident_under_grappa_chat():
+    # vjt 2026-11-20: auth = *@*.grappa.chat, whatever ident grappa sends.
+    w, gd = setup()
+    assert run(w, gd, L("vjt!disagio@due.dita.di.grappa.chat", "JOIN #c")) == [
+        "RAW:guard MODE #c +o vjt"]
+
+
+def test_grappa_chat_lookalikes_are_outsiders():
+    for src in ("vjt!disagio@evilgrappa.chat",
+                "vjt!disagio@due.grappa.chat.evil.example"):
+        w, gd = setup()
+        assert run(w, gd, L(src, "JOIN #c")) == []
+
+
 def test_bitch_outsider_opping_vjt_is_fine(monkeypatch):
     w, gd = bitch_setup(monkeypatch)
     run(w, gd, L(VJT, "JOIN #c"))
