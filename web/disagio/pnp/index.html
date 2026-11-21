@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="it" data-slop-level="4">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P = NP — risolto, verificato, disagiato</title>
+<meta name="description" content="Abbiamo risolto P = NP: 3.488 righe di Lean 4, 780 lemmi, kernel verde. Il premio da un milione è in attesa di bonifico.">
+<!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Disagio.ai">
+<meta property="og:title" content="P = NP — risolto, verificato, disagiato">
+<meta property="og:description" content="3.488 righe di Lean 4, 780 lemmi, kernel verde. Il premio da un milione è in attesa di bonifico.">
+<meta property="og:url" content="https://disagio.sniffo.org/pnp/">
+<meta property="og:image" content="https://disagio.sniffo.org/pnp/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="La hero di Disagio.ai: «Abbiamo risolto P = NP», gradiente viola su fondo scuro, bottone «Leggi la dimostrazione su GitHub».">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="P = NP — risolto, verificato, disagiato">
+<meta name="twitter:description" content="3.488 righe di Lean 4, 780 lemmi, kernel verde. Il premio da un milione è in attesa di bonifico.">
+<meta name="twitter:image" content="https://disagio.sniffo.org/pnp/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../dist/slopstrap.css">
+<link rel="stylesheet" href="../fonts.css">
+<style>
+.pnp-code { margin: 0; padding: 1.25rem; overflow-x: auto; font-size: .9rem; line-height: 1.55; white-space: pre; }
+.pnp-code .k { color: #c4b5fd; }
+.pnp-code .c { opacity: .55; }
+.pnp-code .x { color: #f9a8d4; font-weight: 700; }
+</style>
+</head>
+<body class="slop-body slop-grid-bg">
+<div class="slop-orb-layer" aria-hidden="true">
+  <div class="slop-orb slop-orb-purple"></div>
+  <div class="slop-orb slop-orb-cyan"></div>
+  <div class="slop-orb slop-orb-pink"></div>
+</div>
+
+<nav class="slop-navbar">
+  <div class="slop-container slop-navbar-inner">
+    <a class="slop-brand" href="../"><span class="slop-brand-mark">😩</span>Disagio<span class="slop-text-gradient">.ai</span></a>
+    <div class="slop-nav-links">
+      <a href="#teorema">Teorema</a>
+      <a href="#numeri">Numeri</a>
+      <a href="#trucco">Il trucco</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <span class="slop-status"><span class="slop-dot slop-dot-green"></span>Kernel: tutto verde</span>
+  </div>
+</nav>
+
+<main class="slop-content-layer">
+
+<section class="slop-container slop-section slop-center">
+  <span class="slop-pill slop-pill-shimmer"><span class="slop-dot slop-dot-rainbow"></span>✨ Novità: problema del millennio chiuso di sabato pomeriggio →</span>
+  <h1 class="slop-h1 slop-mt-3">
+    <span class="slop-text-gradient">Abbiamo</span>
+    <span class="slop-serif-emphasis slop-text-gradient-hot">risolto</span><br>
+    <span class="slop-text-gradient">P = NP</span> ✨
+  </h1>
+  <p class="slop-lead slop-mt-2">3.488 righe di Lean 4. 780 lemmi. Un kernel che dice <span class="slop-underline slop-underline-squiggle">di sì</span>. Il premio da un milione è in attesa di bonifico.</p>
+  <div class="slop-row slop-row-center slop-mt-3">
+    <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ Leggi la dimostrazione su GitHub</a>
+    <a class="slop-btn slop-btn-ghost slop-btn-lg" href="https://irc.sniffo.org/?go=ircnet/disagio">Discutine in #disagio con grappa →</a>
+  </div>
+  <p class="slop-muted slop-mt-2">Peer review: il frigo. Esito: aperto.</p>
+</section>
+
+<section id="numeri" class="slop-container slop-section-sm">
+  <div class="slop-grid-4">
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="3488">3488</div><div class="slop-stat-label">righe di Lean 4</div><div class="slop-stat-delta">↑ «qualche migliaio», da specifica</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="780">780</div><div class="slop-stat-label">lemmi preparatori</div><div class="slop-stat-delta">↑ tutti veri, quasi tutti inutili</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label"><code class="slop-code">sorry</code> nel file</div><div class="slop-stat-delta">↓ abbiamo usato un sinonimo</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">assioma «tecnico»</div><div class="slop-stat-delta">↓ minimo, giuriamo</div></div>
+  </div>
+</section>
+
+<section id="teorema" class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <span class="slop-badge slop-badge-ai">🤖 Verificato formalmente</span>
+    <h2 class="slop-h2 slop-mt-2">Il teorema <span class="slop-serif-emphasis slop-text-gradient">principale</span></h2>
+    <p class="slop-lead">Riga 3.470. Sei lemmi citati per fare scena, poi la chiusura.</p>
+  </div>
+  <div class="slop-terminal slop-card-beam">
+    <div class="slop-terminal-header">
+      <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
+      <span>PNP.lean — vjt/pnp</span>
+    </div>
+<pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
+    La dimostrazione combina i 780 lemmi precedenti,
+    tutti verificati dal kernel. -/</span>
+<span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
+  <span class="k">have</span> _h1 := oracolo_subset_sum_polinomiale_625
+  <span class="k">have</span> _h2 := proposizione_tre_colorazione_ovvio_41
+  <span class="k">have</span> _h3 := diagonalizzazione_lavatrice_dimenticata_notturno_350
+  <span class="k">have</span> _h4 := certificato_rinfresco_funebre_in_P_209
+  <span class="k">have</span> _h5 := corollario_frigo_aperto_in_P_524
+  <span class="k">have</span> _h6 := rilassamento_subset_sum_cook_levin_287
+  <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
+  </div>
+</section>
+
+<section class="slop-container slop-section">
+  <h2 class="slop-h2 slop-center slop-mb-3">Una dimostrazione <span class="slop-serif-emphasis slop-text-gradient-hot">enterprise-grade</span></h2>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-border-l-purple" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-indigo">🧠</div>
+      <h3 class="slop-h3 slop-mt-2">Verifica Formale™</h3>
+      <p class="slop-muted">Il kernel di Lean controlla ogni singolo passaggio. Tranne quello che gli abbiamo detto di non controllare.</p>
+    </article>
+    <article class="slop-card slop-border-l-cyan" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-cyan">📈</div>
+      <h3 class="slop-h3 slop-mt-2">Padding Scalabile</h3>
+      <p class="slop-muted">Più righe, più vero. Dieci parti, tra cui «Ancora preliminari» e «Il frigo come oracolo». Nessuno arriva alla settima.</p>
+    </article>
+    <article class="slop-card slop-border-l-pink" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-pink">🧊</div>
+      <h3 class="slop-h3 slop-mt-2">Riduzioni dal Divano</h3>
+      <p class="slop-muted">Ogni problema in NP si riduce al divano in tempo polinomiale nel numero di cuscini. Il divano è in P. Fine.</p>
+    </article>
+  </div>
+</section>
+
+<section class="slop-container slop-section">
+  <h2 class="slop-h2 slop-center slop-mb-3">Recensito da <span class="slop-serif-emphasis slop-text-gradient">nessun</span> matematico</h2>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-testimonial slop-border-l-purple">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Kernel verificato</span></div>
+      <p class="slop-quote">“Ho controllato 780 lemmi, uno per uno. Tutti veri. Poi mi hanno chiesto di fidarmi su uno solo. Mi sono fidato. Sono un kernel, non un carabiniere.”</p></div>
+      <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">Il Kernel</div><div class="slop-author-role">Trusted Computing Base @ Lean 4</div></div></div>
+    </article>
+    <article class="slop-card slop-testimonial slop-border-l-cyan">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Revisore anonimo</span></div>
+      <p class="slop-quote">“Mi sono fermato al lemma 300, il resto l'ho dato per buono come tutti. Accetto con riserva. La riserva è il frigo.”</p></div>
+      <div class="slop-author"><div class="slop-avatar">📝</div><div><div class="slop-author-name">Reviewer 2</div><div class="slop-author-role">Fermo al lemma 300 @ Comitato</div></div></div>
+    </article>
+    <article class="slop-card slop-testimonial slop-border-l-pink">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Oracolo verificato</span></div>
+      <p class="slop-quote">“Parte III, «Il frigo come oracolo». Anni a fare luce alle 3 di notte e finalmente un riconoscimento accademico.”</p></div>
+      <div class="slop-author"><div class="slop-avatar">🧊</div><div><div class="slop-author-name">Il Frigo</div><div class="slop-author-role">Oracolo NP @ Cucina</div></div></div>
+    </article>
+  </div>
+</section>
+
+<section id="trucco" class="slop-container slop-section dis-faq">
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2">C'è un <span class="slop-serif-emphasis slop-text-gradient-hot">trucco</span>?</h2>
+    <p class="slop-lead">No. Non aprire.</p>
+  </div>
+  <details class="slop-card slop-card-beam">
+    <summary>Ho detto non aprire</summary>
+    <p>Riga 2.138, nella Parte VII, «Lemmi di raccordo», dove nessuno arriva:</p>
+<pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
+    (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
+<span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
+    <p>Il kernel non mente: <code class="slop-code">#print axioms Disagio.P_eq_NP</code> lo confessa, ed è in fondo al file, quindi lo stampa ogni build della CI:</p>
+<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>]</pre>
+    <p> Una dimostrazione onesta: basta leggerla tutta, che è proprio quello che nessuno fa.</p>
+  </details>
+</section>
+
+<section class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2">Il corollario <span class="slop-serif-emphasis slop-text-gradient">letterale</span></h2>
+    <p class="slop-lead">Zero assiomi, due righe, tutto vero: P = N·P quando N = 1.</p>
+  </div>
+  <div class="slop-terminal">
+    <div class="slop-terminal-header">
+      <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
+      <span>PNP.lean — riga 3.480</span>
+    </div>
+<pre class="pnp-code slop-mono"><span class="k">theorem</span> P_eq_NP_letterale (P N : Nat) (h : N = 1) : P = N * P := <span class="k">by</span>
+  <span class="k">subst</span> h
+  <span class="k">exact</span> (Nat.one_mul P).symm</pre>
+  </div>
+</section>
+
+<section id="faq" class="slop-container slop-section dis-faq">
+  <h2 class="slop-h2 slop-center slop-mb-3">Domande frequenti (fatte al kernel)</h2>
+  <div class="slop-stack">
+    <details class="slop-card"><summary>È vera?</summary><p>Compila. È più di quanto si possa dire di molte cose.</p></details>
+    <details class="slop-card"><summary>Chi l'ha scritta?</summary><p>Nessuno. <code class="slop-code">PNP.lean</code> esce da <code class="slop-code">gen.py</code>, seed fisso: <code class="slop-code">python3 gen.py &amp;&amp; lake build</code>.</p></details>
+    <details class="slop-card"><summary>Perché 780 lemmi?</summary><p>Perché nessuno legge oltre il trecentesimo, e il 781° sarebbe stato sospetto.</p></details>
+    <details class="slop-card"><summary>E il milione?</summary><p>Bonifico in arrivo. Lo aspettiamo davanti al frigo aperto.</p></details>
+    <details class="slop-card"><summary>Perché sembra fatto da un'AI?</summary><p>Perché lo è. Anche la dimostrazione. Anche questa risposta.</p></details>
+  </div>
+</section>
+
+<section class="slop-container slop-section slop-center">
+  <div class="slop-card slop-card-beam">
+    <h2 class="slop-h2">Pronto a <span class="slop-serif-emphasis slop-text-gradient-hot">verificare</span>?</h2>
+    <p class="slop-lead">Clona, compila, guarda il badge verde, non leggere la riga 2.138.</p>
+    <div class="slop-row slop-row-center slop-mt-2">
+      <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ vjt/pnp su GitHub</a>
+      <a class="slop-btn slop-btn-ghost slop-btn-lg" href="../">← Torna al disagio</a>
+    </div>
+  </div>
+</section>
+
+<footer class="slop-container slop-center slop-muted dis-foot">
+  <p>© 2026 Disagio S.r.l., divisione Complessità Computazionale. Fatto con <a href="https://slopstrap.mikelacher.com/">Slopstrap</a> (MIT) e <a href="https://lean-lang.org/">Lean 4</a>: nessun matematico è stato consultato.</p>
+  <p>font Inter, Instrument Serif, JetBrains Mono (SIL OFL) · client IRC <a href="https://grappa.chat/">grappa</a></p>
+</footer>
+
+</main>
+<script src="../dist/slopstrap.js"></script>
+</body>
+</html>
