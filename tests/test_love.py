@@ -275,6 +275,32 @@ def test_decks_are_per_command():
     assert len(set(seen)) == len(pool)
 
 
+def test_the_round_survives_a_restart(tmp_path):
+    # vjt, #sbiffo 2026-11-21 13:31: the RAM deck reshuffled at the m42
+    # reboot and four lines came back. A restart keeps the round.
+    state = tmp_path / "love.json"
+    pool = love.POOLS["disagio"]
+    seen = []
+    for i in range(len(pool)):
+        # A new process every few lines, each one reading the same state.
+        if i % 7 == 0:
+            lv = love.Love(rng=random.Random(i), cooldown=0,
+                           chans={"#disagio"}, state=state)
+        seen.append(lv.handle(line("a", "#disagio", "!disagio b"), now=i)[1])
+    assert len(set(seen)) == len(pool)
+    lv = love.Love(rng=random.Random(0), cooldown=0, chans={"#disagio"},
+                   state=state)
+    assert lv.handle(line("a", "#disagio", "!disagio b"), now=0)[1] != seen[-1]
+
+
+def test_a_broken_state_is_a_fresh_round(tmp_path):
+    state = tmp_path / "love.json"
+    for junk in ("", "[]", '{"said": 3}', "{"):
+        state.write_text(junk)
+        lv = love.Love(cooldown=0, chans={"#disagio"}, state=state)
+        assert lv.handle(line("a", "#disagio", "!disagio b"), now=0)
+
+
 def test_every_pool_has_at_least_100_lines():
     # vjt, #sbiffo 2026-10-12 12:49: «almeno 100 frasi ognuno».
     for cmd, pool in love.POOLS.items():

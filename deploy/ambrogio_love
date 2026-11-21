@@ -5,8 +5,10 @@
 #
 # Il `!love` del vecchio TOOLS di IRCnet dietro ad Ambrogio (vjt, 2026-10-07),
 # piu' `!slap` e `!pernacchio` dallo stesso processo (vjt, 2026-10-10).
-# Nessuno stato su disco e nessuna rete: legge il log, pesca una frase, scrive
-# una riga nella FIFO. Canali da rc.conf (ambrogio_love_chans): #it-opers fuori
+# Nessuna rete: legge il log, pesca una frase, scrive una riga nella FIFO.
+# Il giro del mazzo sta in /var/db/convento (vjt, #sbiffo 2026-11-21: il
+# reboot rimescolava e le frasi tornavano).
+# Canali da rc.conf (ambrogio_love_chans): #it-opers fuori
 # di default, il leak guard di bot.py bloccherebbe la stessa frase altrove.
 . /etc/rc.subr
 name="ambrogio_love"
@@ -23,6 +25,7 @@ daemon_pidfile="${pidfile%.pid}.daemon.pid"
 command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log/convento/love.log -t ambrogio-love \
   /usr/bin/env LOVE_LOG=/var/log/convento/ambrogio.log \
   LOVE_FIFO=/var/run/convento/ambrogio.send \
+  LOVE_STATE=/var/db/convento/love.json \
   LOVE_CHANS=${ambrogio_love_chans} \
   /usr/local/bin/python3.11 -u /opt/irc-games/love.py"
 # Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr

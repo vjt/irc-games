@@ -49,8 +49,11 @@ Env:
                  (default none; IRCnet #cybernet has TOOLS for love/slap)
   LOVE_ONLY      commands confined to some channels, `cmd:#chan,#chan2;cmd2:#c`
                  (default `disagio:#disagio`)
+  LOVE_STATE     json with the round of each deck, so a restart does not
+                 reshuffle (default unset: RAM only)
 """
 
+import json
 import os
 import random
 import re
@@ -70,6 +73,7 @@ COOLDOWN_SEC = float(os.environ.get("LOVE_COOLDOWN", "2"))
 # The bot never targets itself (vjt, #sbiffo 2026-10-10 13:54: «evitare il
 # self-slap»): `!slap Ambrogio` bounces back on whoever typed it.
 BOT_NICK = os.environ.get("LOVE_NICK", "Ambrogio")
+STATE = os.environ.get("LOVE_STATE") or None
 
 
 def parse_skip(spec):
@@ -1214,6 +1218,8 @@ DISAGIO_PHRASES = [
     "{to} salta la fermata del bus guardando le storie di chi e' alle Maldive",
     "{to} ha la suoneria della sveglia del 2009. E il telefono pure",
     "{to} da' cinque stelle all'autista che sbaglia indirizzo, per non creare imbarazzo",
+    # tom, #sbiffo 2026-11-21 13:32, «aggiungiamo» di vjt.
+    "{to} va a un matrimonio ma ha sbagliato giorno e non riconosce nessuno",
 ]
 
 # command -> phrase pool. All of them share the target rule and the cooldown.
@@ -1289,24 +1295,21 @@ def pick(rng, last=None, pool=PHRASES):
             return p
 
 
-class Deck:
-    """A shuffled pool dealt without replacement: no phrase comes back until
+def deal(rng, pool, said, last=None):
+    """A line of `pool` not in `said` (and add it): no phrase comes back until
     the whole pool has been said (vjt, #sbiffo 2026-10-12 12:46: «perché
     propone sempre le stesse frasi?» — the uniform draw repeated a line of 20
-    twice in four tries). A new shuffle never opens with the last card."""
+    twice in four tries). A new round never opens with the last line.
 
-    def __init__(self, rng, pool):
-        self.rng = rng
-        self.pool = pool
-        self.cards = []
-
-    def deal(self, last=None):
-        if not self.cards:
-            self.cards = list(self.pool)
-            self.rng.shuffle(self.cards)
-            if len(self.cards) > 1 and self.cards[-1] == last:
-                self.cards[0], self.cards[-1] = self.cards[-1], self.cards[0]
-        return self.cards.pop()
+    The round is the set of lines said, not a shuffled list, so it can live
+    on disk and survive a pool edit: a new line is simply not said yet."""
+    left = [p for p in pool if p not in said]
+    if not left:
+        said.clear()
+        left = [p for p in pool if p != last] or list(pool)
+    p = rng.choice(left)
+    said.add(p)
+    return p
 
 
 def say(chan, text):
@@ -1331,20 +1334,40 @@ def say(chan, text):
 
 
 class Love:
-    """The per-channel memory: last line time, last phrase, one deck per
-    command. In RAM only — a restart reshuffles, and nothing about that is
-    worth a file."""
+    """The per-channel memory: last line time, last phrase, one round per
+    command. Rounds and last phrases go to `state` when set: a RAM-only deck
+    reshuffled at the m42 reboot and four lines came back the same morning
+    (vjt, #sbiffo 2026-11-21 13:31)."""
 
     def __init__(self, rng=None, cooldown=COOLDOWN_SEC, chans=None, skip=None,
-                 only=None):
+                 only=None, state=STATE):
         self.rng = rng or random.Random()
         self.cooldown = cooldown
         self.chans = CHANNELS if chans is None else chans
         self.skip = SKIP if skip is None else skip
         self.only = ONLY if only is None else only
         self.last_at = {}
-        self.last_phrase = {}
-        self.decks = {}
+        self.state = Path(state) if state else None
+        self.said, self.last_phrase = {}, {}
+        if self.state:
+            try:
+                d = json.loads(self.state.read_text())
+                self.said = {k: set(v) for k, v in d["said"].items()}
+                self.last_phrase = d["last"]
+            except (OSError, ValueError, KeyError, TypeError, AttributeError):
+                pass
+
+    def save(self):
+        if not self.state:
+            return
+        d = {"said": {k: sorted(v) for k, v in self.said.items()},
+             "last": self.last_phrase}
+        tmp = self.state.with_name(self.state.name + ".tmp")
+        try:
+            tmp.write_text(json.dumps(d, ensure_ascii=False))
+            tmp.replace(self.state)
+        except OSError:
+            pass  # a full disk costs the round, never the line
 
     def handle(self, line, now=None):
         """A bot.log line -> (chan, text) to say, or None."""
@@ -1369,10 +1392,11 @@ class Love:
         now = time.time() if now is None else now
         if now - self.last_at.get(key, float("-inf")) < self.cooldown:
             return None
-        deck = self.decks.setdefault((key, cmd), Deck(self.rng, POOLS[cmd]))
-        phrase = deck.deal(self.last_phrase.get(key))
+        said = self.said.setdefault(f"{key} {cmd}", set())
+        phrase = deal(self.rng, POOLS[cmd], said, self.last_phrase.get(key))
         self.last_at[key] = now
         self.last_phrase[key] = phrase
+        self.save()
         return chan, render(phrase, frm, to)
 
 
