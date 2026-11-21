@@ -189,6 +189,15 @@ def test_vjt_any_ident_under_grappa_chat():
         "RAW:guard MODE #c +o vjt"]
 
 
+def test_afammo_any_ident_but_only_that_host():
+    w, gd = setup()
+    assert run(w, gd, L("x!~whoever@stasenzpensier.afammo.cc", "JOIN #c")) == [
+        "RAW:guard MODE #c +o x"]
+    for src in ("x!y@evil.stasenzpensier.afammo.cc", "x!y@afammo.cc"):
+        w, gd = setup()
+        assert run(w, gd, L(src, "JOIN #c")) == []
+
+
 def test_grappa_chat_lookalikes_are_outsiders():
     for src in ("vjt!disagio@evilgrappa.chat",
                 "vjt!disagio@due.grappa.chat.evil.example"):
