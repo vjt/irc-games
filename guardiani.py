@@ -51,6 +51,8 @@ MASKS = {m.strip().lstrip("~").casefold() for m in os.environ.get(
     "_gosub@stop.endsub.it,"
     "nano@epstein.bar,"
     "*@stasenzpensier.afammo.cc,"
+    # cristobot (vjt 2026-11-21): any ident under diomaiale.com, its vhosts.
+    "*@*.diomaiale.com,"
     "ambrogio@ci.pensa.ambrogio.con.la.grappa.chat,"
     "mike@ti.faccio.le.domande.mentre.sniffo.org").split(",") if m.strip()}
 

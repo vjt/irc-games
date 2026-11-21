@@ -198,6 +198,15 @@ def test_afammo_any_ident_but_only_that_host():
         assert run(w, gd, L(src, "JOIN #c")) == []
 
 
+def test_cristobot_any_ident_under_diomaiale_com():
+    w, gd = setup()
+    assert run(w, gd, L("CristoBOT!~cristobot@il.figlio.del.diomaiale.com",
+                        "JOIN #c")) == ["RAW:guard MODE #c +o CristoBOT"]
+    for src in ("x!y@diomaiale.com", "x!y@evildiomaiale.com"):
+        w, gd = setup()
+        assert run(w, gd, L(src, "JOIN #c")) == []
+
+
 def test_grappa_chat_lookalikes_are_outsiders():
     for src in ("vjt!disagio@evilgrappa.chat",
                 "vjt!disagio@due.grappa.chat.evil.example"):
