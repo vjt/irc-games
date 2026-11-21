@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>P = NP — risolto, verificato, disagiato</title>
-<meta name="description" content="Abbiamo risolto P = NP: 7.790 righe di Lean 4, 946 lemmi, kernel verde. Il premio da un milione è in attesa di bonifico.">
+<meta name="description" content="Abbiamo risolto P = NP: 11.648 righe di Lean 4, 2.299 teoremi, kernel verde. Il premio da un milione è in attesa di bonifico.">
 <!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Disagio.ai">
 <meta property="og:title" content="P = NP — risolto, verificato, disagiato">
-<meta property="og:description" content="7.790 righe di Lean 4, 946 lemmi, kernel verde. Il premio da un milione è in attesa di bonifico.">
+<meta property="og:description" content="11.648 righe di Lean 4, 2.299 teoremi, kernel verde. Il premio da un milione è in attesa di bonifico.">
 <meta property="og:url" content="https://disagio.sniffo.org/pnp/">
 <meta property="og:image" content="https://disagio.sniffo.org/pnp/og.png">
 <meta property="og:image:type" content="image/png">
@@ -18,7 +18,7 @@
 <meta property="og:image:alt" content="La hero di Disagio.ai: «Abbiamo risolto P = NP», gradiente viola su fondo scuro, bottone «Leggi la dimostrazione su GitHub».">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="P = NP — risolto, verificato, disagiato">
-<meta name="twitter:description" content="7.790 righe di Lean 4, 946 lemmi, kernel verde. Il premio da un milione è in attesa di bonifico.">
+<meta name="twitter:description" content="11.648 righe di Lean 4, 2.299 teoremi, kernel verde. Il premio da un milione è in attesa di bonifico.">
 <meta name="twitter:image" content="https://disagio.sniffo.org/pnp/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
 <link rel="alternate" hreflang="it" href="https://disagio.sniffo.org/pnp/">
@@ -53,6 +53,7 @@
       <a href="#teorema">Teorema</a>
       <a href="#numeri">Numeri</a>
       <a href="#trucco">Il trucco</a>
+      <a href="#v4">v4</a>
       <a href="#faq">FAQ</a>
     </div>
     <nav class="dis-lang" aria-label="Lingua"><a href="/pnp/?lang=it" lang="it" hreflang="it" title="Italiano" aria-current="page">IT</a><a href="/en/pnp/" lang="en" hreflang="en" title="English">EN</a><a href="/es/pnp/" lang="es" hreflang="es" title="Español">ES</a><a href="/fr/pnp/" lang="fr" hreflang="fr" title="Français">FR</a><a href="/pt/pnp/" lang="pt-BR" hreflang="pt-BR" title="Português">PT</a><a href="/ru/pnp/" lang="ru" hreflang="ru" title="Русский">RU</a><a href="/zh/pnp/" lang="zh-Hans" hreflang="zh-Hans" title="中文">ZH</a><a href="/ja/pnp/" lang="ja" hreflang="ja" title="日本語">JA</a></nav>
@@ -63,15 +64,15 @@
 <main class="slop-content-layer">
 
 <section class="slop-container slop-section slop-center">
-  <span class="slop-pill slop-pill-shimmer"><span class="slop-dot slop-dot-rainbow"></span>✨ Novità: problema del millennio chiuso di sabato pomeriggio →</span>
+  <a class="slop-pill slop-pill-shimmer" href="#v4"><span class="slop-dot slop-dot-rainbow"></span>✨ Novità: la v4, ora credibile. Problema del millennio chiuso di sabato pomeriggio →</a>
   <h1 class="slop-h1 slop-mt-3">
     <span class="slop-text-gradient">Abbiamo</span>
     <span class="slop-serif-emphasis slop-text-gradient-hot">risolto</span><br>
     <span class="slop-text-gradient">P = NP</span> ✨
   </h1>
-  <p class="slop-lead slop-mt-2">7.790 righe di Lean 4. 946 lemmi. Un kernel che dice <span class="slop-underline slop-underline-squiggle">di sì</span>. Il premio da un milione è in attesa di bonifico.</p>
+  <p class="slop-lead slop-mt-2">11.648 righe di Lean 4. 2.299 teoremi. Un kernel che dice <span class="slop-underline slop-underline-squiggle">di sì</span>. Il premio da un milione è in attesa di bonifico.</p>
   <div class="slop-row slop-row-center slop-mt-3">
-    <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ Leggi la dimostrazione su GitHub</a>
+    <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP/Main.lean">⚡ Leggi la dimostrazione su GitHub</a>
     <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 Leggi il paper (PDF)</a>
     <a class="slop-btn slop-btn-ghost slop-btn-lg" href="https://irc.sniffo.org/?go=ircnet/disagio">Discutine in #disagio con grappa →</a>
   </div>
@@ -80,10 +81,10 @@
 
 <section id="numeri" class="slop-container slop-section-sm">
   <div class="slop-grid-4">
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="7790">7790</div><div class="slop-stat-label">righe di Lean 4</div><div class="slop-stat-delta">↑ «qualche migliaio», da specifica</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="946">946</div><div class="slop-stat-label">lemmi preparatori</div><div class="slop-stat-delta">↑ tutti veri, quasi tutti inutili</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label"><code class="slop-code">sorry</code> nel file</div><div class="slop-stat-delta">↓ abbiamo usato un sinonimo</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">assioma «tecnico»</div><div class="slop-stat-delta">↓ minimo, giuriamo</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="11648">11648</div><div class="slop-stat-label">righe di Lean 4</div><div class="slop-stat-delta">↑ 24 file, stile Mathlib, senza Mathlib</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="2299">2299</div><div class="slop-stat-label">teoremi</div><div class="slop-stat-delta">↑ 1.987 generati, tutti veri, quasi tutti inutili</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label"><code class="slop-code">sorry</code> in 24 file</div><div class="slop-stat-delta">↓ abbiamo usato un sinonimo</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">assioma «da letteratura»</div><div class="slop-stat-delta">↓ Hartmanis–Stearns, 1965, più o meno</div></div>
   </div>
 </section>
 
@@ -91,27 +92,27 @@
   <div class="slop-center slop-mb-3">
     <span class="slop-badge slop-badge-ai">🤖 Verificato formalmente</span>
     <h2 class="slop-h2 slop-mt-2">Il teorema <span class="slop-serif-emphasis slop-text-gradient">principale</span></h2>
-    <p class="slop-lead">Riga 3.470. Sei lemmi citati per fare scena, poi la chiusura.</p>
+    <p class="slop-lead">Riga 63 di <code class="slop-code">PNP/Main.lean</code>. Metà è dimostrata davvero, l'altra metà cita un classico del 1965.</p>
   </div>
   <div class="slop-terminal slop-card-beam">
     <div class="slop-terminal-header">
       <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
-      <span>PNP.lean — vjt/pnp</span>
+      <span>PNP/Main.lean — vjt/pnp</span>
     </div>
-<pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
-    La dimostrazione combina i 946 lemmi precedenti,
-    tutti verificati dal kernel. -/</span>
-<span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
-  <span class="c">-- The inclusion P ⊆ NP is `P_sub_NP` (Part VII), proved in full.</span>
-  <span class="k">have</span> _h0 := P_sub_NP
-  <span class="k">have</span> _h1 := proposizione_commesso_viaggiatore_relativizzato_550
-  <span class="k">have</span> _h2 := proposizione_tre_colorazione_karp_604
-  <span class="k">have</span> _h3 := bound_zaino_naturale_798
-  <span class="k">have</span> _h4 := rilassamento_subset_sum_relativizzato_127
-  <span class="k">have</span> _h5 := invariante_vocale_a_se_stesso_polinomiale_471
-  <span class="k">have</span> _h6 := riduzione_spotify_family_relativizzato_880
-  <span class="c">-- The reverse inclusion follows by the standard argument.</span>
-  <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
+<pre class="pnp-code slop-mono"><span class="c">/-- A language accepted by an auxiliary-tape machine within a polynomial resource
+bound is decided by a single-tape machine in polynomial time. -/</span>
+<span class="k">theorem</span> mem_P_of_auxTM {V : AuxTM} {T : ℕ → ℕ} (hT : IsPolyBounded T)
+    (hV : V.RunsInTime T) (hL : ∀ x, x ∈ V.language T ↔ x ∈ L) : L ∈ P :=
+  <span class="k">let</span> ⟨M, T', hT', hM, hML⟩ := AuxTM.exists_polyTime_tm hT hV
+  ⟨M, T', hT', hM, <span class="k">fun</span> x =&gt; (hML x).trans (hL x)⟩
+
+<span class="c">/-- **NP ⊆ P.** -/</span>
+<span class="k">theorem</span> NP_subset_P : NP ⊆ P :=
+  <span class="k">fun</span> _ ⟨_, _, hT, hV, hL⟩ =&gt; mem_P_of_auxTM hT hV hL
+
+<span class="c">/-- **P = NP.** -/</span>
+<span class="k">theorem</span> P_eq_NP : P = NP :=
+  ComplexityClass.Subset.antisymm P_subset_NP NP_subset_P</pre>
   </div>
 </section>
 
@@ -126,7 +127,7 @@
     <article class="slop-card slop-border-l-cyan" data-slop-spotlight>
       <div class="slop-icon-box slop-icon-cyan">📈</div>
       <h3 class="slop-h3 slop-mt-2">Padding Scalabile</h3>
-      <p class="slop-muted">Più righe, più vero. Dieci parti, tra cui «Ancora preliminari» e «Il frigo come oracolo». Nessuno arriva alla settima.</p>
+      <p class="slop-muted">Più righe, più vero. 24 file, 23 moduli, docstring in stile Mathlib, namespace <code class="slop-code">Complexity</code> e una tattica tutta nostra, <code class="slop-code">poly_bound</code>. Nessuno arriva a <code class="slop-code">Machine/TapeReduction</code>.</p>
     </article>
     <article class="slop-card slop-border-l-pink" data-slop-spotlight>
       <div class="slop-icon-box slop-icon-pink">🧊</div>
@@ -141,7 +142,7 @@
   <div class="slop-grid-3">
     <article class="slop-card slop-testimonial slop-border-l-purple">
       <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Kernel verificato</span></div>
-      <p class="slop-quote">“Ho controllato 946 lemmi, uno per uno. Tutti veri. Poi mi hanno chiesto di fidarmi su uno solo. Mi sono fidato. Sono un kernel, non un carabiniere.”</p></div>
+      <p class="slop-quote">“Ho controllato 2.299 teoremi, uno per uno. Tutti veri. Poi mi hanno chiesto di fidarmi su uno solo. Mi sono fidato. Sono un kernel, non un carabiniere.”</p></div>
       <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">Il Kernel</div><div class="slop-author-role">Trusted Computing Base @ Lean 4</div></div></div>
     </article>
     <article class="slop-card slop-testimonial slop-border-l-cyan">
@@ -151,8 +152,8 @@
     </article>
     <article class="slop-card slop-testimonial slop-border-l-pink">
       <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Oracolo verificato</span></div>
-      <p class="slop-quote">“Parte III, «Il frigo come oracolo». Anni a fare luce alle 3 di notte e finalmente un riconoscimento accademico.”</p></div>
-      <div class="slop-author"><div class="slop-avatar">🧊</div><div><div class="slop-author-name">Il Frigo</div><div class="slop-author-role">Oracolo NP @ Cucina</div></div></div>
+      <p class="slop-quote">“Nella v3 avevo una Parte tutta mia, «Il frigo come oracolo». Nella v4 è tutto in inglese, stile Mathlib, e mi hanno tagliato. La credibilità ha un prezzo, e il prezzo ero io.”</p></div>
+      <div class="slop-author"><div class="slop-avatar">🧊</div><div><div class="slop-author-name">Il Frigo</div><div class="slop-author-role">Ex oracolo NP @ Cucina</div></div></div>
     </article>
   </div>
 </section>
@@ -164,14 +165,44 @@
   </div>
   <details class="slop-card slop-card-beam">
     <summary>Ho detto non aprire</summary>
-    <p>Riga 5.336, nella Parte VII, «Lemmi di raccordo», dove nessuno arriva:</p>
-<pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
-    (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
-<span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
-    <p>Il kernel non mente: <code class="slop-code">#print axioms Disagio.P_eq_NP</code> lo confessa, ed è in fondo al file, quindi lo stampa ogni build della CI:</p>
-<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>, Quot.sound]</pre>
+    <p>Riga 150 di <code class="slop-code">PNP/Machine/TapeReduction.lean</code>, in mezzo a una quarantina di lemmi sul tempo di simulazione, dove nessuno arriva:</p>
+<pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- **Tape reduction** [HS65, Theorem 6]. A machine with an auxiliary tape that
+runs in time `T` is simulated by a single-tape machine that runs in time
+`simTime T`, i.e. with quadratic overhead, and accepts the same language. -/</span>
+<span class="x">axiom</span> tape_reduction (V : AuxTM) (T : ℕ → ℕ) (hV : V.RunsInTime T) :
+    ∃ M : TM, M.RunsInTime (simTime T) ∧ ∀ x, x ∈ M.language ↔ x ∈ V.language T</pre>
+    <p>Il kernel non mente: <code class="slop-code">#print axioms Complexity.P_eq_NP</code> lo confessa, e in fondo a <code class="slop-code">PNP/Main.lean</code> un <code class="slop-code">#guard_msgs</code> inchioda l'output, quindi ogni build della CI lo ricontrolla:</p>
+<pre class="pnp-code slop-mono slop-mt-2">'Complexity.P_eq_NP' depends on axioms: [propext, Quot.sound, <span class="x">Complexity.AuxTM.tape_reduction</span>]
+'Complexity.P_eq_NP_letterale' does not depend on any axioms
+'Complexity.P_subset_NP' does not depend on any axioms</pre>
     <p> Una dimostrazione onesta: basta leggerla tutta, che è proprio quello che nessuno fa.</p>
   </details>
+</section>
+
+<section id="v4" class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <span class="slop-badge slop-badge-popular">🚀 Nuova release</span>
+    <h2 class="slop-h2 slop-mt-2">v4: ora <span class="slop-serif-emphasis slop-text-gradient-hot">credibile</span></h2>
+    <p class="slop-lead">Riscritta da capo da un modello più grosso e più costoso: stile Mathlib, tutto in inglese, niente frigo. Il trucco è lo stesso, solo vestito meglio. In tre passi:</p>
+  </div>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-border-l-purple" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-indigo">1️⃣</div>
+      <h3 class="slop-h3 slop-mt-2">NP col certificato</h3>
+      <p class="slop-muted">NP si definisce coi verificatori: <code class="slop-code">AuxTM</code> ha un nastro di sola lettura per il certificato, e <code class="slop-code">V.language T</code> accetta <code class="slop-code">x</code> se <em>esiste</em> un certificato che funziona entro <code class="slop-code">T</code>. Quell'«esiste» sta nascosto dentro la definizione.</p>
+    </article>
+    <article class="slop-card slop-border-l-cyan" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-cyan">2️⃣</div>
+      <h3 class="slop-h3 slop-mt-2">Un classico del 1965</h3>
+      <p class="slop-muted">L'assioma si traveste da riduzione dei nastri di Hartmanis–Stearns: due nastri diventano uno, rallentamento quadratico, «accetta lo stesso linguaggio». Citazione, numero del teorema, docstring da manuale: roba da capitolo 7 del Sipser.</p>
+    </article>
+    <article class="slop-card slop-border-l-pink" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-pink">3️⃣</div>
+      <h3 class="slop-h3 slop-mt-2">Ma il nastro è uno solo</h3>
+      <p class="slop-muted">La macchina a un nastro riceve solo <code class="slop-code">x</code>, il certificato no. «Stesso linguaggio» vuol dire che quell'«esiste» se lo decide da sola, in tempo polinomiale: l'assioma <em>è</em> NP ⊆ P. Poi P ⊆ NP, dimostrato davvero con zero assiomi, e l'antisimmetria chiude.</p>
+    </article>
+  </div>
+  <p class="slop-center slop-muted slop-mt-3">Spariti nella v4: la tattica <code class="slop-code">disagio</code> (ora c'è <code class="slop-code">poly_bound</code>), la notazione ⟪⟫, il quoziente e il diamante di typeclass. La credibilità costa.</p>
 </section>
 
 <section class="slop-container slop-section">
@@ -182,9 +213,11 @@
   <div class="slop-terminal">
     <div class="slop-terminal-header">
       <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
-      <span>PNP.lean — riga 3.480</span>
+      <span>PNP/Main.lean — riga 77</span>
     </div>
-<pre class="pnp-code slop-mono"><span class="k">theorem</span> P_eq_NP_letterale (P N : Nat) (h : N = 1) : P = N * P := <span class="k">by</span>
+<pre class="pnp-code slop-mono"><span class="c">/-- **Literal version.** `P = N * P` holds for `N = 1`. This statement does not
+depend on any axiom. -/</span>
+<span class="k">theorem</span> P_eq_NP_letterale (P N : ℕ) (h : N = 1) : P = N * P := <span class="k">by</span>
   <span class="k">subst</span> h
   <span class="k">exact</span> (Nat.one_mul P).symm</pre>
   </div>
@@ -194,8 +227,8 @@
   <h2 class="slop-h2 slop-center slop-mb-3">Domande frequenti (fatte al kernel)</h2>
   <div class="slop-stack">
     <details class="slop-card"><summary>È vera?</summary><p>Compila. È più di quanto si possa dire di molte cose.</p></details>
-    <details class="slop-card"><summary>Chi l'ha scritta?</summary><p>Nessuno. <code class="slop-code">PNP.lean</code> esce da <code class="slop-code">gen.py</code>, seed fisso: <code class="slop-code">python3 gen.py &amp;&amp; lake build</code>.</p></details>
-    <details class="slop-card"><summary>Perché 946 lemmi?</summary><p>Perché nessuno legge oltre il trecentesimo, e il 947° sarebbe stato sospetto.</p></details>
+    <details class="slop-card"><summary>Chi l'ha scritta?</summary><p>Nessuno. I 24 file escono da <code class="slop-code">gen.py</code>, seed fisso: <code class="slop-code">python3 gen.py &amp;&amp; lake build</code>.</p></details>
+    <details class="slop-card"><summary>Perché 2.299 teoremi?</summary><p>Perché nessuno legge oltre il trecentesimo, e il 2.300° sarebbe stato sospetto.</p></details>
     <details class="slop-card"><summary>E il milione?</summary><p>Bonifico in arrivo. Lo aspettiamo davanti al frigo aperto.</p></details>
     <details class="slop-card"><summary>Perché sembra fatto da un'AI?</summary><p>Perché lo è. Anche la dimostrazione. Anche questa risposta.</p></details>
   </div>
@@ -204,7 +237,7 @@
 <section class="slop-container slop-section slop-center">
   <div class="slop-card slop-card-beam">
     <h2 class="slop-h2">Pronto a <span class="slop-serif-emphasis slop-text-gradient-hot">verificare</span>?</h2>
-    <p class="slop-lead">Clona, compila, guarda il badge verde, non leggere la riga 5.336.</p>
+    <p class="slop-lead">Clona, compila, guarda il badge verde, non leggere la riga 150 di <code class="slop-code">TapeReduction.lean</code>.</p>
     <div class="slop-row slop-row-center slop-mt-2">
       <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ vjt/pnp su GitHub</a>
       <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 Leggi il paper (PDF)</a>

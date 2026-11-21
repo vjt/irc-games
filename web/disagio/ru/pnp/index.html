@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>P = NP — решено, проверено, тлен</title>
-<meta name="description" content="Мы решили P = NP: 7790 строк на Lean 4, 946 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
+<meta name="description" content="Мы решили P = NP: 11 648 строк на Lean 4, 2299 теорем, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
 <!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Disagio.ai">
 <meta property="og:title" content="P = NP — решено, проверено, тлен">
-<meta property="og:description" content="7790 строк на Lean 4, 946 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
+<meta property="og:description" content="11 648 строк на Lean 4, 2299 теорем, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
 <meta property="og:url" content="https://disagio.sniffo.org/ru/pnp/">
 <meta property="og:image" content="https://disagio.sniffo.org/ru/pnp/og.png">
 <meta property="og:image:type" content="image/png">
@@ -18,7 +18,7 @@
 <meta property="og:image:alt" content="Хиро-блок Disagio.ai: «Мы решили P = NP», фиолетовый градиент на тёмном фоне, кнопка «Читать доказательство на GitHub».">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="P = NP — решено, проверено, тлен">
-<meta name="twitter:description" content="7790 строк на Lean 4, 946 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
+<meta name="twitter:description" content="11 648 строк на Lean 4, 2299 теорем, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
 <meta name="twitter:image" content="https://disagio.sniffo.org/ru/pnp/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
 <link rel="alternate" hreflang="it" href="https://disagio.sniffo.org/pnp/">
@@ -53,6 +53,7 @@
       <a href="#teorema">Теорема</a>
       <a href="#numeri">Цифры</a>
       <a href="#trucco">Подвох</a>
+      <a href="#v4">v4</a>
       <a href="#faq">FAQ</a>
     </div>
     <nav class="dis-lang" aria-label="Язык"><a href="/pnp/?lang=it" lang="it" hreflang="it" title="Italiano">IT</a><a href="/en/pnp/" lang="en" hreflang="en" title="English">EN</a><a href="/es/pnp/" lang="es" hreflang="es" title="Español">ES</a><a href="/fr/pnp/" lang="fr" hreflang="fr" title="Français">FR</a><a href="/pt/pnp/" lang="pt-BR" hreflang="pt-BR" title="Português">PT</a><a href="/ru/pnp/" lang="ru" hreflang="ru" title="Русский" aria-current="page">RU</a><a href="/zh/pnp/" lang="zh-Hans" hreflang="zh-Hans" title="中文">ZH</a><a href="/ja/pnp/" lang="ja" hreflang="ja" title="日本語">JA</a></nav>
@@ -63,15 +64,15 @@
 <main class="slop-content-layer">
 
 <section class="slop-container slop-section slop-center">
-  <span class="slop-pill slop-pill-shimmer"><span class="slop-dot slop-dot-rainbow"></span>✨ Новинка: задачу тысячелетия закрыли в субботу после обеда →</span>
+  <a class="slop-pill slop-pill-shimmer" href="#v4"><span class="slop-dot slop-dot-rainbow"></span>✨ Новинка: v4, теперь правдоподобно. Задачу тысячелетия закрыли в субботу после обеда →</a>
   <h1 class="slop-h1 slop-mt-3">
     <span class="slop-text-gradient">Мы</span>
     <span class="slop-serif-emphasis slop-text-gradient-hot">решили</span><br>
     <span class="slop-text-gradient">P = NP</span> ✨
   </h1>
-  <p class="slop-lead slop-mt-2">7790 строк на Lean 4. 946 лемм. Ядро, которое говорит <span class="slop-underline slop-underline-squiggle">«да»</span>. Премия в миллион — в статусе «ожидает зачисления».</p>
+  <p class="slop-lead slop-mt-2">11 648 строк на Lean 4. 2299 теорем. Ядро, которое говорит <span class="slop-underline slop-underline-squiggle">«да»</span>. Премия в миллион — в статусе «ожидает зачисления».</p>
   <div class="slop-row slop-row-center slop-mt-3">
-    <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ Читать доказательство на GitHub</a>
+    <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP/Main.lean">⚡ Читать доказательство на GitHub</a>
     <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 Читать статью (PDF)</a>
     <a class="slop-btn slop-btn-ghost slop-btn-lg" href="https://irc.sniffo.org/?go=ircnet/disagio">Обсудить в #disagio через grappa →</a>
   </div>
@@ -80,10 +81,10 @@
 
 <section id="numeri" class="slop-container slop-section-sm">
   <div class="slop-grid-4">
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="7790">7790</div><div class="slop-stat-label">строк на Lean 4</div><div class="slop-stat-delta">↑ «пара тысяч», по ТЗ</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="946">946</div><div class="slop-stat-label">подготовительных лемм</div><div class="slop-stat-delta">↑ все верны, почти все бесполезны</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label"><code class="slop-code">sorry</code> в файле</div><div class="slop-stat-delta">↓ мы взяли синоним</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">«техническая» аксиома</div><div class="slop-stat-delta">↓ совсем маленькая, честно</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="11648">11648</div><div class="slop-stat-label">строк на Lean 4</div><div class="slop-stat-delta">↑ 24 файла, в стиле Mathlib, без Mathlib</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="2299">2299</div><div class="slop-stat-label">теорем</div><div class="slop-stat-delta">↑ 1987 сгенерированы, все верны, почти все бесполезны</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label"><code class="slop-code">sorry</code> в 24 файлах</div><div class="slop-stat-delta">↓ мы взяли синоним</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">аксиома «из учебника»</div><div class="slop-stat-delta">↓ Хартманис–Стирнс, 1965, плюс-минус</div></div>
   </div>
 </section>
 
@@ -91,27 +92,27 @@
   <div class="slop-center slop-mb-3">
     <span class="slop-badge slop-badge-ai">🤖 Формально верифицировано</span>
     <h2 class="slop-h2 slop-mt-2"><span class="slop-serif-emphasis slop-text-gradient">Главная</span> теорема</h2>
-    <p class="slop-lead">Строка 3470. Шесть лемм для солидности, потом развязка.</p>
+    <p class="slop-lead">Строка 63 в <code class="slop-code">PNP/Main.lean</code>. Половина доказана по-настоящему, вторая половина ссылается на классику 1965 года.</p>
   </div>
   <div class="slop-terminal slop-card-beam">
     <div class="slop-terminal-header">
       <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
-      <span>PNP.lean — vjt/pnp</span>
+      <span>PNP/Main.lean — vjt/pnp</span>
     </div>
-<pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
-    La dimostrazione combina i 946 lemmi precedenti,
-    tutti verificati dal kernel. -/</span>
-<span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
-  <span class="c">-- The inclusion P ⊆ NP is `P_sub_NP` (Part VII), proved in full.</span>
-  <span class="k">have</span> _h0 := P_sub_NP
-  <span class="k">have</span> _h1 := proposizione_commesso_viaggiatore_relativizzato_550
-  <span class="k">have</span> _h2 := proposizione_tre_colorazione_karp_604
-  <span class="k">have</span> _h3 := bound_zaino_naturale_798
-  <span class="k">have</span> _h4 := rilassamento_subset_sum_relativizzato_127
-  <span class="k">have</span> _h5 := invariante_vocale_a_se_stesso_polinomiale_471
-  <span class="k">have</span> _h6 := riduzione_spotify_family_relativizzato_880
-  <span class="c">-- The reverse inclusion follows by the standard argument.</span>
-  <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
+<pre class="pnp-code slop-mono"><span class="c">/-- A language accepted by an auxiliary-tape machine within a polynomial resource
+bound is decided by a single-tape machine in polynomial time. -/</span>
+<span class="k">theorem</span> mem_P_of_auxTM {V : AuxTM} {T : ℕ → ℕ} (hT : IsPolyBounded T)
+    (hV : V.RunsInTime T) (hL : ∀ x, x ∈ V.language T ↔ x ∈ L) : L ∈ P :=
+  <span class="k">let</span> ⟨M, T', hT', hM, hML⟩ := AuxTM.exists_polyTime_tm hT hV
+  ⟨M, T', hT', hM, <span class="k">fun</span> x =&gt; (hML x).trans (hL x)⟩
+
+<span class="c">/-- **NP ⊆ P.** -/</span>
+<span class="k">theorem</span> NP_subset_P : NP ⊆ P :=
+  <span class="k">fun</span> _ ⟨_, _, hT, hV, hL⟩ =&gt; mem_P_of_auxTM hT hV hL
+
+<span class="c">/-- **P = NP.** -/</span>
+<span class="k">theorem</span> P_eq_NP : P = NP :=
+  ComplexityClass.Subset.antisymm P_subset_NP NP_subset_P</pre>
   </div>
 </section>
 
@@ -126,7 +127,7 @@
     <article class="slop-card slop-border-l-cyan" data-slop-spotlight>
       <div class="slop-icon-box slop-icon-cyan">📈</div>
       <h3 class="slop-h3 slop-mt-2">Масштабируемая Вода</h3>
-      <p class="slop-muted">Больше строк — больше правды. Десять частей, включая «Ещё немного предварительного» и «Холодильник как оракул». До седьмой не доходит никто.</p>
+      <p class="slop-muted">Больше строк — больше правды. 24 файла, 23 модуля, docstring-и в стиле Mathlib, пространство имён <code class="slop-code">Complexity</code> и своя тактика, <code class="slop-code">poly_bound</code>. До <code class="slop-code">Machine/TapeReduction</code> не доходит никто.</p>
     </article>
     <article class="slop-card slop-border-l-pink" data-slop-spotlight>
       <div class="slop-icon-box slop-icon-pink">🧊</div>
@@ -141,7 +142,7 @@
   <div class="slop-grid-3">
     <article class="slop-card slop-testimonial slop-border-l-purple">
       <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Проверенное ядро</span></div>
-      <p class="slop-quote">“Я проверил 946 лемм, одну за другой. Все верны. Потом меня попросили поверить на слово всего в одну. Я поверил. Я ядро, а не следователь.”</p></div>
+      <p class="slop-quote">“Я проверил 2299 теорем, одну за другой. Все верны. Потом меня попросили поверить на слово всего в одну. Я поверил. Я ядро, а не следователь.”</p></div>
       <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">Ядро</div><div class="slop-author-role">Trusted Computing Base @ Lean 4</div></div></div>
     </article>
     <article class="slop-card slop-testimonial slop-border-l-cyan">
@@ -151,8 +152,8 @@
     </article>
     <article class="slop-card slop-testimonial slop-border-l-pink">
       <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Проверенный оракул</span></div>
-      <p class="slop-quote">“Часть III, «Холодильник как оракул». Годы светить людям в 3 часа ночи — и наконец академическое признание.”</p></div>
-      <div class="slop-author"><div class="slop-avatar">🧊</div><div><div class="slop-author-name">Холодильник</div><div class="slop-author-role">NP-оракул @ Кухня</div></div></div>
+      <p class="slop-quote">“В v3 у меня была целая Часть, «Холодильник как оракул». v4 вся на английском, в стиле Mathlib, и меня вырезали. У правдоподобия есть цена, и этой ценой был я.”</p></div>
+      <div class="slop-author"><div class="slop-avatar">🧊</div><div><div class="slop-author-name">Холодильник</div><div class="slop-author-role">Бывший NP-оракул @ Кухня</div></div></div>
     </article>
   </div>
 </section>
@@ -164,14 +165,44 @@
   </div>
   <details class="slop-card slop-card-beam">
     <summary>Сказано же: не открывай</summary>
-    <p>Строка 5336, Часть VII, «Связующие леммы», куда никто не доходит:</p>
-<pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
-    (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
-<span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
-    <p>Ядро не врёт: <code class="slop-code">#print axioms Disagio.P_eq_NP</code> во всём признаётся, а стоит эта команда в конце файла, так что каждый билд CI печатает признание заново:</p>
-<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>, Quot.sound]</pre>
+    <p>Строка 150 в <code class="slop-code">PNP/Machine/TapeReduction.lean</code>, среди примерно сорока лемм о времени симуляции, куда никто не доходит:</p>
+<pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- **Tape reduction** [HS65, Theorem 6]. A machine with an auxiliary tape that
+runs in time `T` is simulated by a single-tape machine that runs in time
+`simTime T`, i.e. with quadratic overhead, and accepts the same language. -/</span>
+<span class="x">axiom</span> tape_reduction (V : AuxTM) (T : ℕ → ℕ) (hV : V.RunsInTime T) :
+    ∃ M : TM, M.RunsInTime (simTime T) ∧ ∀ x, x ∈ M.language ↔ x ∈ V.language T</pre>
+    <p>Ядро не врёт: <code class="slop-code">#print axioms Complexity.P_eq_NP</code> во всём признаётся, а <code class="slop-code">#guard_msgs</code> в конце <code class="slop-code">PNP/Main.lean</code> намертво фиксирует вывод, так что каждый билд CI проверяет признание заново:</p>
+<pre class="pnp-code slop-mono slop-mt-2">'Complexity.P_eq_NP' depends on axioms: [propext, Quot.sound, <span class="x">Complexity.AuxTM.tape_reduction</span>]
+'Complexity.P_eq_NP_letterale' does not depend on any axioms
+'Complexity.P_subset_NP' does not depend on any axioms</pre>
     <p> Честное доказательство: достаточно прочитать его целиком, а этого как раз никто и не делает.</p>
   </details>
+</section>
+
+<section id="v4" class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <span class="slop-badge slop-badge-popular">🚀 Новый релиз</span>
+    <h2 class="slop-h2 slop-mt-2">v4: теперь <span class="slop-serif-emphasis slop-text-gradient-hot">правдоподобно</span></h2>
+    <p class="slop-lead">Переписано с нуля моделью побольше и подороже: стиль Mathlib, всё на английском, без холодильника. Подвох тот же, костюм получше. В три шага:</p>
+  </div>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-border-l-purple" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-indigo">1️⃣</div>
+      <h3 class="slop-h3 slop-mt-2">NP с сертификатом</h3>
+      <p class="slop-muted">NP определяется через верификаторы: у <code class="slop-code">AuxTM</code> есть лента только для чтения под сертификат, а <code class="slop-code">V.language T</code> принимает <code class="slop-code">x</code>, если <em>существует</em> сертификат, который срабатывает за <code class="slop-code">T</code>. Это «существует» спрятано внутри определения.</p>
+    </article>
+    <article class="slop-card slop-border-l-cyan" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-cyan">2️⃣</div>
+      <h3 class="slop-h3 slop-mt-2">Классика 1965 года</h3>
+      <p class="slop-muted">Аксиома переодета в редукцию лент Хартманиса–Стирнса: две ленты превращаются в одну, квадратичное замедление, «распознаёт тот же язык». Ссылка, номер теоремы, docstring как из учебника: прямо из седьмой главы Сипсера.</p>
+    </article>
+    <article class="slop-card slop-border-l-pink" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-pink">3️⃣</div>
+      <h3 class="slop-h3 slop-mt-2">Но лента-то одна</h3>
+      <p class="slop-muted">Одноленточная машина получает только <code class="slop-code">x</code>, без сертификата. «Тот же язык» значит, что это «существует» она решает сама, за полиномиальное время: аксиома <em>и есть</em> NP ⊆ P. Добавляем P ⊆ NP, честно доказанное без единой аксиомы, и антисимметрия всё закрывает.</p>
+    </article>
+  </div>
+  <p class="slop-center slop-muted slop-mt-3">В v4 пропали: тактика <code class="slop-code">disagio</code> (теперь есть <code class="slop-code">poly_bound</code>), нотация ⟪⟫, фактортип и ромб тайпклассов. Правдоподобие стоит дорого.</p>
 </section>
 
 <section class="slop-container slop-section">
@@ -182,9 +213,11 @@
   <div class="slop-terminal">
     <div class="slop-terminal-header">
       <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
-      <span>PNP.lean — строка 3480</span>
+      <span>PNP/Main.lean — строка 77</span>
     </div>
-<pre class="pnp-code slop-mono"><span class="k">theorem</span> P_eq_NP_letterale (P N : Nat) (h : N = 1) : P = N * P := <span class="k">by</span>
+<pre class="pnp-code slop-mono"><span class="c">/-- **Literal version.** `P = N * P` holds for `N = 1`. This statement does not
+depend on any axiom. -/</span>
+<span class="k">theorem</span> P_eq_NP_letterale (P N : ℕ) (h : N = 1) : P = N * P := <span class="k">by</span>
   <span class="k">subst</span> h
   <span class="k">exact</span> (Nat.one_mul P).symm</pre>
   </div>
@@ -194,8 +227,8 @@
   <h2 class="slop-h2 slop-center slop-mb-3">Частые вопросы (заданные ядру)</h2>
   <div class="slop-stack">
     <details class="slop-card"><summary>Это правда?</summary><p>Компилируется. Про многое и этого не скажешь.</p></details>
-    <details class="slop-card"><summary>Кто это написал?</summary><p>Никто. <code class="slop-code">PNP.lean</code> генерирует <code class="slop-code">gen.py</code> с фиксированным seed: <code class="slop-code">python3 gen.py &amp;&amp; lake build</code>.</p></details>
-    <details class="slop-card"><summary>Почему 946 лемм?</summary><p>Потому что дальше трёхсотой никто не читает, а 947-я выглядела бы подозрительно.</p></details>
+    <details class="slop-card"><summary>Кто это написал?</summary><p>Никто. Все 24 файла генерирует <code class="slop-code">gen.py</code> с фиксированным seed: <code class="slop-code">python3 gen.py &amp;&amp; lake build</code>.</p></details>
+    <details class="slop-card"><summary>Почему 2299 теорем?</summary><p>Потому что дальше трёхсотой никто не читает, а 2300-я выглядела бы подозрительно.</p></details>
     <details class="slop-card"><summary>А миллион?</summary><p>Перевод в пути. Ждём его у открытого холодильника.</p></details>
     <details class="slop-card"><summary>Почему кажется, что это сделал ИИ?</summary><p>Потому что так и есть. И доказательство тоже. И этот ответ.</p></details>
   </div>
@@ -204,7 +237,7 @@
 <section class="slop-container slop-section slop-center">
   <div class="slop-card slop-card-beam">
     <h2 class="slop-h2">Ну что, <span class="slop-serif-emphasis slop-text-gradient-hot">проверяем</span>?</h2>
-    <p class="slop-lead">Клонируй, собирай, любуйся зелёным бейджем, не читай строку 5336.</p>
+    <p class="slop-lead">Клонируй, собирай, любуйся зелёным бейджем, не читай строку 150 в <code class="slop-code">TapeReduction.lean</code>.</p>
     <div class="slop-row slop-row-center slop-mt-2">
       <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ vjt/pnp на GitHub</a>
       <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 Читать статью (PDF)</a>
