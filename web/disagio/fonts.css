@@ -37,3 +37,5 @@
 .dis-lang { display: flex; gap: .35rem; font-family: var(--slop-font-mono); font-size: .72rem; white-space: nowrap; }
 .dis-lang a { color: var(--slop-text-muted); }
 .dis-lang a[aria-current] { color: var(--slop-text); font-weight: 700; }
+a.slop-pill { text-decoration: none; }
+a.slop-pill:hover { border-color: rgba(168, 85, 247, 0.8); }
