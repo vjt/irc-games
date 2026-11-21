@@ -1,0 +1,36 @@
+/* Self-hosted, latin subset, variable where the family has it (all SIL OFL).
+   Names match slopstrap.css --slop-font-sans/serif/mono. */
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/inter.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("fonts/instrument-serif-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("fonts/jetbrains-mono.woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Page bits slopstrap has no class for. */
+.dis-out { min-height: 4.5em; white-space: pre-wrap; font-size: 1.05rem; line-height: 1.55; padding: 1.25rem; }
+.dis-out::after { content: "▋"; opacity: .7; animation: dis-blink 1s steps(1) infinite; }
+@keyframes dis-blink { 50% { opacity: 0; } }
+.dis-form { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; }
+.dis-form input { flex: 1 1 12rem; min-width: 0; }
+.dis-card { font-size: .95rem; line-height: 1.5; }
+.dis-num { font-family: var(--slop-font-mono); font-size: .75rem; opacity: .55; }
+.dis-faq details { padding: 1rem 1.25rem; }
+.dis-faq summary { cursor: pointer; font-weight: 600; }
+.dis-faq p { margin: .75rem 0 0; }
+.dis-foot { font-size: .85rem; padding: 2.5rem 0 3rem; }
