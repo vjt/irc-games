@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>P = NP — 已解决、已验证、已丧</title>
-<meta name="description" content="我们解决了 P = NP：3488 行 Lean 4，780 个引理，内核一片绿。百万奖金正在等待到账。">
+<meta name="description" content="我们解决了 P = NP：7790 行 Lean 4，946 个引理，内核一片绿。百万奖金正在等待到账。">
 <!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Disagio.ai">
 <meta property="og:title" content="P = NP — 已解决、已验证、已丧">
-<meta property="og:description" content="3488 行 Lean 4，780 个引理，内核一片绿。百万奖金正在等待到账。">
+<meta property="og:description" content="7790 行 Lean 4，946 个引理，内核一片绿。百万奖金正在等待到账。">
 <meta property="og:url" content="https://disagio.sniffo.org/zh/pnp/">
 <meta property="og:image" content="https://disagio.sniffo.org/zh/pnp/og.png">
 <meta property="og:image:type" content="image/png">
@@ -18,7 +18,7 @@
 <meta property="og:image:alt" content="Disagio.ai 的首屏：“我们解决了 P = NP”，深色背景上的紫色渐变，按钮“在 GitHub 上阅读证明”。">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="P = NP — 已解决、已验证、已丧">
-<meta name="twitter:description" content="3488 行 Lean 4，780 个引理，内核一片绿。百万奖金正在等待到账。">
+<meta name="twitter:description" content="7790 行 Lean 4，946 个引理，内核一片绿。百万奖金正在等待到账。">
 <meta name="twitter:image" content="https://disagio.sniffo.org/zh/pnp/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
 <link rel="alternate" hreflang="it" href="https://disagio.sniffo.org/pnp/">
@@ -68,7 +68,7 @@
     <span class="slop-text-gradient">我们</span><span class="slop-serif-emphasis slop-text-gradient-hot">解决了</span><br>
     <span class="slop-text-gradient">P = NP</span> ✨
   </h1>
-  <p class="slop-lead slop-mt-2">3488 行 Lean 4。780 个引理。一个只会说<span class="slop-underline slop-underline-squiggle">“是”</span>的内核。百万奖金正在等待到账。</p>
+  <p class="slop-lead slop-mt-2">7790 行 Lean 4。946 个引理。一个只会说<span class="slop-underline slop-underline-squiggle">“是”</span>的内核。百万奖金正在等待到账。</p>
   <div class="slop-row slop-row-center slop-mt-3">
     <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ 在 GitHub 上阅读证明</a>
     <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 阅读论文（PDF）</a>
@@ -79,8 +79,8 @@
 
 <section id="numeri" class="slop-container slop-section-sm">
   <div class="slop-grid-4">
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="3488">3488</div><div class="slop-stat-label">行 Lean 4</div><div class="slop-stat-delta">↑ 需求文档原话：“几千行”</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="780">780</div><div class="slop-stat-label">个预备引理</div><div class="slop-stat-delta">↑ 全是真的，几乎全没用</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="7790">7790</div><div class="slop-stat-label">行 Lean 4</div><div class="slop-stat-delta">↑ 需求文档原话：“几千行”</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="946">946</div><div class="slop-stat-label">个预备引理</div><div class="slop-stat-delta">↑ 全是真的，几乎全没用</div></div>
     <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label">文件里的 <code class="slop-code">sorry</code></div><div class="slop-stat-delta">↓ 我们换了个同义词</div></div>
     <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">条“技术性”公理</div><div class="slop-stat-delta">↓ 就一点点，我们发誓</div></div>
   </div>
@@ -98,15 +98,18 @@
       <span>PNP.lean — vjt/pnp</span>
     </div>
 <pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
-    La dimostrazione combina i 780 lemmi precedenti,
+    La dimostrazione combina i 946 lemmi precedenti,
     tutti verificati dal kernel. -/</span>
 <span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
-  <span class="k">have</span> _h1 := oracolo_subset_sum_polinomiale_625
-  <span class="k">have</span> _h2 := proposizione_tre_colorazione_ovvio_41
-  <span class="k">have</span> _h3 := diagonalizzazione_lavatrice_dimenticata_notturno_350
-  <span class="k">have</span> _h4 := certificato_rinfresco_funebre_in_P_209
-  <span class="k">have</span> _h5 := corollario_frigo_aperto_in_P_524
-  <span class="k">have</span> _h6 := rilassamento_subset_sum_cook_levin_287
+  <span class="c">-- The inclusion P ⊆ NP is `P_sub_NP` (Part VII), proved in full.</span>
+  <span class="k">have</span> _h0 := P_sub_NP
+  <span class="k">have</span> _h1 := proposizione_commesso_viaggiatore_relativizzato_550
+  <span class="k">have</span> _h2 := proposizione_tre_colorazione_karp_604
+  <span class="k">have</span> _h3 := bound_zaino_naturale_798
+  <span class="k">have</span> _h4 := rilassamento_subset_sum_relativizzato_127
+  <span class="k">have</span> _h5 := invariante_vocale_a_se_stesso_polinomiale_471
+  <span class="k">have</span> _h6 := riduzione_spotify_family_relativizzato_880
+  <span class="c">-- The reverse inclusion follows by the standard argument.</span>
   <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
   </div>
 </section>
@@ -137,7 +140,7 @@
   <div class="slop-grid-3">
     <article class="slop-card slop-testimonial slop-border-l-purple">
       <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ 已认证内核</span></div>
-      <p class="slop-quote">“780 个引理，我一个一个查过。全是真的。然后他们让我相信其中一条。我信了。我是内核，又不是柯南。”</p></div>
+      <p class="slop-quote">“946 个引理，我一个一个查过。全是真的。然后他们让我相信其中一条。我信了。我是内核，又不是柯南。”</p></div>
       <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">内核</div><div class="slop-author-role">可信计算基 @ Lean 4</div></div></div>
     </article>
     <article class="slop-card slop-testimonial slop-border-l-cyan">
@@ -160,12 +163,12 @@
   </div>
   <details class="slop-card slop-card-beam">
     <summary>说了别点开</summary>
-    <p>第 2138 行，在第七部分“衔接引理”里，一个没人会读到的地方：</p>
+    <p>第 5336 行，在第七部分“衔接引理”里，一个没人会读到的地方：</p>
 <pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
     (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
 <span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
     <p>内核不会撒谎：<code class="slop-code">#print axioms Disagio.P_eq_NP</code> 会如实招供。而且这行就在文件末尾，所以每次 CI 构建都会把它打印出来：</p>
-<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>]</pre>
+<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>, Quot.sound]</pre>
     <p>一份诚实的证明：只要从头读到尾就行——而这恰恰是没人会做的事。</p>
   </details>
 </section>
@@ -191,7 +194,7 @@
   <div class="slop-stack">
     <details class="slop-card"><summary>这是真的吗？</summary><p>能编译通过。光这一点，就比很多东西强了。</p></details>
     <details class="slop-card"><summary>谁写的？</summary><p>没人。<code class="slop-code">PNP.lean</code> 由 <code class="slop-code">gen.py</code> 生成，随机种子固定：<code class="slop-code">python3 gen.py &amp;&amp; lake build</code>。</p></details>
-    <details class="slop-card"><summary>为什么是 780 个引理？</summary><p>因为没人会读过第三百个，而第 781 个就显得可疑了。</p></details>
+    <details class="slop-card"><summary>为什么是 946 个引理？</summary><p>因为没人会读过第三百个，而第 947 个就显得可疑了。</p></details>
     <details class="slop-card"><summary>那一百万呢？</summary><p>转账在路上了。我们守在开着的冰箱前等。</p></details>
     <details class="slop-card"><summary>为什么看着像 AI 做的？</summary><p>因为就是。证明也是。这个回答也是。</p></details>
   </div>
@@ -200,7 +203,7 @@
 <section class="slop-container slop-section slop-center">
   <div class="slop-card slop-card-beam">
     <h2 class="slop-h2">准备好<span class="slop-serif-emphasis slop-text-gradient-hot">验证</span>了吗？</h2>
-    <p class="slop-lead">克隆，编译，欣赏绿色徽章，千万别读第 2138 行。</p>
+    <p class="slop-lead">克隆，编译，欣赏绿色徽章，千万别读第 5336 行。</p>
     <div class="slop-row slop-row-center slop-mt-2">
       <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ GitHub 上的 vjt/pnp</a>
       <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 阅读论文（PDF）</a>

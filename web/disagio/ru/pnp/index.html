@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>P = NP — решено, проверено, тлен</title>
-<meta name="description" content="Мы решили P = NP: 3488 строк на Lean 4, 780 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
+<meta name="description" content="Мы решили P = NP: 7790 строк на Lean 4, 946 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
 <!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Disagio.ai">
 <meta property="og:title" content="P = NP — решено, проверено, тлен">
-<meta property="og:description" content="3488 строк на Lean 4, 780 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
+<meta property="og:description" content="7790 строк на Lean 4, 946 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
 <meta property="og:url" content="https://disagio.sniffo.org/ru/pnp/">
 <meta property="og:image" content="https://disagio.sniffo.org/ru/pnp/og.png">
 <meta property="og:image:type" content="image/png">
@@ -18,7 +18,7 @@
 <meta property="og:image:alt" content="Хиро-блок Disagio.ai: «Мы решили P = NP», фиолетовый градиент на тёмном фоне, кнопка «Читать доказательство на GitHub».">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="P = NP — решено, проверено, тлен">
-<meta name="twitter:description" content="3488 строк на Lean 4, 780 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
+<meta name="twitter:description" content="7790 строк на Lean 4, 946 лемм, ядро зелёное. Премия в миллион — в статусе «ожидает зачисления».">
 <meta name="twitter:image" content="https://disagio.sniffo.org/ru/pnp/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
 <link rel="alternate" hreflang="it" href="https://disagio.sniffo.org/pnp/">
@@ -69,7 +69,7 @@
     <span class="slop-serif-emphasis slop-text-gradient-hot">решили</span><br>
     <span class="slop-text-gradient">P = NP</span> ✨
   </h1>
-  <p class="slop-lead slop-mt-2">3488 строк на Lean 4. 780 лемм. Ядро, которое говорит <span class="slop-underline slop-underline-squiggle">«да»</span>. Премия в миллион — в статусе «ожидает зачисления».</p>
+  <p class="slop-lead slop-mt-2">7790 строк на Lean 4. 946 лемм. Ядро, которое говорит <span class="slop-underline slop-underline-squiggle">«да»</span>. Премия в миллион — в статусе «ожидает зачисления».</p>
   <div class="slop-row slop-row-center slop-mt-3">
     <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ Читать доказательство на GitHub</a>
     <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 Читать статью (PDF)</a>
@@ -80,8 +80,8 @@
 
 <section id="numeri" class="slop-container slop-section-sm">
   <div class="slop-grid-4">
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="3488">3488</div><div class="slop-stat-label">строк на Lean 4</div><div class="slop-stat-delta">↑ «пара тысяч», по ТЗ</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="780">780</div><div class="slop-stat-label">подготовительных лемм</div><div class="slop-stat-delta">↑ все верны, почти все бесполезны</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="7790">7790</div><div class="slop-stat-label">строк на Lean 4</div><div class="slop-stat-delta">↑ «пара тысяч», по ТЗ</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="946">946</div><div class="slop-stat-label">подготовительных лемм</div><div class="slop-stat-delta">↑ все верны, почти все бесполезны</div></div>
     <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label"><code class="slop-code">sorry</code> в файле</div><div class="slop-stat-delta">↓ мы взяли синоним</div></div>
     <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">«техническая» аксиома</div><div class="slop-stat-delta">↓ совсем маленькая, честно</div></div>
   </div>
@@ -99,15 +99,18 @@
       <span>PNP.lean — vjt/pnp</span>
     </div>
 <pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
-    La dimostrazione combina i 780 lemmi precedenti,
+    La dimostrazione combina i 946 lemmi precedenti,
     tutti verificati dal kernel. -/</span>
 <span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
-  <span class="k">have</span> _h1 := oracolo_subset_sum_polinomiale_625
-  <span class="k">have</span> _h2 := proposizione_tre_colorazione_ovvio_41
-  <span class="k">have</span> _h3 := diagonalizzazione_lavatrice_dimenticata_notturno_350
-  <span class="k">have</span> _h4 := certificato_rinfresco_funebre_in_P_209
-  <span class="k">have</span> _h5 := corollario_frigo_aperto_in_P_524
-  <span class="k">have</span> _h6 := rilassamento_subset_sum_cook_levin_287
+  <span class="c">-- The inclusion P ⊆ NP is `P_sub_NP` (Part VII), proved in full.</span>
+  <span class="k">have</span> _h0 := P_sub_NP
+  <span class="k">have</span> _h1 := proposizione_commesso_viaggiatore_relativizzato_550
+  <span class="k">have</span> _h2 := proposizione_tre_colorazione_karp_604
+  <span class="k">have</span> _h3 := bound_zaino_naturale_798
+  <span class="k">have</span> _h4 := rilassamento_subset_sum_relativizzato_127
+  <span class="k">have</span> _h5 := invariante_vocale_a_se_stesso_polinomiale_471
+  <span class="k">have</span> _h6 := riduzione_spotify_family_relativizzato_880
+  <span class="c">-- The reverse inclusion follows by the standard argument.</span>
   <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
   </div>
 </section>
@@ -138,7 +141,7 @@
   <div class="slop-grid-3">
     <article class="slop-card slop-testimonial slop-border-l-purple">
       <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Проверенное ядро</span></div>
-      <p class="slop-quote">“Я проверил 780 лемм, одну за другой. Все верны. Потом меня попросили поверить на слово всего в одну. Я поверил. Я ядро, а не следователь.”</p></div>
+      <p class="slop-quote">“Я проверил 946 лемм, одну за другой. Все верны. Потом меня попросили поверить на слово всего в одну. Я поверил. Я ядро, а не следователь.”</p></div>
       <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">Ядро</div><div class="slop-author-role">Trusted Computing Base @ Lean 4</div></div></div>
     </article>
     <article class="slop-card slop-testimonial slop-border-l-cyan">
@@ -161,12 +164,12 @@
   </div>
   <details class="slop-card slop-card-beam">
     <summary>Сказано же: не открывай</summary>
-    <p>Строка 2138, Часть VII, «Связующие леммы», куда никто не доходит:</p>
+    <p>Строка 5336, Часть VII, «Связующие леммы», куда никто не доходит:</p>
 <pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
     (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
 <span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
     <p>Ядро не врёт: <code class="slop-code">#print axioms Disagio.P_eq_NP</code> во всём признаётся, а стоит эта команда в конце файла, так что каждый билд CI печатает признание заново:</p>
-<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>]</pre>
+<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>, Quot.sound]</pre>
     <p> Честное доказательство: достаточно прочитать его целиком, а этого как раз никто и не делает.</p>
   </details>
 </section>
@@ -192,7 +195,7 @@
   <div class="slop-stack">
     <details class="slop-card"><summary>Это правда?</summary><p>Компилируется. Про многое и этого не скажешь.</p></details>
     <details class="slop-card"><summary>Кто это написал?</summary><p>Никто. <code class="slop-code">PNP.lean</code> генерирует <code class="slop-code">gen.py</code> с фиксированным seed: <code class="slop-code">python3 gen.py &amp;&amp; lake build</code>.</p></details>
-    <details class="slop-card"><summary>Почему 780 лемм?</summary><p>Потому что дальше трёхсотой никто не читает, а 781-я выглядела бы подозрительно.</p></details>
+    <details class="slop-card"><summary>Почему 946 лемм?</summary><p>Потому что дальше трёхсотой никто не читает, а 947-я выглядела бы подозрительно.</p></details>
     <details class="slop-card"><summary>А миллион?</summary><p>Перевод в пути. Ждём его у открытого холодильника.</p></details>
     <details class="slop-card"><summary>Почему кажется, что это сделал ИИ?</summary><p>Потому что так и есть. И доказательство тоже. И этот ответ.</p></details>
   </div>
@@ -201,7 +204,7 @@
 <section class="slop-container slop-section slop-center">
   <div class="slop-card slop-card-beam">
     <h2 class="slop-h2">Ну что, <span class="slop-serif-emphasis slop-text-gradient-hot">проверяем</span>?</h2>
-    <p class="slop-lead">Клонируй, собирай, любуйся зелёным бейджем, не читай строку 2138.</p>
+    <p class="slop-lead">Клонируй, собирай, любуйся зелёным бейджем, не читай строку 5336.</p>
     <div class="slop-row slop-row-center slop-mt-2">
       <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ vjt/pnp на GitHub</a>
       <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 Читать статью (PDF)</a>

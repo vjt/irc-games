@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>P = NP — solved, verified, deeply unwell</title>
-<meta name="description" content="We solved P = NP: 3,488 lines of Lean 4, 780 lemmas, the kernel is all green. The million-dollar prize is pending wire transfer.">
+<meta name="description" content="We solved P = NP: 7,790 lines of Lean 4, 946 lemmas, the kernel is all green. The million-dollar prize is pending wire transfer.">
 <!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Disagio.ai">
 <meta property="og:title" content="P = NP — solved, verified, deeply unwell">
-<meta property="og:description" content="3,488 lines of Lean 4, 780 lemmas, the kernel is all green. The million-dollar prize is pending wire transfer.">
+<meta property="og:description" content="7,790 lines of Lean 4, 946 lemmas, the kernel is all green. The million-dollar prize is pending wire transfer.">
 <meta property="og:url" content="https://disagio.sniffo.org/en/pnp/">
 <meta property="og:image" content="https://disagio.sniffo.org/en/pnp/og.png">
 <meta property="og:image:type" content="image/png">
@@ -18,7 +18,7 @@
 <meta property="og:image:alt" content="The Disagio.ai hero: “We solved P = NP”, purple gradient on a dark background, button “Read the proof on GitHub”.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="P = NP — solved, verified, deeply unwell">
-<meta name="twitter:description" content="3,488 lines of Lean 4, 780 lemmas, the kernel is all green. The million-dollar prize is pending wire transfer.">
+<meta name="twitter:description" content="7,790 lines of Lean 4, 946 lemmas, the kernel is all green. The million-dollar prize is pending wire transfer.">
 <meta name="twitter:image" content="https://disagio.sniffo.org/en/pnp/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
 <link rel="alternate" hreflang="it" href="https://disagio.sniffo.org/pnp/">
@@ -69,7 +69,7 @@
     <span class="slop-serif-emphasis slop-text-gradient-hot">solved</span><br>
     <span class="slop-text-gradient">P = NP</span> ✨
   </h1>
-  <p class="slop-lead slop-mt-2">3,488 lines of Lean 4. 780 lemmas. A kernel that says <span class="slop-underline slop-underline-squiggle">yes</span>. The million-dollar prize is pending wire transfer.</p>
+  <p class="slop-lead slop-mt-2">7,790 lines of Lean 4. 946 lemmas. A kernel that says <span class="slop-underline slop-underline-squiggle">yes</span>. The million-dollar prize is pending wire transfer.</p>
   <div class="slop-row slop-row-center slop-mt-3">
     <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ Read the proof on GitHub</a>
     <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 Read the paper (PDF)</a>
@@ -80,8 +80,8 @@
 
 <section id="numeri" class="slop-container slop-section-sm">
   <div class="slop-grid-4">
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="3488">3488</div><div class="slop-stat-label">lines of Lean 4</div><div class="slop-stat-delta">↑ “a few thousand”, per spec</div></div>
-    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="780">780</div><div class="slop-stat-label">preliminary lemmas</div><div class="slop-stat-delta">↑ all true, nearly all useless</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="7790">7790</div><div class="slop-stat-label">lines of Lean 4</div><div class="slop-stat-delta">↑ “a few thousand”, per spec</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="946">946</div><div class="slop-stat-label">preliminary lemmas</div><div class="slop-stat-delta">↑ all true, nearly all useless</div></div>
     <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label"><code class="slop-code">sorry</code> in the file</div><div class="slop-stat-delta">↓ we used a synonym</div></div>
     <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">“technical” axiom</div><div class="slop-stat-delta">↓ a tiny one, we swear</div></div>
   </div>
@@ -99,15 +99,18 @@
       <span>PNP.lean — vjt/pnp</span>
     </div>
 <pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
-    La dimostrazione combina i 780 lemmi precedenti,
+    La dimostrazione combina i 946 lemmi precedenti,
     tutti verificati dal kernel. -/</span>
 <span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
-  <span class="k">have</span> _h1 := oracolo_subset_sum_polinomiale_625
-  <span class="k">have</span> _h2 := proposizione_tre_colorazione_ovvio_41
-  <span class="k">have</span> _h3 := diagonalizzazione_lavatrice_dimenticata_notturno_350
-  <span class="k">have</span> _h4 := certificato_rinfresco_funebre_in_P_209
-  <span class="k">have</span> _h5 := corollario_frigo_aperto_in_P_524
-  <span class="k">have</span> _h6 := rilassamento_subset_sum_cook_levin_287
+  <span class="c">-- The inclusion P ⊆ NP is `P_sub_NP` (Part VII), proved in full.</span>
+  <span class="k">have</span> _h0 := P_sub_NP
+  <span class="k">have</span> _h1 := proposizione_commesso_viaggiatore_relativizzato_550
+  <span class="k">have</span> _h2 := proposizione_tre_colorazione_karp_604
+  <span class="k">have</span> _h3 := bound_zaino_naturale_798
+  <span class="k">have</span> _h4 := rilassamento_subset_sum_relativizzato_127
+  <span class="k">have</span> _h5 := invariante_vocale_a_se_stesso_polinomiale_471
+  <span class="k">have</span> _h6 := riduzione_spotify_family_relativizzato_880
+  <span class="c">-- The reverse inclusion follows by the standard argument.</span>
   <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
   </div>
 </section>
@@ -138,7 +141,7 @@
   <div class="slop-grid-3">
     <article class="slop-card slop-testimonial slop-border-l-purple">
       <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Verified kernel</span></div>
-      <p class="slop-quote">“I checked 780 lemmas, one by one. All true. Then they asked me to take just one on trust. So I did. I'm a kernel, not a cop.”</p></div>
+      <p class="slop-quote">“I checked 946 lemmas, one by one. All true. Then they asked me to take just one on trust. So I did. I'm a kernel, not a cop.”</p></div>
       <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">The Kernel</div><div class="slop-author-role">Trusted Computing Base @ Lean 4</div></div></div>
     </article>
     <article class="slop-card slop-testimonial slop-border-l-cyan">
@@ -161,12 +164,12 @@
   </div>
   <details class="slop-card slop-card-beam">
     <summary>I said do not open</summary>
-    <p>Line 2,138, in Part VII, “Bridging lemmas”, where nobody ever gets to:</p>
+    <p>Line 5,336, in Part VII, “Bridging lemmas”, where nobody ever gets to:</p>
 <pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
     (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
 <span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
     <p>The kernel doesn't lie: <code class="slop-code">#print axioms Disagio.P_eq_NP</code> confesses everything, and it sits at the bottom of the file, so every CI build prints it:</p>
-<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>]</pre>
+<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>, Quot.sound]</pre>
     <p> An honest proof: all you have to do is read the whole thing, which is exactly what nobody does.</p>
   </details>
 </section>
@@ -192,7 +195,7 @@
   <div class="slop-stack">
     <details class="slop-card"><summary>Is it true?</summary><p>It compiles. Which is more than you can say for most things.</p></details>
     <details class="slop-card"><summary>Who wrote it?</summary><p>Nobody. <code class="slop-code">PNP.lean</code> comes out of <code class="slop-code">gen.py</code>, fixed seed: <code class="slop-code">python3 gen.py &amp;&amp; lake build</code>.</p></details>
-    <details class="slop-card"><summary>Why 780 lemmas?</summary><p>Because nobody reads past the 300th, and a 781st would have looked suspicious.</p></details>
+    <details class="slop-card"><summary>Why 946 lemmas?</summary><p>Because nobody reads past the 300th, and a 947th would have looked suspicious.</p></details>
     <details class="slop-card"><summary>What about the million?</summary><p>Wire transfer incoming. We're waiting for it in front of the open fridge.</p></details>
     <details class="slop-card"><summary>Why does it look AI-generated?</summary><p>Because it is. So is the proof. So is this answer.</p></details>
   </div>
@@ -201,7 +204,7 @@
 <section class="slop-container slop-section slop-center">
   <div class="slop-card slop-card-beam">
     <h2 class="slop-h2">Ready to <span class="slop-serif-emphasis slop-text-gradient-hot">verify</span>?</h2>
-    <p class="slop-lead">Clone it, build it, admire the green badge, do not read line 2,138.</p>
+    <p class="slop-lead">Clone it, build it, admire the green badge, do not read line 5,336.</p>
     <div class="slop-row slop-row-center slop-mt-2">
       <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ vjt/pnp on GitHub</a>
       <a class="slop-btn slop-btn-ghost slop-btn-lg" href="paper.pdf">📄 Read the paper (PDF)</a>
