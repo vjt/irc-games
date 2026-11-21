@@ -129,6 +129,23 @@ def test_crawler_ua_per_host():
     assert yp.crawler_ua("example.com") is None
 
 
+def test_https_offers_alpn_http11(monkeypatch):
+    # Senza ALPN il CDN di WordPress.com da' 403 da m42 e 200 da casa; con
+    # http/1.1 offerto, 200 anche da m42 (misurato 2026-11-21, vjt #sbiffo).
+    import ssl
+    offered = []
+
+    class Spy(ssl.SSLContext):
+        def set_alpn_protocols(self, protos):
+            offered.append(protos)
+            super().set_alpn_protocols(protos)
+
+    monkeypatch.setattr(yp.ssl, "create_default_context",
+                        lambda: Spy(ssl.PROTOCOL_TLS_CLIENT))
+    yp._PinnedHTTPS("example.org", "192.0.2.1", 443, 1)
+    assert offered == [["http/1.1"]]
+
+
 def test_first_link_skips_youtube_and_trims_punctuation():
     text = "guarda https://youtu.be/dQw4w9WgXcQ e poi https://example.com/a?b=1)."
     assert yp.first_link(text) == "https://example.com/a?b=1"

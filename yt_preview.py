@@ -466,8 +466,12 @@ class _PinnedHTTP(http.client.HTTPConnection):
 
 class _PinnedHTTPS(http.client.HTTPSConnection):
     def __init__(self, host, ip, port, timeout):
-        super().__init__(host, port, timeout=timeout,
-                         context=ssl.create_default_context())
+        # A TLS hello with no ALPN smells of a script: WordPress.com's CDN
+        # answers 403 to it from m42 (200 from home), 200 once http/1.1 is
+        # offered. Measured 2026-11-21.
+        ctx = ssl.create_default_context()
+        ctx.set_alpn_protocols(["http/1.1"])
+        super().__init__(host, port, timeout=timeout, context=ctx)
         self._ip = ip
 
     def connect(self):
