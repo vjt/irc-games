@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja" data-slop-level="4">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P = NP — 解決済み・検証済み・惨め済み</title>
+<meta name="description" content="P = NPを解きました：Lean 4で3,488行、補題780個、カーネルはオールグリーン。賞金100万ドルは振込待ちです。">
+<!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Disagio.ai">
+<meta property="og:title" content="P = NP — 解決済み・検証済み・惨め済み">
+<meta property="og:description" content="Lean 4で3,488行、補題780個、カーネルはオールグリーン。賞金100万ドルは振込待ちです。">
+<meta property="og:url" content="https://disagio.sniffo.org/ja/pnp/">
+<meta property="og:image" content="https://disagio.sniffo.org/ja/pnp/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Disagio.aiのヒーロー画像：「ついに解いた P = NP」、暗い背景に紫のグラデーション、「GitHubで証明を読む」ボタン。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="P = NP — 解決済み・検証済み・惨め済み">
+<meta name="twitter:description" content="Lean 4で3,488行、補題780個、カーネルはオールグリーン。賞金100万ドルは振込待ちです。">
+<meta name="twitter:image" content="https://disagio.sniffo.org/ja/pnp/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
+<link rel="alternate" hreflang="it" href="https://disagio.sniffo.org/pnp/">
+<link rel="alternate" hreflang="en" href="https://disagio.sniffo.org/en/pnp/">
+<link rel="alternate" hreflang="es" href="https://disagio.sniffo.org/es/pnp/">
+<link rel="alternate" hreflang="fr" href="https://disagio.sniffo.org/fr/pnp/">
+<link rel="alternate" hreflang="pt-BR" href="https://disagio.sniffo.org/pt/pnp/">
+<link rel="alternate" hreflang="ru" href="https://disagio.sniffo.org/ru/pnp/">
+<link rel="alternate" hreflang="zh-Hans" href="https://disagio.sniffo.org/zh/pnp/">
+<link rel="alternate" hreflang="ja" href="https://disagio.sniffo.org/ja/pnp/">
+<link rel="alternate" hreflang="x-default" href="https://disagio.sniffo.org/pnp/">
+<link rel="stylesheet" href="/dist/slopstrap.css">
+<link rel="stylesheet" href="/fonts.css">
+<style>
+.pnp-code { margin: 0; padding: 1.25rem; overflow-x: auto; font-size: .9rem; line-height: 1.55; white-space: pre; }
+.pnp-code .k { color: #c4b5fd; }
+.pnp-code .c { opacity: .55; }
+.pnp-code .x { color: #f9a8d4; font-weight: 700; }
+</style>
+</head>
+<body class="slop-body slop-grid-bg">
+<div class="slop-orb-layer" aria-hidden="true">
+  <div class="slop-orb slop-orb-purple"></div>
+  <div class="slop-orb slop-orb-cyan"></div>
+  <div class="slop-orb slop-orb-pink"></div>
+</div>
+
+<nav class="slop-navbar">
+  <div class="slop-container slop-navbar-inner">
+    <a class="slop-brand" href="/ja/"><span class="slop-brand-mark">😩</span>Disagio<span class="slop-text-gradient">.ai</span></a>
+    <div class="slop-nav-links">
+      <a href="#teorema">定理</a>
+      <a href="#numeri">数字</a>
+      <a href="#trucco">からくり</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <nav class="dis-lang" aria-label="言語"><a href="/pnp/?lang=it" lang="it" hreflang="it" title="Italiano">IT</a><a href="/en/pnp/" lang="en" hreflang="en" title="English">EN</a><a href="/es/pnp/" lang="es" hreflang="es" title="Español">ES</a><a href="/fr/pnp/" lang="fr" hreflang="fr" title="Français">FR</a><a href="/pt/pnp/" lang="pt-BR" hreflang="pt-BR" title="Português">PT</a><a href="/ru/pnp/" lang="ru" hreflang="ru" title="Русский">RU</a><a href="/zh/pnp/" lang="zh-Hans" hreflang="zh-Hans" title="中文">ZH</a><a href="/ja/pnp/" lang="ja" hreflang="ja" title="日本語" aria-current="page">JA</a></nav>
+    <span class="slop-status"><span class="slop-dot slop-dot-green"></span>カーネル：オールグリーン</span>
+  </div>
+</nav>
+
+<main class="slop-content-layer">
+
+<section class="slop-container slop-section slop-center">
+  <span class="slop-pill slop-pill-shimmer"><span class="slop-dot slop-dot-rainbow"></span>✨ NEW：ミレニアム懸賞問題、土曜の午後に片付けました →</span>
+  <h1 class="slop-h1 slop-mt-3">
+    <span class="slop-text-gradient">ついに</span><span class="slop-serif-emphasis slop-text-gradient-hot">解いた</span><br>
+    <span class="slop-text-gradient">P = NP</span> ✨
+  </h1>
+  <p class="slop-lead slop-mt-2">Lean 4で3,488行。補題780個。<span class="slop-underline slop-underline-squiggle">イエス</span>としか言わないカーネル。賞金100万ドルは振込待ちです。</p>
+  <div class="slop-row slop-row-center slop-mt-3">
+    <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ GitHubで証明を読む</a>
+    <a class="slop-btn slop-btn-ghost slop-btn-lg" href="https://irc.sniffo.org/?go=ircnet/disagio">grappaの#disagioで議論する →</a>
+  </div>
+  <p class="slop-muted slop-mt-2">査読者：冷蔵庫。判定：開けっぱなし。</p>
+</section>
+
+<section id="numeri" class="slop-container slop-section-sm">
+  <div class="slop-grid-4">
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="3488">3488</div><div class="slop-stat-label">Lean 4の行数</div><div class="slop-stat-delta">↑ 仕様書どおり「数千行」</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="780">780</div><div class="slop-stat-label">下ごしらえの補題</div><div class="slop-stat-delta">↑ 全部正しい、ほぼ全部無意味</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label">ファイル内の<code class="slop-code">sorry</code></div><div class="slop-stat-delta">↓ 類義語を使いました</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">「技術的な」公理</div><div class="slop-stat-delta">↓ ほんのちょっとだけ、マジで</div></div>
+  </div>
+</section>
+
+<section id="teorema" class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <span class="slop-badge slop-badge-ai">🤖 形式検証済み</span>
+    <h2 class="slop-h2 slop-mt-2">これが<span class="slop-serif-emphasis slop-text-gradient">主定理</span>だ</h2>
+    <p class="slop-lead">3,470行目。見栄えのために補題を6つ並べて、締め。</p>
+  </div>
+  <div class="slop-terminal slop-card-beam">
+    <div class="slop-terminal-header">
+      <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
+      <span>PNP.lean — vjt/pnp</span>
+    </div>
+<pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
+    La dimostrazione combina i 780 lemmi precedenti,
+    tutti verificati dal kernel. -/</span>
+<span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
+  <span class="k">have</span> _h1 := oracolo_subset_sum_polinomiale_625
+  <span class="k">have</span> _h2 := proposizione_tre_colorazione_ovvio_41
+  <span class="k">have</span> _h3 := diagonalizzazione_lavatrice_dimenticata_notturno_350
+  <span class="k">have</span> _h4 := certificato_rinfresco_funebre_in_P_209
+  <span class="k">have</span> _h5 := corollario_frigo_aperto_in_P_524
+  <span class="k">have</span> _h6 := rilassamento_subset_sum_cook_levin_287
+  <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
+  </div>
+</section>
+
+<section class="slop-container slop-section">
+  <h2 class="slop-h2 slop-center slop-mb-3"><span class="slop-serif-emphasis slop-text-gradient-hot">エンタープライズグレード</span>な証明</h2>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-border-l-purple" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-indigo">🧠</div>
+      <h3 class="slop-h3 slop-mt-2">形式検証™</h3>
+      <p class="slop-muted">Leanのカーネルが、すべてのステップを一つ残らずチェックします。チェックしなくていいよと言っておいた箇所以外は。</p>
+    </article>
+    <article class="slop-card slop-border-l-cyan" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-cyan">📈</div>
+      <h3 class="slop-h3 slop-mt-2">スケーラブルな水増し</h3>
+      <p class="slop-muted">行数が多いほど本当っぽい。全10部構成で、「まだまだ準備」「オラクルとしての冷蔵庫」などを収録。第7部まで辿り着いた人はいません。</p>
+    </article>
+    <article class="slop-card slop-border-l-pink" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-pink">🧊</div>
+      <h3 class="slop-h3 slop-mt-2">ソファへの帰着</h3>
+      <p class="slop-muted">NPのあらゆる問題は、クッションの数の多項式時間でソファに帰着できる。ソファはPに属する。以上。</p>
+    </article>
+  </div>
+</section>
+
+<section class="slop-container slop-section">
+  <h2 class="slop-h2 slop-center slop-mb-3">数学者による査読：<span class="slop-serif-emphasis slop-text-gradient">ゼロ</span>件</h2>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-testimonial slop-border-l-purple">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ 認証済みカーネル</span></div>
+      <p class="slop-quote">「780個の補題を一つずつチェックしました。全部正しかった。そのあと、一つだけ信じてくれと言われました。信じました。私はカーネルであって、刑事じゃないので。」</p></div>
+      <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">カーネル</div><div class="slop-author-role">Trusted Computing Base @ Lean 4</div></div></div>
+    </article>
+    <article class="slop-card slop-testimonial slop-border-l-cyan">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ 匿名査読者</span></div>
+      <p class="slop-quote">「補題300で読むのをやめて、残りはみんなと同じく正しいことにしました。条件付き採録。結論はひと晩、冷蔵庫で寝かせます。」</p></div>
+      <div class="slop-author"><div class="slop-avatar">📝</div><div><div class="slop-author-name">Reviewer 2</div><div class="slop-author-role">補題300で停止中 @ 委員会</div></div></div>
+    </article>
+    <article class="slop-card slop-testimonial slop-border-l-pink">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ 認証済みオラクル</span></div>
+      <p class="slop-quote">「第III部『オラクルとしての冷蔵庫』。深夜3時に照らし続けて幾年月、ついに学術的に認められました。」</p></div>
+      <div class="slop-author"><div class="slop-avatar">🧊</div><div><div class="slop-author-name">冷蔵庫</div><div class="slop-author-role">NPオラクル @ 台所</div></div></div>
+    </article>
+  </div>
+</section>
+
+<section id="trucco" class="slop-container slop-section dis-faq">
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2">何か<span class="slop-serif-emphasis slop-text-gradient-hot">裏</span>があるって？</h2>
+    <p class="slop-lead">ない。開けるな。</p>
+  </div>
+  <details class="slop-card slop-card-beam">
+    <summary>開けるなって言ったのに</summary>
+    <p>2,138行目。誰も辿り着かない第VII部「つなぎの補題」の中：</p>
+<pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
+    (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
+<span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
+    <p>カーネルは嘘をつかない。<code class="slop-code">#print axioms Disagio.P_eq_NP</code>がちゃんと自白してるし、ファイルの末尾にあるから、CIのビルドのたびに毎回出力される：</p>
+<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>]</pre>
+    <p>正直な証明です。最後まで読めばわかります。誰も読まないけど。</p>
+  </details>
+</section>
+
+<section class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2"><span class="slop-serif-emphasis slop-text-gradient">文字どおり</span>の系</h2>
+    <p class="slop-lead">公理ゼロ、2行、全部正しい：N = 1 のとき P = N·P。</p>
+  </div>
+  <div class="slop-terminal">
+    <div class="slop-terminal-header">
+      <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
+      <span>PNP.lean — 3,480行目</span>
+    </div>
+<pre class="pnp-code slop-mono"><span class="k">theorem</span> P_eq_NP_letterale (P N : Nat) (h : N = 1) : P = N * P := <span class="k">by</span>
+  <span class="k">subst</span> h
+  <span class="k">exact</span> (Nat.one_mul P).symm</pre>
+  </div>
+</section>
+
+<section id="faq" class="slop-container slop-section dis-faq">
+  <h2 class="slop-h2 slop-center slop-mb-3">よくある質問（カーネルに聞きました）</h2>
+  <div class="slop-stack">
+    <details class="slop-card"><summary>本当に正しいの？</summary><p>コンパイルは通ります。それだけでも、世の中の大半のものよりマシです。</p></details>
+    <details class="slop-card"><summary>誰が書いたの？</summary><p>誰も。<code class="slop-code">PNP.lean</code>は<code class="slop-code">gen.py</code>が固定シードで吐き出しています：<code class="slop-code">python3 gen.py &amp;&amp; lake build</code>。</p></details>
+    <details class="slop-card"><summary>なんで補題が780個？</summary><p>300個目より先は誰も読まないし、781個目はさすがに怪しまれるので。</p></details>
+    <details class="slop-card"><summary>で、100万ドルは？</summary><p>振込待ちです。開けっぱなしの冷蔵庫の前で待ってます。</p></details>
+    <details class="slop-card"><summary>なんでAIが作ったっぽいの？</summary><p>AIが作ったからです。証明も。この回答も。</p></details>
+  </div>
+</section>
+
+<section class="slop-container slop-section slop-center">
+  <div class="slop-card slop-card-beam">
+    <h2 class="slop-h2"><span class="slop-serif-emphasis slop-text-gradient-hot">検証</span>する準備はいい？</h2>
+    <p class="slop-lead">クローンして、ビルドして、緑のバッジを眺めて、2,138行目は読まないこと。</p>
+    <div class="slop-row slop-row-center slop-mt-2">
+      <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ GitHubでvjt/pnpを見る</a>
+      <a class="slop-btn slop-btn-ghost slop-btn-lg" href="/ja/">← 惨めさに戻る</a>
+    </div>
+  </div>
+</section>
+
+<footer class="slop-container slop-center slop-muted dis-foot">
+  <p>© 2026 有限会社Disagio 計算複雑性部門。<a href="https://slopstrap.mikelacher.com/">Slopstrap</a>（MIT）と<a href="https://lean-lang.org/">Lean 4</a>で作りました。数学者には一切相談していません。</p>
+  <p>フォント：Inter、Instrument Serif、JetBrains Mono（SIL OFL）· IRCクライアント：<a href="https://grappa.chat/">grappa</a></p>
+</footer>
+
+</main>
+<script src="/dist/slopstrap.js"></script>
+</body>
+</html>

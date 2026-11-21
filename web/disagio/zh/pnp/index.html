@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-slop-level="4">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P = NP — 已解决、已验证、已丧</title>
+<meta name="description" content="我们解决了 P = NP：3488 行 Lean 4，780 个引理，内核一片绿。百万奖金正在等待到账。">
+<!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Disagio.ai">
+<meta property="og:title" content="P = NP — 已解决、已验证、已丧">
+<meta property="og:description" content="3488 行 Lean 4，780 个引理，内核一片绿。百万奖金正在等待到账。">
+<meta property="og:url" content="https://disagio.sniffo.org/zh/pnp/">
+<meta property="og:image" content="https://disagio.sniffo.org/zh/pnp/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Disagio.ai 的首屏：“我们解决了 P = NP”，深色背景上的紫色渐变，按钮“在 GitHub 上阅读证明”。">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="P = NP — 已解决、已验证、已丧">
+<meta name="twitter:description" content="3488 行 Lean 4，780 个引理，内核一片绿。百万奖金正在等待到账。">
+<meta name="twitter:image" content="https://disagio.sniffo.org/zh/pnp/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
+<link rel="alternate" hreflang="it" href="https://disagio.sniffo.org/pnp/">
+<link rel="alternate" hreflang="en" href="https://disagio.sniffo.org/en/pnp/">
+<link rel="alternate" hreflang="es" href="https://disagio.sniffo.org/es/pnp/">
+<link rel="alternate" hreflang="fr" href="https://disagio.sniffo.org/fr/pnp/">
+<link rel="alternate" hreflang="pt-BR" href="https://disagio.sniffo.org/pt/pnp/">
+<link rel="alternate" hreflang="ru" href="https://disagio.sniffo.org/ru/pnp/">
+<link rel="alternate" hreflang="zh-Hans" href="https://disagio.sniffo.org/zh/pnp/">
+<link rel="alternate" hreflang="ja" href="https://disagio.sniffo.org/ja/pnp/">
+<link rel="alternate" hreflang="x-default" href="https://disagio.sniffo.org/pnp/">
+<link rel="stylesheet" href="/dist/slopstrap.css">
+<link rel="stylesheet" href="/fonts.css">
+<style>
+.pnp-code { margin: 0; padding: 1.25rem; overflow-x: auto; font-size: .9rem; line-height: 1.55; white-space: pre; }
+.pnp-code .k { color: #c4b5fd; }
+.pnp-code .c { opacity: .55; }
+.pnp-code .x { color: #f9a8d4; font-weight: 700; }
+</style>
+</head>
+<body class="slop-body slop-grid-bg">
+<div class="slop-orb-layer" aria-hidden="true">
+  <div class="slop-orb slop-orb-purple"></div>
+  <div class="slop-orb slop-orb-cyan"></div>
+  <div class="slop-orb slop-orb-pink"></div>
+</div>
+
+<nav class="slop-navbar">
+  <div class="slop-container slop-navbar-inner">
+    <a class="slop-brand" href="/zh/"><span class="slop-brand-mark">😩</span>Disagio<span class="slop-text-gradient">.ai</span></a>
+    <div class="slop-nav-links">
+      <a href="#teorema">定理</a>
+      <a href="#numeri">数据</a>
+      <a href="#trucco">猫腻</a>
+      <a href="#faq">常见问题</a>
+    </div>
+    <nav class="dis-lang" aria-label="语言"><a href="/pnp/?lang=it" lang="it" hreflang="it" title="Italiano">IT</a><a href="/en/pnp/" lang="en" hreflang="en" title="English">EN</a><a href="/es/pnp/" lang="es" hreflang="es" title="Español">ES</a><a href="/fr/pnp/" lang="fr" hreflang="fr" title="Français">FR</a><a href="/pt/pnp/" lang="pt-BR" hreflang="pt-BR" title="Português">PT</a><a href="/ru/pnp/" lang="ru" hreflang="ru" title="Русский">RU</a><a href="/zh/pnp/" lang="zh-Hans" hreflang="zh-Hans" title="中文" aria-current="page">ZH</a><a href="/ja/pnp/" lang="ja" hreflang="ja" title="日本語">JA</a></nav>
+    <span class="slop-status"><span class="slop-dot slop-dot-green"></span>内核：全绿</span>
+  </div>
+</nav>
+
+<main class="slop-content-layer">
+
+<section class="slop-container slop-section slop-center">
+  <span class="slop-pill slop-pill-shimmer"><span class="slop-dot slop-dot-rainbow"></span>✨ 重磅更新：千禧年难题，周六下午顺手搞定 →</span>
+  <h1 class="slop-h1 slop-mt-3">
+    <span class="slop-text-gradient">我们</span><span class="slop-serif-emphasis slop-text-gradient-hot">解决了</span><br>
+    <span class="slop-text-gradient">P = NP</span> ✨
+  </h1>
+  <p class="slop-lead slop-mt-2">3488 行 Lean 4。780 个引理。一个只会说<span class="slop-underline slop-underline-squiggle">“是”</span>的内核。百万奖金正在等待到账。</p>
+  <div class="slop-row slop-row-center slop-mt-3">
+    <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ 在 GitHub 上阅读证明</a>
+    <a class="slop-btn slop-btn-ghost slop-btn-lg" href="https://irc.sniffo.org/?go=ircnet/disagio">用 grappa 去 #disagio 里讨论 →</a>
+  </div>
+  <p class="slop-muted slop-mt-2">同行评审：冰箱。评审结论：门还开着。</p>
+</section>
+
+<section id="numeri" class="slop-container slop-section-sm">
+  <div class="slop-grid-4">
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="3488">3488</div><div class="slop-stat-label">行 Lean 4</div><div class="slop-stat-delta">↑ 需求文档原话：“几千行”</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="780">780</div><div class="slop-stat-label">个预备引理</div><div class="slop-stat-delta">↑ 全是真的，几乎全没用</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label">文件里的 <code class="slop-code">sorry</code></div><div class="slop-stat-delta">↓ 我们换了个同义词</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">条“技术性”公理</div><div class="slop-stat-delta">↓ 就一点点，我们发誓</div></div>
+  </div>
+</section>
+
+<section id="teorema" class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <span class="slop-badge slop-badge-ai">🤖 已形式化验证</span>
+    <h2 class="slop-h2 slop-mt-2"><span class="slop-serif-emphasis slop-text-gradient">核心</span>定理</h2>
+    <p class="slop-lead">第 3470 行。先引用六个引理撑撑场面，然后收尾。</p>
+  </div>
+  <div class="slop-terminal slop-card-beam">
+    <div class="slop-terminal-header">
+      <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
+      <span>PNP.lean — vjt/pnp</span>
+    </div>
+<pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
+    La dimostrazione combina i 780 lemmi precedenti,
+    tutti verificati dal kernel. -/</span>
+<span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
+  <span class="k">have</span> _h1 := oracolo_subset_sum_polinomiale_625
+  <span class="k">have</span> _h2 := proposizione_tre_colorazione_ovvio_41
+  <span class="k">have</span> _h3 := diagonalizzazione_lavatrice_dimenticata_notturno_350
+  <span class="k">have</span> _h4 := certificato_rinfresco_funebre_in_P_209
+  <span class="k">have</span> _h5 := corollario_frigo_aperto_in_P_524
+  <span class="k">have</span> _h6 := rilassamento_subset_sum_cook_levin_287
+  <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
+  </div>
+</section>
+
+<section class="slop-container slop-section">
+  <h2 class="slop-h2 slop-center slop-mb-3">一份<span class="slop-serif-emphasis slop-text-gradient-hot">企业级</span>证明</h2>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-border-l-purple" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-indigo">🧠</div>
+      <h3 class="slop-h3 slop-mt-2">形式化验证™</h3>
+      <p class="slop-muted">Lean 内核检查每一个步骤。除了我们让它别查的那一步。</p>
+    </article>
+    <article class="slop-card slop-border-l-cyan" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-cyan">📈</div>
+      <h3 class="slop-h3 slop-mt-2">可扩展注水</h3>
+      <p class="slop-muted">行数越多，越像真的。全文分十个部分，包括“仍是预备知识”和“冰箱作为谕示机”。没人读到第七部分。</p>
+    </article>
+    <article class="slop-card slop-border-l-pink" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-pink">🧊</div>
+      <h3 class="slop-h3 slop-mt-2">沙发归约</h3>
+      <p class="slop-muted">NP 中的每个问题都能在关于靠垫数量的多项式时间内归约到沙发。沙发属于 P。证毕。</p>
+    </article>
+  </div>
+</section>
+
+<section class="slop-container slop-section">
+  <h2 class="slop-h2 slop-center slop-mb-3">经<span class="slop-serif-emphasis slop-text-gradient">零</span>位数学家审阅</h2>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-testimonial slop-border-l-purple">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ 已认证内核</span></div>
+      <p class="slop-quote">“780 个引理，我一个一个查过。全是真的。然后他们让我相信其中一条。我信了。我是内核，又不是柯南。”</p></div>
+      <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">内核</div><div class="slop-author-role">可信计算基 @ Lean 4</div></div></div>
+    </article>
+    <article class="slop-card slop-testimonial slop-border-l-cyan">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ 匿名审稿人</span></div>
+      <p class="slop-quote">“我看到第 300 个引理就停了，剩下的跟大家一样默认它对。有保留地接收。保留意见已经放进冰箱了。”</p></div>
+      <div class="slop-author"><div class="slop-avatar">📝</div><div><div class="slop-author-name">二号审稿人</div><div class="slop-author-role">卡在第 300 个引理 @ 评审委员会</div></div></div>
+    </article>
+    <article class="slop-card slop-testimonial slop-border-l-pink">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ 已认证谕示机</span></div>
+      <p class="slop-quote">“第三部分，‘冰箱作为谕示机’。凌晨三点给人照了这么多年亮，终于拿到了学术认可。”</p></div>
+      <div class="slop-author"><div class="slop-avatar">🧊</div><div><div class="slop-author-name">冰箱</div><div class="slop-author-role">NP 谕示机 @ 厨房</div></div></div>
+    </article>
+  </div>
+</section>
+
+<section id="trucco" class="slop-container slop-section dis-faq">
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2">有<span class="slop-serif-emphasis slop-text-gradient-hot">猫腻</span>吗？</h2>
+    <p class="slop-lead">没有。别点开。</p>
+  </div>
+  <details class="slop-card slop-card-beam">
+    <summary>说了别点开</summary>
+    <p>第 2138 行，在第七部分“衔接引理”里，一个没人会读到的地方：</p>
+<pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
+    (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
+<span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
+    <p>内核不会撒谎：<code class="slop-code">#print axioms Disagio.P_eq_NP</code> 会如实招供。而且这行就在文件末尾，所以每次 CI 构建都会把它打印出来：</p>
+<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>]</pre>
+    <p>一份诚实的证明：只要从头读到尾就行——而这恰恰是没人会做的事。</p>
+  </details>
+</section>
+
+<section class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2"><span class="slop-serif-emphasis slop-text-gradient">字面意义上</span>的推论</h2>
+    <p class="slop-lead">零公理，两行，句句属实：当 N = 1 时，P = N·P。</p>
+  </div>
+  <div class="slop-terminal">
+    <div class="slop-terminal-header">
+      <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
+      <span>PNP.lean — 第 3480 行</span>
+    </div>
+<pre class="pnp-code slop-mono"><span class="k">theorem</span> P_eq_NP_letterale (P N : Nat) (h : N = 1) : P = N * P := <span class="k">by</span>
+  <span class="k">subst</span> h
+  <span class="k">exact</span> (Nat.one_mul P).symm</pre>
+  </div>
+</section>
+
+<section id="faq" class="slop-container slop-section dis-faq">
+  <h2 class="slop-h2 slop-center slop-mb-3">常见问题（问的是内核）</h2>
+  <div class="slop-stack">
+    <details class="slop-card"><summary>这是真的吗？</summary><p>能编译通过。光这一点，就比很多东西强了。</p></details>
+    <details class="slop-card"><summary>谁写的？</summary><p>没人。<code class="slop-code">PNP.lean</code> 由 <code class="slop-code">gen.py</code> 生成，随机种子固定：<code class="slop-code">python3 gen.py &amp;&amp; lake build</code>。</p></details>
+    <details class="slop-card"><summary>为什么是 780 个引理？</summary><p>因为没人会读过第三百个，而第 781 个就显得可疑了。</p></details>
+    <details class="slop-card"><summary>那一百万呢？</summary><p>转账在路上了。我们守在开着的冰箱前等。</p></details>
+    <details class="slop-card"><summary>为什么看着像 AI 做的？</summary><p>因为就是。证明也是。这个回答也是。</p></details>
+  </div>
+</section>
+
+<section class="slop-container slop-section slop-center">
+  <div class="slop-card slop-card-beam">
+    <h2 class="slop-h2">准备好<span class="slop-serif-emphasis slop-text-gradient-hot">验证</span>了吗？</h2>
+    <p class="slop-lead">克隆，编译，欣赏绿色徽章，千万别读第 2138 行。</p>
+    <div class="slop-row slop-row-center slop-mt-2">
+      <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ GitHub 上的 vjt/pnp</a>
+      <a class="slop-btn slop-btn-ghost slop-btn-lg" href="/zh/">← 回去接着丧</a>
+    </div>
+  </div>
+</section>
+
+<footer class="slop-container slop-center slop-muted dis-foot">
+  <p>© 2026 Disagio 有限责任公司，计算复杂性事业部。使用 <a href="https://slopstrap.mikelacher.com/">Slopstrap</a>（MIT）和 <a href="https://lean-lang.org/">Lean 4</a> 制作：全程未咨询任何数学家。</p>
+  <p>字体 Inter、Instrument Serif、JetBrains Mono（SIL OFL）· IRC 客户端 <a href="https://grappa.chat/">grappa</a></p>
+</footer>
+
+</main>
+<script src="/dist/slopstrap.js"></script>
+</body>
+</html>

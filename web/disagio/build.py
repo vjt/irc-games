@@ -42,6 +42,25 @@ def main():
         "window.DISAGIO = " + json.dumps(ps, ensure_ascii=False, indent=0) + ";\n",
         encoding="utf-8")
     print(f"{OUT.name}: {len(ps)} phrases")
+    check_translations(len(ps))
+
+
+# The translated pools (<lang>/frasi.js) are written by hand from this one,
+# one phrase per Italian phrase in the same order. They do not regenerate:
+# when DISAGIO_PHRASES changes, this says which ones fell behind.
+LANGS = ("en", "es", "fr", "pt", "ru", "zh", "ja")
+
+
+def check_translations(n):
+    bad = []
+    for lang in LANGS:
+        f = HERE / lang / "frasi.js"
+        text = f.read_text(encoding="utf-8")
+        got = json.loads(text[text.index("["):text.rindex("]") + 1])
+        if len(got) != n or any("{to}" not in p for p in got):
+            bad.append(f"{lang}: {len(got)} phrases, Italian has {n}")
+    if bad:
+        raise SystemExit("translations out of date: " + "; ".join(bad))
 
 
 if __name__ == "__main__":

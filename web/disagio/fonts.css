@@ -34,3 +34,6 @@
 .dis-faq summary { cursor: pointer; font-weight: 600; }
 .dis-faq p { margin: .75rem 0 0; }
 .dis-foot { font-size: .85rem; padding: 2.5rem 0 3rem; }
+.dis-lang { display: flex; gap: .35rem; font-family: var(--slop-font-mono); font-size: .72rem; white-space: nowrap; }
+.dis-lang a { color: var(--slop-text-muted); }
+.dis-lang a[aria-current] { color: var(--slop-text); font-weight: 700; }

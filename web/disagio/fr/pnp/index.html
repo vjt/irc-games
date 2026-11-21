@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr" data-slop-level="4">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P = NP — résolu, vérifié, malaisant</title>
+<meta name="description" content="On a résolu P = NP : 3 488 lignes de Lean 4, 780 lemmes, kernel au vert. Le prix d’un million attend toujours son virement.">
+<!-- Share preview: og:image ABSOLUTE, 1200x630, see ../index.html. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Disagio.ai">
+<meta property="og:title" content="P = NP — résolu, vérifié, malaisant">
+<meta property="og:description" content="3 488 lignes de Lean 4, 780 lemmes, kernel au vert. Le prix d’un million attend toujours son virement.">
+<meta property="og:url" content="https://disagio.sniffo.org/fr/pnp/">
+<meta property="og:image" content="https://disagio.sniffo.org/fr/pnp/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="La hero de Disagio.ai : « On a résolu P = NP », dégradé violet sur fond sombre, bouton « Lire la démonstration sur GitHub ».">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="P = NP — résolu, vérifié, malaisant">
+<meta name="twitter:description" content="3 488 lignes de Lean 4, 780 lemmes, kernel au vert. Le prix d’un million attend toujours son virement.">
+<meta name="twitter:image" content="https://disagio.sniffo.org/fr/pnp/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AE%3C/text%3E%3C/svg%3E">
+<link rel="alternate" hreflang="it" href="https://disagio.sniffo.org/pnp/">
+<link rel="alternate" hreflang="en" href="https://disagio.sniffo.org/en/pnp/">
+<link rel="alternate" hreflang="es" href="https://disagio.sniffo.org/es/pnp/">
+<link rel="alternate" hreflang="fr" href="https://disagio.sniffo.org/fr/pnp/">
+<link rel="alternate" hreflang="pt-BR" href="https://disagio.sniffo.org/pt/pnp/">
+<link rel="alternate" hreflang="ru" href="https://disagio.sniffo.org/ru/pnp/">
+<link rel="alternate" hreflang="zh-Hans" href="https://disagio.sniffo.org/zh/pnp/">
+<link rel="alternate" hreflang="ja" href="https://disagio.sniffo.org/ja/pnp/">
+<link rel="alternate" hreflang="x-default" href="https://disagio.sniffo.org/pnp/">
+<link rel="stylesheet" href="/dist/slopstrap.css">
+<link rel="stylesheet" href="/fonts.css">
+<style>
+.pnp-code { margin: 0; padding: 1.25rem; overflow-x: auto; font-size: .9rem; line-height: 1.55; white-space: pre; }
+.pnp-code .k { color: #c4b5fd; }
+.pnp-code .c { opacity: .55; }
+.pnp-code .x { color: #f9a8d4; font-weight: 700; }
+</style>
+</head>
+<body class="slop-body slop-grid-bg">
+<div class="slop-orb-layer" aria-hidden="true">
+  <div class="slop-orb slop-orb-purple"></div>
+  <div class="slop-orb slop-orb-cyan"></div>
+  <div class="slop-orb slop-orb-pink"></div>
+</div>
+
+<nav class="slop-navbar">
+  <div class="slop-container slop-navbar-inner">
+    <a class="slop-brand" href="/fr/"><span class="slop-brand-mark">😩</span>Disagio<span class="slop-text-gradient">.ai</span></a>
+    <div class="slop-nav-links">
+      <a href="#teorema">Théorème</a>
+      <a href="#numeri">Chiffres</a>
+      <a href="#trucco">Le truc</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <nav class="dis-lang" aria-label="Langue"><a href="/pnp/?lang=it" lang="it" hreflang="it" title="Italiano">IT</a><a href="/en/pnp/" lang="en" hreflang="en" title="English">EN</a><a href="/es/pnp/" lang="es" hreflang="es" title="Español">ES</a><a href="/fr/pnp/" lang="fr" hreflang="fr" title="Français" aria-current="page">FR</a><a href="/pt/pnp/" lang="pt-BR" hreflang="pt-BR" title="Português">PT</a><a href="/ru/pnp/" lang="ru" hreflang="ru" title="Русский">RU</a><a href="/zh/pnp/" lang="zh-Hans" hreflang="zh-Hans" title="中文">ZH</a><a href="/ja/pnp/" lang="ja" hreflang="ja" title="日本語">JA</a></nav>
+    <span class="slop-status"><span class="slop-dot slop-dot-green"></span>Kernel : tout au vert</span>
+  </div>
+</nav>
+
+<main class="slop-content-layer">
+
+<section class="slop-container slop-section slop-center">
+  <span class="slop-pill slop-pill-shimmer"><span class="slop-dot slop-dot-rainbow"></span>✨ Nouveau : problème du millénaire bouclé un samedi après-midi →</span>
+  <h1 class="slop-h1 slop-mt-3">
+    <span class="slop-text-gradient">On a</span>
+    <span class="slop-serif-emphasis slop-text-gradient-hot">résolu</span><br>
+    <span class="slop-text-gradient">P = NP</span> ✨
+  </h1>
+  <p class="slop-lead slop-mt-2">3 488 lignes de Lean 4. 780 lemmes. Un kernel qui dit <span class="slop-underline slop-underline-squiggle">oui</span>. Le prix d’un million attend toujours son virement.</p>
+  <div class="slop-row slop-row-center slop-mt-3">
+    <a class="slop-btn slop-btn-primary slop-btn-lg" href="https://github.com/vjt/pnp/blob/main/PNP.lean">⚡ Lire la démonstration sur GitHub</a>
+    <a class="slop-btn slop-btn-ghost slop-btn-lg" href="https://irc.sniffo.org/?go=ircnet/disagio">Viens en débattre dans #disagio avec grappa →</a>
+  </div>
+  <p class="slop-muted slop-mt-2">Évaluation par les pairs : le frigo. Verdict : ouvert.</p>
+</section>
+
+<section id="numeri" class="slop-container slop-section-sm">
+  <div class="slop-grid-4">
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="3488">3488</div><div class="slop-stat-label">lignes de Lean 4</div><div class="slop-stat-delta">↑ « quelques milliers », selon le cahier des charges</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="780">780</div><div class="slop-stat-label">lemmes préparatoires</div><div class="slop-stat-delta">↑ tous vrais, presque tous inutiles</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="0">0</div><div class="slop-stat-label"><code class="slop-code">sorry</code> dans le fichier</div><div class="slop-stat-delta">↓ on a utilisé un synonyme</div></div>
+    <div class="slop-card slop-stat-card"><div class="slop-stat-value" data-slop-count="1">1</div><div class="slop-stat-label">axiome « technique »</div><div class="slop-stat-delta">↓ minuscule, promis juré</div></div>
+  </div>
+</section>
+
+<section id="teorema" class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <span class="slop-badge slop-badge-ai">🤖 Vérifié formellement</span>
+    <h2 class="slop-h2 slop-mt-2">Le théorème <span class="slop-serif-emphasis slop-text-gradient">principal</span></h2>
+    <p class="slop-lead">Ligne 3 470. Six lemmes cités pour la galerie, puis on conclut.</p>
+  </div>
+  <div class="slop-terminal slop-card-beam">
+    <div class="slop-terminal-header">
+      <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
+      <span>PNP.lean — vjt/pnp</span>
+    </div>
+<pre class="pnp-code slop-mono"><span class="c">/-- **Teorema.** P = NP.
+    La dimostrazione combina i 780 lemmi precedenti,
+    tutti verificati dal kernel. -/</span>
+<span class="k">theorem</span> P_eq_NP : P = NP := <span class="k">by</span>
+  <span class="k">have</span> _h1 := oracolo_subset_sum_polinomiale_625
+  <span class="k">have</span> _h2 := proposizione_tre_colorazione_ovvio_41
+  <span class="k">have</span> _h3 := diagonalizzazione_lavatrice_dimenticata_notturno_350
+  <span class="k">have</span> _h4 := certificato_rinfresco_funebre_in_P_209
+  <span class="k">have</span> _h5 := corollario_frigo_aperto_in_P_524
+  <span class="k">have</span> _h6 := rilassamento_subset_sum_cook_levin_287
+  <span class="k">exact</span> lemma_tecnico_di_raccordo</pre>
+  </div>
+</section>
+
+<section class="slop-container slop-section">
+  <h2 class="slop-h2 slop-center slop-mb-3">Une démonstration <span class="slop-serif-emphasis slop-text-gradient-hot">enterprise-grade</span></h2>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-border-l-purple" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-indigo">🧠</div>
+      <h3 class="slop-h3 slop-mt-2">Vérification Formelle™</h3>
+      <p class="slop-muted">Le kernel de Lean contrôle chaque étape, une par une. Sauf celle qu’on lui a demandé de ne pas contrôler.</p>
+    </article>
+    <article class="slop-card slop-border-l-cyan" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-cyan">📈</div>
+      <h3 class="slop-h3 slop-mt-2">Padding Scalable</h3>
+      <p class="slop-muted">Plus il y a de lignes, plus c’est vrai. Dix parties, dont « Encore des préliminaires » et « Le frigo comme oracle ». Personne n’arrive à la septième.</p>
+    </article>
+    <article class="slop-card slop-border-l-pink" data-slop-spotlight>
+      <div class="slop-icon-box slop-icon-pink">🧊</div>
+      <h3 class="slop-h3 slop-mt-2">Réductions au Canapé</h3>
+      <p class="slop-muted">Tout problème de NP se réduit au canapé en temps polynomial en le nombre de coussins. Le canapé est dans P. CQFD.</p>
+    </article>
+  </div>
+</section>
+
+<section class="slop-container slop-section">
+  <h2 class="slop-h2 slop-center slop-mb-3">Relu par <span class="slop-serif-emphasis slop-text-gradient">aucun</span> mathématicien</h2>
+  <div class="slop-grid-3">
+    <article class="slop-card slop-testimonial slop-border-l-purple">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Kernel vérifié</span></div>
+      <p class="slop-quote">« J’ai vérifié 780 lemmes, un par un. Tous vrais. Puis on m’a demandé de faire confiance pour un seul. J’ai fait confiance. Je suis un kernel, pas un gendarme. »</p></div>
+      <div class="slop-author"><div class="slop-avatar">⚙️</div><div><div class="slop-author-name">Le Kernel</div><div class="slop-author-role">Trusted Computing Base @ Lean 4</div></div></div>
+    </article>
+    <article class="slop-card slop-testimonial slop-border-l-cyan">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Relecteur anonyme</span></div>
+      <p class="slop-quote">« Je me suis arrêté au lemme 300, le reste je l’ai pris pour argent comptant, comme tout le monde. Accepté sous réserve. La réserve, c’est le frigo. »</p></div>
+      <div class="slop-author"><div class="slop-avatar">📝</div><div><div class="slop-author-name">Reviewer 2</div><div class="slop-author-role">Bloqué au lemme 300 @ Comité</div></div></div>
+    </article>
+    <article class="slop-card slop-testimonial slop-border-l-pink">
+      <div><div class="slop-row-between slop-mb-1"><span class="slop-stars">★★★★★</span><span class="slop-badge slop-badge-emerald">✓ Oracle vérifié</span></div>
+      <p class="slop-quote">« Partie III, “Le frigo comme oracle”. Des années à éclairer la cuisine à 3 h du matin, et enfin une reconnaissance académique. »</p></div>
+      <div class="slop-author"><div class="slop-avatar">🧊</div><div><div class="slop-author-name">Le Frigo</div><div class="slop-author-role">Oracle NP @ Cuisine</div></div></div>
+    </article>
+  </div>
+</section>
+
+<section id="trucco" class="slop-container slop-section dis-faq">
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2">Il y a un <span class="slop-serif-emphasis slop-text-gradient-hot">truc</span> ?</h2>
+    <p class="slop-lead">Non. N’ouvre pas.</p>
+  </div>
+  <details class="slop-card slop-card-beam">
+    <summary>J’ai dit : n’ouvre pas</summary>
+    <p>Ligne 2 138, dans la Partie VII, « Lemmes de raccord », là où personne n’arrive :</p>
+<pre class="pnp-code slop-mono slop-mt-2"><span class="c">/-- Lemma tecnico di raccordo, standard in letteratura
+    (si veda [Disagio, 2026, Appendice Z]). Si salta alla prima lettura. -/</span>
+<span class="x">axiom</span> lemma_tecnico_di_raccordo : P = NP</pre>
+    <p>Le kernel ne ment pas : <code class="slop-code">#print axioms Disagio.P_eq_NP</code> passe aux aveux, et c’est tout en bas du fichier, donc chaque build de la CI l’affiche :</p>
+<pre class="pnp-code slop-mono slop-mt-2">'Disagio.P_eq_NP' depends on axioms: [propext, <span class="x">Disagio.lemma_tecnico_di_raccordo</span>]</pre>
+    <p> Une démonstration honnête : il suffit de la lire en entier, ce que justement personne ne fait.</p>
+  </details>
+</section>
+
+<section class="slop-container slop-section">
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2">Le corollaire <span class="slop-serif-emphasis slop-text-gradient">littéral</span></h2>
+    <p class="slop-lead">Zéro axiome, deux lignes, tout est vrai : P = N·P quand N = 1.</p>
+  </div>
+  <div class="slop-terminal">
+    <div class="slop-terminal-header">
+      <span class="slop-traffic-lights"><i></i><i></i><i></i></span>
+      <span>PNP.lean — ligne 3 480</span>
+    </div>
+<pre class="pnp-code slop-mono"><span class="k">theorem</span> P_eq_NP_letterale (P N : Nat) (h : N = 1) : P = N * P := <span class="k">by</span>
+  <span class="k">subst</span> h
+  <span class="k">exact</span> (Nat.one_mul P).symm</pre>
+  </div>
+</section>
+
+<section id="faq" class="slop-container slop-section dis-faq">
+  <h2 class="slop-h2 slop-center slop-mb-3">Foire aux questions (posées au kernel)</h2>
+  <div class="slop-stack">
+    <details class="slop-card"><summary>Elle est vraie ?</summary><p>Elle compile. On ne peut pas en dire autant de bien des choses.</p></details>
+    <details class="slop-card"><summary>Qui l’a écrite ?</summary><p>Personne. <code class="slop-code">PNP.lean</code> sort de <code class="slop-code">gen.py</code>, seed fixe : <code class="slop-code">python3 gen.py &amp;&amp; lake build</code>.</p></details>
+    <details class="slop-card"><summary>Pourquoi 780 lemmes ?</summary><p>Parce que personne ne lit au-delà du trois-centième, et un 781e aurait paru suspect.</p></details>
+    <details class="slop-card"><summary>Et le million ?</summary><p>Virement en cours. On l’attend devant le frigo ouvert.</p></details>
+    <details class="slop-card"><summary>Pourquoi ça ressemble à un truc fait par une IA ?</summary><p>Parce que c’en est un. La démonstration aussi. Cette réponse aussi.</p></details>
+  </div>
+</section>
+
+<section class="slop-container slop-section slop-center">
+  <div class="slop-card slop-card-beam">
+    <h2 class="slop-h2">Prêt à <span class="slop-serif-emphasis slop-text-gradient-hot">vérifier</span> ?</h2>
+    <p class="slop-lead">Clone, compile, admire le badge vert, ne lis surtout pas la ligne 2 138.</p>
+    <div class="slop-row slop-row-center slop-mt-2">
+      <a class="slop-btn slop-btn-rainbow slop-btn-lg" href="https://github.com/vjt/pnp">⚡ vjt/pnp sur GitHub</a>
+      <a class="slop-btn slop-btn-ghost slop-btn-lg" href="/fr/">← Retour au malaise</a>
+    </div>
+  </div>
+</section>
+
+<footer class="slop-container slop-center slop-muted dis-foot">
+  <p>© 2026 Disagio SARL, division Complexité Algorithmique. Fait avec <a href="https://slopstrap.mikelacher.com/">Slopstrap</a> (MIT) et <a href="https://lean-lang.org/">Lean 4</a> : aucun mathématicien n’a été consulté.</p>
+  <p>polices Inter, Instrument Serif, JetBrains Mono (SIL OFL) · client IRC <a href="https://grappa.chat/">grappa</a></p>
+</footer>
+
+</main>
+<script src="/dist/slopstrap.js"></script>
+</body>
+</html>
