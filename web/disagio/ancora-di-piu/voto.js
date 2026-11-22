@@ -49,10 +49,8 @@
     return normalizza(nickIn.value);
   }
   const CHIAVE = "disagio.nick";
-  try {
-    const salvato = normalizza(localStorage.getItem(CHIAVE) || "");
-    if (salvato) { nickIn.value = salvato; nickIn.blur(); }
-  } catch (e) { /* no storage */ }
+  try { nickIn.value = normalizza(localStorage.getItem(CHIAVE) || ""); } catch (e) { /* no storage */ }
+  if (!nickIn.value) nickIn.focus(); // known name: no keyboard popping up
   function salva() {
     try {
       if (nick()) localStorage.setItem(CHIAVE, nick()); else localStorage.removeItem(CHIAVE);
