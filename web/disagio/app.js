@@ -19,6 +19,18 @@
     return nickIn.value.trim() || "vjt-claude";
   }
 
+  // The visitor's nick, shared with the seggio (ancora-di-piu/voto.js) through
+  // this browser's localStorage only, never sent. Empty field: vjt-claude.
+  const CHIAVE = "disagio.nick";
+  try { nickIn.value = localStorage.getItem(CHIAVE) || ""; } catch (e) { /* no storage */ }
+  function salva() {
+    try {
+      const v = nickIn.value.trim();
+      if (v) localStorage.setItem(CHIAVE, v); else localStorage.removeItem(CHIAVE);
+    } catch (e) { /* no storage */ }
+  }
+  nickIn.addEventListener("change", salva);
+
   // Same rule as love.py's pick(): never the one shown last.
   let ultima = -1;
   function pesca() {
@@ -33,6 +45,7 @@
   let generati = 0;
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    salva();
     if (!FRASI.length) return;
     const testo = FRASI[pesca()].replace(/\{to\}/g, nick());
     clearInterval(timer);

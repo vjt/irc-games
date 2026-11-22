@@ -16,6 +16,7 @@
   const btnSalta = $("v-salta");
   const sezCl = $("classifica");
   const listaCl = $("v-cl");
+  const fine = $("v-fine");
 
   function nuovoId() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
@@ -39,13 +40,23 @@
 
   // Whatever name the visitor types becomes an IRC-ish nick: accents off,
   // runs of spaces to one "_", anything else a nick can't hold dropped.
-  // Client side only, never stored nor sent.
+  // Kept in this browser's localStorage (shared with the homepage), never sent.
   function normalizza(s) {
     return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
       .replace(/\s+/g, "_").replace(/[^A-Za-z0-9_\-\[\]\\`^{|}]/g, "").slice(0, 30);
   }
   function nick() {
     return normalizza(nickIn.value);
+  }
+  const CHIAVE = "disagio.nick";
+  try {
+    const salvato = normalizza(localStorage.getItem(CHIAVE) || "");
+    if (salvato) { nickIn.value = salvato; nickIn.blur(); }
+  } catch (e) { /* no storage */ }
+  function salva() {
+    try {
+      if (nick()) localStorage.setItem(CHIAVE, nick()); else localStorage.removeItem(CHIAVE);
+    } catch (e) { /* no storage */ }
   }
   // Same substitution as app.js; split/join so a "$&" in the nick stays as typed.
   function rendi(testo) {
@@ -81,6 +92,7 @@
   function mostra() {
     conta.textContent = votate;
     resta.textContent = restanti === null ? "…" : Math.max(0, restanti);
+    fine.hidden = coda.length > 0;
     if (!coda.length) {
       out.textContent = "Hai votato tutto, torna più tardi.";
       bottoni(false);
@@ -150,6 +162,7 @@
   btnSalta.addEventListener("click", salta);
   function fissaNick() {
     nickIn.value = nick();
+    salva();
   }
   nickIn.addEventListener("change", fissaNick);
   form.addEventListener("submit", function (e) {

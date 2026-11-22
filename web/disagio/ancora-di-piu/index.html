@@ -57,7 +57,7 @@
     <span aria-hidden="true">✨</span>
     <input id="v-nick" name="nick" maxlength="30" placeholder="come ti chiami?" autofocus aria-label="il tuo nome" autocapitalize="off" spellcheck="false">
   </form>
-  <p class="slop-center slop-muted slop-mt-2">Il nome serve solo alle frasi: diventa un nick (spazi compresi), resta nel browser e non viene salvato.</p>
+  <p class="slop-center slop-muted slop-mt-2">Il nome serve solo alle frasi: diventa un nick (spazi compresi), resta in questo browser (lo usa anche il generatore) e non arriva a nessuno.</p>
   <div class="slop-card slop-card-beam slop-mt-3">
     <div id="v-frase" class="v-frase" aria-live="polite">carico le candidate…</div>
     <div class="v-bottoni">
@@ -66,6 +66,7 @@
       <button id="v-salta" class="slop-btn slop-btn-ghost v-salta" type="button" disabled>salta</button>
     </div>
   </div>
+  <p id="v-fine" class="slop-center slop-mt-3" hidden><a class="slop-btn slop-btn-rainbow" href="/?lang=it#generatore">⚡ Genera altro disagio</a></p>
   <p id="v-stato" class="slop-center slop-mt-2 v-stato" role="status"></p>
   <p class="slop-center slop-muted"><span id="v-votate">0</span> votate · <span id="v-restanti">…</span> da votare · <a href="#classifica" class="v-cl-link">classifica</a></p>
 </section>
@@ -85,6 +86,6 @@
 
 </main>
 <script src="../dist/slopstrap.js"></script>
-<script src="voto.js?v=2"></script>
+<script src="voto.js?v=3"></script>
 </body>
 </html>
