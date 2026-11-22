@@ -15,12 +15,18 @@
   const more = document.getElementById("dis-more");
   document.getElementById("dis-total").textContent = FRASI.length;
 
+  // Empty field: the misery lands on "someone", in the page's language.
+  const QUALCUNO = {
+    it: "qualcuno", en: "someone", es: "alguien", fr: "quelqu'un",
+    pt: "alguém", ru: "кто-то", ja: "誰か", zh: "某人",
+  }[(document.documentElement.lang || "it").slice(0, 2)] || "qualcuno";
+
   function nick() {
-    return nickIn.value.trim() || "vjt-claude";
+    return nickIn.value.trim() || QUALCUNO;
   }
 
   // The visitor's nick, shared with the seggio (ancora-di-piu/voto.js) through
-  // this browser's localStorage only, never sent. Empty field: vjt-claude.
+  // this browser's localStorage only, never sent.
   const CHIAVE = "disagio.nick";
   try { nickIn.value = localStorage.getItem(CHIAVE) || ""; } catch (e) { /* no storage */ }
   function salva() {
