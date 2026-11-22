@@ -50,6 +50,8 @@ MASKS = {m.strip().lstrip("~").casefold() for m in os.environ.get(
     "uid702845@id-702845.ilkley.irccloud.com,"
     "_gosub@stop.endsub.it,"
     "nano@epstein.bar,"
+    # Lucy (vjt 2026-11-22), her IRCnet SASL cloak.
+    "lucy@lucy.users.ircnet.com,"
     "*@stasenzpensier.afammo.cc,"
     # cristobot (vjt 2026-11-21): any ident under diomaiale.com, its vhosts.
     "*@*.diomaiale.com,"
