@@ -8,6 +8,7 @@ the db in a tempdir, love.py and the site's translations read where they are.
 import http.client
 import importlib.util
 import io
+import ipaddress
 import json
 import os
 import pathlib
@@ -199,8 +200,10 @@ class Api(ServerCase):
         self.assertEqual(self.sql("SELECT frase_id, votante, voto, ip FROM voti"),
                          [(fid, T1, -1, "192.0.2.7")])
         self.assertEqual(self.vote(fid, 1, votante=T2, ip="bogus"), (200, {"ok": True}))
-        self.assertEqual(self.sql("SELECT ip FROM voti WHERE votante = ?", (T2,)),
-                         [("127.0.0.1",)])
+        # A bogus header falls back to the socket peer. Not 127.0.0.1 by
+        # name: inside a FreeBSD jail loopback comes from the jail's own IP.
+        ((peer,),) = self.sql("SELECT ip FROM voti WHERE votante = ?", (T2,))
+        self.assertTrue(ipaddress.ip_address(peer), peer)
 
     def test_vote_validation(self):
         (fid,) = self.candidate("{to} candidata")
