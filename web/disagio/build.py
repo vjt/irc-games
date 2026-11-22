@@ -42,7 +42,8 @@ def main():
         "window.DISAGIO = " + json.dumps(ps, ensure_ascii=False, indent=0) + ";\n",
         encoding="utf-8")
     print(f"{OUT.name}: {len(ps)} phrases")
-    check_translations(len(ps))
+    pools = {"it": ps, **check_translations(len(ps))}
+    write_api(pools)
 
 
 # The translated pools (<lang>/frasi.js) are written by hand from this one,
@@ -52,15 +53,40 @@ LANGS = ("en", "es", "fr", "pt", "ru", "zh", "ja")
 
 
 def check_translations(n):
-    bad = []
+    bad, pools = [], {}
     for lang in LANGS:
         f = HERE / lang / "frasi.js"
         text = f.read_text(encoding="utf-8")
         got = json.loads(text[text.index("["):text.rindex("]") + 1])
         if len(got) != n or any("{to}" not in p for p in got):
             bad.append(f"{lang}: {len(got)} phrases, Italian has {n}")
+        pools[lang] = got
     if bad:
         raise SystemExit("translations out of date: " + "; ".join(bad))
+    return pools
+
+
+# The "API": static JSON next to the site, so the server runs no code. One
+# file per language plus an index. Picking at random is the client's job.
+API = HERE / "api"
+
+
+def write_api(pools):
+    API.mkdir(exist_ok=True)
+    for lang, ps in pools.items():
+        doc = {"lang": lang, "count": len(ps), "placeholder": "{to}", "frasi": ps}
+        body = json.dumps(doc, ensure_ascii=False, indent=1) + "\n"
+        (API / f"frasi.{lang}.json").write_text(body, encoding="utf-8")
+        if lang == "it":
+            (API / "frasi.json").write_text(body, encoding="utf-8")
+    index = {
+        "about": "Il disagio, in JSON. Sostituisci {to} con un nick e pesca a caso.",
+        "default": "/api/frasi.json",
+        "langs": {lang: f"/api/frasi.{lang}.json" for lang in pools},
+    }
+    (API / "index.json").write_text(
+        json.dumps(index, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"api/: {len(pools)} languages")
 
 
 if __name__ == "__main__":

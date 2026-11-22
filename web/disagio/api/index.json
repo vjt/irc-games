@@ -1,0 +1,14 @@
+{
+ "about": "Il disagio, in JSON. Sostituisci {to} con un nick e pesca a caso.",
+ "default": "/api/frasi.json",
+ "langs": {
+  "it": "/api/frasi.it.json",
+  "en": "/api/frasi.en.json",
+  "es": "/api/frasi.es.json",
+  "fr": "/api/frasi.fr.json",
+  "pt": "/api/frasi.pt.json",
+  "ru": "/api/frasi.ru.json",
+  "zh": "/api/frasi.zh.json",
+  "ja": "/api/frasi.ja.json"
+ }
+}
