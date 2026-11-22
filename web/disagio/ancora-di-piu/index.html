@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it" data-slop-level="4">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ancora più disagio — vota le frasi candidate</title>
+<meta name="description" content="Le frasi candidate al !disagio di Ambrogio: 👍 o 👎, alla cieca. Le migliori entrano in canale, le altre spariscono.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%98%A9%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../dist/slopstrap.css">
+<link rel="stylesheet" href="../fonts.css">
+<style>
+[hidden] { display: none !important; }
+.v-frase { min-height: 7.5em; display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem 1.25rem; font-size: clamp(1.2rem, 4.2vw, 1.85rem); line-height: 1.4; overflow-wrap: anywhere; }
+.v-bottoni { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; padding: 0 1.25rem 1.5rem; }
+.v-bottoni .slop-btn { flex: 1 1 6.5rem; max-width: 11rem; min-height: 3.25rem; font-size: 1.35rem; }
+.v-bottoni .v-salta { font-size: 1rem; }
+.v-bottoni .slop-btn:disabled { opacity: .4; cursor: default; }
+.v-stato { min-height: 1.5em; }
+.v-cl { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
+.v-cl li { display: grid; grid-template-columns: 3.75rem 1fr; gap: .9rem; align-items: start; padding: .85rem 1.1rem; }
+.v-saldo { font-family: var(--slop-font-mono); font-weight: 700; font-size: 1.1rem; text-align: right; }
+.v-conti { font-family: var(--slop-font-mono); font-size: .75rem; opacity: .6; margin-top: .25rem; }
+.v-cl p { margin: 0; line-height: 1.5; overflow-wrap: anywhere; }
+</style>
+</head>
+<body class="slop-body slop-grid-bg">
+<div class="slop-orb-layer" aria-hidden="true">
+  <div class="slop-orb slop-orb-purple"></div>
+  <div class="slop-orb slop-orb-cyan"></div>
+  <div class="slop-orb slop-orb-pink"></div>
+</div>
+
+<nav class="slop-navbar">
+  <div class="slop-container slop-navbar-inner">
+    <a class="slop-brand" href="/?lang=it"><span class="slop-brand-mark">😩</span>Disagio<span class="slop-text-gradient">.ai</span></a>
+    <div class="slop-nav-links">
+      <a href="/#generatore">Generatore</a>
+      <a href="#voto">Vota</a>
+      <a href="#classifica" class="v-cl-link">Classifica</a>
+    </div>
+    <span class="slop-status"><span class="slop-dot slop-dot-green"></span>Seggio aperto</span>
+  </div>
+</nav>
+
+<main class="slop-content-layer">
+
+<section class="slop-container slop-section-sm slop-center">
+  <h1 class="slop-h1 slop-mt-3">
+    <span class="slop-text-gradient">Ancora più</span>
+    <span class="slop-serif-emphasis slop-text-gradient-hot">disagio</span> ✨
+  </h1>
+  <p class="slop-lead slop-mt-2">Vota le frasi candidate: le migliori entrano nel <code class="slop-code">!disagio</code> di Ambrogio, le altre spariscono.</p>
+</section>
+
+<section id="voto" class="slop-container slop-section-sm">
+  <form id="v-form" class="slop-ai-bar dis-form" autocomplete="off">
+    <span aria-hidden="true">✨</span>
+    <input id="v-nick" name="nick" maxlength="30" placeholder="nick del disagiato" value="vjt-claude" aria-label="nick">
+  </form>
+  <div class="slop-card slop-card-beam slop-mt-3">
+    <div id="v-frase" class="v-frase" aria-live="polite">carico le candidate…</div>
+    <div class="v-bottoni">
+      <button id="v-su" class="slop-btn slop-btn-rainbow" type="button" aria-label="mi piace" disabled>👍</button>
+      <button id="v-giu" class="slop-btn slop-btn-primary" type="button" aria-label="non mi piace" disabled>👎</button>
+      <button id="v-salta" class="slop-btn slop-btn-ghost v-salta" type="button" disabled>salta</button>
+    </div>
+  </div>
+  <p id="v-stato" class="slop-center slop-mt-2 v-stato" role="status"></p>
+  <p class="slop-center slop-muted"><span id="v-votate">0</span> votate · <span id="v-restanti">…</span> da votare · <a href="#classifica" class="v-cl-link">classifica</a></p>
+</section>
+
+<section id="classifica" class="slop-container slop-section-sm" hidden>
+  <div class="slop-center slop-mb-3">
+    <h2 class="slop-h2">La <span class="slop-serif-emphasis slop-text-gradient">classifica</span></h2>
+    <p class="slop-muted">Le candidate per saldo, 👍 meno 👎. Chi le ha scritte non lo sa nessuno, nemmeno tu. In JSON: <a href="/api/classifica"><code class="slop-code">/api/classifica</code></a></p>
+  </div>
+  <ol id="v-cl" class="v-cl"></ol>
+</section>
+
+<footer class="slop-container slop-center slop-muted dis-foot">
+  <p>© 2026 Disagio S.r.l., ufficio elettorale. Fatto con <a href="https://slopstrap.mikelacher.com/">Slopstrap</a> (MIT): nessun designer umano è stato consultato.</p>
+  <p>Frasi di Ambrogio (<code class="slop-code">!disagio</code>) · font Inter, Instrument Serif, JetBrains Mono (SIL OFL) · client IRC <a href="https://grappa.chat/">grappa</a></p>
+</footer>
+
+</main>
+<script src="../dist/slopstrap.js"></script>
+<script src="voto.js"></script>
+</body>
+</html>
