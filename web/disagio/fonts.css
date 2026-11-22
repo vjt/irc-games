@@ -27,7 +27,7 @@
 .dis-out::after { content: "▋"; opacity: .7; animation: dis-blink 1s steps(1) infinite; }
 @keyframes dis-blink { 50% { opacity: 0; } }
 .dis-form { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; }
-.dis-form input { flex: 1 1 12rem; min-width: 0; }
+.dis-form input { flex: 1 1 12rem; min-width: 0; font-size: 16px; } /* under 16px iOS zooms the page on focus */
 .dis-card { font-size: .95rem; line-height: 1.5; }
 .dis-num { font-family: var(--slop-font-mono); font-size: .75rem; opacity: .55; }
 .dis-faq details { padding: 1rem 1.25rem; }
