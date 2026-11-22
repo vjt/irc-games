@@ -42,7 +42,7 @@ def main():
         "window.DISAGIO = " + json.dumps(ps, ensure_ascii=False, indent=0) + ";\n",
         encoding="utf-8")
     print(f"{OUT.name}: {len(ps)} phrases")
-    pools = {"it": ps, **check_translations(len(ps))}
+    pools = {"it": ps, **check_translations(ps)}
     write_api(pools)
 
 
@@ -52,14 +52,22 @@ def main():
 LANGS = ("en", "es", "fr", "pt", "ru", "zh", "ja")
 
 
-def check_translations(n):
+def check_translations(ita, root=HERE):
+    """A language behind the Italian is a warning, not a stop (irc-games#10):
+    new phrases go at the end, and until they are translated the api/ pools
+    carry them in Italian. A phrase without {to}, or more phrases than the
+    Italian, still stops: there the order no longer lines up."""
     bad, pools = [], {}
     for lang in LANGS:
-        f = HERE / lang / "frasi.js"
+        f = root / lang / "frasi.js"
         text = f.read_text(encoding="utf-8")
         got = json.loads(text[text.index("["):text.rindex("]") + 1])
-        if len(got) != n or any("{to}" not in p for p in got):
-            bad.append(f"{lang}: {len(got)} phrases, Italian has {n}")
+        if len(got) > len(ita) or any("{to}" not in p for p in got):
+            bad.append(f"{lang}: {len(got)} phrases, Italian has {len(ita)}")
+        elif len(got) < len(ita):
+            print(f"warning: {lang}: {len(got)} phrases, Italian has {len(ita)}:"
+                  f" the last {len(ita) - len(got)} fall back to Italian")
+            got = got + ita[len(got):]
         pools[lang] = got
     if bad:
         raise SystemExit("translations out of date: " + "; ".join(bad))
