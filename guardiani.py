@@ -44,10 +44,9 @@ MASKS = {m.strip().lstrip("~").casefold() for m in os.environ.get(
     # vjt (2026-11-20): any ident under grappa.chat. Its PTRs are vjt's own
     # vhosts (the guardians' included); grappa's pool has no rDNS there.
     "*@*.grappa.chat,"
-    # The friends vjt trusts on #disagio (2026-11-11): tom, S~ (shinobi), gosub,
-    # nano.
+    # The friends vjt trusts on #disagio (2026-11-11): tom, gosub, nano.
+    # S~'s irccloud mask removed (vjt 2026-11-22).
     "tom@tom.dev.irc.it,"
-    "uid702845@id-702845.ilkley.irccloud.com,"
     "_gosub@stop.endsub.it,"
     "nano@epstein.bar,"
     # Lucy (vjt 2026-11-22), her IRCnet SASL cloak.
