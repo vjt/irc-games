@@ -16,8 +16,9 @@ rcvar="ambrogio_love_enable"
 load_rc_config "$name"
 : ${ambrogio_love_enable:="NO"}
 : ${ambrogio_love_chans:="#sniffo,#sbiffo"}
-# Data API v3 key: dall'IP della jail la pagina watch risponde LOGIN_REQUIRED,
-# quindi qui la chiave non e' un lusso, e' l'unica via (vjt, 11:57).
+# Comandi confinati a certi canali, `cmd:#a,#b;cmd2:#c` (LOVE_ONLY):
+# !disagio anche su #sniffo (vjt, Azzurra #disagio 2026-11-22).
+: ${ambrogio_love_only:="disagio:#disagio"}
 pidfile="/var/run/convento/love.pid"
 procname="/usr/local/bin/python3.11"
 command="/usr/sbin/daemon"
@@ -27,6 +28,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   LOVE_FIFO=/var/run/convento/ambrogio.send \
   LOVE_STATE=/var/db/convento/love.json \
   LOVE_CHANS=${ambrogio_love_chans} \
+  LOVE_ONLY=${ambrogio_love_only} \
   /usr/local/bin/python3.11 -u /opt/irc-games/love.py"
 # Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr
 # insegue il FIGLIO (procname), quindi uno stop che trova il python gia' morto
