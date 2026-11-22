@@ -57,7 +57,7 @@ Env:
   LOVE_JOIN_SKIP nicks that never get it, collision suffixes included
                  (`Nick-123`, `Nick_`); default: the house bots
   LOVE_JOIN_EVERY seconds before the same nick gets it again in the same
-                 channel (default 21600, six hours)
+                 channel (default 1800, half an hour)
 
 Disagio on join (vjt 2026-11-22: «chi joina si becca il disagio... attenzione
 solo al join flood»). Same deck and round as `!disagio` in that channel, same
@@ -121,7 +121,7 @@ ONJOIN = parse_set(os.environ.get("LOVE_ONJOIN", ""))
 JOIN_SKIP = parse_set(os.environ.get(
     "LOVE_JOIN_SKIP",
     "MikeBongiorno,Convento,EliteWarez,vjt-claude,vjt-muse,vjt-ds4"))
-JOIN_EVERY = float(os.environ.get("LOVE_JOIN_EVERY", "21600"))
+JOIN_EVERY = float(os.environ.get("LOVE_JOIN_EVERY", "1800"))
 JOIN_RATE, JOIN_RATE_SEC = 3, 60       # lines per channel per minute
 BURST_JOINS, BURST_SEC = 4, 10         # more than 4 JOINs in 10 s = a burst
 BURST_QUIET_SEC = 120                  # then no JOIN gets anything for 2 min

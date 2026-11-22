@@ -432,14 +432,14 @@ def test_own_join_with_collision_suffix_opens_the_quiet_minute():
     assert text in disagio_for("tom")
 
 
-def test_one_per_nick_per_channel_every_six_hours():
+def test_one_per_nick_per_channel_every_half_hour():
     lv = door()
     assert lv.handle(join("tom", "#disagio"), now=0)
     assert lv.handle(join("tom", "#disagio"), now=100) is None
-    assert lv.handle(join("TOM", "#disagio"), now=21599) is None
+    assert lv.handle(join("TOM", "#disagio"), now=1799) is None
     assert lv.handle(join("tom", "#sbiffo"), now=200)  # per canale
-    assert lv.handle(join("Tom", "#disagio"), now=21600)
-    assert love.JOIN_EVERY == 21600 or "LOVE_JOIN_EVERY" in os.environ
+    assert lv.handle(join("Tom", "#disagio"), now=1800)
+    assert love.JOIN_EVERY == 1800 or "LOVE_JOIN_EVERY" in os.environ
 
 
 def test_three_a_minute_per_channel():
