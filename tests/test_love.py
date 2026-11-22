@@ -375,3 +375,174 @@ def test_disagio_only_on_disagio():
 def test_bare_stays_silent_for_the_others():
     for cmd in ("love", "slap", "pernacchio", "prot", "vomito"):
         assert love.parse(f"!{cmd}") is None, cmd
+
+
+# --- disagio on join (vjt 2026-11-22: «chi joina si becca il disagio...
+# attenzione solo al join flood») ---
+
+ONJOIN_CHANS = {"#disagio", "#sbiffo", "#sniffo"}
+
+
+def join(nick, chan, colon=False):
+    return f"12:00:00 < :{nick}!~id@host.example JOIN {':' if colon else ''}{chan}"
+
+
+def door(**kw):
+    # only={} lascia passare il disagio anche su #sbiffo: qui si prova l'ingresso.
+    kw.setdefault("cooldown", 0)
+    kw.setdefault("onjoin", {"#disagio", "#sbiffo"})
+    kw.setdefault("only", {})
+    return love.Love(rng=random.Random(1), chans=ONJOIN_CHANS,
+                     join_skip={"mikebongiorno", "vjt-claude"}, **kw)
+
+
+def disagio_for(nick):
+    return {love.render(p, nick, nick) for p in love.POOLS["disagio"]}
+
+
+def test_join_both_shapes_get_a_disagio_aimed_at_the_newcomer():
+    lv = door()
+    chan, text = lv.handle(join("tom", "#disagio"), now=0)
+    assert chan == "#disagio" and text in disagio_for("tom")
+    chan, text = lv.handle(join("Nano", "#DISAGIO", colon=True), now=10)
+    assert chan == "#DISAGIO" and text in disagio_for("Nano")
+
+
+def test_never_the_bot_itself_nor_the_skip_list():
+    lv = door()
+    for t, nick in enumerate(("MikeBongiorno", "mikebongiorno-123",
+                              "VJT-CLAUDE", "vjt-claude_")):
+        assert lv.handle(join(nick, "#disagio"), now=t * 10) is None, nick
+    # Il bot stesso, anche col suffisso della collisione di bot.py.
+    for t, nick in enumerate(("Ambrogio", "AMBROGIO", "Ambrogio-991", "Ambrogio_")):
+        lv = door()
+        assert lv.handle(join(nick, "#disagio", colon=True), now=t) is None, nick
+    # Un prefisso non e' un suffisso: Ambrogione e' un umano.
+    assert door().handle(join("Ambrogione", "#disagio"), now=0)
+
+
+def test_own_join_with_collision_suffix_opens_the_quiet_minute():
+    # Ambrogio su Azzurra era «Ambrogio-991» (2026-11-22).
+    lv = door()
+    own = "12:00:00 < :Ambrogio-991!~ambrogio@ci.pensa.ambrogio.con.la.grappa.chat JOIN :#disagio"
+    assert lv.handle(own, now=0) is None
+    assert lv.handle(join("tom", "#disagio"), now=30) is None
+    assert lv.handle(join("bob", "#sbiffo"), now=30)  # l'altro canale non tace
+    _, text = lv.handle(join("tom", "#disagio"), now=61)
+    assert text in disagio_for("tom")
+
+
+def test_one_per_nick_per_channel_every_six_hours():
+    lv = door()
+    assert lv.handle(join("tom", "#disagio"), now=0)
+    assert lv.handle(join("tom", "#disagio"), now=100) is None
+    assert lv.handle(join("TOM", "#disagio"), now=21599) is None
+    assert lv.handle(join("tom", "#sbiffo"), now=200)  # per canale
+    assert lv.handle(join("Tom", "#disagio"), now=21600)
+    assert love.JOIN_EVERY == 21600 or "LOVE_JOIN_EVERY" in os.environ
+
+
+def test_three_a_minute_per_channel():
+    lv = door()
+    outs = [lv.handle(join(f"n{i}", "#disagio"), now=i * 11) for i in range(5)]
+    assert [o is not None for o in outs] == [True, True, True, False, False]
+    assert lv.handle(join("n9", "#sbiffo"), now=50)  # l'altro canale ha i suoi 3
+    assert lv.handle(join("n5", "#disagio"), now=61)  # quello delle 0 e' uscito
+
+
+def test_burst_says_troppo_disagio_once_then_silence():
+    lv = door()
+    outs = [lv.handle(join(f"n{i}", "#disagio"), now=i) for i in range(5)]
+    assert all(outs[i][1] in disagio_for(f"n{i}") for i in range(3))
+    assert outs[3] is None  # tre al minuto
+    assert outs[4] == ("#disagio", outs[4][1]) and outs[4][1] in love.TROPPO_DISAGIO
+    # Dentro i 120 s: silenzio, anche una seconda raffica.
+    for i in range(5, 15):
+        assert lv.handle(join(f"m{i}", "#disagio"), now=i) is None, i
+    # L'ultima raffica (t=14) ha allungato il silenzio fino a 134.
+    assert lv.handle(join("late", "#disagio"), now=130) is None
+    assert lv.handle(join("calm", "#disagio"), now=140)
+    # L'altro canale non tace.
+    assert lv.handle(join("x", "#sbiffo"), now=20)
+
+
+def test_second_burst_within_ten_minutes_has_no_troppo():
+    lv = door()
+    outs = [lv.handle(join(f"a{i}", "#disagio"), now=i) for i in range(5)]
+    assert outs[4][1] in love.TROPPO_DISAGIO
+    # Raffica dopo il silenzio ma entro 10 minuti: nessun «troppo disagio».
+    outs = [lv.handle(join(f"b{i}", "#disagio"), now=300 + i) for i in range(10)]
+    assert not any(o and o[1] in love.TROPPO_DISAGIO for o in outs)
+    assert all(o is None for o in outs[4:])
+    # Passati i 10 minuti la riga torna.
+    outs = [lv.handle(join(f"c{i}", "#disagio"), now=700 + i) for i in range(5)]
+    assert outs[4][1] in love.TROPPO_DISAGIO
+
+
+def test_netsplit_comeback_is_not_an_arrival():
+    lv = door()
+    lv.handle("12:00:00 < :tom!~id@host QUIT :raptor.azzurra.chat ruby.azzurra.chat", now=0)
+    lv.handle("12:00:00 < :bob!~id@host QUIT :Quit: vado a casa.", now=0)
+    lv.handle("12:00:00 < :eve!~id@host QUIT :Ping timeout: 240 seconds", now=0)
+    assert lv.handle(join("tom", "#disagio"), now=100) is None
+    assert lv.handle(join("bob", "#disagio"), now=110)
+    assert lv.handle(join("eve", "#disagio"), now=120)
+
+
+def test_join_outside_onjoin_channels_is_ignored():
+    lv = door()
+    assert lv.handle(join("tom", "#sniffo"), now=0) is None   # in chans, non in onjoin
+    lv = door(onjoin={"#disagio", "#grappa"})
+    assert lv.handle(join("tom", "#grappa"), now=0) is None   # in onjoin, non in chans
+    # Senza LOVE_ONJOIN non saluta nessuno.
+    assert love.Love(rng=random.Random(1), cooldown=0, chans=ONJOIN_CHANS,
+                     onjoin=set()).handle(join("tom", "#disagio"), now=0) is None
+    # LOVE_ONLY vale anche qui: !disagio confinato a #disagio, #sbiffo tace.
+    lv = door(only={"disagio": {"#disagio"}})
+    assert lv.handle(join("tom", "#sbiffo"), now=0) is None
+    assert lv.handle(join("tom", "#disagio"), now=10)
+    # E LOVE_SKIP.
+    lv = door(skip={"#disagio": {"disagio"}})
+    assert lv.handle(join("tom", "#disagio"), now=0) is None
+
+
+def test_onjoin_shares_deck_and_cooldown_with_the_command():
+    lv = door(cooldown=2)
+    assert lv.handle(join("tom", "#disagio"), now=100)
+    assert lv.handle(line("a", "#disagio", "!disagio"), now=101) is None  # cooldown
+    assert lv.handle(line("a", "#disagio", "!disagio"), now=102)
+    assert lv.handle(join("bob", "#disagio"), now=103) is None            # cooldown
+    # Stesso giro: comandi e ingressi pescano dallo stesso mazzo.
+    lv = door()
+    pool = love.POOLS["disagio"]
+    seen = []
+    for i in range(len(pool)):
+        if i % 3 == 0:
+            text = lv.handle(join(f"n{i}", "#disagio"), now=i * 30)[1]
+            text = text.replace(f"\x02n{i}\x02", "\x02a\x02")
+        else:
+            text = lv.handle(line("a", "#disagio", "!disagio"), now=i * 30)[1]
+        seen.append(text)
+    assert len(set(seen)) == len(pool)
+
+
+def test_privmsg_commands_unchanged_by_onjoin():
+    lv = door()
+    # Una PRIVMSG che contiene una riga di JOIN non e' un ingresso.
+    assert lv.handle(line("tom", "#disagio", "< :x!y@z JOIN #disagio"), now=0) is None
+    assert lv.handle(line("tom", "#disagio", "x 12:00:00 < :x!y@z JOIN :#disagio"), now=1) is None
+    _, text = lv.handle(line("vjt", "#sbiffo", "!love tom"), now=2)
+    assert text in {love.render(p, "vjt", "tom") for p in love.PHRASES}
+    _, text = lv.handle(line("vjt", "#sbiffo", "!slap AMBROGIO"), now=3)
+    assert "vjt" in text and "AMBROGIO" not in text
+    # Le righe in uscita del bot non sono ingressi.
+    assert lv.handle("12:00:00 > JOIN #disagio", now=4) is None
+
+
+def test_troppo_disagio_pool():
+    pool = love.TROPPO_DISAGIO
+    assert 5 <= len(pool) == len(set(pool)) <= 8
+    bad = re.compile(r"[\x00-\x1f\x7f{}]")
+    for p in pool:
+        assert not bad.search(p) and not p.startswith("/me "), p
+    assert "troppo" not in love.POOLS and love.parse("!troppo tom") is None

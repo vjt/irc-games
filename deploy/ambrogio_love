@@ -15,10 +15,13 @@ name="ambrogio_love"
 rcvar="ambrogio_love_enable"
 load_rc_config "$name"
 : ${ambrogio_love_enable:="NO"}
-: ${ambrogio_love_chans:="#sniffo,#sbiffo"}
+: ${ambrogio_love_chans:="#sniffo,#sbiffo,#disagio"}
 # Comandi confinati a certi canali, `cmd:#a,#b;cmd2:#c` (LOVE_ONLY):
 # !disagio anche su #sniffo (vjt, Azzurra #disagio 2026-11-22).
 : ${ambrogio_love_only:="disagio:#disagio"}
+# Disagio on join (vjt, 2026-11-22: «chi joina si becca il disagio...
+# attenzione solo al join flood»). Il canale deve stare anche in _chans.
+: ${ambrogio_love_onjoin:="#disagio"}
 pidfile="/var/run/convento/love.pid"
 procname="/usr/local/bin/python3.11"
 command="/usr/sbin/daemon"
@@ -29,6 +32,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   LOVE_STATE=/var/db/convento/love.json \
   LOVE_CHANS=${ambrogio_love_chans} \
   LOVE_ONLY=${ambrogio_love_only} \
+  LOVE_ONJOIN=${ambrogio_love_onjoin} \
   /usr/local/bin/python3.11 -u /opt/irc-games/love.py"
 # Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr
 # insegue il FIGLIO (procname), quindi uno stop che trova il python gia' morto

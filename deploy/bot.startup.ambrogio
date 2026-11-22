@@ -11,3 +11,5 @@ JOIN #sbiffo
 RAW PRIVMSG ChanServ :INVITE #it-opers
 JOIN #it-opers
 JOIN #grappa
+# #disagio (vjt, 2026-11-22): il disagio on join di love.py.
+JOIN #disagio

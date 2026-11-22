@@ -51,6 +51,22 @@ Env:
                  (default `disagio:#disagio`)
   LOVE_STATE     json with the round of each deck, so a restart does not
                  reshuffle (default unset: RAM only)
+  LOVE_ONJOIN    channels where whoever JOINs gets a !disagio line aimed at
+                 them (default none). The channel must be in LOVE_CHANS too,
+                 and !disagio must be allowed there by LOVE_SKIP/LOVE_ONLY.
+  LOVE_JOIN_SKIP nicks that never get it, collision suffixes included
+                 (`Nick-123`, `Nick_`); default: the house bots
+  LOVE_JOIN_EVERY seconds before the same nick gets it again in the same
+                 channel (default 21600, six hours)
+
+Disagio on join (vjt 2026-11-22: «chi joina si becca il disagio... attenzione
+solo al join flood»). Same deck and round as `!disagio` in that channel, same
+cooldown. On top: at most 3 a minute per channel; nothing in the first 60 s
+after the bot's own JOIN; nothing for whoever comes back from a netsplit (a
+`QUIT :server server` seen in the last LOVE_JOIN_EVERY). More than 4 JOINs in
+10 s is a split or a botnet: the channel gets ONE «troppo disagio» line (at
+most one per 10 min) and then 120 s of silence on JOINs (vjt, same day).
+Anti-flood memory is RAM only.
 """
 
 import json
@@ -92,6 +108,25 @@ SKIP = parse_skip(os.environ.get("LOVE_SKIP", ""))
 # `cmd:#a,#b;cmd2:#c`. !disagio is #disagio's (vjt 2026-11-20: «attivo
 # possibilmente solo su #disagio»), on every network, so it is the default.
 ONLY = parse_skip(os.environ.get("LOVE_ONLY", "disagio:#disagio"))
+
+
+def parse_set(spec):
+    """`#a, #B` -> {"#a", "#b"}."""
+    return {x.strip().lower() for x in spec.split(",") if x.strip()}
+
+
+ONJOIN = parse_set(os.environ.get("LOVE_ONJOIN", ""))
+# The bots of the house (deploy/ and vjt-claude's own): a bot joining is not
+# a newcomer to welcome.
+JOIN_SKIP = parse_set(os.environ.get(
+    "LOVE_JOIN_SKIP",
+    "MikeBongiorno,Convento,EliteWarez,vjt-claude,vjt-muse,vjt-ds4"))
+JOIN_EVERY = float(os.environ.get("LOVE_JOIN_EVERY", "21600"))
+JOIN_RATE, JOIN_RATE_SEC = 3, 60       # lines per channel per minute
+BURST_JOINS, BURST_SEC = 4, 10         # more than 4 JOINs in 10 s = a burst
+BURST_QUIET_SEC = 120                  # then no JOIN gets anything for 2 min
+TROPPO_EVERY = 600                     # one «troppo disagio» per 10 min
+SETTLE_SEC = 60                        # after the bot's own JOIN
 
 # A target is echoed back into the channel: cap it so a 400-byte "nick" does
 # not wrap the line into two.
@@ -1283,6 +1318,19 @@ DISAGIO_PHRASES = [
     "{to} ha dato un nome al Roomba e gli chiede com'e' andata la giornata. Il Roomba si nasconde sotto il letto",
 ]
 
+# The one line a JOIN burst gets instead of a disagio each (vjt 2026-11-22:
+# mass joins, splits or botnets, get a cap and one line first). Nobody is
+# named: the line is for the crowd. Not a command, so not in POOLS.
+TROPPO_DISAGIO = [
+    "troppo disagio tutto insieme, Ambrogio si rifiuta",
+    "entrate in troppi: il disagio si serve uno alla volta, ripassate",
+    "Ambrogio vede arrivare una folla e chiude il portone del disagio",
+    "il disagio all'ingrosso non lo facciamo, solo al dettaglio",
+    "troppa gente, troppo disagio: Ambrogio si chiude in dispensa",
+    "Ambrogio conta le teste, perde il conto e si rifiuta di disagiare",
+    "tutti dentro insieme? il disagio non basta per tutti, tornate piu' tardi",
+]
+
 # command -> phrase pool. All of them share the target rule and the cooldown.
 POOLS = {"love": PHRASES, "slap": SLAP_PHRASES, "pernacchio": PERNACCHIO_PHRASES,
          # vjt, #sbiffo 2026-10-10 13:51, on katia's ask.
@@ -1319,6 +1367,25 @@ CMD_PAT = re.compile(
 # hex form of \x04 too, before the generic control strip.
 COLOR = re.compile(r'\x03(?:\d{1,2}(?:,\d{1,2})?)?|\x04(?:[0-9a-fA-F]{6}(?:,[0-9a-fA-F]{6})?)?')
 CTRL = re.compile(r'[\x00-\x1f\x7f]')
+# Both shapes reach bot.log: `JOIN #chan` and `JOIN :#chan`.
+JOIN_PAT = re.compile(r'^\S+ < :(?P<nick>[^!@\s]+)!\S+ JOIN :?(?P<chan>#[^\s,]+)')
+# A netsplit QUIT names the two servers (`QUIT :raptor.azzurra.chat
+# ruby.azzurra.chat`): whoever leaves that way comes back in the netjoin.
+SPLIT_PAT = re.compile(r'^\S+ < :(?P<nick>[^!@\s]+)!\S+ QUIT :\S+\.\S+ \S+\.\S+\s*$')
+
+
+def same_nick(nick, base):
+    """`nick` is `base` or `base` with a collision suffix: bot.py takes
+    `Nick-NNN` on a 433 (Ambrogio was `Ambrogio-991` on Azzurra, 2026-11-22),
+    clients add `_`, `` ` `` or digits."""
+    return re.fullmatch(re.escape(base) + r'(?:-\d+|[_`^]*\d*)', nick, re.I) is not None
+
+
+def expire(d, now, ttl):
+    """Drop the entries of `d` (key -> time) older than `ttl`, once it grows."""
+    if len(d) > 512:
+        for k in [k for k, t in d.items() if now - t >= ttl]:
+            del d[k]
 
 
 def parse(text):
@@ -1401,12 +1468,23 @@ class Love:
     (vjt, #sbiffo 2026-11-21 13:31)."""
 
     def __init__(self, rng=None, cooldown=COOLDOWN_SEC, chans=None, skip=None,
-                 only=None, state=STATE):
+                 only=None, state=STATE, onjoin=None, join_skip=None,
+                 join_every=JOIN_EVERY):
         self.rng = rng or random.Random()
         self.cooldown = cooldown
         self.chans = CHANNELS if chans is None else chans
         self.skip = SKIP if skip is None else skip
         self.only = ONLY if only is None else only
+        self.onjoin = ONJOIN if onjoin is None else onjoin
+        self.join_skip = JOIN_SKIP if join_skip is None else join_skip
+        self.join_every = join_every
+        # On-join anti-flood, RAM only: per channel the recent JOINs, the
+        # recent lines, the end of a burst's silence, the last «troppo», the
+        # bot's own JOIN; per (channel, nick) the last line; per nick the
+        # last netsplit QUIT.
+        self.joins, self.welcomed = {}, {}
+        self.quiet_until, self.troppo_at, self.arrived = {}, {}, {}
+        self.join_last, self.split_at = {}, {}
         self.last_at = {}
         self.state = Path(state) if state else None
         self.said, self.last_phrase = {}, {}
@@ -1434,7 +1512,7 @@ class Love:
         """A bot.log line -> (chan, text) to say, or None."""
         m = PRIVMSG_PAT.search(line)
         if not m:
-            return None
+            return self.arrival(line, now)
         chan = m.group("chan")
         if chan.lower() not in self.chans:
             return None
@@ -1459,6 +1537,70 @@ class Love:
         self.last_phrase[key] = phrase
         self.save()
         return chan, render(phrase, frm, to)
+
+    def arrival(self, line, now=None):
+        """A JOIN in a LOVE_ONJOIN channel -> (chan, a disagio aimed at whoever
+        joined), or the one «troppo disagio» of a burst, or None."""
+        never = float("-inf")
+        now = time.time() if now is None else now
+        m = SPLIT_PAT.match(line)
+        if m:
+            self.split_at[m.group("nick").lower()] = now
+            expire(self.split_at, now, self.join_every)
+            return None
+        m = JOIN_PAT.match(line)
+        if not m:
+            return None
+        chan, nick = m.group("chan"), m.group("nick")
+        key = chan.lower()
+        if (key not in self.onjoin or key not in self.chans
+                or "disagio" in self.skip.get(key, ())
+                or ("disagio" in self.only and key not in self.only["disagio"])):
+            return None
+        joins = self.joins[key] = [
+            t for t in self.joins.get(key, ()) if now - t < BURST_SEC] + [now]
+        if same_nick(nick, BOT_NICK):
+            self.arrived[key] = now
+            return None
+        if len(joins) > BURST_JOINS:
+            # A split or a botnet: one line for the crowd, then silence. A
+            # burst inside the silence stretches it and says nothing.
+            quiet = now < self.quiet_until.get(key, never)
+            self.quiet_until[key] = now + BURST_QUIET_SEC
+            if quiet or now - self.troppo_at.get(key, never) < TROPPO_EVERY:
+                return None
+            self.troppo_at[key] = now
+            # The 2 s cooldown does not hold it back: a netjoin lands in one
+            # second, the first joiner's line would swallow it every time.
+            said = self.said.setdefault(f"{key} troppo", set())
+            phrase = deal(self.rng, TROPPO_DISAGIO, said,
+                          self.last_phrase.get(f"{key} troppo"))
+            self.last_phrase[f"{key} troppo"] = phrase
+            self.last_at[key] = now
+            self.save()
+            return chan, phrase
+        who = nick.lower()
+        if (now < self.quiet_until.get(key, never)
+                or any(same_nick(nick, s) for s in self.join_skip)
+                or now - self.arrived.get(key, never) < SETTLE_SEC
+                or now - self.split_at.get(who, never) < self.join_every
+                or now - self.join_last.get((key, who), never) < self.join_every):
+            return None
+        welcomed = self.welcomed[key] = [
+            t for t in self.welcomed.get(key, ()) if now - t < JOIN_RATE_SEC]
+        if len(welcomed) >= JOIN_RATE:
+            return None
+        if now - self.last_at.get(key, never) < self.cooldown:
+            return None
+        said = self.said.setdefault(f"{key} disagio", set())
+        phrase = deal(self.rng, POOLS["disagio"], said, self.last_phrase.get(key))
+        self.last_at[key] = now
+        self.last_phrase[key] = phrase
+        welcomed.append(now)
+        self.join_last[(key, who)] = now
+        expire(self.join_last, now, self.join_every)
+        self.save()
+        return chan, render(phrase, nick, nick)
 
 
 def daemon():

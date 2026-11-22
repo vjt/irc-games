@@ -15,9 +15,12 @@ name="ambrogio_love_ircnet"
 rcvar="ambrogio_love_ircnet_enable"
 load_rc_config "$name"
 : ${ambrogio_love_ircnet_enable:="NO"}
-: ${ambrogio_love_ircnet_chans:="#cybernet,#italia"}
+: ${ambrogio_love_ircnet_chans:="#cybernet,#italia,#disagio"}
 # TOOLS fa gia' !love e !slap su #cybernet (vjt, #sbiffo 2026-10-10 13:57).
 : ${ambrogio_love_ircnet_skip:="#cybernet:love,slap"}
+# Disagio on join (vjt, 2026-11-22: «chi joina si becca il disagio...
+# attenzione solo al join flood»). Il canale deve stare anche in _chans.
+: ${ambrogio_love_ircnet_onjoin:="#disagio"}
 # Data API v3 key: dall'IP della jail la pagina watch risponde LOGIN_REQUIRED,
 # quindi qui la chiave non e' un lusso, e' l'unica via (vjt, 11:57).
 pidfile="/var/run/convento/love.ircnet.pid"
@@ -30,6 +33,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   LOVE_STATE=/var/db/convento/love_ircnet.json \
   LOVE_CHANS=${ambrogio_love_ircnet_chans} \
   LOVE_SKIP='${ambrogio_love_ircnet_skip}' \
+  LOVE_ONJOIN=${ambrogio_love_ircnet_onjoin} \
   /usr/local/bin/python3.11 -u /opt/irc-games/love.py"
 # Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr
 # insegue il FIGLIO (procname), quindi uno stop che trova il python gia' morto
