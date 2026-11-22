@@ -37,12 +37,19 @@
     return id;
   })();
 
+  // Whatever name the visitor types becomes an IRC-ish nick: accents off,
+  // runs of spaces to one "_", anything else a nick can't hold dropped.
+  // Client side only, never stored nor sent.
+  function normalizza(s) {
+    return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
+      .replace(/\s+/g, "_").replace(/[^A-Za-z0-9_\-\[\]\\`^{|}]/g, "").slice(0, 30);
+  }
   function nick() {
-    return nickIn.value.trim() || "vjt-claude";
+    return normalizza(nickIn.value);
   }
   // Same substitution as app.js; split/join so a "$&" in the nick stays as typed.
   function rendi(testo) {
-    return testo.split("{to}").join(nick());
+    return testo.split("{to}").join(nick() || "qualcuno");
   }
 
   // coda[0] is on screen. «salta» sends it to the back; a vote drops it.
@@ -53,6 +60,7 @@
   let votate = 0;
   let restanti = null;
   let occupato = false;
+  let pronto = false; // first batch in: until then the card says it's loading
 
   async function carica() {
     const r = await fetch("/api/candidate?n=20&votante=" + encodeURIComponent(VOTANTE),
@@ -75,6 +83,11 @@
     resta.textContent = restanti === null ? "…" : Math.max(0, restanti);
     if (!coda.length) {
       out.textContent = "Hai votato tutto, torna più tardi.";
+      bottoni(false);
+      return;
+    }
+    if (!nick()) {
+      out.textContent = "Prima dimmi come ti chiami, qui sopra: le frasi parlano di te.";
       bottoni(false);
       return;
     }
@@ -135,7 +148,15 @@
   btnSu.addEventListener("click", function () { vota(1); });
   btnGiu.addEventListener("click", function () { vota(-1); });
   btnSalta.addEventListener("click", salta);
-  form.addEventListener("submit", function (e) { e.preventDefault(); });
+  function fissaNick() {
+    nickIn.value = nick();
+  }
+  nickIn.addEventListener("change", fissaNick);
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    fissaNick();
+    nickIn.blur();
+  });
 
   // --- classifica
 
@@ -185,12 +206,12 @@
   });
 
   nickIn.addEventListener("input", function () {
-    if (coda.length) out.textContent = rendi(coda[0].testo);
+    if (pronto) mostra();
     if (ultimaCl && !sezCl.hidden) disegnaCl();
   });
 
   if (location.hash === "#classifica") classifica();
-  carica().then(mostra, function () {
+  carica().then(function () { pronto = true; mostra(); }, function () {
     out.textContent = "Il seggio non risponde. Riprova più tardi.";
   });
 })();
