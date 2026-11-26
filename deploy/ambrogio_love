@@ -17,8 +17,8 @@ load_rc_config "$name"
 : ${ambrogio_love_enable:="NO"}
 : ${ambrogio_love_chans:="#sniffo,#sbiffo,#disagio"}
 # Comandi confinati a certi canali, `cmd:#a,#b;cmd2:#c` (LOVE_ONLY):
-# !disagio anche su #sniffo (vjt, Azzurra #disagio 2026-11-22).
-: ${ambrogio_love_only:="disagio:#disagio"}
+# !disagio anche su #sniffo (vjt, Azzurra #disagio 2026-11-22) e #italia (vjt, 2026-11-26).
+: ${ambrogio_love_only:="disagio:#disagio,#sniffo,#italia"}
 # Disagio on join (vjt, 2026-11-22: «chi joina si becca il disagio...
 # attenzione solo al join flood»). Il canale deve stare anche in _chans.
 : ${ambrogio_love_onjoin:="#disagio"}
