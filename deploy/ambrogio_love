@@ -16,9 +16,9 @@ rcvar="ambrogio_love_enable"
 load_rc_config "$name"
 : ${ambrogio_love_enable:="NO"}
 : ${ambrogio_love_chans:="#sniffo,#sbiffo,#disagio"}
-# Comandi confinati a certi canali, `cmd:#a,#b;cmd2:#c` (LOVE_ONLY):
-# !disagio anche su #sniffo (vjt, Azzurra #disagio 2026-11-22) e #italia (vjt, 2026-11-26).
-: ${ambrogio_love_only:="disagio:#disagio,#sniffo,#italia"}
+# Comandi confinati a certi canali, `cmd:#a,#b;cmd2:#c` (LOVE_ONLY). Vuoto = nessun confine:
+# !disagio ovunque (vjt, 2026-11-26 «abilitalo dappertutto»). `=` e non `:=`, cosi' un "" in rc.conf vale.
+: ${ambrogio_love_only=""}
 # Disagio on join (vjt, 2026-11-22: «chi joina si becca il disagio...
 # attenzione solo al join flood»). Il canale deve stare anche in _chans.
 : ${ambrogio_love_onjoin:="#disagio"}
@@ -31,7 +31,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   LOVE_FIFO=/var/run/convento/ambrogio.send \
   LOVE_STATE=/var/db/convento/love.json \
   LOVE_CHANS=${ambrogio_love_chans} \
-  LOVE_ONLY=${ambrogio_love_only} \
+  LOVE_ONLY='${ambrogio_love_only}' \
   LOVE_ONJOIN=${ambrogio_love_onjoin} \
   /usr/local/bin/python3.11 -u /opt/irc-games/love.py"
 # Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr

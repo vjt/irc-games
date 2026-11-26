@@ -18,6 +18,9 @@ load_rc_config "$name"
 : ${ambrogio_love_ircnet_chans:="#cybernet,#italia,#disagio"}
 # TOOLS fa gia' !love e !slap su #cybernet (vjt, #sbiffo 2026-10-10 13:57).
 : ${ambrogio_love_ircnet_skip:="#cybernet:love,slap"}
+# Comandi confinati a certi canali (LOVE_ONLY), vuoto = nessun confine: !disagio ovunque
+# (vjt, 2026-11-26 «abilitalo dappertutto»; senza, love.py lo terrebbe su #disagio).
+: ${ambrogio_love_ircnet_only=""}
 # Disagio on join (vjt, 2026-11-22: «chi joina si becca il disagio...
 # attenzione solo al join flood»). Il canale deve stare anche in _chans.
 : ${ambrogio_love_ircnet_onjoin:="#disagio"}
@@ -33,6 +36,7 @@ command_args="-f -R 5 -P ${daemon_pidfile} -p ${pidfile} -u convento -o /var/log
   LOVE_STATE=/var/db/convento/love_ircnet.json \
   LOVE_CHANS=${ambrogio_love_ircnet_chans} \
   LOVE_SKIP='${ambrogio_love_ircnet_skip}' \
+  LOVE_ONLY='${ambrogio_love_ircnet_only}' \
   LOVE_ONJOIN=${ambrogio_love_ircnet_onjoin} \
   /usr/local/bin/python3.11 -u /opt/irc-games/love.py"
 # Stesso mietitore degli altri sidecar: daemon(8) fa da supervisore e rc.subr
